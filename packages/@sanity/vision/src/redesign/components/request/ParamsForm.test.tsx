@@ -120,6 +120,17 @@ function optionTexts() {
     .map((option) => option.textContent)
 }
 
+/** Opens a param's help popover, where its type and usages are explained, and returns it */
+function openDetails(name: string): HTMLElement {
+  const button = screen.getByTestId(`vision-params-form-${name}-details`)
+  if (button.getAttribute('aria-expanded') !== 'true') fireEvent.click(button)
+  return screen.getByTestId(`vision-params-form-${name}-details-content`)
+}
+
+function typeDetail(name: string): string | null {
+  return within(openDetails(name)).getByTestId(`vision-params-form-${name}-type`).textContent
+}
+
 function toParams(raw: string): Params {
   try {
     const parsed: unknown = JSON5.parse(raw)
@@ -182,9 +193,7 @@ describe('ParamsForm', () => {
     const {field} = renderForm(
       '*[_type == $type && status == $status && featured == $featured && _id != $id][0...$limit]{"extra": $extra}',
     )
-    const types = ['type', 'status', 'featured', 'id', 'limit', 'extra'].map(
-      (name) => screen.getByTestId(`vision-params-form-${name}-type`).textContent,
-    )
+    const types = ['type', 'status', 'featured', 'id', 'limit', 'extra'].map(typeDetail)
     expect(types).toEqual(
       [
         'vision.params-form.type.document-type',
@@ -205,12 +214,8 @@ describe('ParamsForm', () => {
       'draft',
       'published',
     ])
-    // The details live in the info icon's tooltip, the missing value is flagged like a required field
-    expect(
-      within(screen.getByTestId('vision-params-form-type-details-content')).getByText(
-        '_type == $type',
-      ),
-    ).toBeTruthy()
+    // The details live in the help popover, the missing value is flagged like a required field
+    expect(within(openDetails('type')).getByText('_type == $type')).toBeTruthy()
     expect(within(field('type')).getByTestId('vision-params-form-type-required')).toBeTruthy()
     expect(
       (within(field('type')).getByRole('combobox') as HTMLInputElement).validationMessage,
@@ -372,7 +377,7 @@ describe('ParamsForm', () => {
       const input = within(field(name)).getByRole('spinbutton')
       expect([input.getAttribute('min'), input.getAttribute('step')]).toEqual(['0', '1'])
       expect(input).toHaveProperty('inputMode', 'numeric')
-      expect(screen.getByTestId(`vision-params-form-${name}-type`).textContent).toBe(
+      expect(typeDetail(name)).toBe(
         `vision.params-form.type-detail:${JSON.stringify({
           type: `vision.params-form.type.min:${JSON.stringify({type: 'vision.params-form.type.integer', min: 0})}`,
         })}`,
@@ -621,9 +626,7 @@ describe('ParamsForm', () => {
     expect(field('search').classList.contains(fieldGrid.wide)).toBe(true)
     expect(field('title').classList.contains(fieldGrid.wide)).toBe(false)
     expect(search.classList.contains(fieldGrid.queryText)).toBe(true)
-    expect(screen.getByTestId('vision-params-form-search-type').textContent).toContain(
-      'vision.params-form.type.string',
-    )
+    expect(typeDetail('search')).toContain('vision.params-form.type.string')
 
     fireEvent.change(search, {target: {value: 'a yellow mouse\nwith a lightning tail'}})
     expect(params()).toEqual({search: 'a yellow mouse\nwith a lightning tail', title: 'hello'})
@@ -647,7 +650,7 @@ describe('ParamsForm', () => {
       '*[_type == "post" && count(tags) >= $countRange.min && count(tags) <= $countRange.max]',
       '{"countRange": {"min": 0, "max": 10000}}',
     )
-    expect(screen.getByTestId('vision-params-form-countRange-type').textContent).toBe(
+    expect(typeDetail('countRange')).toBe(
       `vision.params-form.type-detail:${JSON.stringify({type: 'vision.params-form.type.object'})}`,
     )
     expect(screen.getByTestId('vision-params-form-countRange-object-preview').textContent).toBe(

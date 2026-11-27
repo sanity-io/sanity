@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Button, Tab, TabList, TabPanel, type ButtonTone} from '@sanity/ui'
-import {type ReactNode, useEffect, useRef} from 'react'
+import {Button, TabList, TabPanel, type ButtonTone} from '@sanity/ui'
+import {type FocusEvent, type MouseEvent, type ReactNode, useEffect, useRef} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
@@ -63,7 +63,7 @@ export interface CollapsiblePanelProps {
 
 /**
  * The tabbed bottom panel of the request and response columns. When collapsed only the tab
- * header remains, and picking a tab expands it again.
+ * header remains, with no tab selected, and picking a tab expands it again on that tab.
  */
 export function CollapsiblePanel(props: CollapsiblePanelProps) {
   const {
@@ -115,14 +115,15 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         <Box className={styles.panelTabs} ref={stripRef}>
           <TabList gap={1}>
             {tabs.map((tab) => (
-              <Tab
-                aria-controls={elementId(`${tab.id}-panel`)}
-                data-tone={tab.tone}
-                fontSize={1}
+              <PanelTab
+                aria-controls={collapsed ? undefined : elementId(`${tab.id}-panel`)}
+                // The tab that was open stays the tablist's tab stop while no tab is selected
+                focusable={tab.id === activeTab.id}
                 icon={tab.icon}
                 id={elementId(`${tab.id}-tab`)}
                 key={tab.id}
                 label={tab.label}
+                muted={tab.muted}
                 onClick={() => {
                   onTabChange(tab.id)
                   if (collapsed) onToggle()
@@ -135,11 +136,8 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                       }
                     : undefined
                 }
-                muted={tab.muted}
-                padding={2}
+                selected={!collapsed && tab.id === activeTab.id}
                 tone={tab.tone}
-                // A tablist always has a selected tab; collapsing hides its panel, no more
-                selected={tab.id === activeTab.id}
               />
             ))}
           </TabList>
@@ -199,5 +197,66 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         </TabPanel>
       )}
     </Flex>
+  )
+}
+
+interface PanelTabProps {
+  'aria-controls': string | undefined
+  'id': string
+  'label': ReactNode
+  'icon'?: ReactNode
+  'tone'?: ButtonTone
+  'muted'?: boolean
+  'selected': boolean
+  /** Whether the tab is the tablist's tab stop, which \@sanity/ui's `Tab` ties to `selected` */
+  'focusable': boolean
+  /** Set by `TabList` while the arrow keys move through the tabs */
+  'focused'?: boolean
+  'onFocus'?: (event: FocusEvent<HTMLButtonElement>) => void
+  'onClick': () => void
+  'onDoubleClick'?: (event: MouseEvent<HTMLButtonElement>) => void
+}
+
+/**
+ * A tab of the panel's header. \@sanity/ui's `Tab`, except that it can be the tab stop without
+ * being selected: a collapsed panel shows no tab as selected, and keyboard users still reach the
+ * tab that was open.
+ */
+function PanelTab(props: PanelTabProps) {
+  const {focusable, focused, label, onFocus, selected, tone, ...rest} = props
+  const ref = useRef<HTMLButtonElement>(null)
+  const focusedRef = useRef(false)
+
+  useEffect(() => {
+    if (focused && !focusedRef.current) {
+      ref.current?.focus()
+      focusedRef.current = true
+    }
+  }, [focused])
+
+  return (
+    <Button
+      {...rest}
+      aria-selected={selected}
+      className={styles.panelTab}
+      data-tone={tone}
+      fontSize={1}
+      mode="bleed"
+      onBlur={() => {
+        focusedRef.current = false
+      }}
+      onFocus={(event) => {
+        focusedRef.current = true
+        onFocus?.(event)
+      }}
+      padding={2}
+      ref={ref}
+      role="tab"
+      selected={selected}
+      tabIndex={focusable ? 0 : -1}
+      text={label}
+      tone={tone}
+      type="button"
+    />
   )
 }

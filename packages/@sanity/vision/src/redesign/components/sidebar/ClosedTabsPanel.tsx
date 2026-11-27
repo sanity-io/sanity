@@ -2,7 +2,7 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, TextInput} from '@sanity/ui'
-import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
+import {MenuButton} from '@sanity/ui/menu'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useDateTimeFormat} from 'sanity'
 import {ContextMenuButton} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
@@ -17,7 +17,7 @@ import {selectClosedTabs} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {deriveTabTitle} from '../../util/tabTitle'
 import * as styles from '../redesign.module.css'
-import * as themeStyles from '../themeTokens.module.css'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuDivider, VisionMenuItem} from '../VisionMenu'
 import * as sidebarStyles from './sidebar.module.css'
 
 interface ClosedTabItem {
@@ -154,23 +154,23 @@ export function ClosedTabsPanel() {
                       }
                       id={`vision-closed-tab-menu-${closed.tab.id}`}
                       menu={
-                        <Menu className={cx(styles.popoverScroll, themeStyles.themeTokens)}>
-                          <MenuItem
+                        <VisionMenu>
+                          <VisionMenuItem
                             icon={RestoreIcon}
                             onClick={() => restore(closed.tab.id)}
                             text={t('vision.closed-tabs.restore')}
                           />
-                          <MenuDivider />
-                          <MenuItem
+                          <VisionMenuDivider />
+                          <VisionMenuItem
                             data-testid="vision-closed-tab-delete"
                             icon={TrashIcon}
                             onClick={() => deletePermanently(closed.tab.id)}
                             text={t('vision.closed-tabs.delete')}
                             tone="critical"
                           />
-                        </Menu>
+                        </VisionMenu>
                       }
-                      popover={{animate: true, portal: true, placement: 'bottom-end'}}
+                      popover={{...VISION_MENU_POPOVER, placement: 'bottom-end'}}
                     />
                   </Box>
                 </Flex>

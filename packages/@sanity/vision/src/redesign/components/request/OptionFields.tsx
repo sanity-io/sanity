@@ -12,18 +12,21 @@ import {
   useScheduledDraftsEnabled,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Icon, VisuallyHidden} from 'ui5'
+import {Text, Box, Flex, Icon, VisuallyHidden} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
+import {getDefaultPerspective} from '../../../util/defaultPerspective'
 import {prefixApiVersion} from '../../../util/prefixApiVersion'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {type VisionPerspective, type VisionVariantMode} from '../../store/types'
 import {type ApiVersionOption, getApiVersionOptions} from '../../util/apiVersionOptions'
 import {cx} from '../../util/cx'
+import {API_CDN_DOCS_URL, PERSPECTIVES_DOCS_URL} from '../../util/docsUrls'
 import {getEffectivePerspective} from '../../util/tabPerspective'
+import {HelpPopover} from '../HelpPopover'
 import * as styles from '../redesign.module.css'
 import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
@@ -319,10 +322,34 @@ export function usePerspectiveOptionName(perspective: VisionPerspective): string
   }
 }
 
-interface PerspectiveSelectProps {
-  id: string
-  value: VisionPerspective
-  onChange: (perspective: VisionPerspective) => void
+/**
+ * A perspective's title in the perspective menu: "Published", "Drafts", "raw" and so on. Auto reads
+ * as the perspective it follows, "Auto (drafts)" for instance.
+ */
+export function usePerspectiveTitle(): (perspective: VisionPerspective) => string {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const {t: tStudio} = useTranslation()
+  const globalName = useGlobalPerspectiveName()
+  return (perspective) => {
+    switch (perspective) {
+      case 'global':
+        return t('vision.options.auto.button', {name: globalName})
+      case 'published':
+        return tStudio('release.navbar.published')
+      case 'drafts':
+        return tStudio('release.navbar.drafts')
+      case 'raw':
+        return 'raw'
+      case undefined:
+        return t('settings.perspectives.default')
+      case 'scheduledDrafts':
+        return t('settings.perspectives.scheduled-drafts')
+      default: {
+        const unknownPerspective: never = perspective
+        return String(unknownPerspective)
+      }
+    }
+  }
 }
 
 const PUBLISHED = 'published'
@@ -333,15 +360,61 @@ const SCHEDULED = 'scheduled'
 const PERSPECTIVE_ICON_STYLE = {margin: '-0.3125rem'}
 
 /**
+ * The icon the perspective menu shows for a perspective: the published and drafts dots, the
+ * release avatar Auto resolves to, or the icons of the perspectives only Vision offers
+ */
+export function PerspectiveIcon({perspective}: {perspective: VisionPerspective}) {
+  const {selectedPerspective} = usePerspective()
+  switch (perspective) {
+    case 'global':
+      return <ReleaseAvatarIcon fontSize={2} release={selectedPerspective} size="small" />
+    case 'published':
+      return <ReleaseAvatarIcon fontSize={2} release={PUBLISHED} size="small" />
+    case 'drafts':
+      return <ReleaseAvatarIcon fontSize={2} release={DRAFTS} size="small" />
+    case 'raw':
+      return <Icon icon={StackCompactIcon} size={1} style={PERSPECTIVE_ICON_STYLE} />
+    case undefined:
+      return <Icon icon={CircleIcon} size={1} style={PERSPECTIVE_ICON_STYLE} />
+    case 'scheduledDrafts':
+      return <ReleaseAvatarIcon fontSize={2} releaseType={SCHEDULED} size="small" />
+    default: {
+      const unknownPerspective: never = perspective
+      return unknownPerspective
+    }
+  }
+}
+
+/** What the API version's default perspective is, under the perspective menu's API default option */
+function useDefaultPerspectiveSubtitle(apiVersion: string): string {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const defaultPerspective = getDefaultPerspective(apiVersion)
+  return defaultPerspective
+    ? t('vision.options.perspective.default.subtitle-for-version', {
+        perspective: defaultPerspective,
+        apiVersion: prefixApiVersion(apiVersion.trim()),
+      })
+    : t('vision.options.perspective.default.subtitle')
+}
+
+interface PerspectiveSelectProps {
+  id: string
+  value: VisionPerspective
+  /** The API version the query runs against, which decides what the API default option reads */
+  apiVersion: string
+  onChange: (perspective: VisionPerspective) => void
+}
+
+/**
  * The perspective menu, laid out like the navbar's: Auto, the default, follows the navbar's
  * perspective; published and drafts come next, then the perspectives only Vision offers
  */
-export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps) {
+export function PerspectiveSelect({id, value, apiVersion, onChange}: PerspectiveSelectProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const {t: tStudio} = useTranslation()
   const elementId = useTabElementId()(id)
   const globalName = useGlobalPerspectiveName()
-  const {selectedPerspective} = usePerspective()
+  const perspectiveTitle = usePerspectiveTitle()
+  const defaultSubtitle = useDefaultPerspectiveSubtitle(apiVersion)
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const [query, setQuery] = useState('')
   // Shows what the request runs with: a stored scheduled drafts choice reads as Auto where
@@ -354,7 +427,6 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
     value: VisionPerspective
     title: string
     subtitle?: string
-    icon: ReactNode
     group: 'auto' | 'studio' | 'vision'
   }[] = [
     {
@@ -362,38 +434,32 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
       value: 'global',
       title: t('vision.options.auto'),
       subtitle: t('vision.options.perspective.auto.subtitle', {name: globalName}),
-      // What Auto resolves to: the drafts or published dot, or the release's avatar
-      icon: <ReleaseAvatarIcon fontSize={2} release={selectedPerspective} size="small" />,
       group: 'auto',
     },
     {
       key: 'published',
       value: 'published',
-      title: tStudio('release.navbar.published'),
-      icon: <ReleaseAvatarIcon fontSize={2} release={PUBLISHED} size="small" />,
+      title: perspectiveTitle('published'),
       group: 'studio',
     },
     {
       key: 'drafts',
       value: 'drafts',
-      title: tStudio('release.navbar.drafts'),
-      icon: <ReleaseAvatarIcon fontSize={2} release={DRAFTS} size="small" />,
+      title: perspectiveTitle('drafts'),
       group: 'studio',
     },
     {
       key: 'raw',
       value: 'raw',
-      title: 'raw',
+      title: perspectiveTitle('raw'),
       subtitle: t('vision.options.perspective.raw.subtitle'),
-      icon: <Icon icon={StackCompactIcon} size={1} style={PERSPECTIVE_ICON_STYLE} />,
       group: 'vision',
     },
     {
       key: 'default',
       value: undefined,
-      title: t('settings.perspectives.default'),
-      subtitle: t('vision.options.perspective.default.subtitle'),
-      icon: <Icon icon={CircleIcon} size={1} style={PERSPECTIVE_ICON_STYLE} />,
+      title: perspectiveTitle(undefined),
+      subtitle: defaultSubtitle,
       group: 'vision',
     },
     ...(isScheduledDraftsEnabled
@@ -401,8 +467,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
           {
             key: 'scheduledDrafts',
             value: 'scheduledDrafts' as const,
-            title: t('settings.perspectives.scheduled-drafts'),
-            icon: <ReleaseAvatarIcon fontSize={2} releaseType={SCHEDULED} size="small" />,
+            title: perspectiveTitle('scheduledDrafts'),
             group: 'vision' as const,
           },
         ]
@@ -417,7 +482,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
   )
   const renderItem = (item: (typeof items)[number]) => (
     <OptionMenuItem
-      icon={item.icon}
+      icon={<PerspectiveIcon perspective={item.value} />}
       key={item.key}
       onClick={() => onChange(item.value)}
       selected={shownValue === item.value}
@@ -432,7 +497,19 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
 
   return (
     <Stack gap={2}>
-      <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
+      <Flex alignItems="center" gap={1}>
+        <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
+        {/* The help button fills its container, so unwrapped it would take half the row */}
+        <Flex flexShrink={0}>
+          <HelpPopover
+            content={t('settings.perspectives.description')}
+            docsUrl={PERSPECTIVES_DOCS_URL}
+            label={t('vision.options.perspective.help')}
+            testId={`${id}-help`}
+            title={t('settings.perspectives.title')}
+          />
+        </Flex>
+      </Flex>
       <OptionMenuButton
         id={elementId}
         onOpen={() => setQuery('')}
@@ -465,7 +542,7 @@ interface UseCdnFieldProps {
   onChange: (useCdn: boolean) => void
   /** How the CDN answers the query */
   notes?: string[]
-  /** The short line under the switch; the Options pane leaves it to the info tooltip */
+  /** The short line under the switch; the Options pane leaves it to the help popover */
   showSummary?: boolean
 }
 
@@ -483,6 +560,7 @@ export function UseCdnField({
       checked={checked}
       description={showSummary ? t('vision.options.use-cdn.summary') : undefined}
       info={[t('vision.options.use-cdn.description'), ...notes]}
+      infoDocsUrl={API_CDN_DOCS_URL}
       onChange={onChange}
       testId={testId}
       title={t('vision.options.use-cdn')}

@@ -13,6 +13,7 @@ import type {
   StudioProvider,
   TextWithTone,
   TextWithToneProps,
+  useDocumentPane,
   useSchema,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {describe, expectTypeOf, test} from 'vitest'
@@ -47,6 +48,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
   })
   test('TextWithToneProps', () => {
     expectTypeOf<TextWithToneProps>().not.toBeNever()
+  })
+  test('useDocumentPane', () => {
+    expectTypeOf<typeof useDocumentPane>().toBeFunction()
   })
   test('useSchema', () => {
     expectTypeOf<typeof useSchema>().toBeFunction()

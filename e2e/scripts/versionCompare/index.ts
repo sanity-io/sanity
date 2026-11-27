@@ -9,9 +9,11 @@
  * small chunks). Load times are measured under emulated network and CPU conditions (--network, --cpu-throttle;
  * `slow-4g` and `fast-4g` by default), each sample in a fresh context with the HTTP cache off.
  *
- * One more load of the authenticated `/404` page (the login page with --skip-authenticated) per
- * version and profile records a Chrome trace and the CDP network log, both cut off at ready, into
- * --trace-dir. That load is kept out of the timings: the job summary and the JSON report get its
+ * The pages (--pages) are the login screen, the authenticated `/404` tool page, the Structure
+ * tool's root list (`/structure`) and a document opened by a deep link into it; the run writes the
+ * documents those two show to the dataset first (`content.ts`). One more load of every
+ * authenticated page (the login page with --skip-authenticated) per version and profile records a
+ * Chrome trace and the CDP network log, both cut off at ready, into --trace-dir. That load is kept out of the timings: the job summary and the JSON report get its
  * request waterfall (serial request chain, bytes and request count before ready) and the main
  * thread's time split into parse/compile, script and render.
  *
@@ -31,6 +33,7 @@ import {chromium, type Browser} from '@playwright/test'
 import {readEnv} from '../../envVars'
 import {prepareVersion, type BuiltVersion} from './build'
 import {measureBuild, measureRequested, type JsSize} from './bundleSize'
+import {DOCUMENT_PATH, seedContent, STRUCTURE_PATH} from './content'
 import {takeSample, type ReadyKind} from './measure'
 import {
   compareMetric,
@@ -54,6 +57,34 @@ const DEFAULT_PORT = 3339
 
 type Side = 'v6' | 'v7'
 
+/** Every page in measuring order; all but the login screen are authenticated. */
+const PAGES: ReadyKind[] = ['login', 'tools', 'structure', 'document']
+
+function isPage(value: string): value is ReadyKind {
+  return (PAGES as string[]).includes(value)
+}
+
+const PAGE_PATHS: Record<ReadyKind, string> = {
+  document: DOCUMENT_PATH,
+  login: '/',
+  structure: STRUCTURE_PATH,
+  tools: '/404',
+}
+
+const READY_DESCRIPTIONS: Record<ReadyKind, string> = {
+  document: `Document deep link \`${DOCUMENT_PATH}\`: navigation to the opened document's title editable, authenticated`,
+  login: 'Login page: navigation to login screen interactive, unauthenticated',
+  structure: `Structure tool \`${STRUCTURE_PATH}\`: navigation to root list with every type, authenticated`,
+  tools: '`/404` tool page: navigation to navbar tool list, authenticated',
+}
+
+const PAGE_LABELS: Record<ReadyKind, string> = {
+  document: 'Document deep link',
+  login: 'Login page',
+  structure: 'Structure tool',
+  tools: '`/404` tool page',
+}
+
 function parseOptions() {
   const {values} = parseArgs({
     options: {
@@ -61,6 +92,7 @@ function parseOptions() {
       'http-version': {default: '2', type: 'string'},
       'network': {default: 'slow-4g,fast-4g', type: 'string'},
       'out': {default: 'version-compare.json', type: 'string'},
+      'pages': {default: PAGES.join(','), type: 'string'},
       'port': {default: String(DEFAULT_PORT), type: 'string'},
       'reuse-builds': {default: false, type: 'boolean'},
       'runs': {default: '15', type: 'string'},
@@ -91,10 +123,18 @@ function parseOptions() {
     const preset: ThrottleProfile = PROFILES[name]
     return {name, throttle: {...preset, cpuThrottle: cpuOverride ?? preset.cpuThrottle}}
   })
+  const pages = values.pages.split(',').map((name) => name.trim())
+  const unknownPages = pages.filter((name) => !isPage(name))
+  if (unknownPages.length > 0 || pages.length === 0) {
+    throw new Error(`--pages takes a comma separated list of ${PAGES.join(', ')}`)
+  }
   const out = path.resolve(INVOKED_FROM, values.out)
   return {
     httpVersion,
     out,
+    pages: PAGES.filter(
+      (page) => pages.includes(page) && (page === 'login' || !values['skip-authenticated']),
+    ),
     profiles,
     port: Number(values.port),
     reuse: values['reuse-builds'],
@@ -124,6 +164,9 @@ async function main(): Promise<void> {
   const projectId = readEnv('SANITY_E2E_PROJECT_ID')
   const dataset = readEnv('SANITY_E2E_DATASET')
   const token = authenticated ? readEnv('SANITY_E2E_SESSION_TOKEN') : undefined
+  if (token && options.pages.some((page) => page === 'structure' || page === 'document')) {
+    await seedContent({apiHost: API_HOST, dataset, projectId, token})
+  }
 
   await mkdir(options.workDir, {recursive: true})
   await mkdir(options.traceDir, {recursive: true})
@@ -153,19 +196,21 @@ async function main(): Promise<void> {
 
   try {
     const initialJs: Partial<Record<Side, JsSize>> = {}
-    const timings = new Map<
-      string,
-      {login: Record<Side, number[]>; tools: Record<Side, number[]>}
-    >()
+    const timings = new Map<string, Record<ReadyKind, Record<Side, number[]>>>()
     // JS received before ready, per sample, next to the timings of the same loads.
     const jsBytes = new Map<string, Record<ReadyKind, Record<Side, ByteCount[]>>>()
-    const waterfalls = new Map<string, Partial<Record<Side, Waterfall>>>()
-    const pagePath = (kind: ReadyKind) => (kind === 'tools' ? '/404' : '/')
+    const waterfalls = new Map<
+      string,
+      Partial<Record<ReadyKind, Partial<Record<Side, Waterfall>>>>
+    >()
+    const pagePath = (kind: ReadyKind) => PAGE_PATHS[kind]
+    const perPage = <T>(make: () => T) =>
+      Object.fromEntries(PAGES.map((page) => [page, make()])) as Record<ReadyKind, T>
 
     const sample = (kind: ReadyKind, side: Side, profile: NamedProfile, trace: boolean) => {
       server.setRoot(builds[side].distDir)
       return takeSample({
-        auth: kind === 'tools' && token ? {projectId, token} : undefined,
+        auth: kind !== 'login' && token ? {projectId, token} : undefined,
         browser,
         kind,
         path: pagePath(kind),
@@ -205,17 +250,26 @@ async function main(): Promise<void> {
         requests: result.network.requests,
         tasks: window ? mainThreadTasks(events, window) : [],
       })
-      waterfalls.get(profile.name)![side] = waterfall
+      const traced = waterfalls.get(profile.name)!
+      traced[kind] = {...traced[kind], [side]: waterfall}
     }
 
     // One discarded pass per side, metric and profile warms DNS, TLS, the API's own caches and the
     // server's compressed copies. After that the sides alternate within every run, so slow drift
     // of the machine hits both equally.
-    const kinds: ReadyKind[] = authenticated ? ['login', 'tools'] : ['login']
-    const tracedKind: ReadyKind = authenticated ? 'tools' : 'login'
+    const kinds = options.pages
+    const tracedKinds = kinds.some((kind) => kind !== 'login')
+      ? kinds.filter((kind) => kind !== 'login')
+      : kinds
     for (const profile of options.profiles) {
-      timings.set(profile.name, {login: {v6: [], v7: []}, tools: {v6: [], v7: []}})
-      jsBytes.set(profile.name, {login: {v6: [], v7: []}, tools: {v6: [], v7: []}})
+      timings.set(
+        profile.name,
+        perPage(() => ({v6: [], v7: []})),
+      )
+      jsBytes.set(
+        profile.name,
+        perPage(() => ({v6: [], v7: []})),
+      )
       waterfalls.set(profile.name, {})
       for (const kind of kinds) {
         for (const side of sides) {
@@ -230,7 +284,7 @@ async function main(): Promise<void> {
           }
           console.log(`${profile.name} ${kind}: run ${run}/${options.runs}`)
         }
-        if (kind !== tracedKind) continue
+        if (!tracedKinds.includes(kind)) continue
         for (const side of sides) {
           // oxlint-disable-next-line no-await-in-loop -- samples must not overlap
           await traceLoad(kind, side, profile)
@@ -264,18 +318,13 @@ async function main(): Promise<void> {
     }
 
     const profiles: Record<string, ProfileResult> = {}
-    const readyDescriptions: Record<ReadyKind, string> = {
-      login: 'Login page: navigation to login screen interactive, unauthenticated',
-      tools: '`/404` tool page: navigation to navbar tool list, authenticated',
-    }
-    const pageLabels: Record<ReadyKind, string> = {login: 'Login page', tools: '`/404` tool page'}
     for (const {name, throttle} of options.profiles) {
       const ready = timings.get(name)!
       const bytes = jsBytes.get(name)!
       const profileMetrics: Record<string, MetricComparison> = {}
       for (const kind of kinds) {
         profileMetrics[`${kind}Ready`] = compareMetric(
-          readyDescriptions[kind],
+          READY_DESCRIPTIONS[kind],
           'ms',
           ready[kind].v6,
           ready[kind].v7,
@@ -285,7 +334,7 @@ async function main(): Promise<void> {
           ['decodedBytes', 'decoded'],
         ] as const) {
           profileMetrics[`${kind}Js.${key}`] = compareMetric(
-            `${pageLabels[kind]}: JS received before ready, ${label}`,
+            `${PAGE_LABELS[kind]}: JS received before ready, ${label}`,
             'bytes',
             bytes[kind].v6.map((count) => count[key]),
             bytes[kind].v7.map((count) => count[key]),
@@ -298,7 +347,11 @@ async function main(): Promise<void> {
         cpuThrottle: throttle.cpuThrottle,
         metrics: profileMetrics,
         network: throttle.network ? {...throttle.network} : null,
-        ...(traced.v6 && traced.v7 ? {waterfall: {v6: traced.v6, v7: traced.v7}} : {}),
+        waterfalls: Object.fromEntries(
+          Object.entries(traced).flatMap(([kind, {v6, v7} = {}]) =>
+            v6 && v7 ? [[kind, {v6, v7}]] : [],
+          ),
+        ),
       }
     }
 
@@ -319,7 +372,7 @@ async function main(): Promise<void> {
       generatedAt: new Date().toISOString(),
       metrics,
       profiles,
-      schemaVersion: 3,
+      schemaVersion: 4,
       versions: {v6: versionInfo(builds.v6), v7: versionInfo(builds.v7)},
     }
 

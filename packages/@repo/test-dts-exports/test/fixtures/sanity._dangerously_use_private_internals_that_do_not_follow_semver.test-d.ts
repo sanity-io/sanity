@@ -3,7 +3,6 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  _createNode,
   _isCustomDocumentTypeDefinition,
   _isSanityDocumentTypeDefinition,
   _isType,
@@ -111,7 +110,6 @@ import type {
   createWorkspaceFromConfig,
   CreateWorkspaceFromConfigOptions,
   DashboardLink,
-  decodeJsonParams,
   DEFAULT_ANNOTATIONS,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
@@ -166,7 +164,6 @@ import type {
   emitOperation,
   EMPTY_ARRAY,
   EMPTY_OBJECT,
-  encodeJsonParams,
   encodeVariantLinkParam,
   ErrorActions,
   ErrorActionsProps,
@@ -522,7 +519,6 @@ import type {
   Status,
   StatusButton,
   StatusButtonProps,
-  STICKY_PARAMS,
   StoreRequestErrorHandler,
   StringDiff,
   StringDiffSegment,
@@ -745,9 +741,6 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => {
-  test('_createNode', () => {
-    expectTypeOf<typeof _createNode>().toBeFunction()
-  })
   test('_isCustomDocumentTypeDefinition', () => {
     expectTypeOf<typeof _isCustomDocumentTypeDefinition>().toBeFunction()
   })
@@ -1070,9 +1063,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DashboardLink', () => {
     expectTypeOf<typeof DashboardLink>().toBeFunction()
   })
-  test('decodeJsonParams', () => {
-    expectTypeOf<typeof decodeJsonParams>().toBeFunction()
-  })
   test('DEFAULT_ANNOTATIONS', () => {
     expectTypeOf<typeof DEFAULT_ANNOTATIONS>().not.toBeNever()
   })
@@ -1234,9 +1224,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('EMPTY_OBJECT', () => {
     expectTypeOf<typeof EMPTY_OBJECT>().not.toBeNever()
-  })
-  test('encodeJsonParams', () => {
-    expectTypeOf<typeof encodeJsonParams>().toBeFunction()
   })
   test('encodeVariantLinkParam', () => {
     expectTypeOf<typeof encodeVariantLinkParam>().toBeFunction()
@@ -2303,9 +2290,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StatusButtonProps', () => {
     expectTypeOf<StatusButtonProps>().not.toBeNever()
-  })
-  test('STICKY_PARAMS', () => {
-    expectTypeOf<typeof STICKY_PARAMS>().not.toBeNever()
   })
   test('StoreRequestErrorHandler', () => {
     expectTypeOf<StoreRequestErrorHandler>().toBeObject()

@@ -117,8 +117,8 @@ export type VisionEvent =
    */
   | {type: 'tab.load'; id: string; tab: Omit<VisionTabInit, 'id'>; fetch?: FetchOnOpenSource}
   /**
-   * Opens personal saved queries as tabs after the open ones, leaving the active tab as it is,
-   * and records their keys so each opens once; a key already recorded is skipped. One without a
+   * Opens personal saved queries as tabs ahead of the open ones, so the tab the tool opened with
+   * stays last, leaving the active tab as it is, and records their keys so each opens once; a key already recorded is skipped. One without a
    * `tab` is only recorded: a tab already shows it, or its URL holds no query to show
    */
   | {type: 'savedQueries.open'; queries: {key: string; tab: VisionTabInit | null}[]}
@@ -322,7 +322,7 @@ export const visionMachine = setup({
       }
       const tabs = queries.flatMap(({tab}) => (tab ? [createTab(context.settings, tab)] : []))
       return {
-        tabs: [...context.tabs, ...tabs],
+        tabs: [...tabs, ...context.tabs],
         runners: {...context.runners, ...spawnRunners(spawn, tabs)},
         openedSavedQueries: [...recorded],
       }

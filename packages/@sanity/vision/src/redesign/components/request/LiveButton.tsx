@@ -54,9 +54,11 @@ export function LiveButton({active, supported, canFetch, connected, onToggle}: L
           data-testid="vision-auto-refetch"
           // Like Fetch it needs something to fetch, but a running session can always be stopped
           disabled={unavailable || (!live && !canFetch)}
+          fontSize={1}
           gap={2}
           icon={live ? StopIcon : SyncIcon}
-          mode={live ? 'default' : 'ghost'}
+          // Idle matches the copy buttons: bleed, default tone. Stop stays a solid critical button.
+          mode={live ? 'default' : 'bleed'}
           onClick={onToggle}
           padding={2}
           text={label}

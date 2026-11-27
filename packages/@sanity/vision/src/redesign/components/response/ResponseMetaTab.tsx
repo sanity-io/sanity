@@ -16,13 +16,14 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type SyncTagLookupSource, useSyncTagLookup} from '../../hooks/useSyncTagLookup'
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
+import {API_CDN_DOCS_URL} from '../../util/docsUrls'
 import {formatBytes} from '../../util/payloadSize'
 import {type LocalAnswer, localRoundTrip} from '../../util/queryNetwork'
 import {formatSyncTagMeaning, MAX_SYNC_TAG_PROBES} from '../../util/syncTagLookup'
 import {isWildcardSyncTag, sortSyncTags} from '../../util/syncTags'
 import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
-import {InfoTooltip} from '../InfoTooltip'
+import {HelpPopover} from '../HelpPopover'
 import {VisionTooltip} from '../VisionTooltip'
 import {NetworkGlobe} from './NetworkGlobe'
 import * as styles from './syncTagsToggle.module.css'
@@ -375,8 +376,9 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                       </Text>
                       {showCdnHint && (
                         <span style={INLINE_ICON}>
-                          <InfoTooltip
+                          <HelpPopover
                             content={t('vision.network.use-cdn-hint')}
+                            docsUrl={API_CDN_DOCS_URL}
                             label={t('vision.network.use-cdn-hint.label')}
                             testId="vision-network-endpoint-info"
                           />

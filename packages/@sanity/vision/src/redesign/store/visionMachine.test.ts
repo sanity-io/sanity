@@ -632,7 +632,7 @@ describe('visionMachine', () => {
     })
   })
 
-  it('opens saved queries as tabs after the open ones, once each, without switching tabs', () => {
+  it('opens saved queries as tabs ahead of the open ones, once each, without switching tabs', () => {
     const harness = createHarness()
     const [first] = harness.tabs()
     harness.actor.send({type: 'settings.update', settings: {perspective: 'drafts'}})
@@ -652,13 +652,13 @@ describe('visionMachine', () => {
 
     const tabs = harness.tabs()
     expect(tabs.map((tab) => [tab.title, tab.query])).toEqual([
-      [undefined, ''],
       ['Pages', '*[_type == "page"]'],
       [undefined, '*[_type == "post"]'],
+      [undefined, ''],
     ])
     // What a saved query does not state comes from the settings, as for any new tab
-    expect(tabs[1].options.perspective).toBe('raw')
-    expect(tabs[2].options.perspective).toBe('drafts')
+    expect(tabs[0].options.perspective).toBe('raw')
+    expect(tabs[1].options.perspective).toBe('drafts')
     expect(harness.snapshot().context.activeTabId).toBe(first.id)
     expect(harness.runnerIds()).toEqual(tabs.map((tab) => tab.id).sort())
     expect(selectPersistedState(harness.snapshot()).openedSavedQueries).toEqual([
@@ -677,10 +677,20 @@ describe('visionMachine', () => {
       ],
     })
     expect(harness.tabs().map((tab) => tab.query)).toEqual([
-      '',
+      '*[_type == "author"]',
       '*[_type == "page"]',
       '*[_type == "post"]',
+      '',
+    ])
+
+    // A tab opened afterwards still goes last
+    harness.actor.send({type: 'tab.add'})
+    expect(harness.tabs().map((tab) => tab.query)).toEqual([
       '*[_type == "author"]',
+      '*[_type == "page"]',
+      '*[_type == "post"]',
+      '',
+      '',
     ])
     expect(harness.snapshot().context.openedSavedQueries).toEqual([
       'pages',

@@ -55,9 +55,10 @@ export interface VisionTab {
   options: VisionTabOptions
   autoRefetch: boolean
   /**
-   * The shared query (a `vision.sharedQuery` document) the tab is shared as: the user shared the
-   * tab, or opened a query they shared from the Shared tabs drawer. Edits keep it, so the tab can
-   * be shared again or unshared after it changed.
+   * The shared query (a `vision.sharedQuery` document) the tab is linked to: the user shared the
+   * tab, or opened a shared query from the Shared tabs drawer. Edits keep it, so the author can
+   * share the tab again or unshare it after it changed, and everyone with the query open sees
+   * who else has it open. Only a link to a query the user authored makes the tab shared.
    */
   sharedId: string | undefined
 }

@@ -278,18 +278,20 @@ describe('ResponseMetaTab', () => {
     expect(screen.getByTestId('vision-network-region').textContent).toBe(
       'vision.network.region.unknown',
     )
-    // The way to the CDN is behind an info button next to the endpoint, not spelled out
+    // The way to the CDN is behind a help button next to the endpoint, not spelled out
     expect(
       within(screen.getByTestId('vision-response-meta')).queryByText('vision.network.use-cdn-hint'),
     ).toBeNull()
     const info = screen.getByTestId('vision-network-endpoint-info')
     expect(info.getAttribute('aria-label')).toBe('vision.network.use-cdn-hint.label')
     await act(async () => {
-      fireEvent.mouseEnter(info)
-      await new Promise((resolve) => setTimeout(resolve, 600))
+      fireEvent.click(info)
     })
-    expect(screen.getByTestId('vision-network-endpoint-info-content').textContent).toBe(
-      'vision.network.use-cdn-hint',
+    expect(info.getAttribute('aria-expanded')).toBe('true')
+    const help = screen.getByTestId('vision-network-endpoint-info-content')
+    expect(within(help).getByText('vision.network.use-cdn-hint')).toBeTruthy()
+    expect(within(help).getByTestId('vision-network-endpoint-info-docs').getAttribute('href')).toBe(
+      'https://www.sanity.io/docs/content-lake/api-cdn',
     )
 
     cleanup()

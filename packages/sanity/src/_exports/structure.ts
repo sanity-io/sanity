@@ -6,7 +6,6 @@ export {
 } from '../structure/components/incomingReferencesDecoration/types'
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
-export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
 export {
   type ChildObservable,
   type ChildResolver,
@@ -16,36 +15,39 @@ export {
 export {
   type BuildableComponent,
   type Component,
-  ComponentBuilder,
+  type ComponentBuilder,
   type ComponentInput,
 } from '../structure/structureBuilder/Component'
-export {DocumentBuilder, type PartialDocumentNode} from '../structure/structureBuilder/Document'
+export {
+  type DocumentBuilder,
+  type PartialDocumentNode,
+} from '../structure/structureBuilder/Document'
 export {
   type DocumentList,
-  DocumentListBuilder,
+  type DocumentListBuilder,
   type DocumentListInput,
   type DocumentListOptions,
   type PartialDocumentList,
 } from '../structure/structureBuilder/DocumentList'
 export {
   type DocumentListItem,
-  DocumentListItemBuilder,
+  type DocumentListItemBuilder,
   type DocumentListItemInput,
   type PartialDocumentListItem,
 } from '../structure/structureBuilder/DocumentListItem'
 export {
-  DocumentTypeListBuilder,
+  type DocumentTypeListBuilder,
   type DocumentTypeListInput,
 } from '../structure/structureBuilder/DocumentTypeList'
 export {
   type BaseGenericList,
   type BuildableGenericList,
   type GenericList,
-  GenericListBuilder,
+  type GenericListBuilder,
   type GenericListInput,
   type ListDisplayOptions,
 } from '../structure/structureBuilder/GenericList'
-export {InitialValueTemplateItemBuilder} from '../structure/structureBuilder/InitialValueTemplateItem'
+export {type InitialValueTemplateItemBuilder} from '../structure/structureBuilder/InitialValueTemplateItem'
 export {
   type Intent,
   type IntentChecker,
@@ -54,13 +56,13 @@ export {
 export {
   type BuildableList,
   type List,
-  ListBuilder,
+  type ListBuilder,
   type ListInput,
   type SingletonListBuilder,
 } from '../structure/structureBuilder/List'
 export {
   type ListItem,
-  ListItemBuilder,
+  type ListItemBuilder,
   type ListItemChild,
   type ListItemCount,
   type ListItemDisplayOptions,
@@ -74,12 +76,15 @@ export {
   type KnownMenuItemParams,
   type MenuItem,
   type MenuItemActionType,
-  MenuItemBuilder,
+  type MenuItemBuilder,
   type MenuItemParamsType,
   type PartialMenuItem,
   type MenuItem as StructureToolMenuItem,
 } from '../structure/structureBuilder/MenuItem'
-export {type MenuItemGroup, MenuItemGroupBuilder} from '../structure/structureBuilder/MenuItemGroup'
+export {
+  type MenuItemGroup,
+  type MenuItemGroupBuilder,
+} from '../structure/structureBuilder/MenuItemGroup'
 export {
   type Child,
   type Collection,
@@ -103,12 +108,12 @@ export {
 } from '../structure/structureBuilder/types'
 export {
   type ComponentView,
-  ComponentViewBuilder,
+  type ComponentViewBuilder,
 } from '../structure/structureBuilder/views/ComponentView'
-export {type FormView, FormViewBuilder} from '../structure/structureBuilder/views/FormView'
+export {type FormView, type FormViewBuilder} from '../structure/structureBuilder/views/FormView'
 export {
   type BaseView,
-  GenericViewBuilder,
+  type GenericViewBuilder,
   type ViewBuilder,
 } from '../structure/structureBuilder/views/View'
 export {structureTool} from '../structure/structureTool'
@@ -402,6 +407,10 @@ export declare const menuItemsFromInitialValueTemplateItems: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const shallowIntentChecker: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentPane: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
  */

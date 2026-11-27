@@ -9,6 +9,7 @@ import {
   type PointerEvent,
   type RefObject,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -18,6 +19,7 @@ import {Box, Flex} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useIsTextTruncated} from '../../hooks/useIsTextTruncated'
 import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {useVisionTabShortcuts} from '../../hooks/useVisionTabShortcuts'
 import {type VisionTab} from '../../store/types'
@@ -49,6 +51,12 @@ const LAYOUT_TRANSITION: Transition = {layout: {duration: 0.2, ease: [0.77, 0, 0
 const INSTANT_LAYOUT_TRANSITION: Transition = {layout: {duration: 0}}
 
 const NO_IDS: ReadonlySet<string> = new Set()
+
+/** Fields and overlays the query editor does not take the focus from when the tool opens */
+const KEEPS_FOCUS =
+  'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="dialog"], [role="menu"], [role="listbox"]'
+/** How many frames the query editor of a tab shown for the first time has to appear in */
+const EDITOR_FOCUS_FRAMES = 10
 
 function getTabTitle(tab: VisionTab, fallback: string): string {
   return tab.title || deriveTabTitle(tab.query) || fallback
@@ -111,7 +119,7 @@ interface TabHandleProps {
   layoutTransition: Transition
   /** The list the tab may be dragged within */
   listRef: RefObject<HTMLDivElement | null>
-  onSelect: () => void
+  onSelect: (event: MouseEvent<HTMLButtonElement>) => void
   onClose: () => void
   onStartRename: () => void
   /** `changed` is false when the title was committed as it was shown */
@@ -146,6 +154,8 @@ function TabHandle(props: TabHandleProps) {
   const title = getTabTitle(tab, t('vision.tabs.untitled'))
   const dragControls = useDragControls()
   const [dragging, setDragging] = useState(false)
+  const [titleElement, setTitleElement] = useState<HTMLDivElement | null>(null)
+  const truncated = useIsTextTruncated(titleElement)
 
   const handleAuxClick = useCallback(
     (event: MouseEvent) => {
@@ -202,31 +212,40 @@ function TabHandle(props: TabHandleProps) {
             title={title}
           />
         ) : (
-          // A plain button, so the whole tab is its hit area and the tab paints hover and focus
-          <button
-            aria-controls={QUERY_TAB_PANEL_ID}
-            aria-selected={selected}
-            className={styles.tabTitleButton}
-            data-testid="vision-tab-button"
-            id={getQueryTabId(tab.id)}
-            onAuxClick={handleAuxClick}
-            onClick={onSelect}
-            onDoubleClick={onStartRename}
-            onKeyDown={onKeyDown}
-            onPointerDown={startDrag}
-            role="tab"
-            tabIndex={selected ? 0 : -1}
-            type="button"
-          >
-            {shared && (
-              <Text className={styles.tabSharedIcon} muted size={1}>
-                <UsersIcon aria-label={t('vision.tabs.shared')} role="img" />
+          // A plain button, so the whole tab is its hit area and the tab paints hover and focus.
+          // A title cut off with an ellipsis is shown in full in its tooltip
+          <VisionTooltip content={title} disabled={!truncated || dragging} placement="bottom">
+            <button
+              aria-controls={QUERY_TAB_PANEL_ID}
+              aria-selected={selected}
+              className={styles.tabTitleButton}
+              data-testid="vision-tab-button"
+              id={getQueryTabId(tab.id)}
+              onAuxClick={handleAuxClick}
+              onClick={onSelect}
+              onDoubleClick={onStartRename}
+              onKeyDown={onKeyDown}
+              onPointerDown={startDrag}
+              role="tab"
+              tabIndex={selected ? 0 : -1}
+              type="button"
+            >
+              {shared && (
+                <Text className={styles.tabSharedIcon} muted size={1}>
+                  <UsersIcon aria-label={t('vision.tabs.shared')} role="img" />
+                </Text>
+              )}
+              <Text
+                className={styles.tabTitle}
+                muted={!selected}
+                ref={setTitleElement}
+                size={1}
+                textOverflow="ellipsis"
+              >
+                {title}
               </Text>
-            )}
-            <Text className={styles.tabTitle} muted={!selected} size={1} textOverflow="ellipsis">
-              {title}
-            </Text>
-          </button>
+            </button>
+          </VisionTooltip>
         )}
         <Button
           aria-label={t('vision.tabs.close-tab')}
@@ -286,6 +305,52 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
   const focusTab = useCallback((id: string) => {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
   }, [])
+  const findQueryEditor = useCallback(
+    (id: string) =>
+      rootElement?.querySelector<HTMLElement>(
+        `[aria-labelledby="${getQueryTabId(id)}"] [data-testid="vision-query-editor"] .cm-content`,
+      ) ?? null,
+    [rootElement],
+  )
+
+  // Opening the tool, clicking a tab and adding one with the new tab button put the focus in the
+  // shown tab's query editor, so typing goes straight into the query. The editor only takes it
+  // while nothing else has: `from`, the element focused when it was asked for, still has it, or
+  // the focus fell back to the page as a clicked element was hidden. A rename field or a menu
+  // that opened in the meantime keeps it. The editor of a tab shown for the first time is created
+  // in an effect, so it may take a few frames to be there. Returns a function that stops trying.
+  const focusShownEditor = useCallback(
+    (from: Element | null) => {
+      const id = actorRef.getSnapshot().context.activeTabId
+      let frames = EDITOR_FOCUS_FRAMES
+      let request = 0
+      const attempt = () => {
+        const active = document.activeElement
+        if (active !== from && active !== document.body && active !== null) return
+        const editor = findQueryEditor(id)
+        editor?.focus({preventScroll: true})
+        if (editor?.contains(document.activeElement)) return
+        frames--
+        if (frames > 0) request = requestAnimationFrame(attempt)
+      }
+      request = requestAnimationFrame(attempt)
+      return () => cancelAnimationFrame(request)
+    },
+    [actorRef, findQueryEditor],
+  )
+
+  // When the tool opens, or is shown again after another tool, unless the focus is already in it,
+  // in a field or in an overlay. Touch screens are left alone: the editor would open the
+  // on-screen keyboard over the tool
+  useEffect(() => {
+    if (!rootElement) return undefined
+    const from = document.activeElement
+    if (from && from !== document.body) {
+      if (rootElement.contains(from) || from.closest(KEEPS_FOCUS)) return undefined
+    }
+    if (window.matchMedia?.('(pointer: coarse)').matches) return undefined
+    return focusShownEditor(from)
+  }, [focusShownEditor, rootElement])
 
   // The buttons, the keys of a focused tab and the shortcuts all open, close and switch tabs
   // through these, so closing from the keyboard does what the close button does
@@ -317,17 +382,29 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
       // is there until React has rendered the change, which it does before the next frame
       const id = actorRef.getSnapshot().context.activeTabId
       requestAnimationFrame(() => {
-        const editor = onTab
-          ? null
-          : rootElement?.querySelector<HTMLElement>(
-              `[aria-labelledby="${getQueryTabId(id)}"] [data-testid="vision-query-editor"] .cm-content`,
-            )
+        const editor = onTab ? null : findQueryEditor(id)
         editor?.focus({preventScroll: true})
         if (!editor?.contains(document.activeElement)) focusTab(id)
       })
     },
-    [actorRef, focusTab, rootElement],
+    [actorRef, findQueryEditor, focusTab],
   )
+
+  // A tab activated with Enter or Space keeps the focus, as the arrow keys leave it on the tabs,
+  // and so does one tapped on a touch screen
+  const selectTabByClick = useCallback(
+    (id: string, event: MouseEvent<HTMLButtonElement>) => {
+      selectTab(id)
+      const native = event.nativeEvent
+      if (event.detail === 0 || ('pointerType' in native && native.pointerType === 'touch')) return
+      focusShownEditor(document.activeElement)
+    },
+    [focusShownEditor, selectTab],
+  )
+  const addTabByClick = useCallback(() => {
+    addTab()
+    focusShownEditor(document.activeElement)
+  }, [addTab, focusShownEditor])
 
   useVisionTabShortcuts({
     rootElement,
@@ -374,10 +451,17 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
     [focusTab],
   )
 
-  // Keep the active tab whole in the strip when it changes, a new tab included, clear of the new
-  // tab button pinned over the right edge. Layout offsets rather than bounding boxes, so a tab
-  // that is still scaling in or sliding into place measures where it ends up.
+  // Keep the active tab whole in the strip when it changes, a new tab included, and when tabs open
+  // without being shown, as the saved queries do ahead of it, clear of the new tab button pinned
+  // over the right edge. Closing a tab leaves the strip where the user scrolled it. Layout offsets
+  // rather than bounding boxes, so a tab that is still scaling in or sliding into place measures
+  // where it ends up.
+  const tabCount = tabs.length
+  const keptInViewRef = useRef<{activeTabId: string; tabCount: number} | null>(null)
   useLayoutEffect(() => {
+    const previous = keptInViewRef.current
+    keptInViewRef.current = {activeTabId, tabCount}
+    if (previous?.activeTabId === activeTabId && tabCount <= previous.tabCount) return
     const bar = barRef.current
     const item = listRef.current
       ?.querySelector(`#${getQueryTabId(activeTabId)}`)
@@ -388,7 +472,7 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
     else if (item.offsetLeft + item.offsetWidth > bar.scrollLeft + visibleWidth) {
       bar.scrollLeft = item.offsetLeft + item.offsetWidth - visibleWidth
     }
-  }, [activeTabId])
+  }, [activeTabId, tabCount])
 
   const reorder = useCallback(
     (ordered: VisionTab[]) =>
@@ -497,7 +581,7 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
                 actorRef.send({type: 'tab.rename', id: tab.id, title})
                 if (changed) telemetry.tabUsed('rename')
               }}
-              onSelect={() => selectTab(tab.id)}
+              onSelect={(event) => selectTabByClick(tab.id, event)}
               onStartRename={() => setEditingId(tab.id)}
               selected={tab.id === activeTabId}
               shared={findSharedQuery(tab, queries) !== undefined}
@@ -518,7 +602,7 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
               fontSize={1}
               icon={AddIcon}
               mode="bleed"
-              onClick={addTab}
+              onClick={addTabByClick}
               padding={2}
               radius={0}
             />

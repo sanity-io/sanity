@@ -56,7 +56,7 @@ export type NextStateOrOptions = never
  */
 export declare const RouterContext: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const STICKY_PARAMS: never
 /**
@@ -68,15 +68,15 @@ export declare const WithRouter: never
  */
 export type WithRouterProps = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const _createNode: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const decodeJsonParams: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const encodeJsonParams: never
 /**

@@ -1,8 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Text} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type MouseEvent, type ReactElement, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
@@ -10,6 +8,7 @@ import {useIntentLink} from 'sanity/router'
 import {useVisionTelemetry} from '../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../i18n'
 import {COPIED_FEEDBACK_MS} from '../redesign/components/response/CopyResultButton'
+import {VisionTooltip} from '../redesign/components/VisionTooltip'
 import * as styles from './ResultView.module.css'
 
 /**
@@ -105,20 +104,10 @@ function RowActionTooltip({label, children}: {label: string; children: ReactElem
   const [armed, setArmed] = useState(false)
   const arm = () => setArmed(true)
   return (
-    <Tooltip
-      animate
-      content={
-        <Text as="div" size={1}>
-          {label}
-        </Text>
-      }
-      disabled={!armed}
-      placement="top"
-      portal
-    >
+    <VisionTooltip content={label} disabled={!armed} placement="top">
       <span className={styles.rowActionTarget} onFocus={arm} onMouseEnter={arm}>
         {children}
       </span>
-    </Tooltip>
+    </VisionTooltip>
   )
 }

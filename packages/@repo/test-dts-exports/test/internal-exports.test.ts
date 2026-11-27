@@ -37,7 +37,9 @@ import {fileURLToPath} from 'node:url'
 import {type ExportedDeclarations, Node, Project} from 'ts-morph'
 import {beforeAll, describe, expect, test} from 'vitest'
 
-import {isTombstoneDeclaration} from '../tombstones/surface.mjs'
+import {isTombstoneDeclaration, readManifest} from '../tombstones/surface.mjs'
+
+const manifest = readManifest()
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const sanityLibDir = path.resolve(__dirname, '../../../sanity/lib')
@@ -175,7 +177,9 @@ describe('the internals entry is a superset, and the public compatibility list i
  * `@deprecated` is exported from the matching subpath of the internals entry instead, and the
  * public entry keeps a `never` tombstone that names the new path (`test/tombstones.test.ts` covers
  * those). Unlike the checks above, these cover declarations re-exported from dependencies too,
- * because the entry decides what it re-exports.
+ * because the entry decides what it re-exports. The one kind of public declaration a subpath may
+ * export is the runtime value of a public type that its entry only exports type-only, which the
+ * manifest lists under `typeOnly` (the Structure Builder classes).
  */
 const PRIVATE_SUBPATHS = {
   'sanity/structure': 'structure',
@@ -258,10 +262,18 @@ describe('structure, router and presentation keep their internals on subpaths', 
     if (!internalsDtsFile) continue
 
     test(`${internalsSubpath} exports only declarations tagged @internal, @hidden or @deprecated`, () => {
+      const valuesOfPublicTypes = new Set(
+        (manifest.typeOnly?.[`./${subpath}`] ?? [])
+          .filter(({valueFrom}) => valueFrom === `./${internalsSubpath.slice('sanity/'.length)}`)
+          .map(({name}) => name),
+      )
       expect(privacyByFile.get(internalsDtsFile)?.size).toBeGreaterThan(0)
       expect(
-        exportsOf(internalsDtsFile, false),
-        `These exports are public API: export them from \`${entry}\` instead.`,
+        exportsOf(internalsDtsFile, false).filter((name) => !valuesOfPublicTypes.has(name)),
+        `These exports are public API: export them from \`${entry}\` instead, or, when only ` +
+          `the runtime value belongs here, export the type from \`${entry}\` with ` +
+          '`export {type X}` and list it under "typeOnly" in ' +
+          '`packages/sanity/src/_exports/tombstones/manifest.json`.',
       ).toEqual([])
     })
   }

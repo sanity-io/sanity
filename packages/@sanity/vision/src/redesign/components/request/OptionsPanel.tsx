@@ -12,6 +12,7 @@ import {
   selectSourceMapEnabled,
   selectWorkspaceDataset,
 } from '../../store/visionMachine'
+import {CONTENT_SOURCE_MAPS_DOCS_URL} from '../../util/docsUrls'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {SwitchField} from '../SwitchField'
 import {DatasetField} from './DatasetField'
@@ -61,6 +62,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
     ),
     perspective: (
       <PerspectiveSelect
+        apiVersion={resolved.isApiVersionLocked ? resolved.apiVersion : options.apiVersion}
         id="vision-option-perspective"
         onChange={(perspective) => onChange({perspective})}
         value={options.perspective}
@@ -92,6 +94,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
         <SwitchField
           checked={options.includeSourceMap}
           info={t('vision.options.include-source-map.description')}
+          infoDocsUrl={CONTENT_SOURCE_MAPS_DOCS_URL}
           onChange={(includeSourceMap) => onChange({includeSourceMap})}
           testId="vision-option-source-map"
           title={t('vision.options.include-source-map')}

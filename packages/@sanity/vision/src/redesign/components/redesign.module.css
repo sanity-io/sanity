@@ -280,6 +280,11 @@
   white-space: nowrap;
 }
 
+/* As wide as @sanity/ui's `Tab` lets a tab grow */
+.panelTab {
+  max-width: 100%;
+}
+
 /*
  * Option chips in the query column's bottom bar. They scroll sideways when the bar is narrow,
  * the same way the tab strip does, and start at the left so the first chip stays whole. The
@@ -608,6 +613,7 @@
   flex: 1 1 auto;
   align-items: center;
   align-self: stretch;
+  gap: var(--space-2, 8px);
   min-width: 0;
   margin: 0;
   padding: 0 8px 0 12px;
@@ -629,7 +635,6 @@
 
 .tabSharedIcon {
   flex-shrink: 0;
-  margin-right: 6px;
 }
 
 .tabCloseButton {

@@ -1,13 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Button} from '@sanity/ui'
-import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {MenuButton} from '@sanity/ui/menu'
 import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
-import {cx} from '../../util/cx'
-import * as styles from '../redesign.module.css'
-import * as themeStyles from '../themeTokens.module.css'
+import {OPTION_TRIGGER_PROPS} from '../request/OptionMenu'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuItem} from '../VisionMenu'
 
 /** A way the result panel can show the result */
 export interface ResultViewOption<View extends string> {
@@ -18,6 +16,13 @@ export interface ResultViewOption<View extends string> {
 export interface ResultViewMenuProps<View extends string> {
   /** Id of the menu button, unique per query tab */
   id: string
+  /**
+   * Accessible name of the button, naming the shown view. Defaults to the result view's.
+   * Another panel that reuses the menu, such as the params view, passes its own.
+   */
+  buttonLabel?: string
+  /** Accessible name of the menu. Defaults to the result view's */
+  menuLabel?: string
   /** The views to choose from, in menu order */
   views: readonly ResultViewOption<View>[]
   value: View
@@ -30,9 +35,14 @@ export interface ResultViewMenuProps<View extends string> {
   placement?: 'bottom-start' | 'bottom-end'
 }
 
-/** The result panel's view selector: a dropdown naming the shown view, listing the others */
+/**
+ * The result panel's view selector: a dropdown naming the shown view, listing the others, with
+ * the trigger of the Options pickers
+ */
 export function ResultViewMenu<View extends string>({
   id,
+  buttonLabel,
+  menuLabel,
   views,
   value,
   onChange,
@@ -47,29 +57,23 @@ export function ResultViewMenu<View extends string>({
     <MenuButton
       button={
         <Button
+          {...OPTION_TRIGGER_PROPS}
           aria-controls={controls}
-          aria-label={t('vision.result.view.button', {view: active.label})}
+          aria-label={buttonLabel ?? t('vision.result.view.button', {view: active.label})}
           data-testid={`${testId}-button`}
-          fontSize={1}
-          gap={2}
-          iconRight={ChevronDownIcon}
-          mode="bleed"
-          padding={2}
           text={active.label}
         />
       }
       id={id}
       menu={
-        <Menu
-          aria-label={t('vision.result.view.label')}
-          className={cx(styles.popoverScroll, themeStyles.themeTokens)}
+        <VisionMenu
+          aria-label={menuLabel ?? t('vision.result.view.label')}
           data-testid={`${testId}-menu`}
         >
           {views.map((view) => (
-            <MenuItem
+            <VisionMenuItem
               aria-checked={view.id === active.id}
               data-testid={`${testId}-${view.id}`}
-              fontSize={1}
               iconRight={view.id === active.id ? CheckmarkIcon : undefined}
               key={view.id}
               onClick={() => onChange(view.id)}
@@ -78,9 +82,9 @@ export function ResultViewMenu<View extends string>({
               text={view.label}
             />
           ))}
-        </Menu>
+        </VisionMenu>
       }
-      popover={{animate: true, portal: true, placement}}
+      popover={{...VISION_MENU_POPOVER, placement}}
     />
   )
 }

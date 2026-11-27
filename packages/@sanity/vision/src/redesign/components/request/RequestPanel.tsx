@@ -1,8 +1,7 @@
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Badge, Button, Label, Tab, TabList} from '@sanity/ui'
+import {Badge, Button, Label} from '@sanity/ui'
 import {
-  type MouseEvent,
   type RefObject,
   type SetStateAction,
   useCallback,
@@ -38,7 +37,7 @@ import {
   type VisionTab,
   type VisionTabOptions,
 } from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {redesignEditorTheme, redesignFolding} from '../../util/editorTheme'
@@ -58,6 +57,7 @@ import {queryParamHighlight} from '../../util/paramHighlight'
 import {isParamLintFinding, type ParamLintTarget, paramValueRange} from '../../util/paramLint'
 import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
+import {findLinkedSharedQuery} from '../../util/savedQueryTab'
 import {createQuerySchema} from '../../util/schemaCheck'
 import {VISION_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
@@ -67,6 +67,7 @@ import {useRequestBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {FunctionsTab, type QueryEdit} from '../response/FunctionsTab'
 import {LintTab, severityTone} from '../response/LintTab'
+import {type ResultViewOption, ResultViewMenu} from '../response/ResultViewMenu'
 import {
   type BottomPanelState,
   SplitWithBottomPanel,
@@ -86,6 +87,7 @@ import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {RequestOverrideChips} from './RequestOverrideChips'
+import {SharedQueryPresence} from './SharedQueryPresence'
 
 export interface RequestPanelProps {
   tab: VisionTab
@@ -194,6 +196,8 @@ export function RequestPanel(props: RequestPanelProps) {
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const telemetry = useVisionTelemetry()
+  const {queries} = useSavedQueriesApi()
+  const sharedQueryId = findLinkedSharedQuery(tab, queries)?._key
   // The GROQ editor setup, the diagnostics reporting to the Lint tab, and the documentation,
   // completions and extraction of functions, which know the library. Only the library's facet
   // changes when a function is saved; the rest of the setup stays as it is
@@ -306,8 +310,14 @@ export function RequestPanel(props: RequestPanelProps) {
   const {highlightParam, formFocusProps} = useParamHighlight(queryEditorRef)
   const tabElementId = useTabElementId()
   const paramsContentId = tabElementId('vision-request-params-content')
-  const paramsJsonTabId = tabElementId('vision-params-view-json')
-  const paramsFormTabId = tabElementId('vision-params-view-form')
+  const paramsViewMenuId = tabElementId('vision-params-view-menu')
+  const paramsViews = useMemo(
+    (): ResultViewOption<VisionParamsView>[] => [
+      {id: 'json', label: t('vision.params.view.json')},
+      {id: 'form', label: t('vision.params.view.form')},
+    ],
+    [t],
+  )
   const setParamsView = useCallback(
     (view: VisionParamsView) => {
       if (view !== paramsView) telemetry.viewChanged('params', view)
@@ -487,11 +497,6 @@ export function RequestPanel(props: RequestPanelProps) {
     ],
   )
 
-  const fitParams = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    panelRef.current?.fitToContent()
-  }, [])
-
   // Format is offered only where it would change something: never for text that does not parse,
   // and again after the editor is resized, since formatting wraps to its width
   const [queryEditorElement, setQueryEditorElement] = useState<HTMLDivElement | null>(null)
@@ -527,30 +532,10 @@ export function RequestPanel(props: RequestPanelProps) {
             flexGrow={1}
             gap={2}
             minWidth="0"
-            justifyContent="space-between"
+            justifyContent="flex-end"
           >
-            <TabList aria-label={t('vision.params.view.label')} gap={1}>
-              <Tab
-                aria-controls={paramsContentId}
-                fontSize={1}
-                id={paramsJsonTabId}
-                label={t('vision.params.view.json')}
-                onClick={() => setParamsView('json')}
-                onDoubleClick={fitParams}
-                padding={2}
-                selected={paramsView === 'json'}
-              />
-              <Tab
-                aria-controls={paramsContentId}
-                fontSize={1}
-                id={paramsFormTabId}
-                label={t('vision.params.view.form')}
-                onClick={() => setParamsView('form')}
-                onDoubleClick={fitParams}
-                padding={2}
-                selected={paramsView === 'form'}
-              />
-            </TabList>
+            {/* The view switch sits where the result panel has its view menu: after copy, before
+                the actions menu */}
             <Flex
               alignItems="center"
               data-testid="vision-params-toolbar-actions"
@@ -564,6 +549,20 @@ export function RequestPanel(props: RequestPanelProps) {
                 onCopy={onCopyParams}
                 onFormat={onFormatParams}
                 testIdPrefix="vision-params"
+              />
+              <ResultViewMenu
+                buttonLabel={t('vision.params.view.button', {
+                  view:
+                    paramsViews.find((view) => view.id === paramsView)?.label ??
+                    t('vision.params.view.json'),
+                })}
+                controls={paramsContentId}
+                id={paramsViewMenuId}
+                menuLabel={t('vision.params.view.label')}
+                onChange={setParamsView}
+                testId="vision-params-view"
+                value={paramsView}
+                views={paramsViews}
               />
               <ParamsActionsMenu params={paramValues} tab={tab} />
             </Flex>
@@ -674,7 +673,6 @@ export function RequestPanel(props: RequestPanelProps) {
     canFormatParams,
     copied,
     declaredFunctions,
-    fitParams,
     formFocusProps,
     highlightParam,
     lintAgent,
@@ -696,9 +694,9 @@ export function RequestPanel(props: RequestPanelProps) {
     paramValues,
     paramsContentId,
     paramsEditorRef,
-    paramsFormTabId,
-    paramsJsonTabId,
     paramsView,
+    paramsViewMenuId,
+    paramsViews,
     removeFunction,
     resolved,
     saveFunction,
@@ -784,9 +782,12 @@ export function RequestPanel(props: RequestPanelProps) {
             data-scrolled={queryScrolled}
             data-testid="vision-query-toolbar"
           >
-            <Label aria-label={t('query.label')} className={styles.paneToolbarLabel} muted size={1}>
-              {t('query.label')}
-            </Label>
+            <Flex alignItems="center" className={styles.paneToolbarLabel} gap={2}>
+              <Label aria-label={t('query.label')} muted size={1}>
+                {t('query.label')}
+              </Label>
+              {sharedQueryId !== undefined && <SharedQueryPresence documentId={sharedQueryId} />}
+            </Flex>
             <Flex alignItems="center" data-testid="vision-query-toolbar-actions" gap={1}>
               <EditorCornerActions
                 copied={copied === 'query'}
