@@ -134,6 +134,7 @@ import type {
   CreateReferenceButton,
   CreateReferenceOption,
   createRequestErrorChannel,
+  createSchema,
   createSearch,
   createSourceFromConfig,
   createStructureBuilder,
@@ -1314,6 +1315,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('createRequestErrorChannel', () => {
     expectTypeOf<typeof createRequestErrorChannel>().toBeFunction()
+  })
+  test('createSchema', () => {
+    expectTypeOf<typeof createSchema>().toBeFunction()
   })
   test('createSearch', () => {
     expectTypeOf<typeof createSearch>().not.toBeNever()

@@ -656,8 +656,19 @@
                 }
               },
               {
+                // getStudioCliTooling() imports the internals entry lazily, and its types come
+                // from the same entry.
                 "from": {"file": {"categories": "sanity/cli"}},
-                "allow": {"to": {"element": {"type": "sanity/cli__contents"}}}
+                "allow": {
+                  "to": [
+                    {"element": {"type": "sanity/cli__contents"}},
+                    {
+                      "file": {
+                        "categories": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                      }
+                    }
+                  ]
+                }
               },
               {
                 "from": {"element": {"type": "sanity/cli__contents"}},
