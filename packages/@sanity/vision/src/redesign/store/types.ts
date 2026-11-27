@@ -91,8 +91,8 @@ export interface VisionSidebarState {
   drawer: VisionDrawer | null
 }
 
-/** The collapsible panels below the query editor */
-export type VisionPanel = 'params' | 'options'
+/** The collapsible panels of the request column: the params, and the Options, Lint and Functions panel */
+export type VisionPanel = 'params' | 'request'
 
 /** How the params panel edits the params: their JSON, or a form inferred from the query */
 export type VisionParamsView = 'json' | 'form'

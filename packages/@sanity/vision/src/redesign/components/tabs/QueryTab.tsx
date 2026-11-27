@@ -19,11 +19,13 @@ import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective
 import {useLiveSubscription} from '../../hooks/useLiveSubscription'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
+import {useSharedTabSync} from '../../hooks/useSharedTabSync'
 import {useVisionDocumentEvents} from '../../hooks/useVisionDocumentEvents'
 import {selectIsFetching, selectLiveConnected} from '../../store/queryRunnerMachine'
 import {type FetchReason, type VisionTab, type VisionTabOptions} from '../../store/types'
 import {
   usePendingEdits,
+  useSavedQueriesApi,
   useVisionActor,
   useVisionExperience,
   useVisionSelector,
@@ -42,7 +44,7 @@ import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
 import {parseQueryPaste} from '../../util/parseQueryPaste'
-import {parsedQueryToTabInit} from '../../util/savedQueryTab'
+import {findLinkedSharedQuery, parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VisionShortcutId} from '../../util/shortcuts'
 import {useQueryTabSplitSizes} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
@@ -401,6 +403,15 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     queryEditorRef.current?.resetEditorContent(tab.query)
     paramsEditorRef.current?.resetEditorContent(tab.rawParams)
     runnerRef.send({type: 'clear'})
+  })
+
+  const {queries} = useSavedQueriesApi()
+  useSharedTabSync({
+    tabId: tab.id,
+    sharedId: findLinkedSharedQuery(tab, queries)?._key,
+    queryEditorRef,
+    paramsEditorRef,
+    buildUrl: (query, rawParams) => buildRequest(query, rawParams)?.url,
   })
 
   // A tab that refetches automatically resumes with a current result when it mounts. After a

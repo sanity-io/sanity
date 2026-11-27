@@ -37,8 +37,16 @@ export interface ResizableSplitProps {
   onResizeEnd?: (size: number, startSize: number) => void
   /** Enter on the divider: back to the default size */
   onReset?: () => void
+  /**
+   * A double-click on the divider. When set, it replaces the snap-to-center double click, which
+   * is how Params sizes itself to its content
+   */
+  onDoubleClick?: () => void
   allowResize?: boolean
-  /** Hold the divider at equal halves when a drag or a keyboard step comes close to or past them */
+  /**
+   * Hold the divider at equal halves when a drag or a keyboard step comes close to or past them,
+   * and move it there on a double click
+   */
   snapToCenter?: boolean
   /**
    * With `snapToCenter`: the divider holds equal halves whatever `size` says, through every
@@ -67,8 +75,9 @@ function clamp(value: number, {min, max}: Bounds): number {
  * stops short of either, and a size that no longer fits (a window narrowed after a drag) is
  * clamped for as long as the container is that small, the primary pane winning when it cannot
  * fit both. With `snapToCenter`, a drag within a few pixels of equal halves holds them, and an
- * arrow key step that would pass over them stops there; with `snapped` the halves stay equal as
- * the container resizes.
+ * arrow key step that would pass over them stops there, a double click moves the divider onto
+ * them unless `onDoubleClick` handles it; with `snapped` the halves stay equal as the container
+ * resizes.
  */
 export function ResizableSplit(props: ResizableSplitProps) {
   const {
@@ -80,6 +89,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
     onChange,
     onResizeEnd,
     onReset,
+    onDoubleClick,
     allowResize = true,
     snapToCenter = false,
     snapped: snappedProp = false,
@@ -188,6 +198,17 @@ export function ResizableSplit(props: ResizableSplitProps) {
     [allowResize, bounds, change, onResizeEnd, onReset, primary, shownSize, snap, split],
   )
 
+  const handleDoubleClick = useCallback(() => {
+    if (!allowResize) return
+    if (onDoubleClick) {
+      onDoubleClick()
+      return
+    }
+    if (!snap) return
+    change(snap.center)
+    if (snap.center !== shownSize) onResizeEnd?.(snap.center, shownSize)
+  }, [allowResize, change, onDoubleClick, onResizeEnd, shownSize, snap])
+
   const primaryStyle = {flex: `0 0 ${shownSize}px`}
   return (
     <div
@@ -216,6 +237,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
         data-dragging={dragging}
         data-snapped={snapped}
         data-testid={testId && `${testId}-handle`}
+        onDoubleClick={handleDoubleClick}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         role="separator"

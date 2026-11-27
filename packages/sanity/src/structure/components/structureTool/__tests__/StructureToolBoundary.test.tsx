@@ -55,7 +55,10 @@ describe('StructureToolBoundary', {timeout: 20_000}, () => {
     render(studioAtRouterState({}))
     expect(await screen.findByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
 
-    await userEvent.click(screen.getByRole('button', {name: 'Reload'}))
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the reload renders the list pane for the first time, which suspends until its chunk has loaded, and React only resumes work that suspended inside an awaited async `act`
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', {name: 'Reload'}))
+    })
 
     expect(await screen.findByText('Recovered content')).toBeInTheDocument()
     expect(screen.queryByText(STRUCTURE_ERROR_HEADING)).toBeNull()

@@ -87,7 +87,7 @@ import {ParamsActionsMenu} from './ParamsActionsMenu'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
-import {QueryParamsSplit} from './QueryParamsSplit'
+import {MIN_QUERY_PARAMS_HEIGHT, QueryParamsSplit} from './QueryParamsSplit'
 import {RequestOverrideChips} from './RequestOverrideChips'
 import {SharedQueryPresence} from './SharedQueryPresence'
 
@@ -675,6 +675,7 @@ export function RequestPanel(props: RequestPanelProps) {
     <SplitWithBottomPanel
       column="request"
       fitOnTabDoubleClick
+      minMainHeight={MIN_QUERY_PARAMS_HEIGHT}
       footer={
         <ActionRail testId="vision-query-actions">
           <VisionTooltip
