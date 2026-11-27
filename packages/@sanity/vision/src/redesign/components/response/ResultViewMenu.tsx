@@ -1,13 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {Button} from '@sanity/ui'
-import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {MenuButton} from '@sanity/ui/menu'
 import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
-import {cx} from '../../util/cx'
-import * as styles from '../redesign.module.css'
 import {OPTION_TRIGGER_PROPS} from '../request/OptionMenu'
-import * as themeStyles from '../themeTokens.module.css'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuItem} from '../VisionMenu'
 
 /** A way the result panel can show the result */
 export interface ResultViewOption<View extends string> {
@@ -68,16 +66,14 @@ export function ResultViewMenu<View extends string>({
       }
       id={id}
       menu={
-        <Menu
+        <VisionMenu
           aria-label={menuLabel ?? t('vision.result.view.label')}
-          className={cx(styles.popoverScroll, themeStyles.themeTokens)}
           data-testid={`${testId}-menu`}
         >
           {views.map((view) => (
-            <MenuItem
+            <VisionMenuItem
               aria-checked={view.id === active.id}
               data-testid={`${testId}-${view.id}`}
-              fontSize={1}
               iconRight={view.id === active.id ? CheckmarkIcon : undefined}
               key={view.id}
               onClick={() => onChange(view.id)}
@@ -86,9 +82,9 @@ export function ResultViewMenu<View extends string>({
               text={view.label}
             />
           ))}
-        </Menu>
+        </VisionMenu>
       }
-      popover={{animate: true, portal: true, placement}}
+      popover={{...VISION_MENU_POPOVER, placement}}
     />
   )
 }

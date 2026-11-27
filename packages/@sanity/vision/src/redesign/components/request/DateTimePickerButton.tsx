@@ -1,7 +1,6 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {Box, Button, LayerProvider, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {Popover, type PopoverProps} from '@sanity/ui/popover'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type KeyboardEvent, type ReactNode, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {
@@ -9,11 +8,12 @@ import {
   getCalendarLabels,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {useTranslation} from 'sanity/i18n'
-import {Flex, Text} from 'ui5'
+import {Flex} from 'ui5'
 
 import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
 import * as themeStyles from '../themeTokens.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 
 /** The calendar shows and picks times in the local time zone; nothing stores a choice for it */
 const TIME_ZONE_SCOPE = {type: 'input', id: 'vision.params'} as const
@@ -61,16 +61,7 @@ export function DateTimePickerButton(props: DateTimePickerButtonProps) {
   const close = () => setOpen(false)
 
   const button = (
-    <Tooltip
-      animate
-      content={
-        <Text className={themeStyles.themeTokens} size={1} as="div" trim={true}>
-          {labels.tooltipText}
-        </Text>
-      }
-      placement="top"
-      portal
-    >
+    <VisionTooltip content={labels.tooltipText} placement="top">
       <Button
         aria-label={labels.ariaLabel}
         data-testid="vision-params-form-datetime-picker-button"
@@ -81,7 +72,7 @@ export function DateTimePickerButton(props: DateTimePickerButtonProps) {
         onClick={() => setOpen(true)}
         padding={2}
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 
   return (

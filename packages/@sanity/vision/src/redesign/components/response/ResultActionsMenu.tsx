@@ -4,16 +4,15 @@ import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {JsonIcon} from '@sanity/icons/Json'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Button, Text} from '@sanity/ui'
-import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
+import {MenuButton} from '@sanity/ui/menu'
 import {useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
-import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
-import * as themeStyles from '../themeTokens.module.css'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuDivider, VisionMenuItem} from '../VisionMenu'
 import {VisionTooltip} from '../VisionTooltip'
 import {downloadFile} from './downloadFile'
 import {ExportTypesDialog, type TypesExportFormat} from './ExportTypesDialog'
@@ -102,18 +101,15 @@ export function ResultActionsMenu({
             }
             id={`vision-result-menu-${tab.id}`}
             menu={
-              <Menu
-                className={cx(styles.popoverScroll, themeStyles.themeTokens)}
-                data-testid="vision-result-menu"
-              >
-                <MenuItem
+              <VisionMenu data-testid="vision-result-menu">
+                <VisionMenuItem
                   data-testid="vision-export-json"
                   disabled={!getJsonUrl}
                   icon={JsonIcon}
                   onClick={() => download('json', getJsonUrl, 'query-result.json')}
                   text={t('vision.result.export-json')}
                 />
-                <MenuItem
+                <VisionMenuItem
                   className={csvUnavailable ? styles.exportCsvUnavailable : undefined}
                   data-testid="vision-export-csv"
                   disabled={!getCsvUrl}
@@ -126,25 +122,25 @@ export function ResultActionsMenu({
                       {csvUnavailableHint}
                     </Text>
                   ) : null}
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem
+                </VisionMenuItem>
+                <VisionMenuDivider />
+                <VisionMenuItem
                   data-testid="vision-export-typescript"
                   icon={CodeIcon}
                   onClick={() => setExportFormat('typescript')}
                   text={t('vision.result.export-typescript')}
                 />
-                <MenuItem
+                <VisionMenuItem
                   data-testid="vision-export-zod"
                   icon={PackageIcon}
                   onClick={() => setExportFormat('zod')}
                   text={t('vision.result.export-zod')}
                 />
-              </Menu>
+              </VisionMenu>
             }
             onClose={() => setMenuOpen(false)}
             onOpen={() => setMenuOpen(true)}
-            popover={{animate: true, portal: true, placement: 'bottom-end'}}
+            popover={{...VISION_MENU_POPOVER, placement: 'bottom-end'}}
           />
         </span>
       </VisionTooltip>
