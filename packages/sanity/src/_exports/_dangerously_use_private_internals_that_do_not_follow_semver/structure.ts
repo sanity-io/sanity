@@ -14,12 +14,11 @@ export {PaneLayout} from '../../structure/components/pane/PaneLayout'
 export {
   type BackLinkProps,
   type ChildLinkProps,
-  type EditReferenceOptions,
   type PaneRouterContextValue,
   type ParameterizedLinkProps,
   type ReferenceChildLinkProps,
 } from '../../structure/components/paneRouter/types'
-export {PaneRouterContext, usePaneRouter} from '../../structure/components/paneRouter/usePaneRouter'
+export {usePaneRouter} from '../../structure/components/paneRouter/usePaneRouter'
 export {DocumentInspectorHeader} from '../../structure/panes/document/documentInspector/DocumentInspectorHeader'
 export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../../structure/panes/document/DocumentPaneProviderWrapper'
 export {type DocumentPaneProviderProps} from '../../structure/panes/document/types'
@@ -31,7 +30,6 @@ export {type DocumentListPaneProps} from '../../structure/panes/documentList'
 export {type StructureBuilderOptions} from '../../structure/structureBuilder/createStructureBuilder'
 export {type SortMenuItem} from '../../structure/structureBuilder/MenuItem'
 export {type Builder} from '../../structure/structureBuilder/StructureNodes'
-export {type StructureToolProviderProps} from '../../structure/StructureToolProvider'
 export {
   type BaseResolvedPaneNode,
   type CustomComponentPaneNode,
@@ -50,7 +48,6 @@ export {
   type RouterPaneSibling,
   type RouterPaneSiblingContext,
   type SerializablePaneNode,
-  type StrictVersionLayeringOptions,
   type StructureResolverContext,
   type StructureToolContextValue,
   type StructureToolFeatures,

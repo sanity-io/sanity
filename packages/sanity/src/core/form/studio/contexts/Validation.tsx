@@ -1,18 +1,18 @@
 import {type FormNodeValidation, type Path, type ValidationMarker} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
 import {type ReactNode, use, useMemo} from 'react'
-import {ValidationContext} from 'sanity/_singletons'
+import {ValidationMarkersContext} from 'sanity/_singletons'
 
 export function ValidationProvider(props: {validation: ValidationMarker[]; children: ReactNode}) {
   return (
-    <ValidationContext.Provider value={props.validation}>
+    <ValidationMarkersContext.Provider value={props.validation}>
       {props.children}
-    </ValidationContext.Provider>
+    </ValidationMarkersContext.Provider>
   )
 }
 
 function useValidationMarkers(): ValidationMarker[] {
-  const ctx = use(ValidationContext)
+  const ctx = use(ValidationMarkersContext)
   if (!ctx) {
     throw new Error('Form context not provided')
   }

@@ -319,7 +319,7 @@ overrides:
   vitest: ^5.1.1
 
 patchedDependencies:
-  '@sanity/assist@6.3.0': e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946
+  '@sanity/assist@6.3.0': a8237755c432538294aa223d9159174b3fa3c5262fc559a8d02d9e20ae23df3d
   '@sanity/code-input@7.3.16': 59127743b521f62613d306c1d7757c509cd34b3606f57f95dcbc9a1c4a826e62
   '@sanity/document-internationalization@6.3.1': f49a7250f751442ee500d90ba197b2df2c88ab69082e4a9ac1c8caa445549182
   '@sanity/google-maps-input@6.1.18': 73a1028d307de8817457cd60a998f571326802a2704607571d6ded45f0358121
@@ -327,7 +327,7 @@ patchedDependencies:
   '@sanity/themer@0.11.0': 1f3c04d4e79b73046119fd0e0291d6a66d9d63bc68814e8d5a367b4e72cd6613
   sanity-plugin-internationalized-array@5.3.10: e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758
   sanity-plugin-media@6.6.5: 435082ed0d6df33dbf5e937292ca3104e52bc553f7fb299bce22640686ae0965
-  sanity-plugin-utils@2.0.24: d1d214620c2584cc9c542f571953e02b3455dfc31b51d7ece9fbbe351f7e48bc
+  sanity-plugin-utils@2.0.24: 03846c46f494fb957ce570539a9c2fc213f8d10744a585e296815ad2ea00cc94
 
 importers:
 
@@ -992,7 +992,7 @@ importers:
         version: link:../../packages/@repo/utils
       '@sanity/assist':
         specifier: ^6.3.0
-        version: 6.3.0(patch_hash=e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
+        version: 6.3.0(patch_hash=a8237755c432538294aa223d9159174b3fa3c5262fc559a8d02d9e20ae23df3d)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.17.0(vitest@5.1.1)
@@ -22781,7 +22781,7 @@ snapshots:
 
   '@sanity/asset-utils@2.3.0': {}
 
-  '@sanity/assist@6.3.0(patch_hash=e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)':
+  '@sanity/assist@6.3.0(patch_hash=a8237755c432538294aa223d9159174b3fa3c5262fc559a8d02d9e20ae23df3d)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)':
     dependencies:
       '@portabletext/types': 4.0.3
       '@sanity/client': 8.17.0(vitest@5.1.1)
@@ -23163,7 +23163,7 @@ snapshots:
       rxjs: 7.8.2
       sanity: link:packages/sanity
       sanity-plugin-internationalized-array: 5.3.10(patch_hash=e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
-      sanity-plugin-utils: 2.0.24(patch_hash=d1d214620c2584cc9c542f571953e02b3455dfc31b51d7ece9fbbe351f7e48bc)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+      sanity-plugin-utils: 2.0.24(patch_hash=03846c46f494fb957ce570539a9c2fc213f8d10744a585e296815ad2ea00cc94)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
     transitivePeerDependencies:
       - remix
       - styled-components
@@ -30925,7 +30925,7 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       sanity: link:packages/sanity
     optionalDependencies:
-      '@sanity/assist': 6.3.0(patch_hash=e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
+      '@sanity/assist': 6.3.0(patch_hash=a8237755c432538294aa223d9159174b3fa3c5262fc559a8d02d9e20ae23df3d)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
     transitivePeerDependencies:
       - remix
       - styled-components
@@ -30988,7 +30988,7 @@ snapshots:
       - vitest
       - yup
 
-  sanity-plugin-utils@2.0.24(patch_hash=d1d214620c2584cc9c542f571953e02b3455dfc31b51d7ece9fbbe351f7e48bc)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0):
+  sanity-plugin-utils@2.0.24(patch_hash=03846c46f494fb957ce570539a9c2fc213f8d10744a585e296815ad2ea00cc94)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0):
     dependencies:
       '@sanity/icons': 5.4.0(react@19.3.1)
       '@sanity/image-url': 2.2.0

@@ -249,7 +249,6 @@ import type {
   SANITY_PATCH_TYPE,
   ScheduleAction,
   ScheduledBadge,
-  SchedulesContext,
   SelectInput,
   SetActiveGroupOperation,
   setAtPath,
@@ -292,7 +291,6 @@ import type {
   useDocumentChange,
   useDocumentDivergences,
   useDocumentForm,
-  useDocumentPane,
   useDocumentPreviewValues,
   useEnhancedObjectDialog,
   useFieldActions,
@@ -1063,9 +1061,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
   test('ScheduledBadge', () => {
     expectTypeOf<typeof ScheduledBadge>().not.toBeNever()
   })
-  test('SchedulesContext', () => {
-    expectTypeOf<typeof SchedulesContext>().not.toBeNever()
-  })
   test('SelectInput', () => {
     expectTypeOf<typeof SelectInput>().toBeFunction()
   })
@@ -1191,9 +1186,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
   })
   test('useDocumentForm', () => {
     expectTypeOf<typeof useDocumentForm>().toBeFunction()
-  })
-  test('useDocumentPane', () => {
-    expectTypeOf<typeof useDocumentPane>().toBeFunction()
   })
   test('useDocumentPreviewValues', () => {
     expectTypeOf<typeof useDocumentPreviewValues>().toBeFunction()

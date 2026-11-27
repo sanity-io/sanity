@@ -4,4 +4,4 @@ import {createContext} from 'react'
 /**
  * @internal
  */
-export const ValidationContext = createContext<ValidationMarker[]>([])
+export const ValidationMarkersContext = createContext<ValidationMarker[]>([])

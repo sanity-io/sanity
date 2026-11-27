@@ -16,7 +16,6 @@ import type {
   DocumentPaneNode,
   DocumentPaneProvider,
   DocumentPaneProviderProps,
-  EditReferenceOptions,
   ListPaneNode,
   PaneLayout,
   PaneListItem,
@@ -25,7 +24,6 @@ import type {
   PaneMenuItemGroup,
   PaneNode,
   PaneNodeResolver,
-  PaneRouterContext,
   PaneRouterContextValue,
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
@@ -35,13 +33,11 @@ import type {
   RouterPaneSiblingContext,
   SerializablePaneNode,
   SortMenuItem,
-  StrictVersionLayeringOptions,
   StructureBuilderOptions,
   StructureResolverContext,
   StructureToolContextValue,
   StructureToolFeatures,
   StructureToolPaneActionHandler,
-  StructureToolProviderProps,
   UnresolvedPaneNode,
   useDocumentTitle,
   UseDocumentTitle,
@@ -89,9 +85,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/st
   test('DocumentPaneProviderProps', () => {
     expectTypeOf<DocumentPaneProviderProps>().not.toBeNever()
   })
-  test('EditReferenceOptions', () => {
-    expectTypeOf<EditReferenceOptions>().toBeObject()
-  })
   test('ListPaneNode', () => {
     expectTypeOf<ListPaneNode>().toBeObject()
   })
@@ -115,9 +108,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/st
   })
   test('PaneNodeResolver', () => {
     expectTypeOf<PaneNodeResolver>().not.toBeNever()
-  })
-  test('PaneRouterContext', () => {
-    expectTypeOf<typeof PaneRouterContext>().not.toBeNever()
   })
   test('PaneRouterContextValue', () => {
     expectTypeOf<PaneRouterContextValue>().toBeObject()
@@ -146,9 +136,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/st
   test('SortMenuItem', () => {
     expectTypeOf<SortMenuItem>().toBeObject()
   })
-  test('StrictVersionLayeringOptions', () => {
-    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
-  })
   test('StructureBuilderOptions', () => {
     expectTypeOf<StructureBuilderOptions>().toBeObject()
   })
@@ -163,9 +150,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/st
   })
   test('StructureToolPaneActionHandler', () => {
     expectTypeOf<StructureToolPaneActionHandler>().not.toBeNever()
-  })
-  test('StructureToolProviderProps', () => {
-    expectTypeOf<StructureToolProviderProps>().toBeObject()
   })
   test('UnresolvedPaneNode', () => {
     expectTypeOf<UnresolvedPaneNode>().not.toBeNever()

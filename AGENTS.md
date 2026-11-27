@@ -900,7 +900,20 @@ exports only.
 `// <tombstones>` blocks before `tsdown` and appends them to the matching `lib/*.d.ts` after.
 Feeding hundreds of inline `export declare` lines to rolldown-plugin-dts can mark unrelated value
 re-exports (e.g. `SANITY_VERSION`) as type-only; the strip/append keeps monorepo source tombstones
-intact while the published types stay correct.
+intact while the published types stay correct. When the bundled `.d.ts` already imports a name for
+its own declarations (`import {Serializable} from …` for a signature), the appended tombstone for
+that name is declared as `__tombstone_<name>` and exported under the real name, since a second
+declaration of the name is TS2440.
+
+**Every export name comes from exactly one entry.** v6 let a moved export live at its old and new
+entry so plugins could target both majors; v7 does not.
+`packages/@repo/test-dts-exports/test/unique-export-names.test.ts` (part of `pnpm test:exports`)
+fails when a real name is exported by more than one `sanity/package.json#exports` entry. A
+tombstone does not count: it is type-only, has no runtime binding, and exists to name the entry
+that owns the name. Keep a name at one entry, tombstone the others where `sanity@latest` exported
+it, and make the tombstone message say which one (a different declaration of the same name gets
+"Removed from … it was a different `X`", not "Moved to"). `.` wins ties because its wildcard
+re-exports cannot be pruned, and `sanity/_singletons` owns contexts.
 
 When the suite reports a missing export:
 

@@ -4,7 +4,6 @@
 
 import type {
   BaseGenericList,
-  BaseIntentParams,
   BaseView,
   BuildableComponent,
   BuildableGenericList,
@@ -33,7 +32,6 @@ import type {
   DocumentListItemInput,
   DocumentListOptions,
   DocumentNode,
-  DocumentOptions,
   DocumentTypeListBuilder,
   DocumentTypeListInput,
   EditorNode,
@@ -48,7 +46,6 @@ import type {
   InitialValueTemplateItemBuilder,
   Intent,
   IntentChecker,
-  IntentJsonParams,
   IntentParams,
   isIncomingReferenceCreation,
   ItemChild,
@@ -101,9 +98,6 @@ import {describe, expectTypeOf, test} from 'vitest'
 describe('sanity/structure', () => {
   test('BaseGenericList', () => {
     expectTypeOf<BaseGenericList>().toBeObject()
-  })
-  test('BaseIntentParams', () => {
-    expectTypeOf<BaseIntentParams>().toBeObject()
   })
   test('BaseView', () => {
     expectTypeOf<BaseView>().toBeObject()
@@ -189,9 +183,6 @@ describe('sanity/structure', () => {
   test('DocumentNode', () => {
     expectTypeOf<DocumentNode>().toBeObject()
   })
-  test('DocumentOptions', () => {
-    expectTypeOf<DocumentOptions>().toBeObject()
-  })
   test('DocumentTypeListBuilder', () => {
     expectTypeOf<DocumentTypeListBuilder>().not.toBeNever()
   })
@@ -233,9 +224,6 @@ describe('sanity/structure', () => {
   })
   test('IntentChecker', () => {
     expectTypeOf<IntentChecker>().toBeObject()
-  })
-  test('IntentJsonParams', () => {
-    expectTypeOf<IntentJsonParams>().not.toBeNever()
   })
   test('IntentParams', () => {
     expectTypeOf<IntentParams>().not.toBeNever()

@@ -1,5 +1,6 @@
 /* oxlint-disable consistent-return */
-import {defineMigration, unset} from 'sanity/migrate'
+import {unset} from '@sanity/migrate'
+import {defineMigration} from 'sanity/migrate'
 
 export default defineMigration({
   title: 'Cleanup empty values',

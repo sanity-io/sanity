@@ -19,11 +19,7 @@ export {
   ComponentBuilder,
   type ComponentInput,
 } from '../structure/structureBuilder/Component'
-export {
-  DocumentBuilder,
-  type DocumentOptions,
-  type PartialDocumentNode,
-} from '../structure/structureBuilder/Document'
+export {DocumentBuilder, type PartialDocumentNode} from '../structure/structureBuilder/Document'
 export {
   type DocumentList,
   DocumentListBuilder,
@@ -51,10 +47,8 @@ export {
 } from '../structure/structureBuilder/GenericList'
 export {InitialValueTemplateItemBuilder} from '../structure/structureBuilder/InitialValueTemplateItem'
 export {
-  type BaseIntentParams,
   type Intent,
   type IntentChecker,
-  type IntentJsonParams,
   type IntentParams,
 } from '../structure/structureBuilder/Intent'
 export {
@@ -129,6 +123,10 @@ export {type StructureResolver, type StructureToolOptions} from '../structure/ty
  */
 export type BackLinkProps = never
 /**
+ * @deprecated Moved to `sanity/router`. Import `{BaseIntentParams}` from `sanity/router` instead of `sanity/structure`.
+ */
+export type BaseIntentParams = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
  */
 export type BaseResolvedPaneNode = never
@@ -177,6 +175,10 @@ export type DocumentListPaneNode = never
  */
 export type DocumentListPaneProps = never
 /**
+ * @deprecated Moved to `sanity`. Import `{DocumentOptions}` from `sanity` instead of `sanity/structure`.
+ */
+export type DocumentOptions = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const DocumentPane: never
@@ -193,13 +195,17 @@ export declare const DocumentPaneProvider: never
  */
 export type DocumentPaneProviderProps = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@hidden` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{EditReferenceOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release.
  */
 export type EditReferenceOptions = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const HELP_URL: never
+/**
+ * @deprecated Moved to `sanity/router`. Import `{IntentJsonParams}` from `sanity/router` instead of `sanity/structure`.
+ */
+export type IntentJsonParams = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
  */
@@ -245,7 +251,7 @@ export type PaneNode = never
  */
 export type PaneNodeResolver = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@hidden` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_singletons`. Import `{PaneRouterContext}` from `sanity/_singletons` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const PaneRouterContext: never
 /**
@@ -289,7 +295,7 @@ export declare const SerializeError: never
  */
 export type SortMenuItem = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. For an import that follows semver, use `{StrictVersionLayeringOptions}` from `@sanity/types`.
+ * @deprecated Moved to `sanity`. Import `{StrictVersionLayeringOptions}` from `sanity` instead of `sanity/structure`.
  */
 export type StrictVersionLayeringOptions = never
 /**
@@ -317,7 +323,7 @@ export type StructureToolPaneActionHandler = never
  */
 export declare const StructureToolProvider: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{StructureToolProviderProps}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release.
  */
 export type StructureToolProviderProps = never
 /**

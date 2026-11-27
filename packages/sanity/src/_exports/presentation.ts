@@ -1,6 +1,5 @@
 export {useSharedState} from '../presentation/overlays/useSharedState'
 export {defineDocuments, defineLocations, presentationTool} from '../presentation/plugin'
-export {type PreviewProps} from '../presentation/preview/Preview'
 export {type PreviewHeaderProps} from '../presentation/preview/PreviewHeader'
 export {
   type CombinedSearchParams,
@@ -30,7 +29,6 @@ export {
 export {usePresentationNavigate} from '../presentation/usePresentationNavigate'
 export {usePresentationParams} from '../presentation/usePresentationParams'
 export {
-  type Serializable,
   type SerializableArray,
   type SerializableObject,
   type SerializablePrimitive,
@@ -41,7 +39,15 @@ export {
 // Type-only: every symbol is `export declare` / `export type … = never`. Nothing here may
 // emit runtime JavaScript. See AGENTS.md ("Export tombstones (v7)").
 /**
+ * @deprecated Removed from `sanity/presentation`: it was a different `PreviewProps` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `PreviewProps` from `sanity`.
+ */
+export type PreviewProps = never
+/**
  * @deprecated Removed in v7 with the function form of the Presentation tool's `previewUrl` option. Pass `previewUrl` as a string or as an object with `initial` and `previewMode`.
  */
 export type PreviewUrlResolver = never
+/**
+ * @deprecated Removed from `sanity/presentation`: it was a different `Serializable` than the one `sanity/structure` exports, and every export name now comes from exactly one entry. Use the `Serializable` from `sanity/structure`.
+ */
+export type Serializable = never
 // </tombstones>

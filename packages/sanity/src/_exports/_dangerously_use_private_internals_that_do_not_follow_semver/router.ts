@@ -16,4 +16,3 @@ export {
   type MatchResult,
   type NextStateOrOptions,
 } from '../../router/types'
-export {RouterContext} from '../../router/useRouter'

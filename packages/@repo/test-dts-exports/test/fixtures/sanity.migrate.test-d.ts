@@ -16,11 +16,7 @@ import type {
   collectMigrationMutations,
   create,
   createIfNotExists,
-  CreateIfNotExistsMutation,
-  CreateMutation,
   createOrReplace,
-  CreateOrReplaceMutation,
-  dec,
   decodeText,
   DecOp,
   DEFAULT_MUTATION_CONCURRENCY,
@@ -28,8 +24,6 @@ import type {
   del,
   delay,
   delete_,
-  DeleteMutation,
-  diffMatchPatch,
   DiffMatchPatchOp,
   DocumentMigrationReturnValue,
   dryRun,
@@ -39,10 +33,8 @@ import type {
   fromDocuments,
   fromExportArchive,
   fromExportEndpoint,
-  inc,
   IncOp,
   IndexedSegment,
-  insert,
   insertAfter,
   insertBefore,
   InsertOp,
@@ -52,7 +44,6 @@ import type {
   JSONParser,
   JsonPrimitive,
   JsonValue,
-  KeyedSegment,
   map,
   MAX_MUTATION_CONCURRENCY,
   MigrateDefinition,
@@ -61,7 +52,6 @@ import type {
   MigrationProgress,
   MigrationRunnerConfig,
   MigrationRunnerOptions,
-  Mutation,
   NodeMigration,
   NodeMigrationReturnValue,
   NodePatch,
@@ -73,9 +63,7 @@ import type {
   parse,
   parseJSON,
   patch,
-  PatchMutation,
   PatchOptions,
-  Path,
   prepend,
   PrimitiveOp,
   RelativePosition,
@@ -84,9 +72,6 @@ import type {
   RestrictedClient,
   run,
   safeJsonParser,
-  SanityDocument,
-  set,
-  setIfMissing,
   SetIfMissingOp,
   SetOp,
   split,
@@ -102,7 +87,6 @@ import type {
   truncate,
   TruncateOp,
   Tuplify,
-  unset,
   UnsetOp,
 } from 'sanity/migrate'
 import {describe, expectTypeOf, test} from 'vitest'
@@ -147,20 +131,8 @@ describe('sanity/migrate', () => {
   test('createIfNotExists', () => {
     expectTypeOf<typeof createIfNotExists>().toBeFunction()
   })
-  test('CreateIfNotExistsMutation', () => {
-    expectTypeOf<CreateIfNotExistsMutation<any>>().not.toBeNever()
-  })
-  test('CreateMutation', () => {
-    expectTypeOf<CreateMutation<any>>().not.toBeNever()
-  })
   test('createOrReplace', () => {
     expectTypeOf<typeof createOrReplace>().toBeFunction()
-  })
-  test('CreateOrReplaceMutation', () => {
-    expectTypeOf<CreateOrReplaceMutation<any>>().not.toBeNever()
-  })
-  test('dec', () => {
-    expectTypeOf<typeof dec>().not.toBeNever()
   })
   test('decodeText', () => {
     expectTypeOf<typeof decodeText>().toBeFunction()
@@ -182,12 +154,6 @@ describe('sanity/migrate', () => {
   })
   test('delete_', () => {
     expectTypeOf<typeof delete_>().toBeFunction()
-  })
-  test('DeleteMutation', () => {
-    expectTypeOf<DeleteMutation>().not.toBeNever()
-  })
-  test('diffMatchPatch', () => {
-    expectTypeOf<typeof diffMatchPatch>().not.toBeNever()
   })
   test('DiffMatchPatchOp', () => {
     expectTypeOf<DiffMatchPatchOp>().not.toBeNever()
@@ -216,17 +182,11 @@ describe('sanity/migrate', () => {
   test('fromExportEndpoint', () => {
     expectTypeOf<typeof fromExportEndpoint>().toBeFunction()
   })
-  test('inc', () => {
-    expectTypeOf<typeof inc>().not.toBeNever()
-  })
   test('IncOp', () => {
     expectTypeOf<IncOp<any>>().not.toBeNever()
   })
   test('IndexedSegment', () => {
     expectTypeOf<IndexedSegment>().not.toBeNever()
-  })
-  test('insert', () => {
-    expectTypeOf<typeof insert>().toBeFunction()
   })
   test('insertAfter', () => {
     expectTypeOf<typeof insertAfter>().not.toBeNever()
@@ -255,9 +215,6 @@ describe('sanity/migrate', () => {
   test('JsonValue', () => {
     expectTypeOf<JsonValue>().not.toBeNever()
   })
-  test('KeyedSegment', () => {
-    expectTypeOf<KeyedSegment>().not.toBeNever()
-  })
   test('map', () => {
     expectTypeOf<typeof map>().toBeFunction()
   })
@@ -281,9 +238,6 @@ describe('sanity/migrate', () => {
   })
   test('MigrationRunnerOptions', () => {
     expectTypeOf<MigrationRunnerOptions>().toBeObject()
-  })
-  test('Mutation', () => {
-    expectTypeOf<Mutation<any>>().not.toBeNever()
   })
   test('NodeMigration', () => {
     expectTypeOf<NodeMigration>().toBeObject()
@@ -318,14 +272,8 @@ describe('sanity/migrate', () => {
   test('patch', () => {
     expectTypeOf<typeof patch>().toBeFunction()
   })
-  test('PatchMutation', () => {
-    expectTypeOf<PatchMutation<any>>().not.toBeNever()
-  })
   test('PatchOptions', () => {
     expectTypeOf<PatchOptions>().not.toBeNever()
-  })
-  test('Path', () => {
-    expectTypeOf<Path>().not.toBeNever()
   })
   test('prepend', () => {
     expectTypeOf<typeof prepend>().toBeFunction()
@@ -350,15 +298,6 @@ describe('sanity/migrate', () => {
   })
   test('safeJsonParser', () => {
     expectTypeOf<typeof safeJsonParser>().not.toBeNever()
-  })
-  test('SanityDocument', () => {
-    expectTypeOf<SanityDocument>().not.toBeNever()
-  })
-  test('set', () => {
-    expectTypeOf<typeof set>().not.toBeNever()
-  })
-  test('setIfMissing', () => {
-    expectTypeOf<typeof setIfMissing>().not.toBeNever()
   })
   test('SetIfMissingOp', () => {
     expectTypeOf<SetIfMissingOp<any>>().not.toBeNever()
@@ -405,9 +344,6 @@ describe('sanity/migrate', () => {
   })
   test('Tuplify', () => {
     expectTypeOf<Tuplify<any>>().not.toBeNever()
-  })
-  test('unset', () => {
-    expectTypeOf<typeof unset>().not.toBeNever()
   })
   test('UnsetOp', () => {
     expectTypeOf<UnsetOp>().not.toBeNever()
