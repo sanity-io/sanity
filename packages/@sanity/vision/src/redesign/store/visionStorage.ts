@@ -5,8 +5,10 @@ import {isPlainObject} from '../../util/isPlainObject'
 import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../../util/localStorage'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
+import {keepRecentClosedTabs} from './closedTabs'
 import {
   type VisionAiSettings,
+  type VisionClosedTab,
   type VisionDatasetMode,
   type VisionDrawer,
   type VisionEditorSettings,
@@ -191,6 +193,7 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
       hidden: [...DEFAULT_EXPORT_SNIPPET_SETTINGS.hidden],
     },
     functions: [],
+    closedTabs: [],
     openedSavedQueries: [],
   }
 }
@@ -297,15 +300,17 @@ function sanitizeTab(
   })
 }
 
-const DRAWERS: readonly VisionDrawer[] = ['saved', 'shared', 'delta', 'mutate', 'settings']
+const DRAWERS: readonly VisionDrawer[] = ['closed-tabs', 'shared', 'delta', 'mutate', 'settings']
 
+/** The Restore tabs drawer took the place of the Saved queries drawer, and opens where it was open */
 function sanitizeSidebar(value: unknown): VisionSidebarState {
   if (!isPlainObject(value)) {
     return {expanded: false, drawer: null}
   }
+  const stored = value.drawer === 'saved' ? 'closed-tabs' : value.drawer
   return {
     expanded: value.expanded === true,
-    drawer: DRAWERS.find((drawer) => drawer === value.drawer) ?? null,
+    drawer: DRAWERS.find((drawer) => drawer === stored) ?? null,
   }
 }
 
@@ -432,6 +437,30 @@ function sanitizeOpenedSavedQueries(value: unknown): string[] {
 }
 
 /**
+ * The closed tabs that validate and are not due to be purged, the first of each tab id and none
+ * of an open tab, since tab ids key the runners; state saved before tabs could be restored has none
+ */
+function sanitizeClosedTabs(
+  value: unknown,
+  openTabs: VisionTab[],
+  settings: VisionSettings,
+  defaults: VisionStorageDefaults,
+): VisionClosedTab[] {
+  if (!Array.isArray(value)) return []
+  const closedTabs: VisionClosedTab[] = []
+  const seenIds = new Set(openTabs.map((tab) => tab.id))
+  for (const candidate of value) {
+    if (!isPlainObject(candidate) || typeof candidate.closedAt !== 'string') continue
+    const tab = sanitizeTab(candidate.tab, settings, defaults)
+    if (tab && !seenIds.has(tab.id)) {
+      seenIds.add(tab.id)
+      closedTabs.push({tab, closedAt: candidate.closedAt})
+    }
+  }
+  return keepRecentClosedTabs(closedTabs, Date.now())
+}
+
+/**
  * A fresh state whose tab holds the query the classic tool last showed, with its params and
  * request options, or the fresh state as it is when the classic tool left no query. The classic
  * tool ran queries on the `raw` perspective until another one was picked, and its
@@ -516,6 +545,7 @@ export function loadVisionState(
   const response = sanitizeResponseSettings(stored.response)
   const exportSnippets = sanitizeExportSnippetSettings(stored.exportSnippets)
   const functions = sanitizeFunctions(stored.functions)
+  const closedTabs = sanitizeClosedTabs(stored.closedTabs, tabs, settings, defaults)
   const openedSavedQueries = sanitizeOpenedSavedQueries(stored.openedSavedQueries)
   if (tabs.length === 0) {
     return {
@@ -529,6 +559,7 @@ export function loadVisionState(
       response,
       exportSnippets,
       functions,
+      closedTabs,
       openedSavedQueries,
     }
   }
@@ -551,6 +582,7 @@ export function loadVisionState(
     response,
     exportSnippets,
     functions,
+    closedTabs,
     openedSavedQueries,
   }
 }

@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {DEFAULT_API_VERSION} from '../../apiVersions'
 import {clearLocalStorage} from '../../util/localStorage'
@@ -25,6 +25,10 @@ const defaults = {
 describe('visionStorage', () => {
   beforeEach(() => {
     localStorage.clear()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('resolves settings from the tool defaults: following the workspace, on published', () => {
@@ -143,7 +147,7 @@ describe('visionStorage', () => {
       settings: {...state.settings, useCdn: true},
       tabs: [tab],
       activeTabId: tab.id,
-      sidebar: {expanded: true, drawer: 'saved' as const},
+      sidebar: {expanded: true, drawer: 'closed-tabs' as const},
       panels: {
         params: true,
         options: false,
@@ -177,11 +181,57 @@ describe('visionStorage', () => {
         hidden: ['next-sanity' as const, 'nuxt' as const],
       },
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
+      closedTabs: [
+        {
+          tab: createTab(state.settings, {
+            id: 'closed-posts',
+            query: '*[_type == "post"]',
+            title: 'Posts',
+            options: {perspective: undefined},
+            sharedId: 'shared-posts',
+          }),
+          closedAt: new Date().toISOString(),
+        },
+      ],
       openedSavedQueries: ['saved-pages', 'saved-posts'],
     }
     saveVisionState('proj', saved)
 
     expect(loadVisionState('proj', defaults)).toEqual(saved)
+  })
+
+  it('keeps the closed tabs that validate and are under 30 days old, the first of each id and none of an open tab', () => {
+    vi.useFakeTimers({now: new Date('2026-03-31T12:00:00Z')})
+    const state = createInitialState(defaults)
+    const closed = (id: string, closedAt: unknown) => ({
+      tab: createTab(state.settings, {id, query: `*[_type == "${id}"]`}),
+      closedAt,
+    })
+    const recent = closed('recent', '2026-03-30T12:00:00.000Z')
+    const lastDay = closed('last-day', '2026-03-01T12:00:01.000Z')
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({
+        ...state,
+        closedTabs: [
+          recent,
+          closed('recent', '2026-03-29T12:00:00.000Z'),
+          {tab: state.tabs[0], closedAt: '2026-03-30T12:00:00.000Z'},
+          closed('expired', '2026-03-01T12:00:00.000Z'),
+          closed('undated', 7),
+          closed('unparseable', 'yesterday'),
+          {tab: {query: '*'}, closedAt: '2026-03-30T12:00:00.000Z'},
+          'not a closed tab',
+          lastDay,
+        ],
+      }),
+    )
+    expect(loadVisionState('proj', defaults).closedTabs).toEqual([recent, lastDay])
+
+    // State saved before tabs could be restored has none
+    const {closedTabs: _closedTabs, ...before} = state
+    localStorage.setItem(getVisionStorageKey('before'), JSON.stringify(before))
+    expect(loadVisionState('before', defaults).closedTabs).toEqual([])
   })
 
   it('records each saved query opened as a tab once, and none for state saved before', () => {
@@ -285,9 +335,13 @@ describe('visionStorage', () => {
       )
       return loadVisionState('proj', defaults).sidebar.drawer
     }
+    expect(load('closed-tabs')).toBe('closed-tabs')
+    expect(load('shared')).toBe('shared')
     expect(load('mutate')).toBe('mutate')
     expect(load('settings')).toBe('settings')
     expect(load('delta')).toBe('delta')
+    // Restore tabs took the place of the Saved queries drawer
+    expect(load('saved')).toBe('closed-tabs')
     expect(load('lint')).toBeNull()
     expect(load('functions')).toBeNull()
     expect(load('history')).toBeNull()

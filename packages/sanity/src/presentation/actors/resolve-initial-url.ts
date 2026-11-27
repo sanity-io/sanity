@@ -1,69 +1,45 @@
 import {type SanityClient} from 'sanity'
 import {fromPromise, type PromiseActorLogic} from 'xstate'
 
-import {type PresentationPerspective, type PreviewUrlOption} from '../types'
-import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
+import {type PreviewUrlOption} from '../types'
 
 /** @internal */
 export function defineResolveInitialUrlActor({
   client,
-  studioBasePath,
   previewUrlOption,
-  perspective,
-  variant,
 }: {
   client: SanityClient
-  studioBasePath: string
   previewUrlOption: PreviewUrlOption | undefined
-  perspective: PresentationPerspective
-  variant: string | undefined
 }): PromiseActorLogic<URL, {previewSearchParam: string | null}> {
-  return fromPromise<URL, {previewSearchParam: string | null}>(
-    async ({input}: {input: {previewSearchParam: string | null}}) => {
-      const {origin} = location
-      /**
-       * If the previewUrlOption is a function, we need to resolve it and maintain backwards compatibility
-       */
-      if (typeof previewUrlOption === 'function') {
-        const initial = await previewUrlOption({
-          client,
-          studioBasePath,
-          // @TODO handle checking permissions here, and then generating a secret
-          previewUrlSecret: '',
-          studioPreviewPerspective: encodeStudioPerspective(perspective),
-          studioPreviewVariant: variant,
-          previewSearchParam: input.previewSearchParam,
-        })
-        return new URL(initial, origin)
-      }
+  return fromPromise<URL, {previewSearchParam: string | null}>(async () => {
+    const {origin} = location
 
-      /**
-       * Provide backwards compatibility for versions where `previewUrl` where optional
-       */
-      if (!previewUrlOption) {
-        return new URL('/', origin)
-      }
-      /**
-       * Support setting `previewUrl` as a string shorthand
-       */
-      if (typeof previewUrlOption === 'string') {
-        return new URL(previewUrlOption, origin)
-      }
+    /**
+     * Provide backwards compatibility for versions where `previewUrl` where optional
+     */
+    if (!previewUrlOption) {
+      return new URL('/', origin)
+    }
+    /**
+     * Support setting `previewUrl` as a string shorthand
+     */
+    if (typeof previewUrlOption === 'string') {
+      return new URL(previewUrlOption, origin)
+    }
 
-      if (typeof previewUrlOption.initial === 'function') {
-        const initial = await previewUrlOption.initial({
-          client,
-          origin,
-        })
-        return new URL(initial, origin)
-      }
+    if (typeof previewUrlOption.initial === 'function') {
+      const initial = await previewUrlOption.initial({
+        client,
+        origin,
+      })
+      return new URL(initial, origin)
+    }
 
-      if (typeof previewUrlOption.initial === 'string') {
-        return new URL(previewUrlOption.initial, origin)
-      }
+    if (typeof previewUrlOption.initial === 'string') {
+      return new URL(previewUrlOption.initial, origin)
+    }
 
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      return new URL(previewUrlOption.preview || '/', previewUrlOption.origin || origin)
-    },
-  )
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    return new URL(previewUrlOption.preview || '/', previewUrlOption.origin || origin)
+  })
 }

@@ -40,7 +40,6 @@ export function defineResolvePreviewModeActor({
     if (
       !previewUrlOption ||
       typeof previewUrlOption === 'string' ||
-      typeof previewUrlOption === 'function' ||
       !previewUrlOption.previewMode
     ) {
       return false

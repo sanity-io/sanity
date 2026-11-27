@@ -9,7 +9,6 @@ import {defineResolveInitialUrlActor} from '../../actors/resolve-initial-url'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
 import {defineResolvePreviewModeUrlActor} from '../../actors/resolve-preview-mode-url'
 import {
-  type DeprecatedPreviewUrlResolver,
   type PreviewUrlAllowOption,
   type PreviewUrlAllowOptionContext,
   type PreviewUrlInitialOptionContext,
@@ -50,7 +49,6 @@ const createFakeClient = () => {
   return client as unknown as SanityClient
 }
 const client = createFakeClient()
-const studioBasePath = '/'
 const expiresAt = new Date(Date.now() + 1000 * 60 * 60)
 const mockActors = ({
   allowOption = undefined,
@@ -67,24 +65,12 @@ const mockActors = ({
     client,
     allowOption,
   }),
-  'resolve initial url': defineResolveInitialUrlActor({
-    client,
-    studioBasePath,
-    previewUrlOption,
-    perspective: 'drafts',
-    variant,
-  }),
+  'resolve initial url': defineResolveInitialUrlActor({client, previewUrlOption}),
   'resolve preview mode': defineResolvePreviewModeActor({
     client,
     previewUrlOption,
   }),
-  'resolve preview mode url': defineResolvePreviewModeUrlActor({
-    client,
-    studioBasePath,
-    previewUrlOption,
-    perspective: 'drafts',
-    variant,
-  }),
+  'resolve preview mode url': defineResolvePreviewModeUrlActor({perspective: 'drafts', variant}),
   'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(() =>
     of({granted: true, reason: 'Matching grant'}),
   ),
@@ -218,15 +204,6 @@ describe('Preview URL machine', () => {
         },
         'http://localhost:3000/preview',
       ],
-      [
-        (async ({studioPreviewPerspective}) => {
-          const url = new URL('https://example.com')
-          url.searchParams.set('sanity-preview-perspective', studioPreviewPerspective)
-          return url.toString()
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        }) as DeprecatedPreviewUrlResolver,
-        'https://example.com/?sanity-preview-perspective=drafts',
-      ],
       [{origin: 'https://example.com'}, 'https://example.com/'],
       [{preview: '/preview'}, 'http://localhost:3000/preview'],
       [{origin: 'https://example.com', preview: '/preview'}, 'https://example.com/preview'],
@@ -235,13 +212,7 @@ describe('Preview URL machine', () => {
         previewUrlMachine.provide({
           actors: {
             ...mockActors(),
-            'resolve initial url': defineResolveInitialUrlActor({
-              client,
-              studioBasePath,
-              previewUrlOption: previewUrlOption,
-              perspective: 'drafts',
-              variant: undefined,
-            }),
+            'resolve initial url': defineResolveInitialUrlActor({client, previewUrlOption}),
           },
         }),
         {input: {previewSearchParam: null}},
@@ -250,36 +221,6 @@ describe('Preview URL machine', () => {
       const snapshot = await waitFor(actor, (state) => state.context.initialUrl !== null)
       expect(snapshot.context.initialUrl).toBeInstanceOf(URL)
       expect(snapshot.context.initialUrl!.toString()).toBe(expected)
-    })
-
-    test('passes the selected variant to legacy preview url resolvers', async () => {
-      const actor = createActor(
-        previewUrlMachine.provide({
-          actors: {
-            ...mockActors(),
-            'resolve initial url': defineResolveInitialUrlActor({
-              client,
-              studioBasePath,
-              previewUrlOption: (async ({studioPreviewVariant}) => {
-                const url = new URL('https://example.com')
-                if (studioPreviewVariant) {
-                  url.searchParams.set('sanity-preview-variant', studioPreviewVariant)
-                }
-                return url.toString()
-                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-              }) as DeprecatedPreviewUrlResolver,
-              perspective: 'drafts',
-              variant: 'Ab12cd34',
-            }),
-          },
-        }),
-        {input: {previewSearchParam: null}},
-      ).start()
-
-      const snapshot = await waitFor(actor, (state) => state.context.initialUrl !== null)
-      expect(snapshot.context.initialUrl!.toString()).toBe(
-        'https://example.com/?sanity-preview-variant=Ab12cd34',
-      )
     })
   })
 
@@ -537,72 +478,6 @@ describe('Preview URL machine', () => {
       snapshot = await waitFor(actor, (state) => state.hasTag('error'))
       expect(snapshot.context.error).not.toBeNull()
     })
-  })
-
-  test('handles legacy preview url resolver', async () => {
-    const actor = createActor(
-      previewUrlMachine.provide({
-        actors: mockActors({
-          previewUrlOption: async ({studioPreviewPerspective, previewSearchParam}) => {
-            const url = new URL('/api/preview', location.origin)
-            url.searchParams.set('perspective', studioPreviewPerspective)
-            url.searchParams.set('redirectTo', previewSearchParam ?? '')
-            return url.toString()
-          },
-        }),
-      }),
-      {input: {previewSearchParam: 'https://example.com'}},
-    ).start()
-
-    const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
-    expect(snapshot.context.previewUrl?.toString()).toBe(
-      `http://localhost:3000/api/preview?${new URLSearchParams({perspective: 'drafts', redirectTo: 'https://example.com'})}`,
-    )
-  })
-
-  /**
-   * These two tests are skipped as we're looking to remove the legacy preview url resolver,
-   * unless there's a good reason to keep it.
-   */
-  test.skip('handles legacy preview url resolver with allowOption', async () => {
-    const actor = createActor(
-      previewUrlMachine.provide({
-        actors: mockActors({
-          allowOption: ['http://localhost:*', 'https://example.com'],
-          previewUrlOption: async ({studioPreviewPerspective, previewSearchParam}) => {
-            const url = new URL('/api/preview', location.origin)
-            url.searchParams.set('perspective', studioPreviewPerspective)
-            url.searchParams.set('redirectTo', previewSearchParam ?? '')
-            return url.toString()
-          },
-        }),
-      }),
-      {input: {previewSearchParam: 'https://example.com'}},
-    ).start()
-
-    const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
-    expect(snapshot.context.previewUrl?.toString()).toBe(
-      `http://localhost:3000/api/preview?${new URLSearchParams({perspective: 'drafts', redirectTo: 'https://example.com'})}`,
-    )
-  })
-  test.skip('handles legacy preview url resolver with previewUrlSecret', async () => {
-    const actor = createActor(
-      previewUrlMachine.provide({
-        actors: mockActors({
-          previewUrlOption: async ({previewUrlSecret}) => {
-            const url = new URL('/api/preview', location.origin)
-            url.searchParams.set('secret', previewUrlSecret)
-            return url.toString()
-          },
-        }),
-      }),
-      {input: {previewSearchParam: null}},
-    ).start()
-
-    const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
-    const secret = snapshot.context.previewUrl?.searchParams.get('secret')
-    expect(typeof secret).toBe('string')
-    expect(secret).not.toBe('')
   })
 
   test('handles changing the preview search param origin', async () => {

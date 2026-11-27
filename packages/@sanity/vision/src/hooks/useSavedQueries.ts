@@ -1,5 +1,4 @@
 import {type ListenOptions} from '@sanity/client'
-import {uuid} from '@sanity/uuid' // Import the UUID library
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser} from 'sanity'
 import {useStudioPreferenceList} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
@@ -39,44 +38,34 @@ interface SharedQueryDocument {
   url: string
 }
 
-export function useSavedQueries(
-  options: {
-    /** Called with the key of a personal query a save is about to write, before the list shows it */
-    onCreatePersonalQuery?: (key: string) => void
-  } = {},
-): {
+/**
+ * The shared queries, which tabs are shared as, and the personal queries saved in the classic
+ * tool, which open as tabs once. Nothing writes to the personal queries.
+ */
+export function useSavedQueries(): {
   queries: QueryConfig[]
   /** Whether the shared queries have been fetched, so one missing from the list is not shared */
   sharedQueriesLoaded: boolean
-  /** Resolves with the key of the saved query (the document id of a shared one) */
-  saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<string>
-  updateQuery: (query: QueryConfig) => Promise<void>
-  deleteQuery: (key: string) => Promise<void>
+  /** Creates a shared query, and resolves with its document id */
+  shareQuery: (query: Pick<QueryConfig, 'url' | 'title' | 'savedAt'>) => Promise<string>
+  /** Replaces what a shared query the current user authored holds */
+  updateSharedQuery: (query: QueryConfig) => Promise<void>
   /** Deletes a shared query the current user authored; rejects when that fails */
   unshareQuery: (key: string) => Promise<void>
   saving: boolean
-  deleting: string[]
-  saveQueryError: Error | undefined
-  deleteQueryError: Error | undefined
   error: Error | undefined
 } {
-  const {onCreatePersonalQuery} = options
-  const {
-    items: personalItems,
-    error: personalError,
-    set: setPersonalQuery,
-  } = useStudioPreferenceList('studio.vision-tool.saved-queries')
+  const {items: personalItems, error: personalError} = useStudioPreferenceList(
+    'studio.vision-tool.saved-queries',
+  )
   const workspaceClient = useClient({apiVersion: DEFAULT_API_VERSION})
   const currentUser = useCurrentUser()
 
   const [sharedQueries, setSharedQueries] = useState<QueryConfig[]>([])
   const [sharedQueriesLoaded, setSharedQueriesLoaded] = useState(false)
-  // Saves and updates may overlap, so `saving` is derived from how many are in flight rather
+  // Shares and updates may overlap, so `saving` is derived from how many are in flight rather
   // than cleared by whichever one settles first
   const [pendingSaves, setPendingSaves] = useState(0)
-  const [deleting, setDeleting] = useState<string[]>([])
-  const [saveQueryError, setSaveQueryError] = useState<Error | undefined>()
-  const [deleteQueryError, setDeleteQueryError] = useState<Error | undefined>()
   const [error, setError] = useState<Error | undefined>()
 
   const personalQueries: QueryConfig[] = useMemo(
@@ -157,87 +146,56 @@ export function useSavedQueries(
     })
   }, [sharedQueries, personalQueries])
 
-  /**
-   * Runs a save or update as one of the saves in flight (`saving` holds until the last of them
-   * has settled) and reports its failure through `saveQueryError` before rejecting with it
-   */
+  /** Runs a share or update as one of the saves in flight, which `saving` holds until all settle */
   const runSave = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
     setPendingSaves((count) => count + 1)
-    setSaveQueryError(undefined)
-    return task()
-      .catch((err: unknown) => {
-        const saveError = err instanceof Error ? err : new Error(String(err))
-        setSaveQueryError(saveError)
-        throw saveError
-      })
-      .finally(() => setPendingSaves((count) => count - 1))
+    return task().finally(() => setPendingSaves((count) => count - 1))
   }, [])
 
-  // Resolves with the key of the saved query (the document id of a shared one)
-  const saveQuery = useCallback(
-    (query: Omit<QueryConfig, '_key'>): Promise<string> =>
+  const shareQuery = useCallback(
+    (query: Pick<QueryConfig, 'url' | 'title' | 'savedAt'>): Promise<string> =>
       runSave(async () => {
-        if (query.shared) {
-          if (!currentUser?.id) {
-            throw new Error('No current user found. Unable to save shared query.')
-          }
-          const createdDoc = (await workspaceClient.create({
-            _type: SHARED_QUERY_DOCUMENT_TYPE,
-            authorId: currentUser.id,
+        if (!currentUser?.id) {
+          throw new Error('No current user found. Unable to save shared query.')
+        }
+        const createdDoc = (await workspaceClient.create({
+          _type: SHARED_QUERY_DOCUMENT_TYPE,
+          authorId: currentUser.id,
+          savedAt: query.savedAt,
+          title: query.title,
+          url: query.url,
+        })) as SharedQueryDocument
+        setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
+        return createdDoc._id
+      }),
+    [currentUser, workspaceClient, mapSharedQueries, runSave],
+  )
+
+  const updateSharedQuery = useCallback(
+    (query: QueryConfig): Promise<void> =>
+      runSave(async () => {
+        if (!query.shared || !currentUser?.id || query.authorId !== currentUser.id) {
+          throw new Error('Only the author can update a shared query.')
+        }
+        const updatedDoc = (await workspaceClient
+          .patch(query._key)
+          .set({
             savedAt: query.savedAt,
             title: query.title,
             url: query.url,
-          })) as SharedQueryDocument
-          setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
-          return createdDoc._id
-        }
+          })
+          .commit()) as SharedQueryDocument
 
-        const newQuery = {...query, _key: uuid()}
-        onCreatePersonalQuery?.(newQuery._key)
-        await setPersonalQuery(newQuery._key, newQuery)
-        return newQuery._key
+        const [updatedSharedQuery] = mapSharedQueries([updatedDoc])
+        setSharedQueries((prev) =>
+          prev.map((existingQuery) =>
+            existingQuery._key === query._key ? updatedSharedQuery : existingQuery,
+          ),
+        )
       }),
-    [
-      currentUser,
-      workspaceClient,
-      mapSharedQueries,
-      onCreatePersonalQuery,
-      runSave,
-      setPersonalQuery,
-    ],
+    [workspaceClient, currentUser, mapSharedQueries, runSave],
   )
 
-  const updateQuery = useCallback(
-    (query: QueryConfig): Promise<void> =>
-      runSave(async () => {
-        if (query.shared) {
-          if (!currentUser?.id || query.authorId !== currentUser.id) {
-            throw new Error('Only the author can update a shared query.')
-          }
-          const updatedDoc = (await workspaceClient
-            .patch(query._key)
-            .set({
-              savedAt: query.savedAt,
-              title: query.title,
-              url: query.url,
-            })
-            .commit()) as SharedQueryDocument
-
-          const [updatedSharedQuery] = mapSharedQueries([updatedDoc])
-          setSharedQueries((prev) =>
-            prev.map((existingQuery) =>
-              existingQuery._key === query._key ? updatedSharedQuery : existingQuery,
-            ),
-          )
-          return
-        }
-
-        await setPersonalQuery(query._key, query)
-      }),
-    [workspaceClient, currentUser, mapSharedQueries, runSave, setPersonalQuery],
-  )
-
-  // Rejects when the document could not be deleted; `deleteQuery` turns that into state
   const unshareQuery = useCallback(
     async (key: string) => {
       const sharedQuery = sharedQueries.find((query) => query._key === key && query.shared)
@@ -253,40 +211,13 @@ export function useSavedQueries(
     [currentUser, sharedQueries, workspaceClient],
   )
 
-  const deletePersonalQuery = useCallback(
-    (key: string) => setPersonalQuery(key, undefined),
-    [setPersonalQuery],
-  )
-
-  const deleteQuery = useCallback(
-    async (key: string) => {
-      setDeleting((prev) => [...prev, key])
-      setDeleteQueryError(undefined)
-      try {
-        if (sharedQueries.some((query) => query._key === key && query.shared)) {
-          await unshareQuery(key)
-        } else {
-          await deletePersonalQuery(key)
-        }
-      } catch (err) {
-        setDeleteQueryError(err instanceof Error ? err : new Error(String(err)))
-      }
-      setDeleting((prev) => prev.filter((k) => k !== key))
-    },
-    [deletePersonalQuery, unshareQuery, sharedQueries],
-  )
-
   return {
     queries,
     sharedQueriesLoaded,
-    saveQuery,
-    updateQuery,
-    deleteQuery,
+    shareQuery,
+    updateSharedQuery,
     unshareQuery,
     saving: pendingSaves > 0,
-    deleting,
-    saveQueryError,
-    deleteQueryError,
     error: error ?? (personalError instanceof Error ? personalError : undefined),
   }
 }

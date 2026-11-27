@@ -10,7 +10,11 @@ import {defineLocalesResources} from 'sanity/_dangerously_use_private_internals_
 const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
-  /** Label for deleting a query */
+  /**
+   * Label for deleting a query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.delete': 'Delete',
   /**
    * Label for editing a query's title
@@ -186,7 +190,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   'result.timing-not-applicable': 'n/a',
 
-  /** Query already saved error label */
+  /**
+   * Query already saved error label
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'save-query.already-saved': 'Query already saved',
   /** Save error label */
   'save-query.error': 'Error saving query',
@@ -205,7 +213,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'save-query.shared-success': 'Shared query saved',
-  /** Save success label */
+  /**
+   * Save success label
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'save-query.success': 'Query saved',
   /**
    * Save unshared query success label
@@ -284,6 +296,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspectives.title': 'Perspectives',
 
+  /** When a tab in the Restore tabs drawer was closed; `date` is the date and time */
+  'vision.closed-tabs.closed-at': 'Closed {{date}}',
+  /** Menu item deleting a tab from the Restore tabs drawer for good */
+  'vision.closed-tabs.delete': 'Delete permanently',
+  /** Empty state of the Restore tabs drawer */
+  'vision.closed-tabs.empty': 'No closed tabs. Tabs you close are kept here for 30 days.',
+  /** Menu item reopening a tab from the Restore tabs drawer */
+  'vision.closed-tabs.restore': 'Restore tab',
   /** Copy button of a pane header, for a moment after it copied */
   'vision.copied': 'Copied',
   /** Label of the document after the change in the Delta panel */
@@ -1163,8 +1183,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.query.format': 'Format query',
   /** Toast shown when the query could not be reformatted */
   'vision.query.prettify.failed': 'Could not format the query',
-  /** Menu item saving the query to the personal saved queries */
-  'vision.query.save': 'Save query',
   /** The Fetch button while a fetch is running, stopping it; paired with Stop live */
   'vision.query.stop': 'Stop',
   /** Tooltip and accessible label of the Stop button, which stops the running fetch only */
@@ -1307,29 +1325,25 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.view.label': 'Result view',
   /** View showing the result as a tree to browse */
   'vision.result.view.tree': 'Tree',
-  /** Empty state of the saved queries panel */
-  'vision.saved.empty': 'No saved queries yet. Save the current query with the + button.',
-  /** Empty state of a query list when the search matches nothing */
-  'vision.saved.empty-search': 'No queries match your search',
-  /** Menu item loading a saved query into the active tab */
+  /** Empty state of the Shared tabs and Restore tabs drawers when the search matches nothing */
+  'vision.saved.empty-search': 'No tabs match your search',
+  /** Menu item loading a shared tab into the active tab */
   'vision.saved.load-in-current-tab': 'Load into current tab',
-  /** Menu item opening a saved query in a new tab */
+  /** Menu item opening a shared tab in a new tab */
   'vision.saved.open-in-new-tab': 'Open in new tab',
   /** Toast shown when saved queries were opened as tabs, which happens once in each browser */
   'vision.saved.opened-as-tabs': 'Saved queries opened as tabs: {{count}}',
-  /** Menu item renaming a saved query */
+  /** Menu item renaming a shared tab */
   'vision.saved.rename': 'Rename',
-  /** Accessible label for the button saving the current query */
-  'vision.saved.save-current': 'Save current query',
-  /** Toast shown when an opened saved query used a content variant the tab does not send */
+  /** Toast shown when an opened shared tab used a content variant the tab does not send */
   'vision.saved.unavailable-variant':
-    'This saved query used the "{{variant}}" variant; select it in the navbar to run the query with it.',
-  /** Toast shown when an opened saved query names a dataset that is not available here */
+    'This shared tab used the "{{variant}}" variant; select it in the navbar to run the query with it.',
+  /** Toast shown when an opened shared tab names a dataset that is not available here */
   'vision.saved.unknown-dataset':
-    'The dataset "{{dataset}}" of this saved query is not available here, keeping the current one.',
-  /** Toast shown when an opened saved query used a content variant, but this workspace has variants switched off */
+    'The dataset "{{dataset}}" of this shared tab is not available here, keeping the current one.',
+  /** Toast shown when an opened shared tab used a content variant, but this workspace has variants switched off */
   'vision.saved.variants-disabled':
-    'This saved query used the "{{variant}}" variant; this workspace has variants switched off, so the query runs without it.',
+    'This shared tab used the "{{variant}}" variant; this workspace has variants switched off, so the query runs without it.',
   /** Explains the settings that switch Vision's AI features off */
   'vision.settings.ai.description':
     "These features write with Sanity Agent Actions and use your organization's AI credits. Switch off the ones you do not want; the choice is saved in this browser.",
@@ -1366,7 +1380,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.clear-storage.confirm': 'Yes, clear storage',
   /** Explanation of what clearing the storage does */
   'vision.settings.clear-storage.description':
-    'Deletes the functions library and resets the open tabs and these defaults in this browser. Saved and shared queries are kept.',
+    'Deletes the functions library and the closed tabs, and resets the open tabs and these defaults in this browser. Shared tabs are kept.',
   /** Toast shown after the storage was cleared */
   'vision.settings.clear-storage.success': 'Storage cleared',
   /** Explanation at the top of the settings dialog */
@@ -1445,10 +1459,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.sidebar.collapse': 'Collapse sidebar',
   /** Sidebar toggle: show labels next to the icons */
   'vision.sidebar.expand': 'Expand sidebar',
+  /** Sidebar item and drawer title for the tabs closed in the last 30 days, which can be reopened */
+  'vision.sidebar.closed-tabs': 'Restore tabs',
   /** Accessible label for the sidebar navigation */
   'vision.sidebar.label': 'Vision sidebar',
-  /** Sidebar item and drawer title for personal saved queries */
-  'vision.sidebar.saved-queries': 'Saved queries',
   /** Sidebar item opening the settings dialog */
   'vision.sidebar.settings': 'Settings',
   /** Sidebar item and drawer title for shared tabs, the tabs stored as shared queries */
