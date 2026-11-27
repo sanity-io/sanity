@@ -122,14 +122,10 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
-  // The release's kind is a word in the sentence ("the ASAP release [X]"), and the chip is its name.
-  const releaseType = isAnonymousBundle ? undefined : currentRelease?.metadata?.releaseType
-  const i18nKey =
-    releaseType === 'asap'
-      ? 'banners.release.not-in-release-asap'
-      : releaseType === 'undecided'
-        ? 'banners.release.not-in-release-undecided'
-        : 'banners.release.not-in-release-yet'
+  // One sentence for every release type. A scheduled release is locked, so it drops the "yet".
+  const i18nKey = isScheduledRelease
+    ? 'banners.release.not-in-release-scheduled'
+    : 'banners.release.not-in-release-yet'
 
   if (!variantsEnabled) {
     return (
@@ -186,8 +182,9 @@ export function DocumentNotInReleaseBanner({
             componentProps={{
               currentRelease,
               fallbackTitle: tCore('release.placeholder-untitled-release'),
-              // The kind before the chip: a bundle with no release document is a bundle
-              lead: isAnonymousBundle
+              // The kind before the chip, by the same check as the action's label: an agent bundle
+              // is a bundle; anything else, including a release still loading, is a release
+              lead: isAgentBundleName(currentRelease)
                 ? t('banners.release.lead.bundle')
                 : t('banners.release.lead.release'),
             }}
