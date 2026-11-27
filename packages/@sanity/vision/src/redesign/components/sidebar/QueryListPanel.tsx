@@ -28,7 +28,12 @@ import {type VisionTab} from '../../store/types'
 import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectActiveTab, selectDatasets} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
-import {findSharedQuery, savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
+import {
+  findLinkedSharedQuery,
+  findSharedQuery,
+  savedQueryToTabInit,
+  tabMatchesParsedQuery,
+} from '../../util/savedQueryTab'
 import * as styles from '../redesign.module.css'
 import * as themeStyles from '../themeTokens.module.css'
 import * as sidebarStyles from './sidebar.module.css'
@@ -60,8 +65,8 @@ function isOwnSharedQuery(query: QueryConfig): boolean {
 
 /**
  * The Shared tabs drawer, listing the tabs stored as shared queries, which everyone using the
- * dataset can open. A tab opened or loaded from a shared tab the user shared is linked to it
- * (`VisionTab.sharedId`), as is the tab they shared it from.
+ * dataset can open. A tab opened or loaded from a shared tab is linked to it
+ * (`VisionTab.sharedId`), as is the tab the author shared it from.
  */
 export function QueryListPanel() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -164,14 +169,15 @@ export function QueryListPanel() {
       const existing = findTabShowing(item)
       if (existing) {
         actorRef.send({type: 'tab.select', id: existing.id})
-        // A tab showing a query the user shared, and shared as nothing else, is that shared tab
-        if (own && !findSharedQuery(existing, queries)) {
+        // A tab showing a query the user shared, and shared as nothing else, is that shared tab;
+        // one showing someone else's is linked to it unless it is linked to another one
+        if (own ? !findSharedQuery(existing, queries) : !findLinkedSharedQuery(existing, queries)) {
           actorRef.send({type: 'tab.setSharedId', id: existing.id, sharedId: query._key})
         }
       } else {
         actorRef.send({
           type: 'tab.add',
-          tab: {...savedQueryToTabInit(query, parsed), sharedId: own ? query._key : undefined},
+          tab: {...savedQueryToTabInit(query, parsed), sharedId: query._key},
         })
         warnAboutUnrepresentable(parsed)
       }
@@ -179,7 +185,7 @@ export function QueryListPanel() {
     [actorRef, findTabShowing, queries, telemetry, warnAboutUnrepresentable],
   )
 
-  // Loading a shared tab the user shared makes the tab that shared tab
+  // Loading a shared tab links the tab to it, and makes it that shared tab when the user shared it
   const loadIntoCurrentTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
@@ -187,10 +193,7 @@ export function QueryListPanel() {
       actorRef.send({
         type: 'tab.load',
         id: activeTab.id,
-        tab: {
-          ...savedQueryToTabInit(query, parsed),
-          sharedId: isOwnSharedQuery(query) ? query._key : undefined,
-        },
+        tab: {...savedQueryToTabInit(query, parsed), sharedId: query._key},
       })
       warnAboutUnrepresentable(parsed)
     },

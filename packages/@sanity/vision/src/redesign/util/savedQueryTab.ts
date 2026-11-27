@@ -59,6 +59,16 @@ export function findSharedQuery(tab: VisionTab, queries: QueryConfig[]): QueryCo
   )
 }
 
+/** The shared query a tab is linked to (`VisionTab.sharedId`) while it is still shared, whoever authored it */
+export function findLinkedSharedQuery(
+  tab: VisionTab,
+  queries: QueryConfig[],
+): QueryConfig | undefined {
+  const {sharedId} = tab
+  if (sharedId === undefined) return undefined
+  return queries.find((query) => query._key === sharedId && query.shared)
+}
+
 /** The request a tab would send right now, as far as a saved URL states it (`resolveRequestOptions`) */
 export interface EffectiveRequestOptions {
   dataset: string

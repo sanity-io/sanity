@@ -112,6 +112,22 @@ const sanityMocks = vi.hoisted(() => {
   }
 })
 
+/** The presence store: who else is on each document, and the locations the tool reports */
+const presenceMocks = vi.hoisted(() => ({
+  presence: {} as Record<string, {user: {id: string}; path: []; sessionId: string}[]>,
+  setLocation: vi.fn(),
+}))
+
+/** Another user's session on a document, as the presence store lists it */
+function presentUser(id: string) {
+  return {
+    user: {id},
+    path: [] as [],
+    sessionId: `session-${id}`,
+    lastActiveAt: '2026-01-01T00:00:00Z',
+  }
+}
+
 /** The studio's upsell infrastructure, as the AI credits upsell sees it */
 const upsellMocks = vi.hoisted(() => ({
   /**
@@ -270,6 +286,8 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', a
   const organizationId$ = of('org-1')
   return {
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
+    usePresenceStore: () => ({setLocation: presenceMocks.setLocation}),
+    useDocumentPresence: (documentId: string) => presenceMocks.presence[documentId] ?? [],
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
     UserAvatar: () => null,
     ReleaseAvatarIcon: () => null,
@@ -316,6 +334,16 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1',
   STUDIO_SKIP_TRANSITION_TYPE: 'sanity-studio-skip',
   useSchema: () => undefined,
 }))
+
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2',
+  async (importOriginal) => ({
+    ...(await importOriginal<Record<string, unknown>>()),
+    FieldPresenceInner: ({presence}: {presence: {user: {id: string}}[]}) => (
+      <span>{presence.map((item) => item.user.id).join(',')}</span>
+    ),
+  }),
+)
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,
@@ -924,6 +952,7 @@ describe('VisionRedesign', () => {
     resetAiCredits()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
     sanityMocks.savedQueries = {queries: []}
+    presenceMocks.presence = {}
     sanityMocks.router.state = {}
     sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
     editorMocks.visibleColumns = undefined
@@ -5754,7 +5783,7 @@ describe('VisionRedesign', () => {
     expect(items.map(text)).toEqual([expect.stringContaining('Pages')])
   })
 
-  it('links the tabs opened from shared tabs the user shared, and only those', async () => {
+  it('links the tabs opened from shared tabs, marking only those the user shared', async () => {
     sanityMocks.savedQueries = {
       queries: [
         sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true),
@@ -5770,9 +5799,8 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(getStoredState().tabs).toHaveLength(3))
     expect(getStoredState().tabs.slice(1)).toMatchObject([
       {title: 'Pages', query: '*[_type == "page"]', sharedId: 'shared-pages'},
-      {title: 'Posts', query: '*[_type == "post"]'},
+      {title: 'Posts', query: '*[_type == "post"]', sharedId: 'shared-posts'},
     ])
-    expect(getStoredState().tabs[2].sharedId).toBeUndefined()
     expect(telemetry.log).toHaveBeenCalledWith(
       VisionSharedTabUsed,
       withVisionVersion({action: 'open'}),
@@ -5794,6 +5822,49 @@ describe('VisionRedesign', () => {
       target: {value: 'pa'},
     })
     expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabsSearched, withVisionVersion({}))
+  })
+
+  it('shows who else has a shared tab open next to the Query label, and is present on it', async () => {
+    sanityMocks.savedQueries = {
+      queries: [sharedSavedQuery('shared-posts', 'Posts', '*[_type == "post"]', false)],
+    }
+    presenceMocks.presence = {'shared-posts': [presentUser('user-2'), presentUser('user-3')]}
+    renderRedesign()
+    // The tab the tool opens on is not shared: nobody to show, and nowhere to be present
+    await waitFor(() => expect(screen.getAllByTestId('vision-query-toolbar')).toHaveLength(1))
+    expect(screen.queryByTestId('vision-shared-query-presence')).toBeNull()
+    expect(presenceMocks.setLocation).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
+    const [item] = await screen.findAllByTestId('vision-saved-query')
+    fireEvent.click(within(item).getByTestId('vision-saved-query-open'))
+    const avatars = await screen.findByTestId('vision-shared-query-presence')
+    expect(text(avatars)).toBe('user-2,user-3')
+    expect(presenceMocks.setLocation).toHaveBeenLastCalledWith([
+      expect.objectContaining({type: 'document', documentId: 'shared-posts', path: []}),
+    ])
+
+    // Back on the tab that is not shared, the user leaves the shared query
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    await waitFor(() => expect(presenceMocks.setLocation).toHaveBeenLastCalledWith([]))
+  })
+
+  it('shows nobody while the user is alone on a shared tab, and leaves it once unshared', async () => {
+    sanityMocks.savedQueries = {
+      queries: [sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true)],
+    }
+    storeTabSharedAs('shared-pages', 'Pages', '*[_type == "page"]')
+    renderRedesign()
+    await waitFor(() =>
+      expect(presenceMocks.setLocation).toHaveBeenLastCalledWith([
+        expect.objectContaining({documentId: 'shared-pages'}),
+      ]),
+    )
+    expect(screen.queryByTestId('vision-shared-query-presence')).toBeNull()
+
+    const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    fireEvent.click(within(menu).getByTestId('vision-unshare-tab'))
+    await waitFor(() => expect(presenceMocks.setLocation).toHaveBeenLastCalledWith([]))
   })
 
   it('unshares a shared tab from the drawer, keeping its query open in a tab', async () => {
@@ -6447,6 +6518,7 @@ describe('VisionRedesign adoption telemetry', () => {
     resetAiCredits()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
     sanityMocks.savedQueries = {queries: []}
+    presenceMocks.presence = {}
     sanityMocks.router.state = {}
     sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
     editorMocks.visibleColumns = undefined
