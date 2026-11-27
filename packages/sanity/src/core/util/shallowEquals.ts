@@ -27,7 +27,12 @@ export function shallowEquals<T>(a: T, b: T): boolean {
   let countB = 0
   for (const key in recordA) {
     if (Object.prototype.hasOwnProperty.call(recordA, key)) {
-      if (recordA[key] !== recordB[key]) return false
+      // A key that is missing on `b` reads as `undefined` there, which would pass the value
+      // comparison for an `undefined`-valued key on `a` and let equal key counts hide a swap
+      // of one key for another.
+      if (!Object.prototype.hasOwnProperty.call(recordB, key) || recordA[key] !== recordB[key]) {
+        return false
+      }
       countA++
     }
   }
