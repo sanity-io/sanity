@@ -10,6 +10,8 @@ import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
  */
 export type DocumentGroupInventoryLocation = 'document_inspector' | 'compare_versions_menu'
 
+type InventoryVersionBundle = 'published' | 'drafts' | 'release' | 'agent'
+
 interface DocumentGroupInventoryVersionSelectedInfo {
   location: DocumentGroupInventoryLocation
   bundle: InventoryVersionBundle
@@ -17,17 +19,13 @@ interface DocumentGroupInventoryVersionSelectedInfo {
   isVariant: boolean
 }
 
-interface DocumentGroupInventoryVersionCreatedInfo {
-  /**
-   * `create_variant` is the inventory's Create variant form, the others are actions of a version's
-   * context menu
-   */
-  action: 'create_variant' | 'add_to_release' | 'copy_to_drafts'
-  /** Whether the created version belongs to a content variant */
-  isVariant: boolean
-}
-
-type InventoryVersionBundle = 'published' | 'drafts' | 'release' | 'agent'
+/** When a version's row is picked in the document group inventory */
+export const DocumentGroupInventoryVersionSelected =
+  defineEvent<DocumentGroupInventoryVersionSelectedInfo>({
+    name: 'Document Group Inventory Version Selected',
+    version: 1,
+    description: 'User picked a version of the document in the document group inventory',
+  })
 
 /**
  * Classifies a version by the bundle it lives in. Read from `_system` rather than the id, which
@@ -45,13 +43,15 @@ export function getInventoryVersionTelemetry(
   return {bundle: 'release', isVariant}
 }
 
-/** When a version's row is picked in the document group inventory */
-export const DocumentGroupInventoryVersionSelected =
-  defineEvent<DocumentGroupInventoryVersionSelectedInfo>({
-    name: 'Document Group Inventory Version Selected',
-    version: 1,
-    description: 'User picked a version of the document in the document group inventory',
-  })
+interface DocumentGroupInventoryVersionCreatedInfo {
+  /**
+   * `create_variant` is the inventory's Create variant form, the others are actions of a version's
+   * context menu
+   */
+  action: 'create_variant' | 'add_to_release' | 'copy_to_drafts'
+  /** Whether the created version belongs to a content variant */
+  isVariant: boolean
+}
 
 /** When a version is successfully created from the document group inventory */
 export const DocumentGroupInventoryVersionCreated =
