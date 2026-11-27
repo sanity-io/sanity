@@ -306,6 +306,42 @@ describe('ResizableSplit', () => {
     expect(primaryPane().style.flex).toBe('0 0 700px')
   })
 
+  it('moves the divider to equal halves on a double click, and holds them', () => {
+    const onChange = vi.fn()
+    const onResizeEnd = vi.fn()
+    render(<Harness defaultSize={250} onChange={onChange} onResizeEnd={onResizeEnd} snapToCenter />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+
+    fireEvent.doubleClick(handle)
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+    expect(onChange).toHaveBeenLastCalledWith(400, true)
+    expect(onResizeEnd).toHaveBeenCalledExactlyOnceWith(400, 250)
+    measure(1001, 400)
+    expect(primaryPane().style.flex).toBe('0 0 500px')
+
+    // Already there: nothing moved, so no resize is reported
+    fireEvent.doubleClick(handle)
+    expect(onResizeEnd).toHaveBeenCalledTimes(1)
+  })
+
+  it('ignores a double click without the snap option or while resizing is not allowed', () => {
+    const onChange = vi.fn()
+    render(<Harness defaultSize={250} onChange={onChange} />)
+    measure(801, 400)
+    fireEvent.doubleClick(screen.getByTestId('split-handle'))
+    expect(primaryPane().style.flex).toBe('0 0 250px')
+    cleanup()
+
+    ResizeObserverMock.instances = []
+    render(<Harness allowResize={false} defaultSize={250} onChange={onChange} snapToCenter />)
+    measure(801, 400)
+    fireEvent.doubleClick(screen.getByTestId('split-handle'))
+    expect(primaryPane().style.flex).toBe('0 0 250px')
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
   it('does not snap when equal halves would break a minimum, or without the option', () => {
     render(<Harness defaultSize={300} minSecondarySize={100} minSize={420} snapToCenter />)
     measure(801, 400)

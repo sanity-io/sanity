@@ -1522,6 +1522,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Accessible label of the divider between the result and the response details panel */
   'vision.split.bottom-panel':
     'Resize the response details panel: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
+  /** Accessible label of the divider between the query editor and the params */
+  'vision.split.query-params':
+    'Resize the query and params: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
   /** Accessible label of the divider between the request and response panes */
   'vision.split.request-response':
     'Resize the request and response panes: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
@@ -1546,6 +1549,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.tabs.share-update-success': 'Shared tab updated',
   /** Accessible label of the icon marking a tab the user shared */
   'vision.tabs.shared': 'Shared tab',
+  /** Toast shown when edits to a shared tab could not be saved, so they are undone */
+  'vision.tabs.sync-failed': 'Could not save your edits to the shared tab',
   /** Placeholder of the input renaming a tab */
   'vision.tabs.title-placeholder': 'Tab title',
   /** Menu item that stops sharing a tab: the tab stays open, only for the user who shared it */

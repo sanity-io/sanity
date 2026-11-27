@@ -75,7 +75,6 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
     onToggle,
     onTabDoubleClick,
   } = props
-  const {t} = useTranslation(visionLocaleNamespace)
   const tabElementId = useTabElementId()
   const elementId = (suffix: string) => tabElementId(`${idPrefix}-${suffix}`)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
@@ -142,21 +141,11 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             ))}
           </TabList>
         </Box>
-        <Button
-          aria-controls={collapsed ? undefined : elementId(`${activeTab.id}-panel`)}
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
-          className={motion.toggle}
-          data-testid={`${idPrefix}-panel-toggle`}
-          fontSize={1}
-          icon={
-            <span className={motion.toggleChevron}>
-              <ChevronDownIcon />
-            </span>
-          }
-          mode="bleed"
-          onClick={onToggle}
-          padding={2}
+        <PanelToggle
+          collapsed={collapsed}
+          controls={elementId(`${activeTab.id}-panel`)}
+          onToggle={onToggle}
+          testId={`${idPrefix}-panel-toggle`}
         />
       </Flex>
       {!collapsed && (
@@ -197,6 +186,38 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         </TabPanel>
       )}
     </Flex>
+  )
+}
+
+interface PanelToggleProps {
+  collapsed: boolean
+  /** The id of the body it shows and hides */
+  controls: string
+  onToggle: () => void
+  testId: string
+}
+
+/** The chevron at the end of a collapsible panel's header, which collapses or expands it */
+export function PanelToggle(props: PanelToggleProps) {
+  const {collapsed, controls, onToggle, testId} = props
+  const {t} = useTranslation(visionLocaleNamespace)
+  return (
+    <Button
+      aria-controls={collapsed ? undefined : controls}
+      aria-expanded={!collapsed}
+      aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
+      className={motion.toggle}
+      data-testid={testId}
+      fontSize={1}
+      icon={
+        <span className={motion.toggleChevron}>
+          <ChevronDownIcon />
+        </span>
+      }
+      mode="bleed"
+      onClick={onToggle}
+      padding={2}
+    />
   )
 }
 

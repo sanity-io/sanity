@@ -74,6 +74,8 @@ function queryEditor(selection: EditorSelection): RefObject<VisionCodeMirrorHand
     selectRange: vi.fn(),
     getVisibleColumns: () => undefined,
     reformat: vi.fn(),
+    getContent: () => editor.state.doc.toString(),
+    applyRemoteContent: vi.fn(),
     isEditing: () => false,
   }
   return {current: handle}

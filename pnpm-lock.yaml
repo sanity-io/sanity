@@ -2249,6 +2249,9 @@ importers:
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.17.0(vitest@5.1.1)
+      '@sanity/diff-match-patch':
+        specifier: ^3.2.1
+        version: 3.2.1
       '@sanity/icons':
         specifier: ^5.4.0
         version: 5.4.0(react@19.3.1)
