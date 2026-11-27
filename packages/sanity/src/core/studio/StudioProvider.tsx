@@ -14,6 +14,7 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMa
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
+import {PreloadNavbarData} from './preloadNavbarData'
 import {AuthenticateScreen} from './screens/AuthenticateScreen'
 import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
 import {NotFoundScreen} from './screens/NotFoundScreen'
@@ -67,6 +68,7 @@ export function StudioProvider({
     () => (
       <>
         <PreloadWorkspaceSourceResolver />
+        <PreloadNavbarData />
         <Suspense fallback={<LoadingBlock />}>
           <AuthenticatedStudio importMapUrl={importMapUrl}>{children}</AuthenticatedStudio>
         </Suspense>

@@ -1432,9 +1432,13 @@ revealed. Two consequences for Suspense code:
   it. Tests mock `useUpsellData` with a module-scoped `of(result)`
   (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an observable
   created per render would resubscribe on every commit.
-- The feature requests start when the plugins' providers commit, once the auth state has settled
-  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
-  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+- The feature requests start as soon as the auth state has settled as signed in, not before:
+  nothing probes `/features` or the schedules usage for a visitor who is not logged in or whose
+  credentials the auth probe rejects. `PreloadNavbarData` (`core/studio/preloadNavbarData.tsx`,
+  rendered by `StudioProvider` inside `AuthBoundary`) sends both then, before the authenticated
+  studio, the workspace source and the plugins have loaded, because the navbar's tool menu
+  suspends on them; the providers that publish the promises read the cached answers. A new
+  request the navbar suspends on starts there too. `getFeatures` and
   `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
   both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
 - A default plugin's components never check the workspace flag that enables the plugin:
