@@ -1,7 +1,9 @@
 import {type ButtonTone} from '@sanity/ui'
-import {type ComponentPropsWithRef, type Ref, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentPropsWithRef, type RefAttributes} from 'react'
 import {Text, type TextProps} from 'ui5'
+
+import {textWithTone} from './TextWithTone.css'
 
 /** @internal */
 export type TextWithToneProps = Omit<TextProps<'div'>, 'tone' | 'as'> & {
@@ -10,44 +12,20 @@ export type TextWithToneProps = Omit<TextProps<'div'>, 'tone' | 'as'> & {
 } & Omit<ComponentPropsWithRef<'div'>, keyof TextProps<'div'> | 'tone' | 'as'>
 
 /** @internal */
-const TextWithToneStyle = styled(Text)`
-  &:not([data-muted]) {
-    &[data-tone='default'] {
-      --text-color: var(--card-badge-default-fg-color);
-    }
-    &[data-tone='primary'] {
-      --text-color: var(--card-badge-primary-fg-color);
-    }
-    &[data-tone='positive'] {
-      --text-color: var(--card-badge-positive-fg-color);
-    }
-    &[data-tone='caution'] {
-      --text-color: var(--card-badge-caution-fg-color);
-    }
-    &[data-tone='critical'] {
-      --text-color: var(--card-badge-critical-fg-color);
-    }
-  }
-
-  &[data-dimmed] {
-    opacity: 0.3;
-  }
-`
-
-/** @internal */
 export function TextWithTone(props: TextWithToneProps & RefAttributes<HTMLDivElement>) {
-  const {ref, tone, dimmed, muted, ...rest} = props
+  const {ref, tone, dimmed, muted, className, ...rest} = props
 
   return (
-    <TextWithToneStyle
+    <Text
       data-ui="TextWithTone"
       data-dimmed={dimmed ? '' : undefined}
       data-muted={muted ? '' : undefined}
       data-tone={tone}
       muted={muted}
       ref={ref}
+      className={clsx(textWithTone, className)}
       {...rest}
-      forwardedAs="div"
+      as="div"
       trim={true}
     />
   )
