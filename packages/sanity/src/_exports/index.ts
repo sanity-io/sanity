@@ -2598,7 +2598,7 @@ export type StringSegmentUnchanged = never
  */
 export type StructureNodeIdValidationResult = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const Studio: never
 /**
@@ -2614,11 +2614,11 @@ export declare const StudioAnnouncementsDialog: never
  */
 export type StudioDiagnostics = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const StudioDiagnosticsBridge: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export type StudioDiagnosticsBridgeApi = never
 /**
@@ -2634,7 +2634,7 @@ export type StudioFeedbackDialogProps = never
  */
 export declare const StudioFeedbackProvider: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const StudioLayout: never
 /**
@@ -2654,7 +2654,7 @@ export type StudioManifest = never
  */
 export declare const StudioNavbar: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const StudioProvider: never
 /**
@@ -2710,11 +2710,11 @@ export declare const TemplatePreview: never
  */
 export declare const TextInput: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const TextWithTone: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export type TextWithToneProps = never
 /**
@@ -4538,7 +4538,7 @@ export declare const useScheduledDraftDocument: never
  */
 export declare const useScheduledDraftsEnabled: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const useSchema: never
 /**
