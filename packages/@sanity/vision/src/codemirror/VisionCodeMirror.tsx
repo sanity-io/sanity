@@ -51,8 +51,7 @@ function EditorRoot({
   const {sanity} = useTheme()
   const style: EditorRootStyle = {
     '--vision-editor-font-size': `${EDITOR_FONT_SIZE}px`,
-    // With the line-number gutter's fold column, it makes the space after a line number as wide
-    // as the space before it (`redesignEditorTheme`)
+    // The space between the gutters' divider and the text (`redesignEditorTheme`)
     '--vision-editor-line-padding-left': `${rem(6)}`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-content-border-right-width': `${rem(sanity.space[4])}`,
