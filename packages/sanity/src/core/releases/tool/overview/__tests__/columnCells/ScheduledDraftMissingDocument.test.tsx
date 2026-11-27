@@ -15,6 +15,8 @@ import {type TableRelease} from '../../ReleasesOverview'
 
 const HISTORY_UNAVAILABLE_TOOLTIP =
   'The history of this document is not available anymore due to retention policy, the published document is not affected'
+const HISTORY_UNAVAILABLE_NO_PUBLISHED_TOOLTIP =
+  'The history of this document is not available anymore due to retention policy'
 
 const publishedDocumentTypes = vi.hoisted(() => new Map<string, string>())
 
@@ -169,6 +171,7 @@ describe('scheduled draft rows without a document', () => {
 
   describe('publish date column', () => {
     it('explains in place of the avatar that the history has been removed by retention', async () => {
+      publishedDocumentTypes.set('article-1', 'article')
       mockDocumentsResult({})
 
       await renderMetadataCell(scheduledDraft('published'))
@@ -176,6 +179,19 @@ describe('scheduled draft rows without a document', () => {
       const infoIcon = await screen.findByTestId('scheduled-draft-history-unavailable')
       await userEvent.hover(infoIcon)
       await waitFor(() => expect(screen.getByText(HISTORY_UNAVAILABLE_TOOLTIP)).toBeVisible())
+    })
+
+    it('leaves the published document out of the explanation when there is none', async () => {
+      mockDocumentsResult({})
+
+      await renderMetadataCell(scheduledDraft('archived'))
+
+      const infoIcon = await screen.findByTestId('scheduled-draft-history-unavailable')
+      await userEvent.hover(infoIcon)
+      await waitFor(() =>
+        expect(screen.getByText(HISTORY_UNAVAILABLE_NO_PUBLISHED_TOOLTIP)).toBeVisible(),
+      )
+      expect(screen.queryByText(HISTORY_UNAVAILABLE_TOOLTIP)).toBeNull()
     })
 
     it.each([

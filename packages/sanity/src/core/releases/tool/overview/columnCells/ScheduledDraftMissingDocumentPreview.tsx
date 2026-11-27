@@ -1,25 +1,17 @@
 import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {map} from 'rxjs'
 import {IntentLink} from 'sanity/router'
 import {Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type InjectedTableProps} from '../../components/Table/types'
+import {usePublishedDocumentType} from '../hooks/usePublishedDocumentType'
 import {type ScheduledDraftMissingDocument} from '../hooks/useScheduledDraftRowDocument'
 
-interface PublishedDocumentTypeState {
-  loading: boolean
-  documentType: string | undefined
-}
-
-const LOADING_DOCUMENT_TYPE: PublishedDocumentTypeState = {loading: true, documentType: undefined}
 const PUBLISHED_PERSPECTIVE_STACK: string[] = []
 const PUBLISHED_PERSPECTIVE_SEARCH_PARAMS: [string, string][] = [['perspective', 'published']]
 
@@ -65,15 +57,7 @@ function PublishedDocumentPreviewLink({
 
 function PublishedDocumentPreview({documentId}: {documentId: string}) {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const documentPreviewStore = useDocumentPreviewStore()
-  const documentType$ = useMemo(
-    () =>
-      documentPreviewStore
-        .observeDocumentTypeFromId(documentId)
-        .pipe(map((documentType): PublishedDocumentTypeState => ({loading: false, documentType}))),
-    [documentPreviewStore, documentId],
-  )
-  const {loading, documentType} = useObservable(documentType$, LOADING_DOCUMENT_TYPE)
+  const {loading, documentType} = usePublishedDocumentType(documentId)
 
   if (loading) return <SanityDefaultPreview isPlaceholder layout="default" />
   if (documentType) {
