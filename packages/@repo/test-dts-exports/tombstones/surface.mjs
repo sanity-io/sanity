@@ -375,6 +375,65 @@ export function diffSurfaces({published, workspace, manifest}) {
   return diff
 }
 
+const REPLACEMENT_IMPORT =
+  /((?:`[^`]+`(?:,? (?:and |or )?)?)+(?: hook)?) from (`[^`]+`|the same entry)/g
+
+/**
+ * Replacement imports a tombstone message names: `` `X` from `sanity/entry` ``, a list of
+ * names (`` `X` and `Y` from … ``), or `` `X` from the same entry `` (the entry the message
+ * named last). Imports from other packages (`@sanity/types`) are not checked.
+ *
+ * @param {string} message
+ * @returns {{names: string[], importPath: string | undefined}[]} `importPath` is undefined when
+ *   the message says "the same entry" without having named one
+ */
+export function parseReplacementImports(message) {
+  /** @type {{names: string[], importPath: string | undefined}[]} */
+  const imports = []
+  /** @type {string | undefined} */
+  let lastEntry
+  for (const match of message.matchAll(REPLACEMENT_IMPORT)) {
+    const names = [...match[1].matchAll(/`\{?([^`}]+)\}?`/g)].map((span) => span[1])
+    const importPath = match[2] === 'the same entry' ? lastEntry : match[2].slice(1, -1)
+    if (match[2] !== 'the same entry') {
+      if (importPath !== PACKAGE_NAME && !importPath?.startsWith(`${PACKAGE_NAME}/`)) continue
+      lastEntry = importPath
+    }
+    imports.push({names, importPath})
+  }
+  return imports
+}
+
+/**
+ * Tombstone messages that tell a consumer to import a name from an entry that does not export
+ * it, or from an entry the workspace does not have.
+ *
+ * @param {{workspace: Surface, manifest: Manifest}} input
+ * @returns {{entry: string, name: string, replacement: string, importPath: string | undefined, reason: string}[]}
+ */
+export function findBrokenReplacementImports({workspace, manifest}) {
+  /** @type {ReturnType<typeof findBrokenReplacementImports>} */
+  const broken = []
+  for (const [entry, tombstones] of Object.entries(manifest.tombstones)) {
+    for (const {name, message} of tombstones) {
+      for (const {names, importPath} of parseReplacementImports(message)) {
+        const target = importPath && importPathToEntry(importPath)
+        for (const replacement of names) {
+          const reason = !target
+            ? 'the message says "the same entry" but names no entry before it'
+            : !workspace[target]
+              ? `the workspace has no ${importPath} entry`
+              : workspace[target][replacement]?.tombstone !== false
+                ? `${importPath} does not export ${replacement}`
+                : undefined
+          if (reason) broken.push({entry, name, replacement, importPath, reason})
+        }
+      }
+    }
+  }
+  return broken
+}
+
 const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
