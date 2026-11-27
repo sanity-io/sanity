@@ -9,6 +9,7 @@ import {DEFAULT_API_VERSION} from './apiVersions'
 import {type VisionRedesignProps} from './redesign/components/VisionRedesign'
 import SanityVision from './SanityVision'
 import {type VisionConfig} from './types'
+import {VISION_VERSION} from './version'
 
 const loadedModules = vi.hoisted(() => new Set<string>())
 const telemetry = vi.hoisted(() => ({log: vi.fn()}))
@@ -94,6 +95,9 @@ describe('SanityVision', () => {
     // Leaving the tool and coming back re-runs its effects without remounting it
     rerender(toolElement({}, 'hidden'))
     rerender(toolElement({}, 'visible'))
-    expect(telemetry.log).toHaveBeenCalledExactlyOnceWith(VisionOpened, {ui: 'redesign'})
+    expect(telemetry.log).toHaveBeenCalledExactlyOnceWith(VisionOpened, {
+      ui: 'redesign',
+      visionVersion: VISION_VERSION,
+    })
   })
 })

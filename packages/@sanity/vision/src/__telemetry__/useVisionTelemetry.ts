@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useMemo} from 'react'
 
+import {VISION_VERSION} from '../version'
 import {
   VisionAgentActionInvoked,
   VisionAiUpsellOpened,
@@ -99,49 +100,60 @@ export interface VisionTelemetry {
   deltaLoaded: () => void
 }
 
+function withVisionVersion<Data extends object>(data: Data): Data & {visionVersion: string} {
+  return {...data, visionVersion: VISION_VERSION}
+}
+
 /** Usage events for the Vision tool. See `vision.telemetry.ts`. */
 export function useVisionTelemetry(): VisionTelemetry {
   const telemetry = useTelemetry()
 
   return useMemo(
     (): VisionTelemetry => ({
-      opened: (ui) => telemetry.log(VisionOpened, {ui}),
+      opened: (ui) => telemetry.log(VisionOpened, withVisionVersion({ui})),
       queryRun: (data) => {
-        telemetry.log(VisionQueryRun, data)
-        if (data.hasParams) telemetry.log(VisionParamsUsed, {mode: data.mode})
+        telemetry.log(VisionQueryRun, withVisionVersion(data))
+        if (data.hasParams) telemetry.log(VisionParamsUsed, withVisionVersion({mode: data.mode}))
       },
-      queryCancelled: (mode) => telemetry.log(VisionQueryCancelled, {mode}),
-      datasetChanged: () => telemetry.log(VisionDatasetChanged),
-      perspectiveChanged: () => telemetry.log(VisionPerspectiveChanged),
-      apiVersionChanged: (custom) => telemetry.log(VisionApiVersionChanged, {custom}),
-      copied: (target) => telemetry.log(VisionCopied, {target}),
-      queryUrlPasted: () => telemetry.log(VisionQueryUrlPasted),
-      resultExported: (format) => telemetry.log(VisionResultExported, {format}),
-      documentOpened: (source) => telemetry.log(VisionDocumentOpened, {source}),
-      panelToggled: (panel, open) => telemetry.log(VisionPanelToggled, {panel, open}),
-      tabsChanged: (count, action) => telemetry.log(VisionTabsChanged, {count, action}),
-      tabUsed: (action) => telemetry.log(VisionTabUsed, {action}),
-      sharedTab: (action) => telemetry.log(VisionSharedTabUsed, {action}),
-      sharedTabsSearched: () => telemetry.log(VisionSharedTabsSearched),
-      closedTab: (action) => telemetry.log(VisionClosedTabUsed, {action}),
-      closedTabsSearched: () => telemetry.log(VisionClosedTabsSearched),
-      drawerOpened: (drawer) => telemetry.log(VisionDrawerOpened, {drawer}),
-      dialogOpened: (dialog) => telemetry.log(VisionDialogOpened, {dialog}),
-      panelTabOpened: (tab) => telemetry.log(VisionPanelTabOpened, {tab}),
-      viewChanged: (target, view) => telemetry.log(VisionViewChanged, {target, view}),
-      optionToggled: (option, enabled) => telemetry.log(VisionOptionToggled, {option, enabled}),
-      settingsChanged: (section) => telemetry.log(VisionSettingsChanged, {section}),
-      shortcutUsed: (shortcut) => telemetry.log(VisionShortcutUsed, {shortcut}),
-      queryPrettified: (outcome) => telemetry.log(VisionQueryPrettified, {outcome}),
-      lintUsed: (action) => telemetry.log(VisionLintUsed, {action}),
-      snippetCopied: (snippet) => telemetry.log(VisionSnippetCopied, {snippet}),
-      agentAction: (action) => telemetry.log(VisionAgentActionInvoked, {action}),
-      aiUpsellOpened: () => telemetry.log(VisionAiUpsellOpened),
-      queryPlanShown: () => telemetry.log(VisionQueryPlanShown),
-      historyUsed: (action) => telemetry.log(VisionHistoryUsed, {action}),
-      functionUsed: (action) => telemetry.log(VisionFunctionUsed, {action}),
-      mutateUsed: (action) => telemetry.log(VisionMutateUsed, {action}),
-      deltaLoaded: () => telemetry.log(VisionDeltaLoaded),
+      queryCancelled: (mode) => telemetry.log(VisionQueryCancelled, withVisionVersion({mode})),
+      datasetChanged: () => telemetry.log(VisionDatasetChanged, withVisionVersion({})),
+      perspectiveChanged: () => telemetry.log(VisionPerspectiveChanged, withVisionVersion({})),
+      apiVersionChanged: (custom) =>
+        telemetry.log(VisionApiVersionChanged, withVisionVersion({custom})),
+      copied: (target) => telemetry.log(VisionCopied, withVisionVersion({target})),
+      queryUrlPasted: () => telemetry.log(VisionQueryUrlPasted, withVisionVersion({})),
+      resultExported: (format) => telemetry.log(VisionResultExported, withVisionVersion({format})),
+      documentOpened: (source) => telemetry.log(VisionDocumentOpened, withVisionVersion({source})),
+      panelToggled: (panel, open) =>
+        telemetry.log(VisionPanelToggled, withVisionVersion({panel, open})),
+      tabsChanged: (count, action) =>
+        telemetry.log(VisionTabsChanged, withVisionVersion({count, action})),
+      tabUsed: (action) => telemetry.log(VisionTabUsed, withVisionVersion({action})),
+      sharedTab: (action) => telemetry.log(VisionSharedTabUsed, withVisionVersion({action})),
+      sharedTabsSearched: () => telemetry.log(VisionSharedTabsSearched, withVisionVersion({})),
+      closedTab: (action) => telemetry.log(VisionClosedTabUsed, withVisionVersion({action})),
+      closedTabsSearched: () => telemetry.log(VisionClosedTabsSearched, withVisionVersion({})),
+      drawerOpened: (drawer) => telemetry.log(VisionDrawerOpened, withVisionVersion({drawer})),
+      dialogOpened: (dialog) => telemetry.log(VisionDialogOpened, withVisionVersion({dialog})),
+      panelTabOpened: (tab) => telemetry.log(VisionPanelTabOpened, withVisionVersion({tab})),
+      viewChanged: (target, view) =>
+        telemetry.log(VisionViewChanged, withVisionVersion({target, view})),
+      optionToggled: (option, enabled) =>
+        telemetry.log(VisionOptionToggled, withVisionVersion({option, enabled})),
+      settingsChanged: (section) =>
+        telemetry.log(VisionSettingsChanged, withVisionVersion({section})),
+      shortcutUsed: (shortcut) => telemetry.log(VisionShortcutUsed, withVisionVersion({shortcut})),
+      queryPrettified: (outcome) =>
+        telemetry.log(VisionQueryPrettified, withVisionVersion({outcome})),
+      lintUsed: (action) => telemetry.log(VisionLintUsed, withVisionVersion({action})),
+      snippetCopied: (snippet) => telemetry.log(VisionSnippetCopied, withVisionVersion({snippet})),
+      agentAction: (action) => telemetry.log(VisionAgentActionInvoked, withVisionVersion({action})),
+      aiUpsellOpened: () => telemetry.log(VisionAiUpsellOpened, withVisionVersion({})),
+      queryPlanShown: () => telemetry.log(VisionQueryPlanShown, withVisionVersion({})),
+      historyUsed: (action) => telemetry.log(VisionHistoryUsed, withVisionVersion({action})),
+      functionUsed: (action) => telemetry.log(VisionFunctionUsed, withVisionVersion({action})),
+      mutateUsed: (action) => telemetry.log(VisionMutateUsed, withVisionVersion({action})),
+      deltaLoaded: () => telemetry.log(VisionDeltaLoaded, withVisionVersion({})),
     }),
     [telemetry],
   )
