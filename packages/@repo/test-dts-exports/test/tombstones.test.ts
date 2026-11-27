@@ -11,7 +11,9 @@ import {
   diffSurfaces,
   entryImportPath,
   fetchPublishedPackage,
+  findBrokenReplacementImports,
   formatSurfaceDiff,
+  parseReplacementImports,
   readManifest,
   readSurface,
   type Surface,
@@ -93,6 +95,17 @@ describe('export tombstones', () => {
       expect(leaked, 'Tombstones must be type-only and never emit JavaScript.').toEqual([])
     })
   }
+
+  it('every replacement import a message names is exported by the entry it names', () => {
+    expect(
+      findBrokenReplacementImports({workspace, manifest}).map(
+        ({entry, name, replacement, reason}) =>
+          `${name} in ${entryImportPath(entry)}: ${replacement}: ${reason}`,
+      ),
+      'Point the message at an entry that exports the name and run ' +
+        '`node packages/sanity/src/_exports/tombstones/generate.mjs`.',
+    ).toEqual([])
+  })
 
   // Downloads and walks the published package's .d.ts, which takes longer than the default 5s.
   it(
@@ -224,5 +237,70 @@ describe('diffSurfaces', () => {
     expect(formatSurfaceDiff(diff, '1.0.0')).toMatch(
       /- moved in sanity points at sanity\/old-home, but it is exported from sanity\/new-home\. Suggested: "Moved to `sanity\/new-home`\./,
     )
+  })
+})
+
+describe('findBrokenReplacementImports', () => {
+  const real = {kind: 'value', tombstone: false, deprecated: undefined} as const
+  const tombstone = {kind: 'value', tombstone: true, deprecated: 'Removed.'} as const
+  const workspace: Surface = {
+    '.': {gone: tombstone, useIt: real},
+    './internals': {useIt: real, useItLegacy: real},
+    './internals/2': {useIt: real, useItLegacy: real, lazyOnly: real},
+  }
+
+  it('parses names, lists, hooks and "the same entry"', () => {
+    expect(
+      parseReplacementImports(
+        'Use `a` and `b` from `sanity/x`. Or the `c` hook from `sanity/y`, then `{d}` from the same entry. Not `e` from `@sanity/types`.',
+      ),
+    ).toEqual([
+      {names: ['a', 'b'], importPath: 'sanity/x'},
+      {names: ['c'], importPath: 'sanity/y'},
+      {names: ['d'], importPath: 'sanity/y'},
+    ])
+  })
+
+  it('reports a name its entry does not export, including through "the same entry"', () => {
+    const message =
+      'Removed. Use `lazyOnly` from `sanity/internals` or `useIt` from `sanity/internals`, and `useItLegacy` from the same entry.'
+    expect(
+      findBrokenReplacementImports({
+        workspace,
+        manifest: {removedEntries: [], tombstones: {'.': [{name: 'gone', kind: 'value', message}]}},
+      }),
+    ).toEqual([
+      {
+        entry: '.',
+        name: 'gone',
+        replacement: 'lazyOnly',
+        importPath: 'sanity/internals',
+        reason: 'sanity/internals does not export lazyOnly',
+      },
+    ])
+  })
+
+  it('reports names that the entry only tombstones, and entries the workspace lacks', () => {
+    const message = 'Use `gone` from `sanity`, or `useIt` from `sanity/missing`.'
+    expect(
+      findBrokenReplacementImports({
+        workspace,
+        manifest: {removedEntries: [], tombstones: {'.': [{name: 'gone', kind: 'value', message}]}},
+      }).map(({reason}) => reason),
+    ).toEqual(['sanity does not export gone', 'the workspace has no sanity/missing entry'])
+  })
+
+  it('reports "the same entry" without a preceding entry', () => {
+    expect(
+      findBrokenReplacementImports({
+        workspace,
+        manifest: {
+          removedEntries: [],
+          tombstones: {
+            '.': [{name: 'gone', kind: 'value', message: 'Use `useIt` from the same entry.'}],
+          },
+        },
+      }).map(({reason}) => reason),
+    ).toEqual(['the message says "the same entry" but names no entry before it'])
   })
 })

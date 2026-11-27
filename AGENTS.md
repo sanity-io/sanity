@@ -888,6 +888,9 @@ types, of every entry of it and of the workspace build with ts-morph
 - tombstones whose message starts with ``Moved to `<entry>` `` while that entry does not export
   the name, which happens when a name moves again (from the internals entry to one of its
   subpaths, for example).
+- tombstones whose message names a replacement import (`` `X` from `sanity/entry` ``, a list of
+  names, or `` `X` from the same entry ``) where that entry does not export `X`. This check reads
+  only the workspace build and the manifest, so it runs without the npm download.
 
 The same suite checks that every tombstone in the built `.d.ts` is `never` with exactly its
 manifest message, and that no tombstone is a runtime export of its entry's JS. The download is

@@ -440,7 +440,7 @@
       {
         "name": "CommentsEnabledProviderV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from the same entry."
+        "message": "Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from the same entry."
       },
       {
         "name": "CommentsIntentProvider",
@@ -460,7 +460,7 @@
       {
         "name": "CommentsProviderV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsProviderLegacy` from the same entry."
+        "message": "Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsProviderLegacy` from the same entry."
       },
       {
         "name": "CommentsSelectedPath",
@@ -4425,7 +4425,7 @@
       {
         "name": "useCommentsEnabledV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from the same entry."
+        "message": "Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from the same entry."
       },
       {
         "name": "useCommentsMode",
@@ -4435,7 +4435,7 @@
       {
         "name": "useCommentsModeV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from the same entry."
+        "message": "Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from the same entry."
       },
       {
         "name": "useCommentsSelectedPath",
