@@ -6,8 +6,12 @@ import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../../../../ui-components/menuButton/menuOverflow.css'
+import {useFocusSearchOnOpen} from '../../../../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../../../../ui-components/menuButton/useMenuOverflow'
+import {useStableMenuWidth} from '../../../../../../../ui-components/menuButton/useStableMenuWidth'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
-import {documentNavigationMenu} from './DocumentNavigationMenu.css'
+import {documentNavigationMenu, menuSectionLabel} from './DocumentNavigationMenu.css'
 
 /** @internal */
 export interface DocumentNavigationMenuSection {
@@ -45,7 +49,14 @@ function MenuSection(props: {
   const {children, label, testId, tooltip} = props
   return (
     <Flex borderTop data-testid={testId} flexDirection="column" gap={1} paddingTop={1}>
-      <Flex alignItems="center" gap={2} paddingX={3} paddingTop={3} paddingBottom={2}>
+      <Flex
+        alignItems="center"
+        className={menuSectionLabel}
+        gap={2}
+        paddingBottom={2}
+        paddingRight={3}
+        paddingTop={3}
+      >
         <Label muted size={1} style={{textTransform: 'uppercase'}}>
           {label}
         </Label>
@@ -77,6 +88,9 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
     props
   const {t} = useTranslation()
   const menuId = useId()
+  const focusSearchField = useFocusSearchOnOpen()
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
 
   const isFiltering = filterQuery.trim().length > 0
   const visibleSections = sections.filter(
@@ -88,15 +102,25 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
     (event: ChangeEvent<HTMLInputElement>) => onFilterChange(event.currentTarget.value),
     [onFilterChange],
   )
-  const handleClose = useCallback(() => onFilterChange(''), [onFilterChange])
+  const handleClose = useCallback(() => {
+    resetMenuWidth()
+    onFilterChange('')
+  }, [onFilterChange, resetMenuWidth])
 
   return (
     <MenuButton
       button={button}
       id={menuId}
       onClose={handleClose}
+      onOpen={lockMenuWidth}
       menu={
-        <Menu className={documentNavigationMenu} data-testid={testId} padding={1}>
+        <Menu
+          className={documentNavigationMenu}
+          data-testid={testId}
+          padding={1}
+          ref={menuRef}
+          style={menuStyle}
+        >
           <Box flexShrink={0} padding={1}>
             <TextInput
               aria-label={filterPlaceholder}
@@ -104,22 +128,25 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               onChange={handleFilterChange}
               placeholder={filterPlaceholder}
               radius={2}
+              ref={focusSearchField}
               value={filterQuery}
             />
           </Box>
           {hasMatches ? (
             <Flex
+              className={menuOverflowScroller}
               flexDirection="column"
               flexGrow={1}
               flexShrink={1}
               minHeight="0"
               overflowY="auto"
-              paddingX={1}
-              paddingBottom={1}
+              ref={scrollerRef}
             >
               {/* Menu items are flex children with min-height: 0, so they collapse when they sit
-              directly in this scroller. Keep them in a column that sizes to its content. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1}>
+              directly in this scroller. Keep them in a column that sizes to its content. The 4px
+              top, with the search field's 4px, puts the first row 8px below the field. The 4px
+              bottom, with the menu's own 4px, puts the last row 8px above the menu's edge. */}
+              <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={1} paddingY={1}>
                 {leadingItems}
                 {visibleSections.map((section) => (
                   <MenuSection
@@ -134,10 +161,14 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               </Flex>
             </Flex>
           ) : (
-            <Box data-testid={`${testId}-no-matches`} paddingX={4} paddingBottom={3}>
-              <Text muted size={1}>
-                {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
-              </Text>
+            // The two boxes of the navbar menus' `FilterNoMatches`, with paddings that account for
+            // this menu's tighter search field: 8px below the field, as the first row is
+            <Box paddingBottom={2} paddingTop={1} paddingX={2}>
+              <Box data-testid={`${testId}-no-matches`} padding={2}>
+                <Text muted size={1}>
+                  {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
+                </Text>
+              </Box>
             </Box>
           )}
         </Menu>

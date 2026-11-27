@@ -155,7 +155,9 @@ export function DocumentReleasesMenu() {
       button={
         <DropdownButton
           data-testid="document-releases-menu-button"
-          icon={selectedRelease ? <ReleaseAvatarIcon release={selectedRelease} /> : DotIcon}
+          icon={
+            selectedRelease ? <ReleaseAvatarIcon release={selectedRelease} size="small" /> : DotIcon
+          }
           onClear={selectedRelease ? handleClear : undefined}
           tone={selectedRelease ? getReleaseTone(selectedRelease) : undefined}
           text={
@@ -165,25 +167,27 @@ export function DocumentReleasesMenu() {
           }
         />
       }
-      filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+      filterPlaceholder={t('document-panel-navigation.releases.filter-placeholder')}
       filterQuery={filterQuery}
       onFilterChange={setFilterQuery}
       sections={[
         {
           key: 'document',
-          label: t('document-panel-navigation.releases.section.in-releases', {
+          label: t('document-panel-navigation.releases.section.with-document', {
             count: documentReleaseCount,
           }),
+          // Hidden when the document is in no release: the menu then lists "Other releases" only.
           items: documentReleases.map(renderReleaseItem),
-          alwaysShow: true,
-          tooltip:
-            documentReleaseCount === 0
-              ? t('document-panel-navigation.releases.section.no-releases-tooltip')
-              : undefined,
         },
         {
           key: 'other',
-          label: t('document-panel-navigation.releases.section.other'),
+          // Invites the pick: picking a release opens it, where the banner offers to add the
+          // document. "More" once the section above lists releases the document is already in.
+          label: t(
+            documentReleaseCount > 0
+              ? 'document-panel-navigation.releases.section.add-to-more'
+              : 'document-panel-navigation.releases.section.add-to',
+          ),
           items: otherReleases.map(renderReleaseItem),
         },
       ]}

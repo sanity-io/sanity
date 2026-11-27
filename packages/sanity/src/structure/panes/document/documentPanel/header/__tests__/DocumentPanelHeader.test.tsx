@@ -1,5 +1,5 @@
 import {queryHelpers, render, screen} from '@testing-library/react'
-import {type useWorkspace, type WorkspaceOptions} from 'sanity'
+import {type DocumentPresence, type useWorkspace, type WorkspaceOptions} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -42,10 +42,18 @@ vi.mock('../DocumentPanelNavigation/DocumentPanelNavigation', () => ({
  */
 const workspaceBeta = vi.hoisted(() => ({override: undefined as WorkspaceOptions['beta']}))
 
+/** Presence for the document across all of its versions, as the presence store reports it. */
+const documentPresence = vi.hoisted(() => ({current: [] as DocumentPresence[]}))
+
 vi.mock('sanity', async (importOriginal) => {
   const actual = await importOriginal<{useWorkspace: typeof useWorkspace}>()
   return {
     ...actual,
+    useDocumentPresence: () => documentPresence.current,
+    // The avatar stack needs the user colour context; the tests only need who it was handed.
+    FieldPresenceInner: ({presence}: {presence: DocumentPresence[]}) => (
+      <span data-testid="presence-users">{presence.map((item) => item.user.id).join(',')}</span>
+    ),
     useWorkspace: () => {
       const workspace = actual.useWorkspace()
       return workspaceBeta.override ? {...workspace, beta: workspaceBeta.override} : workspace
@@ -65,6 +73,7 @@ let wrapper: React.ComponentType<{children: React.ReactNode}>
 function documentPaneValue(): Partial<DocumentPaneContextValue> {
   return {
     documentId: 'doc-1',
+    value: {_id: 'drafts.doc-1', _type: 'article'},
     connectionState: 'connected',
     editState: null,
     menuItemGroups: [],
@@ -110,6 +119,7 @@ describe('DocumentPanelHeader', () => {
 
   afterEach(() => {
     workspaceBeta.override = undefined
+    documentPresence.current = []
     vi.clearAllMocks()
   })
 
@@ -201,5 +211,44 @@ describe('DocumentPanelHeader', () => {
 
     expect(await screen.findByTestId('document-header-title')).toBeInTheDocument()
     expect(queryToolbars()).toHaveLength(0)
+  })
+
+  describe('presence', () => {
+    function presenceOn(documentId: string, userId: string): DocumentPresence {
+      return {
+        user: {id: userId, displayName: userId},
+        path: [],
+        sessionId: `session-${userId}`,
+        documentId,
+        lastActiveAt: '2026-11-17T10:00:00.000Z',
+      }
+    }
+
+    it('shows the people on the version the pane displays', async () => {
+      documentPresence.current = [
+        presenceOn('drafts.doc-1', 'ada'),
+        presenceOn('versions.rSpring.doc-1', 'linus'),
+      ]
+
+      await mountHeader()
+
+      expect(screen.getByTestId('presence-users').textContent).toBe('ada')
+    })
+
+    it('leaves out the people on other versions of the document', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        ...documentPaneValue(),
+        value: {_id: 'versions.rSpring.doc-1', _type: 'article'},
+      })
+      documentPresence.current = [
+        presenceOn('drafts.doc-1', 'ada'),
+        presenceOn('doc-1', 'grace'),
+        presenceOn('versions.rOther.doc-1', 'linus'),
+      ]
+
+      await mountHeader()
+
+      expect(screen.queryByTestId('document-level-presence')).toBeNull()
+    })
   })
 })

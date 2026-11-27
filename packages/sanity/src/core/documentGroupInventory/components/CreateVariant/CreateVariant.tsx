@@ -126,7 +126,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
       <Header>
         <VStack gap={2}>
           <Text size={1} weight="medium" as="h2">
-            {t('document-group.create-variant')}
+            {t('document-group.create-variant.confirm')}
           </Text>
           <Text size={1} muted>
             <Translate
@@ -175,7 +175,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
             onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
           />
           <Button
-            text={t('document-group.create-variant')}
+            text={t('document-group.create-variant.confirm')}
             loading={isVariantCreationPending}
             disabled={
               typeof variantDefinition === 'undefined' ||

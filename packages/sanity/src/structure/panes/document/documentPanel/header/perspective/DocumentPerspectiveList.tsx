@@ -17,6 +17,7 @@ import {
   useFormatRelativeLocalePublishDate,
   usePerspective,
   useTranslation,
+  useWorkspace,
   VersionChip,
 } from 'sanity'
 import {Text, VStack} from 'ui5'
@@ -94,6 +95,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {loading} = useActiveReleases()
   const {editState, displayed, documentId} = useDocumentPane()
   const {documentType} = useDocumentPaneInfo()
+  const isVariantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const documentGroupId = getPublishedId(documentId)
   const {
     filteredReleases,
@@ -145,7 +147,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           disabled: !editState?.published,
         }}
       />
-      {isDraftModelEnabled && (
+      {/* With Variants on, live edit types have no drafts, so the chip is hidden unless a draft
+      already exists (e.g. the type was switched to live edit later), which keeps that draft
+      reachable. With Variants off the chip shows disabled, as on main. */}
+      {isDraftModelEnabled && (!isVariantsEnabled || !isLiveEdit || editState?.draft) && (
         <VersionChip
           tooltipContent={
             <Text size={1} as="div" trim={true}>
@@ -167,7 +172,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 </>
               ) : (
                 <>
-                  {isLiveEdit
+                  {isLiveEdit && !isVariantsEnabled
                     ? t('release.chip.tooltip.draft-disabled.live-edit')
                     : t('release.chip.tooltip.no-edits')}
                 </>
