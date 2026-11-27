@@ -374,10 +374,17 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
     [focusTab],
   )
 
-  // Keep the active tab whole in the strip when it changes, a new tab included, clear of the new
-  // tab button pinned over the right edge. Layout offsets rather than bounding boxes, so a tab
-  // that is still scaling in or sliding into place measures where it ends up.
+  // Keep the active tab whole in the strip when it changes, a new tab included, and when tabs open
+  // without being shown, as the saved queries do ahead of it, clear of the new tab button pinned
+  // over the right edge. Closing a tab leaves the strip where the user scrolled it. Layout offsets
+  // rather than bounding boxes, so a tab that is still scaling in or sliding into place measures
+  // where it ends up.
+  const tabCount = tabs.length
+  const keptInViewRef = useRef<{activeTabId: string; tabCount: number} | null>(null)
   useLayoutEffect(() => {
+    const previous = keptInViewRef.current
+    keptInViewRef.current = {activeTabId, tabCount}
+    if (previous?.activeTabId === activeTabId && tabCount <= previous.tabCount) return
     const bar = barRef.current
     const item = listRef.current
       ?.querySelector(`#${getQueryTabId(activeTabId)}`)
@@ -388,7 +395,7 @@ export function QueryTabBar({rootElement}: QueryTabBarProps) {
     else if (item.offsetLeft + item.offsetWidth > bar.scrollLeft + visibleWidth) {
       bar.scrollLeft = item.offsetLeft + item.offsetWidth - visibleWidth
     }
-  }, [activeTabId])
+  }, [activeTabId, tabCount])
 
   const reorder = useCallback(
     (ordered: VisionTab[]) =>

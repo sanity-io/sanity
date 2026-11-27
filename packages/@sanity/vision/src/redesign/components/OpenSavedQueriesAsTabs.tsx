@@ -17,7 +17,8 @@ import {savedQueryToTabInit, tabMatchesParsedQuery} from '../util/savedQueryTab'
  * `savedQueries.open`): a reload adds nothing, and a closed one stays closed, listed in the
  * Restore tabs drawer like any closed tab. One a tab already shows is recorded without opening
  * another. The list loads from the server after the tool opens, so whatever arrives later opens
- * then. The tabs open newest first, after the open ones. Shared queries stay in their own drawer.
+ * then. The tabs open newest first, ahead of the open ones, so the tab the tool opened with stays
+ * last. Shared queries stay in their own drawer.
  */
 export function OpenSavedQueriesAsTabs() {
   const {t} = useTranslation(visionLocaleNamespace)
