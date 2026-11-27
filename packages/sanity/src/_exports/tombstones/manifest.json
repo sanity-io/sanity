@@ -1613,6 +1613,11 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
+        "name": "LegacyAuthConfig",
+        "kind": "type",
+        "message": "Removed in v7. Use `AuthConfig` from `sanity`, the type of the workspace `auth` config key; its login provider options (`loginMethod`, `providers`, `redirectOnSingle`, `apiHost`) are unchanged. To narrow to them, use `Exclude<AuthConfig, OAuthAuthConfig>`."
+      },
+      {
         "name": "LegacyCallbackResult",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."

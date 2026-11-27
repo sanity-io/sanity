@@ -915,7 +915,6 @@
     "KeyedObject": "type",
     "KeyedSegment": "type",
     "LayoutProps": "type",
-    "LegacyAuthConfig": "type",
     "ListenQueryOptions": "type",
     "Loadable": "type",
     "LoadableLegacy": "type",

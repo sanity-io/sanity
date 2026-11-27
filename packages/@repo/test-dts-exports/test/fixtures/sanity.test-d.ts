@@ -480,7 +480,6 @@ import type {
   KeyedObject,
   KeyedSegment,
   LayoutProps,
-  LegacyAuthConfig,
   ListenQueryOptions,
   Loadable,
   LoadableLegacy,
@@ -2333,9 +2332,6 @@ describe('sanity', () => {
   })
   test('LayoutProps', () => {
     expectTypeOf<LayoutProps>().toBeObject()
-  })
-  test('LegacyAuthConfig', () => {
-    expectTypeOf<LegacyAuthConfig>().toBeObject()
   })
   test('ListenQueryOptions', () => {
     expectTypeOf<ListenQueryOptions>().toBeObject()

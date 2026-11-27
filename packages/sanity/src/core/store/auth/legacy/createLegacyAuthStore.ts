@@ -37,7 +37,7 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import {type LegacyAuthConfig} from '../../../config/auth/types'
+import {type LoginProvidersAuthConfig} from '../../../config/auth/types'
 import {isStaging} from '../../../environment/isStaging'
 import {type RequestFailureDiagnostics} from '../../../studio/requestErrors/diagnoseRequestFailure'
 import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
@@ -68,7 +68,7 @@ import {type LegacyCallbackResult} from './types'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
 
 /** @internal */
-export interface AuthStoreOptions extends LegacyAuthConfig {
+export interface AuthStoreOptions extends LoginProvidersAuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string

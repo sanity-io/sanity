@@ -73,7 +73,6 @@ export {
   type LoginMethod,
   type OAuthAuthConfig,
   type OAuthConfig,
-  type LegacyAuthConfig,
 } from '../core/config/auth/types'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -1911,6 +1910,10 @@ export declare const LISTENER_PAUSE_GRACE_PERIOD: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export type LatencyReportEvent = never
+/**
+ * @deprecated Removed in v7. Use `AuthConfig` from `sanity`, the type of the workspace `auth` config key; its login provider options (`loginMethod`, `providers`, `redirectOnSingle`, `apiHost`) are unchanged. To narrow to them, use `Exclude<AuthConfig, OAuthAuthConfig>`.
+ */
+export type LegacyAuthConfig = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
