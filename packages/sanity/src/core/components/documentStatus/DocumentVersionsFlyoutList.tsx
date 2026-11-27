@@ -144,8 +144,8 @@ const COLORS = {
    * the panel's own background, so dark takes the next step, gray-900.
    */
   hoverBackground: 'light-dark(var(--gray-50), var(--gray-900))',
-  /** Keyboard focus, on any row: UI 5's focus outline, drawn just outside the row. */
-  focusOutline: 'var(--focus-outline)',
+  /** Keyboard focus, on any row: the 1px focus ring the form fields and buttons draw. */
+  focusOutline: '1px solid var(--card-focus-ring-color)',
 } as const
 
 function FlyoutRow(props: {
@@ -214,8 +214,8 @@ function FlyoutRow(props: {
         backgroundColor,
         color: viewed ? COLORS.viewedTitle : undefined,
         outline: focused ? COLORS.focusOutline : undefined,
-        // Outside the row, on the panel, so it shows on the blue of the open version too
-        outlineOffset: focused ? 2 : undefined,
+        // A 1px gap, like a button's focus ring, so it shows on the blue of the open version too
+        outlineOffset: focused ? 1 : undefined,
       }}
       tabIndex={-1}
       tone="inherit"
