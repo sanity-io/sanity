@@ -32,7 +32,7 @@ function createEditableVariant(): EditableSystemVariant {
 }
 
 describe('createVariantOperationsStore', () => {
-  it('creates a variant definition with the create action', async () => {
+  it('creates a variant definition with the create action, storing the metadata `_type`', async () => {
     const variant = createEditableVariant()
     const client = mockClient()
 
@@ -45,13 +45,13 @@ describe('createVariantOperationsStore', () => {
         variantId: VARIANT_ID,
         conditions: variant.conditions,
         priority: variant.priority,
-        metadata: variant.metadata,
+        metadata: {...variant.metadata, _type: 'sanity.variantMetadata'},
       },
       {tag: 'variants.create'},
     )
   })
 
-  it('updates a variant definition with the edit action', async () => {
+  it('updates a variant definition with the edit action, storing the metadata `_type`', async () => {
     const variant = createEditableVariant()
     const client = mockClient()
 
@@ -66,7 +66,7 @@ describe('createVariantOperationsStore', () => {
         patch: {
           set: {
             conditions: variant.conditions,
-            metadata: variant.metadata,
+            metadata: {...variant.metadata, _type: 'sanity.variantMetadata'},
             priority: variant.priority,
           },
         },

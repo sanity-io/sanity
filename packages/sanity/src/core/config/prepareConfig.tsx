@@ -129,6 +129,7 @@ import {
   type Source,
   type SourceClientOptions,
   type SourceOptions,
+  type VariantMetadataConfig,
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
@@ -551,6 +552,7 @@ export function prepareConfig(
             auth,
             i18n,
             releaseMetadata: defaultPluginsOptions.releases.metadata ?? {},
+            variantMetadata: defaultPluginsOptions.variants.metadata ?? {},
           })
         }),
         shareReplay(1),
@@ -686,6 +688,8 @@ interface ResolveSourceOptions {
   i18n: {i18next: i18n; source: LocaleSource}
   /** Resolved once per workspace, with the default plugins options. */
   releaseMetadata: ReleaseMetadataConfig
+  /** Resolved once per workspace, with the default plugins options. */
+  variantMetadata: VariantMetadataConfig
 }
 
 function resolveSource({
@@ -697,6 +701,7 @@ function resolveSource({
   auth,
   i18n,
   releaseMetadata,
+  variantMetadata,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
   const bifur = createBifurClient(client, auth.token)
@@ -1016,6 +1021,7 @@ function resolveSource({
     variants: {
       enabled: variantsEnabled,
       types: variantsTypesReducer({config, initialValue: undefined}),
+      metadata: variantMetadata,
     },
     documentGroupInventory: {
       // The document group inventory is an inherent part of the variants experience.

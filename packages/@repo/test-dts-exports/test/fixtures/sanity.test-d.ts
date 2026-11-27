@@ -1853,6 +1853,7 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VARIANT_DOCUMENT_TYPE,
   VariantConditionMap,
   VariantConditions,
   VariantConditionsContext,
@@ -7480,6 +7481,9 @@ describe('sanity', () => {
   })
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
+  })
+  test('VARIANT_DOCUMENT_TYPE', () => {
+    expectTypeOf<typeof VARIANT_DOCUMENT_TYPE>().not.toBeNever()
   })
   test('VariantConditionMap', () => {
     expectTypeOf<VariantConditionMap>().toBeObject()

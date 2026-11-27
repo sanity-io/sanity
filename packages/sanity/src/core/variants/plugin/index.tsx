@@ -6,10 +6,14 @@ import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {type ProviderProps} from '../../config/studio/types'
+import {type VariantMetadataConfig} from '../../config/types'
 import {FEATURES, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
 import {type VariantsMode} from '../contexts/mode/types'
 import {VariantsUpsellProvider} from '../contexts/upsell/VariantsUpsellProvider'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
+import {variantSchema} from '../schema/variant'
+import {variantMetadataSchema} from '../schema/variantMetadata'
+import {VARIANT_DOCUMENT_TYPE} from '../store/constants'
 
 const VariantsTool = lazy(() => import('../tool/VariantsTool'))
 
@@ -26,10 +30,23 @@ export const VARIANTS_INTENT = 'variant'
 const VARIANTS_TOOL_NAME = 'variants'
 
 /**
+ * Adds the `system.variant` document type and the `sanity.variantMetadata` object type, with
+ * the metadata the workspace and its plugins configure in `beta.variants.metadata`, resolved by
+ * `getDefaultPluginsOptions`.
+ *
  * @internal
  */
-export const variants = definePlugin({
+export const variants = definePlugin((options: {metadata?: VariantMetadataConfig}) => ({
   name: VARIANTS_NAME,
+  schema: {
+    types: (prev) => [...prev, variantSchema, variantMetadataSchema(options.metadata)],
+    templates: (prev) => prev.filter((template) => template.schemaType !== VARIANT_DOCUMENT_TYPE),
+  },
+  document: {
+    // Variant definitions are written through the variants actions API, never through document
+    // actions.
+    actions: (prev, context) => (context.schemaType === VARIANT_DOCUMENT_TYPE ? [] : prev),
+  },
   studio: {
     components: {
       provider: VariantsStudioProvider,
@@ -55,7 +72,7 @@ export const variants = definePlugin({
   i18n: {
     bundles: [variantsUsEnglishLocaleBundle],
   },
-})
+}))
 
 // `getDefaultPlugins` only includes this plugin when the workspace has variants enabled, so none of
 // its components check `beta.variants.enabled` themselves.

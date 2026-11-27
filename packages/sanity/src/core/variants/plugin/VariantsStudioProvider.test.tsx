@@ -44,7 +44,7 @@ vi.mock('../../hooks/useUpsellData', async (importOriginal) => {
 
 const useFeatureEnabledObservableMock = vi.mocked(useFeatureEnabledObservable)
 
-const VariantsStudioProvider = variants().studio!.components!.provider!
+const VariantsStudioProvider = variants({}).studio!.components!.provider!
 
 function Mode() {
   return <span>mode:{String(use(useVariantsMode()))}</span>

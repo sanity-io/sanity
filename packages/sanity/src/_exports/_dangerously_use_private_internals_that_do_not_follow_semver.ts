@@ -176,6 +176,7 @@ export {
   type VariantConditions,
   type VariantConditionsContext,
   type VariantConditionValue,
+  type VariantMetadataConfig,
   type VariantTypeConfig,
   type VariantTypeContext,
   type VariantTypesConfig,

@@ -1,6 +1,7 @@
 import {type BaseActionOptions, type SingleActionResult, type SanityClient} from '@sanity/client'
 
 import {variantsApiClient} from '../../store/document/document-pair/utils/variantsApiClient'
+import {VARIANT_METADATA_TYPE_NAME} from '../schema/variantMetadata'
 import {getVariantId} from '../tool/util'
 import {type EditableSystemVariant} from '../types'
 
@@ -12,6 +13,16 @@ export interface VariantOperationsStore {
    * delete to find out whether the current user is allowed to perform it.
    */
   deleteVariant: (variantId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+}
+
+/**
+ * Variant metadata is the named `sanity.variantMetadata` object type, so it is stored with its
+ * `_type`, which typegen and other schema-aware readers expect.
+ */
+function withMetadataType(
+  metadata: NonNullable<EditableSystemVariant['metadata']>,
+): NonNullable<EditableSystemVariant['metadata']> {
+  return {...metadata, _type: VARIANT_METADATA_TYPE_NAME}
 }
 
 /**
@@ -29,7 +40,7 @@ export function createVariantOperationsStore(options: {
       variantId,
       conditions: variant.conditions,
       priority: variant.priority,
-      ...(variant.metadata ? {metadata: variant.metadata} : {}),
+      ...(variant.metadata ? {metadata: withMetadataType(variant.metadata)} : {}),
     }
 
     return await client.action(action, {tag: 'variants.create'})
@@ -44,7 +55,7 @@ export function createVariantOperationsStore(options: {
     }
 
     if (variant.metadata) {
-      setPayload.metadata = variant.metadata
+      setPayload.metadata = withMetadataType(variant.metadata)
     }
 
     const patch: {

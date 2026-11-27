@@ -889,6 +889,7 @@ import type {
   VariantConditions,
   VariantConditionsContext,
   VariantConditionValue,
+  VariantMetadataConfig,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
   VariantTypeConfig,
   VariantTypeContext,
@@ -3583,6 +3584,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('VariantConditionValue', () => {
     expectTypeOf<VariantConditionValue>().toBeObject()
+  })
+  test('VariantMetadataConfig', () => {
+    expectTypeOf<VariantMetadataConfig>().toBeObject()
   })
   test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()

@@ -421,6 +421,12 @@ const defaultWorkspace = defineConfig({
           },
         },
       },
+      metadata: {
+        fields: [
+          defineField({name: 'owner', title: 'Owner', type: 'string'}),
+          defineField({name: 'expiresAt', title: 'Expires at', type: 'datetime'}),
+        ],
+      },
     },
     reactActivityMode: {
       enabled: true,
