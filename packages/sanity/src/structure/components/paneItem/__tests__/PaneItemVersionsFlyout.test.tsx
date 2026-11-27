@@ -40,7 +40,7 @@ const paneRouterContextValue = {
   routerPanesState: [[{id: 'book'}]],
 } as unknown as PaneRouterContextValue
 
-async function renderRow() {
+async function renderRow(options: {dots?: boolean} = {}) {
   const wrapper = await createTestProvider()
   const user = userEvent.setup({delay: null})
   const onNavigate = vi.fn()
@@ -50,13 +50,27 @@ async function renderRow() {
       <PaneRouterContext.Provider value={paneRouterContextValue}>
         <a data-pane-item-row="" data-testid="row" href="#row" onClick={onRowClick} tabIndex={-1}>
           Winterhold
-          <PaneItemVersionsFlyout childId="winterhold" renderList={renderList} />
+          <PaneItemVersionsFlyout childId="winterhold" renderList={renderList}>
+            {options.dots ? <span data-testid="dots">dots</span> : undefined}
+          </PaneItemVersionsFlyout>
         </a>
       </PaneRouterContext.Provider>
     </RouterProvider>,
     {wrapper},
   )
   return {onNavigate, onRowClick, row: screen.getByTestId('row'), user}
+}
+
+/** A tap: the pointer events a touch screen sends, then the click that follows them. */
+function tap(element: Element) {
+  const init = {bubbles: true, cancelable: true, pointerType: 'touch', isPrimary: true}
+  let notPrevented = true
+  act(() => {
+    element.dispatchEvent(new PointerEvent('pointerdown', init))
+    element.dispatchEvent(new PointerEvent('pointerup', init))
+    notPrevented = element.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true}))
+  })
+  return notPrevented
 }
 
 const advance = (ms: number) =>
@@ -172,5 +186,79 @@ describe('PaneItemVersionsFlyout', () => {
     await user.keyboard('{ArrowLeft}')
     expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
     expect(document.activeElement).toBe(row)
+  })
+
+  it('tells assistive technology the row opens a menu, and whether it is open', async () => {
+    const {row, user} = await renderRow()
+    expect(row).toHaveAttribute('aria-haspopup', 'menu')
+    expect(row).toHaveAttribute('aria-expanded', 'false')
+
+    row.focus()
+    await user.keyboard('{ArrowRight}')
+    await advance(100)
+    expect(row).toHaveAttribute('aria-expanded', 'true')
+
+    await user.keyboard('{Escape}')
+    expect(row).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('moves focus into the flyout on the right arrow key when hover already opened it', async () => {
+    const {row, user} = await renderRow()
+    await user.hover(row)
+    await advance(OPEN_DELAY)
+    expect(screen.getByRole('menu', {hidden: true})).toBeTruthy()
+
+    row.focus()
+    await user.keyboard('{ArrowRight}')
+    await advance(100)
+    expect(document.activeElement).toBe(
+      screen.getByRole('menuitem', {name: 'Default', hidden: true}),
+    )
+  })
+
+  describe('on a touch screen', () => {
+    it('opens on a tap on the dots without following the row link, and a second tap closes it', async () => {
+      const {onRowClick, row} = await renderRow({dots: true})
+      const dots = screen.getByTestId('dots')
+
+      // The tap opens the flyout; it does not also open the row's document
+      expect(tap(dots)).toBe(false)
+      expect(screen.getByRole('menu', {hidden: true})).toBeTruthy()
+      expect(onRowClick).not.toHaveBeenCalled()
+      expect(row).toHaveAttribute('aria-expanded', 'true')
+
+      tap(dots)
+      expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
+    })
+
+    it('stays open after the finger lifts, which sends the row a pointerleave', async () => {
+      const {row} = await renderRow({dots: true})
+      tap(screen.getByTestId('dots'))
+
+      act(() => {
+        row.dispatchEvent(new PointerEvent('pointerleave', {pointerType: 'touch', bubbles: false}))
+      })
+      await advance(CLOSE_DELAY + 500)
+      expect(screen.getByRole('menu', {hidden: true})).toBeTruthy()
+    })
+
+    it('stays open when a tap lands on the flyout and the finger lifts off it', async () => {
+      await renderRow({dots: true})
+      tap(screen.getByTestId('dots'))
+      const flyout = screen.getByRole('menu', {hidden: true}).parentElement as HTMLElement
+
+      // React derives `onPointerLeave` from `pointerout` with a related target outside the element
+      act(() => {
+        flyout.dispatchEvent(
+          new PointerEvent('pointerout', {
+            bubbles: true,
+            pointerType: 'touch',
+            relatedTarget: document.body,
+          }),
+        )
+      })
+      await advance(CLOSE_DELAY + 500)
+      expect(screen.getByRole('menu', {hidden: true})).toBeTruthy()
+    })
   })
 })
