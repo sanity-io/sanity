@@ -5351,7 +5351,7 @@ describe('VisionRedesign', () => {
   )
 
   it(
-    'opens the personal saved queries as tabs once each, newest first, after the open tab',
+    'opens the personal saved queries as tabs once each, newest first, ahead of the open tab',
     {timeout: 15_000},
     async () => {
       sanityMocks.savedQueries = {
@@ -5383,9 +5383,10 @@ describe('VisionRedesign', () => {
 
       await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(3))
       const tabs = screen.getAllByTestId('vision-tab')
-      expect(text(tabs[1])).toContain('Pages')
-      expect(text(tabs[2])).toContain('Posts')
-      // The tab the tool opened on stays the shown one
+      expect(text(tabs[0])).toContain('Pages')
+      expect(text(tabs[1])).toContain('Posts')
+      // The tab the tool opened on stays last, and the shown one
+      expect(within(tabs[2]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
       expect(getQueryEditor().value).toBe('')
       expect(await screen.findByText('vision.saved.opened-as-tabs')).toBeTruthy()
       await waitFor(() =>
@@ -5396,7 +5397,7 @@ describe('VisionRedesign', () => {
           'saved-broken',
         ]),
       )
-      expect(getStoredState().tabs.slice(1)).toMatchObject([
+      expect(getStoredState().tabs.slice(0, 2)).toMatchObject([
         {
           title: 'Pages',
           query: '*[_type == "page"]',
@@ -5414,7 +5415,7 @@ describe('VisionRedesign', () => {
 
       // A closed one stays closed, listed in Restore tabs like any closed tab
       fireEvent.click(
-        within(screen.getAllByTestId('vision-tab')[2]).getByTestId('vision-tab-close'),
+        within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'),
       )
       await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
       cleanup()
@@ -5440,7 +5441,7 @@ describe('VisionRedesign', () => {
     show()
 
     await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
-    expect(text(screen.getAllByTestId('vision-tab')[1])).toContain('Pages')
+    expect(text(screen.getAllByTestId('vision-tab')[0])).toContain('Pages')
     await waitFor(() => expect(getStoredState().openedSavedQueries).toEqual(['saved-pages']))
   })
 
@@ -5495,7 +5496,7 @@ describe('VisionRedesign', () => {
       renderRedesign()
       await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
       fireEvent.click(
-        within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'),
+        within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-close'),
       )
       await waitFor(() => expect(getStoredState().closedTabs).toHaveLength(1))
       typeQuery('*[_type == "author"]')
