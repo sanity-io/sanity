@@ -1,18 +1,18 @@
 import {useMemo} from 'react'
+import {type TargetPerspective, usePerspective, useWorkspace} from 'sanity'
+
+import {useDocumentVersions} from '../../../../../../../core/releases/hooks/useDocumentVersions'
+import {isPublishedPerspective} from '../../../../../../../core/releases/util/util'
 import {
+  useAgentVersionDisplay,
   type AgentVersionDisplay,
-  DEFAULT_VARIANT_TYPE_KEY,
+} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
-  isPublishedPerspective,
-  type TargetPerspective,
-  useAgentVersionDisplay,
-  useDocumentVersions,
-  usePerspective,
-  useWorkspace,
-} from 'sanity'
-
+} from '../../../../../../../core/util/draftUtils'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {isLiveEditEnabled} from '../../../../../../components/paneItem/helpers'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
 import {useDocumentPane} from '../../../../useDocumentPane'

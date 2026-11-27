@@ -15,8 +15,8 @@ vi.mock('../../useDocumentLocations')
 
 const paneRouterParams = vi.hoisted(() => ({current: {} as Record<string, string>}))
 
-// Mock usePaneRouter from sanity/structure
-vi.mock('sanity/structure', async (importOriginal) => ({
+// Mock usePaneRouter
+vi.mock('../../../structure/components/paneRouter/usePaneRouter', async (importOriginal) => ({
   ...(await importOriginal()),
   usePaneRouter: vi.fn(() => ({params: paneRouterParams.current})),
 }))

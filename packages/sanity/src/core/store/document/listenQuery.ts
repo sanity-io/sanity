@@ -11,7 +11,9 @@ import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
 /**

@@ -4,6 +4,7 @@ import {type PerspectiveStack} from '../../perspective/types'
 import {PreviewLoader} from './PreviewLoader'
 
 /**
+ * @hidden
  * @internal
  */
 export function Preview(

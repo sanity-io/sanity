@@ -14,16 +14,22 @@ const sanityMocks = vi.hoisted(() => ({
   variantsApiVersion: 'v2025-08-18',
 }))
 
-vi.mock('sanity', () => ({
+vi.mock('sanity/i18n', () => ({
   useTranslation: () => ({
     t: (key: string, values?: {apiVersion?: string}) =>
       values?.apiVersion ? `${key}:${values.apiVersion}` : key,
   }),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.releasesApiVersion},
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.variantsApiVersion},
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+    RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.releasesApiVersion},
+    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.variantsApiVersion},
+  }),
+)
 
 function clientError(statusCode: number, message: string) {
   return new ClientError({

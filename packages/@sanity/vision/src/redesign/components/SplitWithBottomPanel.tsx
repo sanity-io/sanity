@@ -1,0 +1,299 @@
+import {BoundaryElementProvider} from '@sanity/ui'
+import {
+  type Dispatch,
+  type ReactNode,
+  type Ref,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  ViewTransition,
+} from 'react'
+import {useTranslation} from 'sanity/i18n'
+import {Box, Flex} from 'ui5'
+
+import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
+import {type VisionPanelTab} from '../../__telemetry__/vision.telemetry'
+import {visionLocaleNamespace} from '../../i18n'
+import {useContentSize} from '../hooks/useContentSize'
+import {useVisionExperience, type VisionLayout} from '../store/VisionActorContext'
+import {
+  BOTTOM_BAR_HEIGHT,
+  CollapsiblePanel,
+  type CollapsiblePanelTab,
+  PANEL_BODY_BORDER,
+  PANEL_HEADER_HEIGHT,
+} from './CollapsiblePanel'
+import {type BottomPanelColumn, bottomPanelSizeToFit, defaultBottomPanelSize} from './fitPanelSize'
+import {COLLAPSE_BELOW, usePanelSnapShut} from './panelSnapShut'
+import {PANEL_PANE, PANEL_TRANSITION, startLayoutTransition} from './panelTransitions'
+import * as styles from './redesign.module.css'
+import {ResizableSplit, SPLIT_HANDLE_SIZE} from './ResizableSplit'
+
+/** The main area may never be dragged smaller than this, unless the column asks for more */
+const MIN_MAIN_HEIGHT = 120
+
+/**
+ * How far above the bottom of the query tab the request panel's toolbar row and the response
+ * panel's tab header start out, per layout. Both columns' default panel sizes derive from it.
+ */
+const DEFAULT_ROW_OFFSET: Record<VisionLayout, number> = {columns: 220, stacked: 180, mobile: 160}
+
+/** The bottom panel's tab, whether it is collapsed, and the height dragged per layout */
+export interface BottomPanelState {
+  activeTabId: string
+  collapsed: boolean
+  bottomSizes: Partial<Record<VisionLayout, number>>
+}
+
+export interface SplitWithBottomPanelHandle {
+  /** Sizes the bottom panel to its open tab, or as tall as the split allows */
+  fitToContent: () => void
+}
+
+export interface SplitWithBottomPanelProps {
+  /** Prefix for the bottom panel's element ids and test ids */
+  id: string
+  testId: string
+  /** The main area above the bottom panel */
+  children: ReactNode
+  /** The bottom panel's tabs; the first one starts out selected */
+  tabs: CollapsiblePanelTab[]
+  /**
+   * The column this is. Its bottom panel's initial height lines up the request panel's toolbar row
+   * with the response panel's tab header.
+   */
+  column: BottomPanelColumn
+  /** Rendered below the split pane: the request column's action bar */
+  footer?: ReactNode
+  /**
+   * Controlled tab, collapsed flag and height. Without it the panel keeps its own, which resets
+   * when this component remounts.
+   */
+  state?: BottomPanelState
+  onStateChange?: Dispatch<SetStateAction<BottomPanelState>>
+  /** Double-clicking a tab sizes the panel to that tab. A single click only selects it. */
+  fitOnTabDoubleClick?: boolean
+  /** The main area may never be dragged smaller than this, 120 pixels by default */
+  minMainHeight?: number
+  ref?: Ref<SplitWithBottomPanelHandle | null>
+}
+
+/**
+ * A column of the query tab: the main area (editor or result) above a resizable, collapsible
+ * tabbed panel. The height is remembered per layout, since one dragged for two columns rarely
+ * suits a stacked pane. The footer, when there is one, stays below the split.
+ */
+export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
+  const {
+    id,
+    testId,
+    children,
+    tabs,
+    column,
+    footer,
+    state,
+    onStateChange,
+    fitOnTabDoubleClick = false,
+    minMainHeight = MIN_MAIN_HEIGHT,
+    ref,
+  } = props
+  const telemetry = useVisionTelemetry()
+  const {t} = useTranslation(visionLocaleNamespace)
+  const {layout} = useVisionExperience()
+  const [uncontrolled, setUncontrolled] = useState<BottomPanelState>(() => ({
+    activeTabId: tabs[0]?.id ?? '',
+    collapsed: false,
+    bottomSizes: {},
+  }))
+  const panelState = state ?? uncontrolled
+  const setPanelState = onStateChange ?? setUncontrolled
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+  const columnHeight = useContentSize(boundaryElement)?.height
+  const defaultSize = defaultBottomPanelSize({
+    column,
+    rowOffset: DEFAULT_ROW_OFFSET[layout],
+    headerHeight: PANEL_HEADER_HEIGHT,
+    bodyBorder: PANEL_BODY_BORDER,
+    footerHeight: BOTTOM_BAR_HEIGHT,
+    columnHeight,
+    minMainHeight,
+    handleSize: SPLIT_HANDLE_SIZE,
+  })
+  const bottomSize = panelState.bottomSizes[layout] ?? defaultSize
+  // The size the divider is being dragged to. A collapsed panel follows it without its stored
+  // height changing, which is the one it opens to when the drag ends.
+  const [dragSize, setDragSize] = useState<number | null>(null)
+  const [fitRequest, setFitRequest] = useState(0)
+
+  const selectTab = useCallback(
+    (tabId: string) => {
+      if (tabId !== panelState.activeTabId) {
+        // The panels' tab ids are the telemetry's tab names
+        telemetry.panelTabOpened(tabId as VisionPanelTab)
+      }
+      setPanelState((current) =>
+        current.activeTabId === tabId ? current : {...current, activeTabId: tabId},
+      )
+    },
+    [panelState.activeTabId, setPanelState, telemetry],
+  )
+  const toggle = useCallback(() => {
+    telemetry.panelToggled(column, panelState.collapsed)
+    startLayoutTransition(PANEL_TRANSITION, () =>
+      setPanelState((current) => ({...current, collapsed: !current.collapsed})),
+    )
+  }, [panelState.collapsed, setPanelState, telemetry, column])
+  const collapseShrunk = useCallback(
+    (restoreSize: number | undefined) => {
+      telemetry.panelToggled(column, false)
+      setPanelState((current) => ({
+        ...current,
+        collapsed: true,
+        bottomSizes: {...current.bottomSizes, [layout]: restoreSize},
+      }))
+    },
+    [column, layout, setPanelState, telemetry],
+  )
+  const expandDragged = useCallback(() => {
+    telemetry.panelToggled(column, true)
+    setDragSize(null)
+    setPanelState((current) => (current.collapsed ? {...current, collapsed: false} : current))
+  }, [column, setPanelState, telemetry])
+  const snapShut = usePanelSnapShut({
+    containerRef,
+    handleTestId: `${testId}-split-handle`,
+    toggleTestId: `${id}-panel-toggle`,
+    defaultSize,
+    collapse: collapseShrunk,
+    expand: expandDragged,
+  })
+  const resizeEnded = useCallback(
+    (size: number, startSize: number) => {
+      snapShut(size, startSize)
+      // A panel dragged open lets go of the dragged size in the transition that expands it, so it
+      // never shows collapsed in between
+      if (startSize >= COLLAPSE_BELOW || size < COLLAPSE_BELOW) setDragSize(null)
+    },
+    [snapShut],
+  )
+  const shownCollapsed = panelState.collapsed && (dragSize === null || dragSize < COLLAPSE_BELOW)
+  const requestFit = useCallback(
+    (tabId?: string) => {
+      const update = () => {
+        setPanelState((current) => {
+          const activeTabId = tabId ?? current.activeTabId
+          if (!current.collapsed && current.activeTabId === activeTabId) return current
+          return {...current, activeTabId, collapsed: false}
+        })
+        setFitRequest((count) => count + 1)
+      }
+      // Only expanding moves the panes here; the fit itself animates once its size is measured.
+      // An open panel switches tabs at once, as a click on a tab does
+      if (panelState.collapsed) startLayoutTransition(PANEL_TRANSITION, update)
+      else update()
+    },
+    [panelState.collapsed, setPanelState],
+  )
+
+  useImperativeHandle(ref, () => ({fitToContent: requestFit}), [requestFit])
+
+  // After the open tab has mounted (a click selects it before the double-click, and a collapsed
+  // panel expands first). Measuring in an effect sees the editor the tab's own effects created.
+  useEffect(() => {
+    if (fitRequest === 0) return undefined
+    const apply = () => {
+      const container = containerRef.current
+      const split = container?.querySelector<HTMLElement>(`[data-testid="${testId}-split"]`)
+      const header = container?.querySelector<HTMLElement>(
+        `[data-testid="${id}-panel"]`,
+      )?.firstElementChild
+      const content = container?.querySelector<HTMLElement>('[data-vision-panel-content]')
+      const toolbar = container?.querySelector<HTMLElement>('[data-vision-panel-toolbar]')
+      if (!split || !(header instanceof HTMLElement) || !content) return
+      const size = bottomPanelSizeToFit({
+        headerHeight: header.offsetHeight,
+        // The divider under the header is the top border of the body around the toolbar and the
+        // scrolling content
+        contentHeight:
+          content.offsetHeight +
+          (toolbar?.offsetHeight ?? 0) +
+          (content.parentElement?.parentElement?.clientTop ?? 0),
+        containerHeight: split.clientHeight,
+        minMainHeight,
+        handleSize: SPLIT_HANDLE_SIZE,
+      })
+      if (size === null) return
+      startLayoutTransition(PANEL_TRANSITION, () =>
+        setPanelState((current) =>
+          current.bottomSizes[layout] === size && !current.collapsed
+            ? current
+            : {
+                ...current,
+                collapsed: false,
+                bottomSizes: {...current.bottomSizes, [layout]: size},
+              },
+        ),
+      )
+    }
+    apply()
+    const frame = requestAnimationFrame(apply)
+    return () => cancelAnimationFrame(frame)
+  }, [fitRequest, id, layout, minMainHeight, setPanelState, testId])
+
+  // Tooltips, popovers and menus opened in this column stay inside it, rather than spilling over
+  // the divider into the other one
+  return (
+    <Flex data-testid={testId} flexDirection="column" height="100%" ref={setBoundaryElement}>
+      <BoundaryElementProvider element={boundaryElement}>
+        <Box className={styles.splitPaneContainer} ref={containerRef}>
+          <ResizableSplit
+            label={t('vision.split.bottom-panel')}
+            minSecondarySize={minMainHeight}
+            minSize={PANEL_HEADER_HEIGHT}
+            onChange={(size) => {
+              setDragSize(size)
+              setPanelState((current) =>
+                current.collapsed
+                  ? current
+                  : {...current, bottomSizes: {...current.bottomSizes, [layout]: size}},
+              )
+            }}
+            onResizeEnd={resizeEnded}
+            onReset={() =>
+              setPanelState((current) => ({
+                ...current,
+                bottomSizes: {...current.bottomSizes, [layout]: undefined},
+              }))
+            }
+            primary="second"
+            size={dragSize ?? (panelState.collapsed ? PANEL_HEADER_HEIGHT : bottomSize)}
+            split="horizontal"
+            testId={`${testId}-split`}
+          >
+            <ViewTransition default={PANEL_PANE}>
+              <Flex className={styles.paneFill}>{children}</Flex>
+            </ViewTransition>
+            <ViewTransition default={PANEL_PANE}>
+              <Box className={styles.paneFill}>
+                <CollapsiblePanel
+                  activeTabId={panelState.activeTabId}
+                  collapsed={shownCollapsed}
+                  id={id}
+                  onTabChange={selectTab}
+                  onTabDoubleClick={fitOnTabDoubleClick ? requestFit : undefined}
+                  onToggle={toggle}
+                  tabs={tabs}
+                />
+              </Box>
+            </ViewTransition>
+          </ResizableSplit>
+        </Box>
+        {footer}
+      </BoundaryElementProvider>
+    </Flex>
+  )
+}

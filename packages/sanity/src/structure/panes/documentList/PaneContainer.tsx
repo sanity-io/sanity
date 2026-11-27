@@ -1,18 +1,14 @@
 import {Card} from '@sanity/ui'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {
-  EMPTY_ARRAY,
-  type GeneralDocumentListLayoutKey,
-  type ObjectSchemaType,
-  SourceProvider,
-  useI18nText,
-  useSchema,
-  useSource,
-  useTranslation,
-} from 'sanity'
+import {type GeneralDocumentListLayoutKey, type ObjectSchemaType} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Code} from 'ui5'
 
+import {useSchema} from '../../../core/hooks/useSchema'
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {SourceProvider, useSource} from '../../../core/studio/source'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'

@@ -1,0 +1,587 @@
+import {readFileSync} from 'node:fs'
+import {createRequire} from 'node:module'
+import {dirname, join} from 'node:path'
+
+import {type SyncTag} from '@sanity/client'
+import {LayerProvider, ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {ToastProvider} from '@sanity/ui/toast'
+import {act, cleanup, fireEvent, render, screen, within} from '@testing-library/react'
+import {Activity} from 'react'
+import {afterAll, afterEach, beforeAll, describe, expect, it, onTestFinished, vi} from 'vitest'
+
+import {encodeQueryString} from '../../../util/encodeQueryString'
+import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
+import {type VisionResponseMeta} from '../../store/types'
+import {type QueryNetwork} from '../../util/queryNetwork'
+import {
+  clearSyncTagLookupCache,
+  MAX_SYNC_TAG_PROBES,
+  type SyncTagLookupClient,
+} from '../../util/syncTagLookup'
+import {ResponseMetaTab} from './ResponseMetaTab'
+
+const cobe = vi.hoisted(() => {
+  const update = vi.fn()
+  const destroy = vi.fn()
+  return {update, destroy, createGlobe: vi.fn(() => ({update, destroy}))}
+})
+vi.mock('cobe', () => ({default: cobe.createGlobe}))
+// Wherever the tests run, the browser is in Oslo
+vi.mock('../../util/timeZoneLocation', () => ({
+  browserLocation: () => ({latitude: 59.91, longitude: 10.75}),
+}))
+
+vi.mock('sanity', () => ({
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) =>
+      options ? `${key}:${JSON.stringify(options)}` : key,
+  }),
+}))
+
+vi.stubGlobal(
+  'matchMedia',
+  vi.fn((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+)
+
+const theme = buildTheme()
+
+function meta(
+  network: QueryNetwork | undefined,
+  url = 'https://abc.apicdn.sanity.io/v1/data/query/p?query=*',
+): VisionResponseMeta {
+  return {
+    url,
+    method: network?.method ?? 'GET',
+    ms: 4,
+    e2eMs: 90,
+    payloadBytes: 10,
+    syncTags: [],
+    resultSourceMap: undefined,
+    network,
+  }
+}
+
+const cdnMiss: QueryNetwork = {
+  method: 'GET',
+  viaCdn: true,
+  cacheHit: false,
+  shard: 'gcp-eu-w1-01-prod-1028',
+  traceId: 'trace-1',
+  cacheControl: 'private, max-age=60',
+}
+
+async function renderTab(
+  props: Partial<Parameters<typeof ResponseMetaTab>[0]> & {meta: VisionResponseMeta | undefined},
+) {
+  // The globe loads cobe with a dynamic import, which settles inside the act
+  await act(async () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <ResponseMetaTab
+              perspectiveName="published"
+              resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+              url={props.meta?.url}
+              {...props}
+            />
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>,
+    )
+  })
+}
+
+describe('ResponseMetaTab', () => {
+  afterEach(() => cleanup())
+
+  it('says when nothing has been fetched yet', async () => {
+    await renderTab({meta: undefined})
+    expect(screen.getByText('vision.response.empty')).toBeTruthy()
+  })
+
+  it('shows the URL of a fetch still in flight, without timings or the way it travelled', async () => {
+    const url = 'https://abc.api.sanity.io/v1/data/query/p?query=*'
+    await renderTab({meta: undefined, url})
+    expect((screen.getByTestId('vision-query-url') as HTMLInputElement).value).toBe(url)
+    expect(screen.getByTestId('vision-meta-execution').textContent).toBe(
+      'result.timing-not-applicable',
+    )
+    expect(screen.getByTestId('vision-meta-e2e').textContent).toBe('result.timing-not-applicable')
+    expect(screen.getByTestId('vision-meta-payload').textContent).toBe(
+      'result.timing-not-applicable',
+    )
+    expect(screen.queryByTestId('vision-network-endpoint')).toBeNull()
+    expect(screen.queryByTestId('vision-network-globe')).toBeNull()
+  })
+
+  it('shows a CDN miss, where the query ran, and draws the way there', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.cdn',
+    )
+    expect(screen.getByTestId('vision-network-cache').textContent).toBe('vision.network.cache.miss')
+    expect(screen.getByTestId('vision-network-region').textContent).toBe(
+      'europe-west1 (St. Ghislain, Belgium)',
+    )
+    expect(screen.getByText('Cache-Control: private, max-age=60')).toBeTruthy()
+    expect(screen.getByText('trace-1')).toBeTruthy()
+    expect(cobe.createGlobe).toHaveBeenCalled()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [unknown, {arcs: unknown[]}]
+    expect(options.arcs).toHaveLength(1)
+  })
+
+  it('marks the globe ready once cobe has drawn it, so it fades in rather than popping in', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    const canvas = screen.getByTestId('vision-network-globe').querySelector('canvas')
+    expect(canvas).not.toBeNull()
+    expect(canvas?.hasAttribute('data-ready')).toBe(false)
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(cobe.update).toHaveBeenCalled()
+    expect(canvas?.hasAttribute('data-ready')).toBe(true)
+  })
+
+  it('keeps the settled globe as a still picture when its tab is hidden and shown again', async () => {
+    const drawImage = vi.fn()
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockImplementation(((type: string) => (type === '2d' ? {drawImage} : null)) as never)
+    // The globe has finished turning by its first frame
+    const frame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => window.setTimeout(() => callback(1e9), 0))
+    onTestFinished(() => {
+      getContext.mockRestore()
+      frame.mockRestore()
+    })
+    const ui = (mode: 'visible' | 'hidden') => (
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <Activity mode={mode}>
+              <ResponseMetaTab
+                meta={meta(cdnMiss)}
+                perspectiveName="published"
+                resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+                url={meta(cdnMiss).url}
+              />
+            </Activity>
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    )
+    let view: ReturnType<typeof render> | undefined
+    await act(async () => {
+      view = render(ui('visible'))
+    })
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    const still = screen.getByTestId('vision-network-globe').querySelector('canvas')
+    expect(drawImage).toHaveBeenCalledTimes(1)
+    expect(still?.hasAttribute('data-ready')).toBe(true)
+    // The WebGL globe is no longer needed once its picture is copied
+    expect(cobe.destroy).toHaveBeenCalledTimes(1)
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+
+    await act(async () => view?.rerender(ui('hidden')))
+    await act(async () => view?.rerender(ui('visible')))
+    expect(screen.getByTestId('vision-network-globe').querySelector('canvas')).toBe(still)
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+  })
+
+  it('settles the globe when its tab is hidden while it is still turning', async () => {
+    const drawImage = vi.fn()
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockImplementation(((type: string) => (type === '2d' ? {drawImage} : null)) as never)
+    onTestFinished(() => getContext.mockRestore())
+    const ui = (mode: 'visible' | 'hidden') => (
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <Activity mode={mode}>
+              <ResponseMetaTab
+                meta={meta(cdnMiss)}
+                perspectiveName="published"
+                resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+                url={meta(cdnMiss).url}
+              />
+            </Activity>
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    )
+    let view: ReturnType<typeof render> | undefined
+    await act(async () => {
+      view = render(ui('visible'))
+    })
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(drawImage).not.toHaveBeenCalled()
+
+    await act(async () => view?.rerender(ui('hidden')))
+    expect(drawImage).toHaveBeenCalledTimes(1)
+    const still = screen.getByTestId('vision-network-globe').querySelector('canvas')
+    await act(async () => view?.rerender(ui('visible')))
+    expect(screen.getByTestId('vision-network-globe').querySelector('canvas')).toBe(still)
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows a CDN cache hit without a way to the API', async () => {
+    await renderTab({meta: meta({...cdnMiss, cacheHit: true})})
+    expect(screen.getByTestId('vision-network-cache').textContent).toBe('vision.network.cache.hit')
+    expect(screen.getByText('vision.network.cache.hit-explained')).toBeTruthy()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [unknown, {arcs: unknown[]}]
+    expect(options.arcs).toHaveLength(0)
+  })
+
+  it('points at the option while queries go to the API, and says why when the perspective keeps them there', async () => {
+    const api = meta(
+      {
+        method: 'GET',
+        viaCdn: false,
+        cacheHit: false,
+        shard: undefined,
+        traceId: undefined,
+        cacheControl: undefined,
+      },
+      'https://abc.api.sanity.io/v1/data/query/p?query=*',
+    )
+    await renderTab({meta: api, resolved: {useCdn: false, isCdnBlockedByPerspective: false}})
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.api',
+    )
+    expect(screen.getByTestId('vision-network-cache').textContent).toBe('vision.network.cache.none')
+    expect(screen.getByTestId('vision-network-region').textContent).toBe(
+      'vision.network.region.unknown',
+    )
+    // The way to the CDN is behind a help button next to the endpoint, not spelled out
+    expect(
+      within(screen.getByTestId('vision-response-meta')).queryByText('vision.network.use-cdn-hint'),
+    ).toBeNull()
+    const info = screen.getByTestId('vision-network-endpoint-info')
+    expect(info.getAttribute('aria-label')).toBe('vision.network.use-cdn-hint.label')
+    await act(async () => {
+      fireEvent.click(info)
+    })
+    expect(info.getAttribute('aria-expanded')).toBe('true')
+    const help = screen.getByTestId('vision-network-endpoint-info-content')
+    expect(within(help).getByText('vision.network.use-cdn-hint')).toBeTruthy()
+    expect(within(help).getByTestId('vision-network-endpoint-info-docs').getAttribute('href')).toBe(
+      'https://www.sanity.io/docs/content-lake/api-cdn',
+    )
+
+    cleanup()
+    await renderTab({
+      meta: api,
+      perspectiveName: 'Global (drafts)',
+      resolved: {useCdn: false, isCdnBlockedByPerspective: true},
+    })
+    expect(screen.queryByTestId('vision-network-endpoint-info')).toBeNull()
+    expect(screen.getByTestId('vision-network-cdn-blocked').textContent).toContain(
+      'vision.options.use-cdn.blocked:{"perspective":"Global (drafts)"}',
+    )
+  })
+
+  it('tells the CDN from the URL when the headers could not be read', async () => {
+    await renderTab({meta: meta(undefined)})
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.cdn',
+    )
+  })
+
+  it('shows the method, and explains a POST with the size the query and params came to', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    expect(screen.getByTestId('vision-network-method').textContent).toBe(
+      'vision.network.method.get',
+    )
+    expect(screen.queryByTestId('vision-network-method-explained')).toBeNull()
+
+    cleanup()
+    // The URL Vision shows carries the query and params even when the client posted them
+    const query = `*[_type == "author"] // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
+    const url = `https://abc.apicdn.sanity.io/v1/data/query/p${encodeQueryString(query, {limit: 1})}&perspective=published`
+    await renderTab({meta: meta({...cdnMiss, method: 'POST'}, url)})
+    expect(screen.getByTestId('vision-network-method').textContent).toBe(
+      'vision.network.method.post',
+    )
+    expect(screen.getByTestId('vision-network-method-explained').textContent).toBe(
+      `vision.network.method.post-explained:${JSON.stringify({
+        size: encodedQuerySize(query, {limit: 1}),
+        limit: QUERY_URL_SIZE_LIMIT,
+      })}`,
+    )
+  })
+
+  it('keeps a short duration in milliseconds and writes a longer one in seconds', async () => {
+    await renderTab({meta: {...meta(cdnMiss), ms: 888, e2eMs: 1_170, payloadBytes: 354_000}})
+    expect(screen.getByTestId('vision-meta-execution').textContent).toBe('888ms')
+    expect(screen.getByTestId('vision-meta-e2e').textContent).toBe('1.17s')
+    expect(screen.getByTestId('vision-meta-payload').textContent).toBe('354 kB')
+  })
+
+  it('leaves the info button out once the CDN answers', async () => {
+    await renderTab({
+      meta: meta(cdnMiss),
+      resolved: {useCdn: false, isCdnBlockedByPerspective: false},
+    })
+    expect(screen.queryByTestId('vision-network-endpoint-info')).toBeNull()
+  })
+})
+
+describe('ResponseMetaTab rows', () => {
+  const ui5Styles = document.createElement('style')
+  beforeAll(() => {
+    const ui5Manifest = createRequire(import.meta.url).resolve('ui5/package.json')
+    ui5Styles.textContent = readFileSync(join(dirname(ui5Manifest), 'dist/styles.css'), 'utf8')
+    document.head.append(ui5Styles)
+  })
+  afterAll(() => {
+    ui5Styles.remove()
+  })
+  afterEach(() => cleanup())
+
+  it('spaces the rows apart and puts each label, on one line, on the baseline of its value', async () => {
+    await renderTab({meta: {...meta(cdnMiss), syncTags: ['s1:b', 's1:a']}})
+    const rows = getComputedStyle(screen.getByTestId('vision-response-meta-rows'))
+    expect(rows.alignItems).toBe('baseline')
+    expect(rows.rowGap).toBe('12px')
+    const labels = screen.getAllByTestId('vision-response-meta-label')
+    expect(labels.map((label) => label.textContent)).toContain('vision.response.sync-tags')
+    for (const label of labels) {
+      expect(getComputedStyle(label).whiteSpace).toBe('nowrap')
+    }
+  })
+
+  it('draws the sync tag text where its baseline is, so the label lines up with the pills', async () => {
+    await renderTab({meta: {...meta(cdnMiss), syncTags: ['s1:b', 's1:a']}})
+    const tags = screen.getByTestId('vision-meta-sync-tags')
+    // A transform moves the text away from the baseline the row aligns its label to
+    for (const tag of ['s1:a', 's1:b']) {
+      let element: HTMLElement | null = within(tags).getByText(tag)
+      while (element && element !== tags) {
+        expect(getComputedStyle(element).transform).toMatch(/^(none)?$/)
+        element = element.parentElement
+      }
+    }
+  })
+})
+
+/**
+ * A client resolving `s1:book` (a type), `s1:any` and `s1:other-any` (the dataset `other`),
+ * holding every answer until `release`
+ */
+function lookupClient(options: {fail?: boolean} = {}) {
+  const pending: (() => void)[] = []
+  let calls = 0
+  const clientOf = (dataset: string): SyncTagLookupClient => ({
+    config: () => ({projectId: 'p', dataset, apiHost: 'https://api'}),
+    fetch: (query, params) => {
+      calls++
+      return new Promise((resolve, reject) => {
+        pending.push(() => {
+          if (options.fail) reject(new Error('Network down'))
+          else if (query === 'array::unique(*._type)') {
+            resolve({result: ['book'], syncTags: [dataset === 'd' ? 's1:any' : 's1:other-any']})
+          } else resolve({result: 0, syncTags: params.type === 'book' ? ['s1:book'] : []})
+        })
+      })
+    },
+    withConfig: (config) => clientOf(config.dataset),
+  })
+  const client = clientOf('d')
+  return {
+    client,
+    calls: () => calls,
+    release: async () => {
+      // Each answer can send the next probe, so settle until nothing is left waiting
+      while (pending.length > 0) {
+        await act(async () => {
+          for (const answer of pending.splice(0)) answer()
+        })
+      }
+    },
+  }
+}
+
+describe('ResponseMetaTab sync tag lookup', () => {
+  afterEach(() => {
+    cleanup()
+    clearSyncTagLookupCache()
+  })
+
+  const tagged: VisionResponseMeta = {
+    ...meta(cdnMiss),
+    syncTags: ['s1:book', 's1:mystery', 's1:any'],
+  }
+  const toggle = () => screen.getByRole('button', {name: 'vision.response.sync-tags'})
+  const pills = () =>
+    within(screen.getByTestId('vision-meta-sync-tags'))
+      .getAllByText(/./)
+      .map((pill) => pill.textContent)
+
+  it('keeps the row as it is while the setting is off', async () => {
+    await renderTab({meta: tagged})
+    expect(screen.queryByTestId('vision-meta-sync-tags-toggle')).toBeNull()
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+  })
+
+  it('keeps the row as it is when the response has no tags to resolve', async () => {
+    const {client, calls} = lookupClient()
+    await renderTab({meta: meta(cdnMiss), syncTagLookup: {client, result: []}})
+    expect(screen.queryByTestId('vision-meta-sync-tags-toggle')).toBeNull()
+    expect(screen.getByText('vision.response.sync-tags.none')).toBeTruthy()
+    expect(calls()).toBe(0)
+  })
+
+  it('shows the resolved tags first and switches to the raw ones, marking those it could not resolve', async () => {
+    const {client, calls, release} = lookupClient()
+    await renderTab({meta: tagged, syncTagLookup: {client, result: [{_type: 'book'}]}})
+
+    expect(toggle().getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByTestId('vision-meta-sync-tags').getAttribute('aria-busy')).toBe('true')
+    expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+
+    await release()
+    expect(screen.getByTestId('vision-meta-sync-tags').getAttribute('aria-busy')).toBeNull()
+    expect(pills()).toEqual(['*', '_type == "book"', 's1:mystery'])
+    const mystery = screen.getByText('s1:mystery').closest('[data-resolved]')
+    expect(mystery?.getAttribute('data-resolved')).toBe('false')
+    expect(mystery?.getAttribute('title')).toBe(
+      `vision.response.sync-tags.unresolved:{"budget":${MAX_SYNC_TAG_PROBES}}`,
+    )
+    expect(screen.getByRole('status').textContent).toBe(
+      'vision.response.sync-tags.partly-resolved:{"count":1,"total":3}',
+    )
+
+    fireEvent.click(toggle())
+    expect(toggle().getAttribute('aria-pressed')).toBe('false')
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+    expect(screen.queryByRole('status')).toBeNull()
+
+    // Shown again, the answers are already known
+    const sent = calls()
+    fireEvent.click(toggle())
+    expect(pills()).toEqual(['*', '_type == "book"', 's1:mystery'])
+    expect(calls()).toBe(sent)
+  })
+
+  it('says when the lookup failed, keeps the raw tags, and tries again when shown again', async () => {
+    const failing = lookupClient({fail: true})
+    await renderTab({meta: tagged, syncTagLookup: {client: failing.client, result: []}})
+
+    await failing.release()
+    expect(screen.getByRole('status').textContent).toBe(
+      'vision.response.sync-tags.resolve-failed:{"message":"Network down"}',
+    )
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+
+    fireEvent.click(toggle())
+    fireEvent.click(toggle())
+    expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
+    expect(failing.calls()).toBe(2)
+  })
+})
+
+describe('ResponseMetaTab wildcard sync tags', () => {
+  afterEach(() => cleanup())
+
+  const badgeOf = (text: string) => {
+    const badge = within(screen.getByTestId('vision-meta-sync-tags'))
+      .getByText(text)
+      .closest('[data-ui="Badge"]')
+    if (!(badge instanceof HTMLElement)) throw new Error(`No badge for ${text}`)
+    return badge
+  }
+
+  /** The tone ui5 gives a badge, as the class that styles it */
+  const toneOf = (badge: HTMLElement) =>
+    [...badge.classList].find((name) => name.startsWith('sui-tone-'))
+
+  async function hover(element: HTMLElement) {
+    await act(async () => {
+      fireEvent.mouseEnter(element)
+      await new Promise((resolve) => setTimeout(resolve, 600))
+    })
+  }
+
+  it.each(['*', 's1:*', 'ALL', 's1:ALL'])(
+    'shows the %s tag as critical, explaining that any change refetches',
+    async (tag) => {
+      await renderTab({meta: {...meta(cdnMiss), syncTags: [tag as SyncTag, 's1:book']}})
+      expect(toneOf(badgeOf(tag))).toBe('sui-tone-critical')
+      expect(toneOf(badgeOf('s1:book'))).toBe('sui-tone-neutral')
+      expect(badgeOf(tag).getAttribute('title')).toBeNull()
+
+      const openTooltips = () =>
+        screen
+          .queryAllByText('vision.response.sync-tags.wildcard')
+          .filter((text) => text.closest('[style*="display: none"]') === null)
+      expect(openTooltips()).toHaveLength(0)
+      await hover(badgeOf(tag))
+      expect(openTooltips()).toHaveLength(1)
+    },
+  )
+
+  it('shows a tag the lookup resolved to the whole dataset as critical, and the others as positive', async () => {
+    const {client, release} = lookupClient()
+    await renderTab({
+      meta: {...meta(cdnMiss), syncTags: ['s1:any', 's1:book']},
+      syncTagLookup: {client, result: [{_type: 'book'}]},
+    })
+    expect(toneOf(badgeOf('s1:any'))).toBe('sui-tone-neutral')
+
+    await release()
+    expect(toneOf(badgeOf('*'))).toBe('sui-tone-critical')
+    expect(toneOf(badgeOf('_type == "book"'))).toBe('sui-tone-positive')
+
+    await hover(badgeOf('*'))
+    expect(
+      screen
+        .getAllByText('vision.response.sync-tags.wildcard')
+        .filter((text) => text.closest('[style*="display: none"]') === null),
+    ).toHaveLength(1)
+  })
+
+  it('shows a tag resolved to another dataset as critical, naming the dataset', async () => {
+    const {client, release} = lookupClient()
+    await renderTab({
+      meta: {...meta(cdnMiss), syncTags: ['s1:other-any', 's1:book']},
+      syncTagLookup: {client, result: [{_type: 'book', author: {_ref: 'r', _dataset: 'other'}}]},
+    })
+    await release()
+    expect(toneOf(badgeOf('* in dataset "other"'))).toBe('sui-tone-critical')
+
+    await hover(badgeOf('* in dataset "other"'))
+    expect(
+      screen
+        .getAllByText('vision.response.sync-tags.other-dataset:{"dataset":"other"}')
+        .filter((text) => text.closest('[style*="display: none"]') === null),
+    ).toHaveLength(1)
+  })
+
+  it('gives a specific tag no wildcard tooltip', async () => {
+    await renderTab({meta: {...meta(cdnMiss), syncTags: ['s1:book']}})
+    await hover(badgeOf('s1:book'))
+    expect(screen.queryByText('vision.response.sync-tags.wildcard')).toBeNull()
+  })
+})

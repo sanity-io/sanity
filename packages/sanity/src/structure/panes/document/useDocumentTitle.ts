@@ -1,13 +1,16 @@
 import {useMemo} from 'react'
-import {prepareForPreview, useTranslation, useValuePreview, isGoingToUnpublish} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
+import {useValuePreview} from '../../../core/preview/useValuePreview'
+import {prepareForPreview} from '../../../core/preview/utils/prepareForPreview'
+import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 
 /**
  * useDocumentTitle hook return type.
  *
- * @beta
+ * @internal
  * @hidden
  */
 export interface UseDocumentTitle {
@@ -18,7 +21,7 @@ export interface UseDocumentTitle {
 /**
  * React hook that returns the document title for the current document in the document pane.
  *
- * @beta
+ * @internal
  * @hidden
  *
  * @returns The document title or error. See {@link UseDocumentTitle}

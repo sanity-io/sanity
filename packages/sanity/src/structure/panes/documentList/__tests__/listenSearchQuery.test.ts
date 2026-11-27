@@ -7,18 +7,29 @@ import {
 } from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {concat, defer, firstValueFrom, NEVER, Observable, of, Subject, throwError} from 'rxjs'
-import {createSearch, LISTENER_PAUSE_GRACE_PERIOD, listenerGate, type SearchSort} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {stubDocumentVisibility} from '../../../../../test/testUtils/documentVisibility'
+import {type SearchSort} from '../../../../core/search/common/types'
+import {createSearch} from '../../../../core/search/search'
+import {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  listenerGate,
+} from '../../../../core/store/listenerGate/listenerGate'
 import {listenSearchQuery, resolveSearchOrdering, type SearchQueryState} from '../listenSearchQuery'
 
 let releaseListenerGate: (() => void) | undefined
 
-vi.mock('sanity', async (importOriginal) => ({
+vi.mock('../../../../core/search/common/compileFieldPath', async (importOriginal) => ({
   ...(await importOriginal()),
   compileFieldPath: vi.fn(),
+}))
+vi.mock('../../../../core/search/search', async (importOriginal) => ({
+  ...(await importOriginal()),
   createSearch: vi.fn(() => vi.fn(() => of({hits: []}))),
+}))
+vi.mock('../../../../core/search/common/getSearchableTypes', async (importOriginal) => ({
+  ...(await importOriginal()),
   getSearchableTypes: vi.fn(() => [{name: 'author'}]),
 }))
 

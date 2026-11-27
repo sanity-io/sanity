@@ -29,9 +29,10 @@ export default defineConfig({
     // `cmkOptions` in tsconfig.json mirror for the generated typings)
     modules: {generateScopedName: cssModulesPattern},
     lightningcss: {
-      // The `@sanity/browserslist-config` targets predate `light-dark()`, and Lightning CSS
-      // polyfills it with `--lightningcss-light`/`-dark` toggles keyed to `prefers-color-scheme`
-      // rather than the computed `color-scheme`, so ship it as authored instead. See
+      // Every browser of the package's `browserslist` (Baseline 2026) supports `light-dark()`, so
+      // nothing polyfills it today. For targets that predate it, Lightning CSS would polyfill it
+      // with `--lightningcss-light`/`-dark` toggles keyed to `prefers-color-scheme` rather than
+      // the computed `color-scheme`, so it always ships as authored. See
       // https://github.com/parcel-bundler/lightningcss/issues/873
       exclude: Features.LightDark,
     },

@@ -1,11 +1,11 @@
 import {createClient, type LiveEvent} from '@sanity/client'
 import {render, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
-import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from 'sanity'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {stubDocumentVisibility} from '../../../test/testUtils/documentVisibility'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from '../../core/store/listenerGate/listenerGate'
 import {presentationUsEnglishLocaleBundle} from '../i18n'
 import {SharePreviewMenu} from './SharePreviewMenu'
 

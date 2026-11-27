@@ -1,5 +1,7 @@
-import {getPublishedId, useTranslation, type DocumentBadgeComponent} from 'sanity'
+import {type DocumentBadgeComponent} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
+import {getPublishedId} from '../../core/util/draftUtils'
 import {structureLocaleNamespace} from '../i18n'
 
 /** @internal */

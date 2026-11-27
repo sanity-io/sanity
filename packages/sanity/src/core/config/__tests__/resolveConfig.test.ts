@@ -171,7 +171,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/singleDocRelease'},
     ])
   })
-  it('still registers the comments plugin as sanity/comments when v2 is enabled', async () => {
+  it('still registers the comments plugin as sanity/comments when legacy is enabled', async () => {
     const projectId = 'ppsg7ml5'
     const dataset = 'production'
     const client = createClient({
@@ -188,7 +188,7 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [mockPlugin()],
-        beta: {comments: {v2: true}},
+        comments: {legacy: true},
       }),
     )
     const commentsPlugins =
@@ -451,6 +451,21 @@ describe('createSourceFromConfig', () => {
   })
 })
 
+describe('beta eventsAPI config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('resolves releases from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {eventsAPI: {releases: true}},
+    })
+
+    expect(source.beta?.eventsAPI?.releases).toBe(true)
+  })
+})
+
 const rootTypes = (context: {dataset: string}) => ({
   variant: {conditions: [{name: 'audience', values: [context.dataset]}]},
 })
@@ -646,83 +661,49 @@ describe('beta variants config', () => {
   })
 })
 
-describe('beta comments config', () => {
+describe('comments.legacy config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('defaults comments v2 to false', async () => {
-    const source = await createSourceFromConfig({projectId, dataset})
+  it('defaults comments.legacy to false on the workspace', async () => {
+    const workspace = await createWorkspaceFromConfig({projectId, dataset})
 
-    expect(source.beta?.comments?.v2).toBe(false)
+    expect(workspace.comments.legacy).toBe(false)
   })
 
-  it('resolves comments v2 from root config', async () => {
-    const source = await createSourceFromConfig({
+  it('resolves comments.legacy from root config', async () => {
+    const workspace = await createWorkspaceFromConfig({
       projectId,
       dataset,
-      beta: {comments: {v2: true}},
+      comments: {legacy: true},
     })
 
-    expect(source.beta?.comments?.v2).toBe(true)
+    expect(workspace.comments.legacy).toBe(true)
   })
 
-  it('resolves comments v2 from plugin config', async () => {
-    const source = await createSourceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        definePlugin({
-          name: 'sanity/beta-comments-v2',
-          beta: {comments: {v2: true}},
-        })(),
-      ],
-    })
-
-    expect(source.beta?.comments?.v2).toBe(true)
-  })
-
-  it('lets root config override plugin comments config', async () => {
-    const source = await createSourceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        definePlugin({
-          name: 'sanity/beta-comments-v2',
-          beta: {comments: {v2: false}},
-        })(),
-      ],
-      beta: {comments: {v2: true}},
-    })
-
-    expect(source.beta?.comments?.v2).toBe(true)
-  })
-
-  it('throws when comments is not an object', async () => {
+  it('throws when comments.legacy is not a boolean', async () => {
     await expect(
-      createSourceFromConfig({
+      createWorkspaceFromConfig({
         projectId,
         dataset,
-        beta: {
-          // @ts-expect-error should be an object
-          comments: 'v2',
+        comments: {
+          // @ts-expect-error should be a boolean
+          legacy: 'yes',
         },
       }),
-    ).rejects.toThrow('Expected `beta.comments` to be an object, but received string')
+    ).rejects.toThrow('Expected `comments.legacy` to be a boolean, but received string')
   })
 
-  it('throws when comments v2 is not a boolean', async () => {
-    await expect(
-      createSourceFromConfig({
-        projectId,
-        dataset,
-        beta: {
-          comments: {
-            // @ts-expect-error should be a boolean
-            v2: 'enabled',
-          },
-        },
-      }),
-    ).rejects.toThrow('Expected `beta.comments.v2` to be a boolean, but received string')
+  it('ignores a leftover beta.comments.v2 flag', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      beta: {
+        comments: {v2: true},
+      } as never,
+    })
+
+    expect(workspace.comments.legacy).toBe(false)
   })
 })
 
@@ -894,39 +875,55 @@ describe('document inspectors context', () => {
   })
 })
 
-describe('beta react activity mode config', () => {
+describe('react activity mode config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('defaults to false', async () => {
+  it('defaults to true', async () => {
     const source = await createSourceFromConfig({projectId, dataset})
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
+    expect(source.reactActivityMode.enabled).toBe(true)
   })
 
-  it('resolves from root config', async () => {
+  it('opts out from the root config', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
-      beta: {reactActivityMode: {enabled: true}},
+      reactActivityMode: {enabled: false},
     })
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
+    expect(source.reactActivityMode.enabled).toBe(false)
   })
 
-  it('resolves from plugin config', async () => {
+  it('opts out from plugin config', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
       plugins: [
         definePlugin({
-          name: 'sanity/beta-react-activity-mode',
-          beta: {reactActivityMode: {enabled: true}},
+          name: 'sanity/react-activity-mode',
+          reactActivityMode: {enabled: false},
         })(),
       ],
     })
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
+    expect(source.reactActivityMode.enabled).toBe(false)
+  })
+
+  it('lets root config override a plugin opt-out', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/react-activity-mode',
+          reactActivityMode: {enabled: false},
+        })(),
+      ],
+      reactActivityMode: {enabled: true},
+    })
+
+    expect(source.reactActivityMode.enabled).toBe(true)
   })
 
   it('lets root config override plugin config', async () => {
@@ -935,14 +932,14 @@ describe('beta react activity mode config', () => {
       dataset,
       plugins: [
         definePlugin({
-          name: 'sanity/beta-react-activity-mode',
-          beta: {reactActivityMode: {enabled: true}},
+          name: 'sanity/react-activity-mode',
+          reactActivityMode: {enabled: true},
         })(),
       ],
-      beta: {reactActivityMode: {enabled: false}},
+      reactActivityMode: {enabled: false},
     })
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
+    expect(source.reactActivityMode.enabled).toBe(false)
   })
 
   it('throws when the namespace is not an object', async () => {
@@ -950,12 +947,10 @@ describe('beta react activity mode config', () => {
       createSourceFromConfig({
         projectId,
         dataset,
-        beta: {
-          // @ts-expect-error should be an object
-          reactActivityMode: true,
-        },
+        // @ts-expect-error should be an object
+        reactActivityMode: true,
       }),
-    ).rejects.toThrow('Expected `beta.reactActivityMode` to be an object, but received boolean')
+    ).rejects.toThrow('Expected `reactActivityMode` to be an object, but received boolean')
   })
 
   it('throws when enabled is not a boolean', async () => {
@@ -963,16 +958,12 @@ describe('beta react activity mode config', () => {
       createSourceFromConfig({
         projectId,
         dataset,
-        beta: {
-          reactActivityMode: {
-            // @ts-expect-error should be a boolean
-            enabled: 'yes',
-          },
+        reactActivityMode: {
+          // @ts-expect-error should be a boolean
+          enabled: 'yes',
         },
       }),
-    ).rejects.toThrow(
-      'Expected `beta.reactActivityMode.enabled` to be a boolean, but received string',
-    )
+    ).rejects.toThrow('Expected `reactActivityMode.enabled` to be a boolean, but received string')
   })
 })
 
@@ -1125,6 +1116,28 @@ describe('search strategy selection', () => {
     })
 
     expect(workspaceB.search.strategy).toBe('groq2024')
+  })
+})
+
+describe('document comments config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('resolves comments.enabled and does not expose unstable_comments', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      document: {
+        comments: {
+          enabled: false,
+        },
+      },
+    })
+
+    expect(source.document.comments.enabled({documentId: 'doc1', documentType: 'article'})).toBe(
+      false,
+    )
+    expect(source.document).not.toHaveProperty('unstable_comments')
   })
 })
 

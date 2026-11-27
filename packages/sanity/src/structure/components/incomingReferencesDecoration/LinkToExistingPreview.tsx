@@ -2,24 +2,25 @@ import {type SchemaType} from '@sanity/types'
 import {type BadgeTone} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {type DocumentPreviewStore} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
+import {Text} from 'ui5'
+
+import {PreviewCard} from '../../../core/components/previewCard/PreviewCard'
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {getPreviewStateObservable} from '../../../core/preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../core/preview/utils/getPreviewValueWithFallback'
+import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../core/releases/components/VersionInlineBadge'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
 import {
-  type DocumentPreviewStore,
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   isVersionId,
-  PreviewCard,
-  ReleaseTitle,
-  SanityDefaultPreview,
-  useActiveReleases,
-  useTranslation,
-  VersionInlineBadge,
-} from 'sanity'
-import {Text} from 'ui5'
+} from '../../../core/util/draftUtils'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore

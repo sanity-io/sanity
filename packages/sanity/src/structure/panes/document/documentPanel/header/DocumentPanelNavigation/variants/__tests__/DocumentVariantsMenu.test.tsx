@@ -1,20 +1,17 @@
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  getVersionFromId,
-  isAgentBundleName,
-  type SystemVariant,
-  useActiveReleases,
-  useAgentVersionDisplay,
-  useAllVariants,
-  useDocumentVersions,
-  usePerspective,
-  useSetVariant,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {type SystemVariant, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useSetVariant} from '../../../../../../../../core/perspective/useSetVariant'
+import {useDocumentVersions} from '../../../../../../../../core/releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
+import {isAgentBundleName} from '../../../../../../../../core/store/agent/createAgentBundlesStore'
+import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {getVersionFromId} from '../../../../../../../../core/util/draftUtils'
+import {useAllVariants} from '../../../../../../../../core/variants/store/useAllVariants'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
@@ -29,14 +26,29 @@ import {DocumentVariantsMenu} from '../DocumentVariantsMenu'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
-  useAgentVersionDisplay: vi.fn(),
-  useAllVariants: vi.fn(),
-  useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
-  useSetVariant: vi.fn(),
 }))
 
+vi.mock(
+  '../../../../../../../../core/releases/hooks/useDocumentVersions',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useDocumentVersions: vi.fn(),
+  }),
+)
+vi.mock('../../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
+}))
+
+vi.mock('../../../../../../../../core/perspective/useSetVariant', () => ({
+  useSetVariant: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/store/agent/useAgentVersionDisplay', () => ({
+  useAgentVersionDisplay: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/variants/store/useAllVariants', () => ({
+  useAllVariants: vi.fn(),
+}))
 vi.mock('../../../../../useDocumentPane')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>

@@ -515,11 +515,6 @@ export interface DocumentPluginOptions {
    */
   singletons?: UnresolvedSingletonDefinition[] | SingletonsResolver
 
-  /** @deprecated Use `comments` instead */
-  unstable_comments?: {
-    enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
-  }
-
   /** @internal */
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
@@ -715,6 +710,35 @@ export interface PluginOptions {
   }
 
   /**
+   * Keep recently used tools mounted with React's `<Activity>` while another tool is active.
+   *
+   * On by default. The three most recently used tools stay mounted: inactive ones are hidden with
+   * an `<Activity mode="hidden">` boundary instead of being unmounted, so their state survives the
+   * round trip, and switching back to one of them restores the URL it was last at instead of
+   * resetting it to the tool's start page. Going from Presentation to Structure and back, for
+   * example, keeps the preview iframe loaded and the document you were editing open.
+   *
+   * Opening a fourth tool unmounts the one you have not used for the longest time. Hidden tools
+   * have their effects paused, as with any hidden `<Activity>` boundary.
+   *
+   * Set `enabled` to `false` to unmount a tool as soon as you leave it, and mount it again from
+   * scratch when you come back. A value set on the root config wins over one set by a plugin.
+   *
+   * Hidden `<Activity>` boundaries tear down effects and re-create them on reveal, which custom
+   * studio code and plugins may not expect. If this causes problems in your tools, components or
+   * plugins, set `enabled` to `false`, or see the React documentation's troubleshooting guide for
+   * `<Activity>`: https://react.dev/reference/react/Activity#troubleshooting
+   */
+  reactActivityMode?: {
+    /**
+     * Whether recently used tools stay mounted while another tool is active.
+     *
+     * @defaultValue `true`
+     */
+    enabled?: boolean
+  }
+
+  /**
    * Config for the Sanity Media Library asset source integration.
    * @beta
    */
@@ -837,11 +861,17 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   unstable_sources?: SourceOptions[]
   /**
-   * @deprecated Use `tasks` instead
+   * Set `legacy: true` to keep using the legacy comments, stored in the comments addon dataset,
+   * instead of the Comments API.
+   * @public
    */
-  unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
+  comments?: {
+    legacy?: boolean
+  }
   /**
-   * @internal
+   * Enables or disables tasks in this workspace. Enabled by default.
+   *
+   * @public
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
   /**
@@ -1147,11 +1177,6 @@ export interface Source {
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
 
-    /** @deprecated  Use `comments` instead */
-    unstable_comments: {
-      enabled: (props: DocumentCommentsEnabledContext) => boolean
-    }
-
     /** @internal */
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
@@ -1283,7 +1308,11 @@ export interface Source {
      */
     schemaDescriptorId: Promise<string | undefined>
   }
-  /** @beta */
+  /**
+   * Whether tasks are enabled for this source.
+   *
+   * @public
+   */
   tasks?: WorkspaceOptions['tasks']
 
   scheduledDrafts?: {
@@ -1312,6 +1341,20 @@ export interface Source {
    * @internal
    */
   beta?: BetaFeatures
+  /**
+   * Resolved `reactActivityMode` config.
+   *
+   * Recently used tools stay mounted while another tool is active. `enabled` is `false` only when
+   * the root config or a plugin opted out.
+   */
+  reactActivityMode: {
+    /**
+     * Whether recently used tools stay mounted while another tool is active.
+     *
+     * @defaultValue `true`
+     */
+    enabled: boolean
+  }
   /** Configuration for error handling.
    * @beta
    */
@@ -1375,7 +1418,11 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   apiHost?: string
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
-  schema: Schema
+  /**
+   * The locale source. Initialized and memoized on first access.
+   *
+   * @remarks Object spread, enumeration, and serialization access this enumerable getter.
+   */
   i18n: LocaleSource
   /**
    * @internal
@@ -1388,8 +1435,9 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       dataset: string
       title: string
       auth: AuthStore
-      schema: Schema
       i18n: LocaleSource
+      /** The source's i18next instance. Initialized and memoized on first access. */
+      i18next: i18n
       source: Observable<Source>
     }>
   }
@@ -1416,11 +1464,6 @@ export interface ScheduledPublishingPluginOptions {
    * Sanity is enabling it by default in the config, {@link "../scheduledPublishing/constants.ts"}
    */
   __internal__workspaceEnabled?: boolean
-  /**
-   * Whether to show the use releases warning banner in the tool.
-   * @deprecated The banner this controls is no longer being used
-   */
-  showReleasesBanner?: boolean
 }
 
 /**
@@ -1458,6 +1501,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    * @beta
    */
   unstable_sources: Source[]
+  comments: DefaultPluginsWorkspaceOptions['comments']
   scheduledPublishing: ScheduledPublishingPluginOptions
   apps?: AppsOptions
 }
@@ -1498,7 +1542,7 @@ export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
-  comments: {v2: boolean}
+  comments: {legacy: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
   variants: {enabled: boolean}
@@ -1742,60 +1786,13 @@ export type VariantTypesConfig =
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  form?: {
-    /** @deprecated `enhancedObjectDialog` has been removed. The enhanced object dialog is now always enabled and is considered the default studio experience. */
-    enhancedObjectDialog?: never
-  }
-
   /**
-   * @deprecated - The Start in Create flow has been removed and will be updated in an upcoming studio release.
-   */
-  create?: {
-    /**
-     * When true, a "Start in Sanity Create" action will be shown for all new documents, in place of regular document actions,
-     * when the following are true:
-     * - the origin of the current url is listed under Studios in sanity.to/manage (OR fallbackStudioOrigin is provided)
-     * - [origin]/static/create-manifest.json is available over HTTP GET
-     *
-     * The manifest file is automatically created and deployed when deploying studios with `sanity deploy`
-     *
-     * @see #fallbackStudioOrigin
-     */
-    startInCreateEnabled?: boolean
-
-    /**
-     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
-     * provide a fallback origin as a string.
-     *
-     * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
-     *
-     * If the provided fallback Studio does not expose create-manifest.json "Start in Sanity Create" will fail when using the fallback.
-     *
-     * Example: `wonderful.sanity.studio`
-     *
-     * Keep in mind that when fallback origin is used, Sanity Create will used the schema types and dataset in the *deployed* Studio,
-     * not from localhost.
-     *
-     * To see data synced from Sanity Create in your localhost Studio, you must ensure that the deployed fallback studio uses the same
-     * workspace and schemas as your local configuration.
-     *
-     * @see #startInCreateEnabled
-     */
-    fallbackStudioOrigin?: string
-  }
-  /**
-   * Config for the history events API .
+   * Config for the history events API.
    *
-   * If enabled, it will use the new events API to fetch document history.
-   *
-   * If it is not enabled, it will continue using the legacy Timeline.
+   * Document history always uses the events API. `releases` enables it for the release activity
+   * feed.
    */
   eventsAPI?: {
-    /**
-     * @deprecated This option will be removed in the next major version, after which document
-     * history will always use the events API and the legacy Timeline will no longer be available.
-     */
-    documents?: boolean
     releases?: boolean
   }
   /**
@@ -1827,14 +1824,6 @@ export interface BetaFeatures {
     types?: VariantTypesConfig
   }
   /**
-   * Config for the opt-in Comments API implementation.
-   *
-   * @beta
-   */
-  comments?: {
-    v2?: boolean
-  }
-  /**
    * Control whether the preview of the new document group inventory is
    * switched on.
    *
@@ -1845,31 +1834,6 @@ export interface BetaFeatures {
    * It is switched on automatically when `beta.variants.enabled` is true.
    */
   documentGroupInventory?: {
-    enabled?: boolean
-  }
-  /**
-   * Keep recently used tools mounted with React's `<Activity>` while another tool is active.
-   *
-   * By default the Studio unmounts a tool as soon as you switch to another one, and mounts it
-   * again from scratch when you come back. With this switched on, the three most recently used
-   * tools stay mounted: inactive ones are hidden with an `<Activity mode="hidden">` boundary
-   * instead of being unmounted, so their state survives the round trip, and switching back to one
-   * of them restores the URL it was last at instead of resetting it to the tool's start page.
-   * Going from Presentation to Structure and back, for example, keeps the preview iframe loaded
-   * and the document you were editing open.
-   *
-   * Opening a fourth tool unmounts the one you have not used for the longest time. Hidden tools
-   * have their effects paused, as with any hidden `<Activity>` boundary.
-   *
-   * This feature is not ready for production yet. Only enable it to test in development and
-   * staging environments.
-   *
-   * Hidden `<Activity>` boundaries tear down effects and re-create them on reveal, which custom
-   * studio code and plugins may not expect. If enabling this mode causes problems in your tools,
-   * components or plugins, see the React documentation's troubleshooting guide for `<Activity>`:
-   * https://react.dev/reference/react/Activity#troubleshooting
-   */
-  reactActivityMode?: {
     enabled?: boolean
   }
   /**

@@ -1,0 +1,987 @@
+/* Sizes inside the tool follow the tool's width, not the window's */
+.root {
+  position: relative;
+  container: visionTool / inline-size;
+}
+
+/*
+ * The bars along the bottom of the tool, side by side: the sidebar's toggle, the request column's
+ * action bar and the response column's tab header. Each is `--vision-bottom-bar-height` tall
+ * under a 1px top rule (the header's rule is the split divider above it), so the three rules
+ * form one line.
+ */
+.bottomBar {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: calc(var(--vision-bottom-bar-height) + 1px);
+  border-top: 1px solid var(--card-border-color);
+}
+
+/*
+ * A row of a bottom panel: its tab header, and the toolbar rows of its tabs (the params' view tabs
+ * and actions, the Lint tab's Fix with AI). They share the header's height and insets, so a
+ * toolbar's first and last buttons line up with the tabs and the collapse toggle above them, and
+ * are centered on the same line within their row.
+ */
+.panelBar {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: var(--vision-bottom-bar-height);
+  padding-inline: 8px;
+}
+
+/* `ResizableSplit`: two panes and the divider between them */
+.splitRoot {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.splitRootRow {
+  flex-direction: row;
+}
+
+.splitRootColumn {
+  flex-direction: column;
+}
+
+/* A pane of the split; the primary one gets its size inline, the other takes what is left */
+.splitPane {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/*
+ * The divider: the visible border line, with a hit area straddling it (the same 11px as the
+ * params handle) that shows while hovered, focused or dragged. Above the panes so the whole hit
+ * area can be grabbed, below the sidebar (20).
+ */
+.splitHandle {
+  position: relative;
+  flex: 0 0 1px;
+  background: var(--card-border-color);
+  z-index: 11;
+  touch-action: none;
+  outline: none;
+}
+
+.splitHandle::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+}
+
+.splitHandle:hover::after,
+.splitHandle[data-dragging='true']::after {
+  background: var(--card-shadow-ambient-color);
+}
+
+.splitHandle:focus-visible::after {
+  background: var(--card-shadow-ambient-color);
+  outline: 2px solid var(--card-focus-ring-color);
+  outline-offset: -2px;
+}
+
+/* Held at equal halves: the line takes the focus color while it is dragged or focused */
+.splitHandle[data-snapped='true'][data-dragging='true'],
+.splitHandle[data-snapped='true']:focus-visible {
+  background: var(--card-focus-ring-color);
+}
+
+.splitHandleVertical {
+  cursor: col-resize;
+}
+
+.splitHandleVertical::after {
+  top: 0;
+  bottom: 0;
+}
+
+.splitHandleHorizontal {
+  cursor: row-resize;
+}
+
+.splitHandleHorizontal::after {
+  left: 0;
+  right: 0;
+}
+
+.splitHandleDisabled {
+  cursor: default;
+}
+
+.splitHandleDisabled:hover::after {
+  background: transparent;
+}
+
+/* Fills the pane it is rendered into */
+.paneFill {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.splitPaneContainer {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 0%;
+}
+
+/*
+ * The toolbar of a pane (the query's and the result's label with their actions, the params' view
+ * tabs): a row of its own above the content, which scrolls below it, so the content never shows
+ * through it and the content's scrollbar never runs alongside it. Its bottom rule is drawn only
+ * while the content is scrolled away from its top.
+ */
+.paneToolbar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border-bottom: 1px solid transparent;
+  background-color: var(--card-bg-color);
+  transition: border-color 120ms ease;
+}
+
+.paneToolbar[data-scrolled='true'] {
+  border-bottom-color: var(--card-border-color);
+}
+
+/* The query's and the result's toolbar, as tall as the bars along the bottom of the tool */
+.paneToolbarMain {
+  height: var(--vision-bottom-bar-height);
+  padding: 0 8px 0 12px;
+}
+
+.paneToolbarLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  user-select: none;
+}
+
+/*
+ * The content under a pane's toolbar. When it scrolls itself it keeps its scrollbar's track
+ * whether or not the content overflows, like the Structure tool's list panes, so the content's
+ * width never jumps when it starts or stops overflowing. The studio styles `::-webkit-scrollbar`
+ * (`GlobalStyle`), and WebKit reserves nothing for a styled scrollbar with `scrollbar-gutter`, so
+ * the track is kept with `overflow-y: scroll`; a track with nothing to scroll paints nothing.
+ * Firefox, which ignores those styles, keeps `overflow: auto`.
+ */
+.paneScroll {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Content that scrolls inside its own box (an editor, a graph, a virtual list) */
+.paneScroll[data-fill] {
+  overflow: hidden;
+}
+
+/*
+ * A pane-filling editor's scroller keeps its track the same way. The doubled class beats
+ * CodeMirror's own `overflow: auto`, which it injects after this stylesheet.
+ */
+@supports selector(::-webkit-scrollbar) {
+  .paneScroll:not([data-fill]) {
+    overflow-y: scroll;
+  }
+
+  .paneScroll.paneScroll[data-fill] :global(.cm-scroller) {
+    overflow-y: scroll;
+  }
+}
+
+/*
+ * Generate, under the query's last line in the editor's content: the button, or the bar it opens.
+ * It lines up with the text of the lines above, and sticks to the right of the gutters at the
+ * visible width (both set from the editor's layout), so long lines scrolled sideways keep it in
+ * view. The editor's content is preformatted, monospaced text with a caret; the controls are not.
+ */
+.queryEnd {
+  position: sticky;
+  box-sizing: border-box;
+  padding: 4px var(--vision-editor-line-padding-left);
+  white-space: normal;
+  caret-color: auto;
+  cursor: auto;
+}
+
+/*
+ * The sparkles line up with the first character: the button's padding and the icon's own inset
+ * hang into the margin
+ */
+.queryEndButton {
+  margin-left: -6px;
+}
+
+/* The result's JSON view fills the result pane, its editor scrolling on its own */
+.resultJson {
+  height: 100%;
+}
+
+/*
+ * The box of a JSON editor (a document in Delta, the mutations in Mutate): it takes the height
+ * the drawer leaves over to it, and its document scrolls inside
+ */
+.jsonEditorBox {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/*
+ * The part of a drawer section that gives up height first and scrolls (the changes of a dry run,
+ * the value delta mode returned), so the section's heading and notes stay in view
+ */
+.drawerScroller {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+/*
+ * The divider under a bottom panel's tab header belongs to the expanded body, so the header keeps
+ * the same height inside its borders whether the panel is expanded or collapsed, and its tabs the
+ * same whole-pixel insets above and below. The body stacks the toolbar over the scroll container;
+ * it sets `display: flex` itself, through its `display` prop: `@sanity/ui`'s Box writes its
+ * display as `.x:not([hidden])`, as specific as a doubled class, and its runtime stylesheet
+ * follows this one in a built studio, so a doubled class here lost to it there (and won in
+ * `sanity dev`, where this stylesheet is injected later).
+ */
+.panelBody {
+  flex-direction: column;
+  min-height: 0;
+  border-top: 1px solid var(--card-border-color);
+}
+
+/* Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
+.panelTabs {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/*
+ * TabList is an Inline (inline-block children), so it wraps like text unless told otherwise; the
+ * panel scrolls horizontally instead
+ */
+.panelTabs [data-ui='TabList'] {
+  white-space: nowrap;
+}
+
+/* As wide as @sanity/ui's `Tab` lets a tab grow */
+.panelTab {
+  max-width: 100%;
+}
+
+/*
+ * Option chips in the query column's bottom bar. They sit at the right end of the bar, and scroll
+ * sideways when the bar is narrow, the same way the tab strip does. The Live fetch, Fetch and
+ * menu buttons sit outside this strip and do not move with it.
+ */
+.actionRailChips {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* The buttons keep their width; the space before the chips gives way, then the chips scroll */
+.actionRail > :not(.actionRailChips) {
+  flex-shrink: 0;
+}
+
+/* A chip keeps its width; the strip scrolls instead of cutting it down */
+.actionRailChips > * {
+  flex-shrink: 0;
+}
+
+/*
+ * The auto margin pushes the chips to the right while they fit. Once they overflow it is zero, so
+ * the strip starts at the first chip and scrolls from there, which `justify-content: flex-end`
+ * would not allow: it pushes the overflow out past the start, where it cannot be scrolled to.
+ */
+.actionRailChips > :first-child {
+  margin-inline-start: auto;
+}
+
+/* The query editor fills the main area of the request column, and never less than this */
+.querySection {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 120px;
+}
+
+/*
+ * The open tab's body. It stays as tall as that tab's content (fit-to-content reads it) instead
+ * of stretching to the panel, and it contains its children's margins so they count too.
+ */
+.panelContent {
+  align-self: flex-start;
+  display: flow-root;
+  width: 100%;
+}
+
+/* Content that scrolls inside its own box takes the panel's height; fitting it keeps the size */
+.panelContentFill {
+  height: 100%;
+}
+
+/*
+ * The Content Source Map tab, under its view menu in the panel's toolbar. A view that scrolls
+ * inside its own box gets the panel's height.
+ */
+.sourceMapTab[data-fill] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+}
+
+.editorContainer {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollArea {
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Above the drawer, which comes out from under it (see `sidebar.module.css`) */
+.sidebarRail {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  background: var(--card-bg-color);
+}
+
+/* The collapsed rail's width, which `.sidebarSlot` reserves too */
+.sidebarRailCollapsed {
+  width: 49px;
+}
+
+.sidebarRailExpanded {
+  width: 224px;
+}
+
+/* On phones the expanded rail floats over the content instead of squeezing it */
+.sidebarRailOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /* Above the floating editor labels (10) and the split pane resizers */
+  z-index: 21;
+  background: var(--card-bg-color);
+  box-shadow: 0 0 0 1px var(--card-border-color);
+}
+
+/* A sidebar item, which a count can sit on */
+.sidebarItem {
+  position: relative;
+}
+
+/* Keeps the collapsed rail's room reserved while the expanded rail floats over the content */
+.sidebarSlot {
+  position: relative;
+  flex-shrink: 0;
+  width: 49px;
+}
+
+.sidebarDrawer {
+  width: 300px;
+  flex-shrink: 0;
+  min-height: 0;
+  background: var(--card-bg-color);
+}
+
+/* The tab's tools and the settings take more room than a list of queries */
+.sidebarDrawerWide {
+  width: min(480px, 45cqi);
+}
+
+/*
+ * On phones the drawer covers the whole width, rail included, instead of leaving the tabs area a
+ * sliver: it closes from its own header, and an expanded rail floating over it would otherwise
+ * hide most of its list.
+ */
+.sidebarDrawerOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  /* Above the expanded rail (21) */
+  z-index: 22;
+}
+
+/*
+ * The tab strip, laid out like an editor's: full-height rectangular tabs, each closed off by a
+ * vertical rule, on a tinted band whose bottom rule is an inset shadow, so the selected tab's
+ * background can cover it and merge with the panel below (a border would be clipped away by the
+ * strip's overflow instead).
+ */
+/* Holds the scrolling strip and the scroll thumb laid over its bottom edge */
+.tabStrip {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/*
+ * Scrolls sideways once the tabs overflow, with its native scrollbar hidden: that one takes a row
+ * of its own below the tabs. `.tabScrollThumb` stands in for it. The bottom rule is drawn at the
+ * tabs' edge and stays put while the tabs scroll.
+ */
+.tabBar {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  scroll-padding-inline-end: 36px;
+  flex-shrink: 0;
+  background:
+    linear-gradient(var(--card-border-color), var(--card-border-color)) 0 35px / 100% 1px no-repeat,
+    var(--card-bg2-color);
+}
+
+/* WebKit before `scrollbar-width`, which the studio's `::-webkit-scrollbar` styles would size */
+.tabBar::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * An editor-style overlay scrollbar: a thin thumb with no track, over the tabs' bottom edge, that
+ * shows while the strip is hovered, scrolled or dragged. `useOverlayScrollThumb` sizes and moves
+ * it, and keeps it clear of the pinned new tab button.
+ */
+.tabScrollThumb {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--card-muted-fg-color) 45%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 300ms ease,
+    background-color 100ms ease;
+}
+
+/* A taller hit area than the thumb draws, so it is easy to grab */
+.tabScrollThumb::before {
+  content: '';
+  position: absolute;
+  inset: -5px 0 0;
+}
+
+.tabScrollThumb[data-overflowing='true'][data-scrolling='true'],
+.tabScrollThumb[data-overflowing='true'][data-dragging='true'] {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 100ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tabStrip:hover .tabScrollThumb[data-overflowing='true'] {
+    opacity: 1;
+    pointer-events: auto;
+    transition-duration: 100ms;
+  }
+
+  .tabScrollThumb:hover,
+  .tabScrollThumb[data-dragging='true'] {
+    background: color-mix(in srgb, var(--card-muted-fg-color) 75%, transparent);
+  }
+}
+
+/* Bleed buttons paint the card background, which reads as white boxes on the tinted strip */
+.tabBar [data-ui='Button']:not(:hover) {
+  background-color: transparent;
+}
+
+/* The reorderable list of tabs (a motion Reorder.Group rendered as a div) */
+.tabList {
+  display: flex;
+  align-items: stretch;
+  height: 36px;
+}
+
+/* The draggable wrapper around each tab; motion positions it while dragging and reordering */
+.tabItem {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.tabItem[data-dragging='true'] {
+  z-index: 1;
+}
+
+/*
+ * Half of an Untitled query tab, on the 4px grid. A `*` plus its close button is about 51px, so
+ * 64px still leaves breathing room and nothing clips. The close button keeps its room when
+ * hidden, so hovering never changes the width.
+ */
+.tab {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 64px;
+  max-width: 240px;
+  padding-right: 6px;
+  border-right: 1px solid var(--card-border-color);
+  transform-origin: bottom center;
+}
+
+/* A tab opened by a click grows up out of the strip's bottom rule */
+.tab[data-entering='true'] {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .tab[data-entering='true'] {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @starting-style {
+    .tab[data-entering='true'] {
+      transform: none;
+    }
+  }
+}
+
+/*
+ * Hover tints the whole tab and brightens its title, easing in; selecting a tab (often from the
+ * keyboard) switches its background at once. Touch devices get no hover, which would otherwise
+ * stick after a tap.
+ */
+@media (hover: hover) and (pointer: fine) {
+  /* Halfway between the strip and its rules: `--card-muted-bg-color` is the strip's own color */
+  .tab:not([data-selected='true']):hover {
+    background: color-mix(in srgb, var(--card-border-color) 50%, var(--card-bg2-color));
+    transition: background-color 100ms ease;
+  }
+
+  .tab:not([data-selected='true']):hover .tabTitle {
+    color: var(--card-fg-color);
+  }
+
+  .tab:hover .tabCloseButton {
+    opacity: 1;
+    transition:
+      opacity 100ms ease,
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+.tab[data-selected='true'] {
+  background: var(--card-bg-color);
+}
+
+/* The selected tab's accent, over the strip's bottom rule */
+.tab[data-selected='true']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--card-focus-ring-color);
+  pointer-events: none;
+}
+
+/* Keyboard focus outlines the whole tab, inside the strip, which clips anything outside it */
+.tab:has(.tabTitleButton:focus-visible) {
+  outline: 1px solid var(--card-focus-ring-color);
+  outline-offset: -1px;
+}
+
+.tabItem[data-dragging='true'] .tab {
+  box-shadow: 0 2px 6px var(--card-shadow-umbra-color);
+}
+
+/* Fills the tab up to the close button, so the whole tab selects it */
+.tabTitleButton {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  align-self: stretch;
+  gap: var(--space-2, 8px);
+  min-width: 0;
+  margin: 0;
+  padding: 0 8px 0 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+}
+
+.tabTitleButton:focus-visible {
+  outline: none;
+}
+
+.tabTitle {
+  min-width: 0;
+}
+
+.tabSharedIcon {
+  flex-shrink: 0;
+}
+
+.tabCloseButton {
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.tab:focus-within .tabCloseButton,
+.tab[data-selected='true'] .tabCloseButton {
+  opacity: 1;
+}
+
+.tabTitleInput {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+
+/*
+ * Holds the new tab button right after the last tab, and pins it to the strip's right edge once
+ * the tabs overflow, so it stays whole while the tabs scroll underneath it. Its own background
+ * and rules cover them; the left rule lands on the last tab's when nothing overflows.
+ */
+.newTabSlot {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-shrink: 0;
+  height: 36px;
+  background: var(--card-bg2-color);
+  box-shadow:
+    -1px 0 0 var(--card-border-color),
+    inset 0 -1px 0 var(--card-border-color);
+}
+
+/* A square cell at the strip's height */
+.newTabButton {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+}
+
+/* The result pane: its toolbar, and the result scrolling below it */
+.resultContainer {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  /* Turning critical for a failed fetch, and back, is a color change */
+  transition: background-color 200ms ease;
+}
+
+/* The card sets `display: flex` through its `display` prop; see `.panelBody` */
+.resultContainer {
+  flex-direction: column;
+}
+
+/*
+ * A result view (tree, JSON or graph) fades in when it is switched to and when the first result
+ * arrives. A newer result replaces the shown one in place, without motion: fetches come from a
+ * shortcut and from every live update, and a result being read should not move.
+ */
+.resultView,
+.resultEnter {
+  transition-property: opacity, transform;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultView,
+  .resultEnter {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/*
+ * While a newer fetch is in flight the shown result stays; once the fetch has taken long enough
+ * to notice it dims, so a quick fetch never flickers. It brightens quickly when the response
+ * arrives. The paired durations and delays below line up with `transition-property` above
+ * (opacity, then transform), so a view switched to mid-fetch still lifts in on mount instead of
+ * losing that transition entirely to this rule's higher specificity. Its own `@starting-style`
+ * starts that view already dimmed rather than hidden, so it is never invisible for the 400ms
+ * meant to hold an already-visible result steady before dimming it.
+ */
+.resultContainer[data-refreshing='true'] .resultView {
+  opacity: 0.5;
+  transition-duration: 200ms, 180ms;
+  transition-delay: 400ms, 0s;
+  transition-timing-function: ease, cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultContainer[data-refreshing='true'] .resultView {
+    opacity: 0.5;
+  }
+}
+
+/*
+ * The tree wraps to the pane's width and never scrolls sideways. Its hover band reaches past the
+ * lines into this box's padding and beyond, and is clipped here at the pane's edges rather than
+ * widening the pane's scroller.
+ */
+.treeContent {
+  overflow-x: clip;
+}
+
+/* The delayed spinner fades in rather than popping up */
+.resultSpinner [data-ui='Spinner'] {
+  transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultSpinner [data-ui='Spinner'] {
+    opacity: 0;
+  }
+}
+
+/* Wraps a menu button so a tooltip can attach to it without taking the button's ref */
+.tooltipTarget {
+  display: inline-flex;
+}
+
+/*
+ * MenuItem clips its `text` to one line, so the reason a CSV file cannot be built is rendered
+ * as a child of the item. It wraps under the label instead of being cut off, and the child's
+ * own padding would otherwise open a second padded row.
+ */
+.exportCsvUnavailable > span:last-child {
+  display: block;
+  padding-top: 0;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* A disabled menu item lets the pointer through to its wrapper, which carries the tooltip */
+.disabledMenuItemTarget > [disabled] {
+  pointer-events: none;
+}
+
+.exportUnavailableHint {
+  display: block;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/*
+ * An unavailable action is a disabled button wrapped in a focusable stand-in, which shows the
+ * focus ring the disabled button cannot
+ */
+.actionRail [aria-disabled='true'][tabindex] {
+  border-radius: 3px;
+  outline: none;
+}
+
+.actionRail [aria-disabled='true'][tabindex]:focus-visible {
+  box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+}
+
+/* Less motion: views and confirmations still fade, nothing moves or scales */
+@media (prefers-reduced-motion: reduce) {
+  .resultView,
+  .resultEnter {
+    transition-property: opacity;
+  }
+
+  .resultView,
+  .resultEnter {
+    transform: none;
+  }
+
+  @starting-style {
+    .resultView,
+    .resultEnter {
+      transform: none;
+    }
+  }
+}
+
+.codeBlock {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+/* The tabs of the Export query dialog scroll sideways on a narrow screen instead of squeezing */
+.exportTabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* The path of a snippet file, above its code */
+.exportFileHeader {
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+/*
+ * Long lines of an export snippet wrap rather than scroll the code sideways; the copied text keeps
+ * its own lines
+ */
+.exportCode pre,
+.exportCode code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The highlighted code of a snippet file, in the card's colors where no token colors it */
+.exportCodeBlock {
+  margin: 0;
+  color: var(--card-code-fg-color, var(--card-fg-color));
+}
+
+.exportCodeBlock code {
+  font: inherit;
+}
+
+/*
+ * Single-line, ellipsized query preview. @sanity/ui's Code trims its line box with
+ * pseudo-elements, so the ellipsis is applied to a wrapper with the code rendered inline.
+ */
+.previewCode {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewCode pre,
+.previewCode code {
+  display: inline;
+  white-space: inherit;
+}
+
+.previewCode pre::before,
+.previewCode pre::after {
+  content: none;
+}
+
+/* A lint finding is a full-width button that reads as a list row */
+.lintFindingButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lintFindingButton:hover {
+  background: var(--card-muted-bg-color);
+}
+
+/* A flex item whose content truncates instead of widening it past the row */
+.shrinkable {
+  min-width: 0;
+}
+
+/* A bleed button holding a stack of texts that must truncate rather than overflow the list */
+.listItemButton {
+  min-width: 0;
+}
+
+.listItemButton [data-ui='Box'],
+.listItemButton [data-ui='Flex'] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.listItemButton > [data-ui='Box'] {
+  width: 100%;
+}
+
+/*
+ * A query tab shown again (`QueryTab`), for the frames around the reveal: lifting the hidden
+ * tab's `display: none` would start every `@starting-style` transition inside it over
+ */
+.queryTabRevealing,
+.queryTabRevealing *,
+.queryTabRevealing *::before,
+.queryTabRevealing *::after {
+  transition: none !important;
+}
+
+/*
+ * Overscroll. Nothing rubber-bands sideways: a sideways bounce shifts the gutter, and a sideways
+ * swipe handed on past the edge turns into the browser's back and forward gesture. The long
+ * panes (the editors, the result, the bottom panels) keep their vertical bounce. Nested
+ * scrollers (strips, drawers, menus, the sidebar) keep it to themselves rather than chaining it
+ * into the studio.
+ */
+.paneScroll {
+  overscroll-behavior-x: none;
+}
+
+.root :global(.cm-scroller) {
+  overscroll-behavior-x: none;
+}
+
+.tabBar,
+.panelTabs,
+.actionRailChips,
+.exportTabs,
+.scrollArea,
+.drawerScroller,
+.codeBlock,
+.nestedScroll {
+  overscroll-behavior: none contain;
+}
+
+/* A text field in a drawer (the settings' hidden diff fields) */
+.nestedScroll textarea {
+  overscroll-behavior: none contain;
+}
+
+/*
+ * A portaled menu, picker or autocomplete scrolls inside the popover (its wrapper, the menu or the
+ * listbox) and never hands the scroll on to whatever is under it. It has no scrollers that should
+ * chain, so every element in it gets the rule; on one that does not scroll it does nothing. A menu
+ * button's popover takes no class of its own, so its wrapper is found from the menu inside it.
+ */
+.popoverScroll,
+.popoverScroll * {
+  overscroll-behavior: none contain;
+}
+
+[data-ui='Popover__wrapper']:has(.popoverScroll) {
+  overscroll-behavior: none contain;
+}
+
+/* A document-id field is one grid column. Its menu is wider, so a preview title fits. */
+.documentIdMenu {
+  min-width: 280px;
+}

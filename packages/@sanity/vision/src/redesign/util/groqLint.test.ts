@@ -1,0 +1,396 @@
+import {setDiagnostics} from '@codemirror/lint'
+import {EditorState} from '@codemirror/state'
+import {EditorView} from '@codemirror/view'
+import {Schema} from '@sanity/schema'
+import {describe, expect, it, vi} from 'vitest'
+
+import {
+  functionLibrary,
+  type GroqEditorLabels,
+  groqEditorLabels,
+  queryParamValues,
+  querySchema,
+} from './groqEditorContext'
+import {
+  collectFindings,
+  groqLintSource,
+  PARAM_LINT_MARK_CLASS,
+  type QueryLintFinding,
+  renderMessage,
+  splitMessage,
+  syntaxErrorDiagnostic,
+  toDiagnostics,
+  worstSeverity,
+} from './groqLint'
+import * as groqWasm from './groqWasm'
+import {createQuerySchema} from './schemaCheck'
+
+const EDITOR_LABELS: GroqEditorLabels = {
+  reference: 'GROQ functions reference',
+  apiVersion: (version) => `Needs API version ${version} or later`,
+  deltaOnly: 'Only in delta mode',
+  declaredOn: (line) => `Declared on line ${line}`,
+  inLibrary: 'In your library',
+  completionDeclared: 'in this query',
+  completionLibrary: 'from your library',
+  extract: 'Extract to function',
+  addFromLibrary: 'Declare it',
+  useSuggestion: (suggestion) => `Use ${suggestion}`,
+  fieldOf: (types) => `Field of ${types}`,
+  systemField: 'System field',
+  documentType: 'Document type',
+  operatorReference: 'Operators',
+  paramValue: 'In params',
+  paramNotSet: 'Not in params',
+}
+
+function viewOf(doc: string) {
+  return {state: EditorState.create({doc})}
+}
+
+const SCHEMA = createQuerySchema(
+  Schema.compile({
+    name: 'test',
+    types: [
+      {
+        name: 'author',
+        type: 'document',
+        fields: [
+          {name: 'name', type: 'string'},
+          {name: 'bestFriend', type: 'reference', to: [{type: 'author'}]},
+        ],
+      },
+    ],
+  }),
+)
+
+describe('schema findings', () => {
+  it('lints the types and fields the schema does not have, with an action writing the suggestion', async () => {
+    const query = '*[_type == "athor"]{nmae, "f": bestFriend.name}'
+    const onApplySuggestion = vi.fn()
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: query,
+        extensions: [
+          groqEditorLabels.of({...EDITOR_LABELS, onApplySuggestion}),
+          querySchema.of(SCHEMA),
+        ],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    expect(
+      diagnostics.map((diagnostic) => [
+        query.slice(diagnostic.from, diagnostic.to),
+        diagnostic.source,
+        diagnostic.severity,
+        diagnostic.actions?.map((action) => action.name),
+      ]),
+    ).toEqual([['"athor"', 'vision/unknown-type', 'warning', ['Use "author"']]])
+
+    // With the type fixed, its fields are checked
+    const fixed = diagnostics.find((diagnostic) => diagnostic.source === 'vision/unknown-type')
+    if (!fixed?.actions) throw new Error('expected a type suggestion')
+    fixed.actions[0].apply(view, fixed.from, fixed.to)
+    expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend.name}')
+    const next = await groqLintSource(view)
+    expect(next.map((diagnostic) => [diagnostic.source, diagnostic.actions?.[0].name])).toEqual([
+      ['vision/unknown-field', 'Use name'],
+      ['vision/not-a-reference', 'Use ->'],
+    ])
+    // The dot becomes an arrow, though the diagnostic is on the name after it
+    const reference = next.find((diagnostic) => diagnostic.source === 'vision/not-a-reference')
+    if (!reference?.actions) throw new Error('expected a reference suggestion')
+    reference.actions[0].apply(view, reference.from, reference.to)
+    expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend->name}')
+    expect(onApplySuggestion).toHaveBeenCalledTimes(2)
+    view.destroy()
+  })
+
+  it('reports a param value the schema has no type for at the param, with the fix for the params', async () => {
+    const query = '*[_type == $type]{nmae}'
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: query,
+        extensions: [
+          groqEditorLabels.of(EDITOR_LABELS),
+          querySchema.of(SCHEMA),
+          queryParamValues.of({type: 'athor'}),
+        ],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    const [typeDiagnostic] = diagnostics
+    expect(typeDiagnostic).toMatchObject({
+      source: 'vision/unknown-type',
+      markClass: PARAM_LINT_MARK_CLASS,
+    })
+    // Its fix is in the params, not in the query
+    expect(typeDiagnostic.actions).toBeUndefined()
+
+    const state = view.state.update(setDiagnostics(view.state, diagnostics)).state
+    expect(collectFindings(state)).toEqual([
+      expect.objectContaining({
+        source: 'vision/unknown-type',
+        param: {name: 'type', path: [], value: 'athor', suggestion: 'author'},
+      }),
+    ])
+    view.destroy()
+  })
+
+  it('collects the quick fix of a query finding, at its offsets in the query', async () => {
+    const query = '*[_type == "author"]{nmae}'
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: query,
+        extensions: [groqEditorLabels.of(EDITOR_LABELS), querySchema.of(SCHEMA)],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    const state = view.state.update(setDiagnostics(view.state, diagnostics)).state
+    const [finding] = collectFindings(state)
+    expect(finding.param).toBeUndefined()
+    const from = query.indexOf('nmae')
+    expect(finding.fix).toEqual({from, to: from + 4, insert: 'name'})
+    view.destroy()
+  })
+
+  it('checks nothing against a schema the editor was not given', async () => {
+    const query = '*[_type == "athor"]{nmae}'
+    expect(
+      (await groqLintSource(viewOf(query))).filter((diagnostic) =>
+        diagnostic.source?.startsWith('vision/'),
+      ),
+    ).toEqual([])
+  })
+})
+
+describe('groqLintSource', () => {
+  it('turns groq-lint findings into diagnostics on the offending ranges', async () => {
+    const query = '*[_type == "post" && author->name == "x"]{title}'
+    const diagnostics = await groqLintSource(viewOf(query))
+
+    expect(
+      diagnostics.map((diagnostic) => [
+        diagnostic.source,
+        diagnostic.severity,
+        query.slice(diagnostic.from, diagnostic.to),
+      ]),
+    ).toEqual([['groq-lint/join-in-filter', 'error', 'author->']])
+  })
+
+  it('reports a query that does not parse as a single error', async () => {
+    const query = '*[_type == "a"'
+    const diagnostics = await groqLintSource(viewOf(query))
+
+    expect(diagnostics).toEqual([
+      {
+        from: 1,
+        to: 14,
+        severity: 'error',
+        message: "expected ']' following expression",
+        source: 'groq',
+      },
+    ])
+  })
+
+  it('does not flag an unsliced query, which is what exploring a dataset starts from', async () => {
+    expect(await groqLintSource(viewOf('*[_type == "pokemon"]'))).toEqual([])
+    expect(await groqLintSource(viewOf('*[_type == "post"]{title}'))).toEqual([])
+    expect(await groqLintSource(viewOf('*[_type == "post"][0...10]{title}'))).toEqual([])
+  })
+
+  it('still flags other groq-lint rules on an unsliced query', async () => {
+    const query = '*[_type == "pokemon" && trainer->name == "x"]'
+    const diagnostics = await groqLintSource(viewOf(query))
+    expect(diagnostics.map((diagnostic) => diagnostic.source)).toEqual(['groq-lint/join-in-filter'])
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.source === 'groq-lint/unlimited-query'),
+    ).toBe(false)
+  })
+
+  it('leaves the wasm alone for a blank document, which every new tab starts as', async () => {
+    const lintSpy = vi.spyOn(groqWasm, 'lintGroq')
+    expect(await groqLintSource(viewOf(''))).toEqual([])
+    expect(await groqLintSource(viewOf('  \n'))).toEqual([])
+    expect(lintSpy).not.toHaveBeenCalled()
+    lintSpy.mockRestore()
+  })
+
+  it('checks custom functions and function calls along with the groq-lint rules', async () => {
+    const query = 'fn ex::f($p) = $p{"x": $p.y};\n*{"n": count(), "f": ex::f(@)}'
+    const diagnostics = await groqLintSource(viewOf(query))
+
+    expect(
+      diagnostics.map((diagnostic) => [
+        diagnostic.source,
+        query.slice(diagnostic.from, diagnostic.to),
+      ]),
+    ).toEqual([
+      ['vision/parameter-reuse', '$p'],
+      ['vision/arity', 'count'],
+    ])
+    const rendered = diagnostics
+      .find((diagnostic) => diagnostic.source === 'vision/arity')
+      ?.renderMessage?.(new EditorView())
+    expect(rendered).toBeDefined()
+    const container = document.createElement('div')
+    container.append(rendered ?? '')
+    expect(container.innerHTML).toBe('<code>count()</code> takes one argument, not 0')
+  })
+
+  it('says what is wrong with a declaration the parser rejects', async () => {
+    const [diagnostic] = await groqLintSource(viewOf('fn foo($p) = $p{name}; *'))
+    expect(diagnostic).toMatchObject({
+      severity: 'error',
+      source: 'groq',
+      message: 'Custom functions need a namespace of their own: `fn my::foo(…)`',
+    })
+  })
+
+  it('offers to declare a library function the query calls without declaring it', async () => {
+    const onApplySuggestion = vi.fn()
+    const library = [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}]
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: '*{"author": ex::author(author)}',
+        extensions: [
+          functionLibrary.of(library),
+          groqEditorLabels.of({...EDITOR_LABELS, onApplySuggestion}),
+        ],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    expect(diagnostics.map((diagnostic) => diagnostic.source)).toEqual(['vision/unknown-function'])
+    const diagnostic = diagnostics[0]
+
+    expect(diagnostic.source).toBe('vision/unknown-function')
+    expect(diagnostic.actions?.map((action) => action.name)).toEqual(['Declare it'])
+    diagnostic.actions?.[0].apply(view, diagnostic.from, diagnostic.to)
+    expect(onApplySuggestion).toHaveBeenCalledTimes(1)
+    expect(view.state.doc.toString()).toBe(
+      'fn ex::author($ref) = $ref->{name};\n\n*{"author": ex::author(author)}',
+    )
+    view.destroy()
+  })
+
+  it('still checks the functions of a query that parses when the wasm cannot be loaded', async () => {
+    const lintSpy = vi.spyOn(groqWasm, 'lintGroq').mockRejectedValue(new Error('offline'))
+    expect(
+      (await groqLintSource(viewOf('*{"n": count()}'))).map((diagnostic) => diagnostic.source),
+    ).toEqual(['vision/arity'])
+    expect(await groqLintSource(viewOf('*{"n": count(}'))).toEqual([])
+    lintSpy.mockRestore()
+  })
+})
+
+describe('toDiagnostics', () => {
+  it('clamps ranges to the document and never lets `to` precede `from`', () => {
+    const [first, second] = toDiagnostics(
+      [
+        {ruleId: 'large-pages', message: 'Large page', severity: 'warning', from: 2, to: 99},
+        {ruleId: 'match-on-id', message: 'Match on id', severity: 'info', from: 8, to: 3},
+      ],
+      10,
+    )
+    expect([first.from, first.to, first.severity]).toEqual([2, 10, 'warning'])
+    expect([second.from, second.to, second.severity]).toEqual([8, 8, 'info'])
+  })
+})
+
+describe('collectFindings', () => {
+  it('lists the editor diagnostics with their line and column', () => {
+    const doc = '*[_type == "post"\n  && author->name == "x"]'
+    let state = EditorState.create({doc})
+    state = state.update(
+      setDiagnostics(state, [
+        {
+          from: doc.indexOf('author->'),
+          to: doc.indexOf('author->') + 'author->'.length,
+          severity: 'error',
+          message: 'Avoid joins',
+          source: 'groq-lint/join-in-filter',
+        },
+        {from: 0, to: 1, severity: 'info', message: 'Everything'},
+      ]),
+    ).state
+
+    expect(collectFindings(state)).toEqual([
+      {
+        from: 0,
+        to: 1,
+        line: 1,
+        column: 1,
+        severity: 'info',
+        message: 'Everything',
+        source: undefined,
+      },
+      {
+        from: 23,
+        to: 31,
+        line: 2,
+        column: 6,
+        severity: 'error',
+        message: 'Avoid joins',
+        source: 'groq-lint/join-in-filter',
+      },
+    ])
+  })
+})
+
+describe('splitMessage', () => {
+  it('marks the backtick-quoted segments as code', () => {
+    expect(splitMessage('Avoid `->` in filters; write `count(*[])`.')).toEqual([
+      {text: 'Avoid ', code: false},
+      {text: '->', code: true},
+      {text: ' in filters; write ', code: false},
+      {text: 'count(*[])', code: true},
+      {text: '.', code: false},
+    ])
+    expect(splitMessage('plain')).toEqual([{text: 'plain', code: false}])
+  })
+})
+
+describe('renderMessage', () => {
+  it('renders the backtick-quoted GROQ as inline code', () => {
+    const container = document.createElement('div')
+    container.append(renderMessage('Avoid `->` in filters; write `count(*[])` instead.'))
+
+    expect(container.innerHTML).toBe(
+      'Avoid <code>-&gt;</code> in filters; write <code>count(*[])</code> instead.',
+    )
+    expect(container.textContent).toBe('Avoid -> in filters; write count(*[]) instead.')
+  })
+})
+
+describe('syntaxErrorDiagnostic', () => {
+  it('keeps the parser message and clamps the range', () => {
+    expect(syntaxErrorDiagnostic(new groqWasm.GroqSyntaxError('unexpected end', 4, 20), 6)).toEqual(
+      {
+        from: 4,
+        to: 6,
+        severity: 'error',
+        message: 'unexpected end',
+        source: 'groq',
+      },
+    )
+  })
+})
+
+describe('worstSeverity', () => {
+  const finding = (severity: QueryLintFinding['severity']): QueryLintFinding => ({
+    from: 0,
+    to: 1,
+    line: 1,
+    column: 1,
+    severity,
+    message: 'm',
+    source: undefined,
+  })
+
+  it('picks the most severe finding, so a lone warning does not read as an error', () => {
+    expect(worstSeverity([])).toBeUndefined()
+    expect(worstSeverity([finding('warning')])).toBe('warning')
+    expect(worstSeverity([finding('hint'), finding('info')])).toBe('info')
+    expect(worstSeverity([finding('warning'), finding('error'), finding('info')])).toBe('error')
+  })
+})

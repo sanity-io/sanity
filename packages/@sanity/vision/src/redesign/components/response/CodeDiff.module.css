@@ -1,0 +1,15 @@
+/*
+ * The diff's chrome, as the overrides `@pierre/diffs` reads through its shadow root. Added and
+ * removed lines take the studio theme's positive and critical tones: pierre mixes their line,
+ * gutter and word backgrounds from these against the card background. The gutter, its line
+ * numbers and the collapsed lines' bar match the editors.
+ */
+.codeDiff {
+  --diffs-addition-color-override: var(--card-badge-positive-dot-color);
+  --diffs-deletion-color-override: var(--card-badge-critical-dot-color);
+  --diffs-fg-number-addition-override: var(--card-badge-positive-fg-color);
+  --diffs-fg-number-deletion-override: var(--card-badge-critical-fg-color);
+  --diffs-fg-number-override: color-mix(in srgb, var(--card-muted-fg-color) 70%, transparent);
+  --diffs-gap-style: 1px solid var(--card-border-color);
+  --diffs-bg-separator-override: var(--card-code-bg-color);
+}

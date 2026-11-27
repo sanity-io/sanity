@@ -29,8 +29,11 @@ const mockSource = {
 }
 
 // The real changesInspector is used below, and it reaches for useTranslation in its menu item.
-vi.mock('sanity', () => ({
+vi.mock('../../../../core/studio/source', () => ({
   useSource: () => mockSource,
+}))
+
+vi.mock('sanity/i18n', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

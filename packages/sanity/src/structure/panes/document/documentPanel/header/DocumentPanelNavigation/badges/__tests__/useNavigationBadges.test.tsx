@@ -1,15 +1,12 @@
 import {renderHook} from '@testing-library/react'
-import {
-  getVersionFromId,
-  type ObjectSchemaType,
-  useAgentVersionDisplay,
-  useDocumentVersions,
-  usePerspective,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {type ObjectSchemaType, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useDocumentVersions} from '../../../../../../../../core/releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
+import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {getVersionFromId} from '../../../../../../../../core/util/draftUtils'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
@@ -18,9 +15,19 @@ import {useNavigationBadges} from '../useNavigationBadges'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useAgentVersionDisplay: vi.fn(),
-  useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+
+vi.mock(
+  '../../../../../../../../core/releases/hooks/useDocumentVersions',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useDocumentVersions: vi.fn(),
+  }),
+)
+
+vi.mock('../../../../../../../../core/store/agent/useAgentVersionDisplay', () => ({
+  useAgentVersionDisplay: vi.fn(),
 }))
 
 vi.mock('../../../../../useDocumentPane')

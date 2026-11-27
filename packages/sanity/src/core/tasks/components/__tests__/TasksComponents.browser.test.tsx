@@ -208,7 +208,7 @@ function TargetWorkspaceBridge(props: {children: ReactNode}) {
         apiHost: workspace.apiHost,
         schema: workspace.schema,
         i18n: workspace.i18n,
-        comments: {v2: false},
+        comments: workspace.comments,
         tasks: {enabled: true},
         scheduledDrafts: {enabled: false},
         variants: {enabled: false},

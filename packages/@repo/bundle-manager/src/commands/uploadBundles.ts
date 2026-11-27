@@ -8,8 +8,9 @@ import {MONOREPO_ROOT, readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
 
 import {isValidTag} from '../assert'
-import {appVersion, corePkgs, VALID_TAGS} from '../constants'
+import {corePkgs, VALID_TAGS} from '../constants'
 import {createStorageClient} from '../helpers/createStorageClient'
+import {getBundleDestination} from '../helpers/getBundleDestination'
 import {updateManifestWith} from '../helpers/updateManifestWith'
 import {addVersion} from '../operations/addVersion'
 import {tagVersion} from '../operations/tagVersion'
@@ -65,21 +66,17 @@ async function copyPackages(asVersion?: string) {
     const version = asVersion || packageJson.version
     packageVersions[pkg] = version
 
-    // Convert slashes to double underscores
-    // Needed for `@sanity/vision` and other scoped packages
-    const cleanDir = cleanDirName(pkg)
-
-    for await (const filePath of getFiles(path.join(MONOREPO_ROOT, `packages/${pkg}/dist`))) {
+    const distDir = path.join(MONOREPO_ROOT, `packages/${pkg}/dist`)
+    for await (const filePath of getFiles(distDir)) {
       try {
-        const fileName = path.basename(filePath)
-        const ext = path.extname(fileName)
+        const ext = path.extname(filePath)
         const contentType = mimeTypes[ext]
         if (!contentType) {
           throw new Error(`Unknown content type for file ${filePath}`)
         }
 
         const options: UploadOptions = {
-          destination: `modules/${appVersion}/${cleanDir}/${version}/bare/${fileName}`,
+          destination: getBundleDestination({pkg, version, distDir, filePath}),
           gzip: true,
           contentType,
           metadata: {

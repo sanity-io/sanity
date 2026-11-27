@@ -1,2 +1,7 @@
-export type {VisionBetaConfig, VisionLocaleResourceKeys, VisionToolConfig} from './types'
+export type {
+  VisionAiConfig,
+  VisionAiFeatures,
+  VisionLocaleResourceKeys,
+  VisionToolConfig,
+} from './types'
 export {visionTool} from './visionTool'

@@ -5,10 +5,49 @@ import {I18nextProvider} from 'react-i18next'
 import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useActiveWorkspace} from '../../studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {useSource} from '../../studio/source'
+import {getFallbackI18nInstance} from '../fallback'
 import {defaultLocale} from '../locales'
 import {storePreferredLocale} from '../localeStore'
 import {type Locale} from '../types'
+
+const fallbackI18n = getFallbackI18nInstance()
+
+/**
+ * Provides the core translations needed before a workspace source is available.
+ *
+ * The studio's own strings load on demand, so a `useTranslation` above
+ * `ActiveWorkspaceLocaleProvider` (the workspace loading, not found and config error screens)
+ * suspends until they have arrived. The loading block without text needs no translation.
+ *
+ * @internal
+ */
+export function FallbackLocaleProvider({children}: PropsWithChildren) {
+  return (
+    <Suspense fallback={<LoadingBlock />}>
+      <I18nextProvider i18n={fallbackI18n}>{children}</I18nextProvider>
+    </Suspense>
+  )
+}
+
+/**
+ * Provides the active workspace's translations, so screens rendered before a workspace source
+ * resolves (login, access requests) use the workspace's configured and preferred locale.
+ *
+ * @internal
+ */
+export function ActiveWorkspaceLocaleProvider({children}: PropsWithChildren) {
+  const {activeWorkspace} = useActiveWorkspace()
+  // oxlint-disable-next-line no-deprecated -- the root source's i18next instance is only reachable here
+  const i18next = activeWorkspace.__internal.sources[0]?.i18next ?? fallbackI18n
+
+  return (
+    <Suspense fallback={<LoadingBlock />}>
+      <I18nextProvider i18n={i18next}>{children}</I18nextProvider>
+    </Suspense>
+  )
+}
 
 /**
  * @internal

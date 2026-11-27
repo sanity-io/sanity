@@ -7,8 +7,9 @@ import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {Code} from 'ui5'
 
-import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
+import {getAtKeypath} from '../util/getAtKeypath'
 import * as styles from './ResultView.module.css'
+import {ResultViewRowActions} from './ResultViewRowActions'
 
 const lru = new LRU({maxSize: 50000})
 
@@ -27,7 +28,7 @@ interface ResultViewWrapperStyle extends CSSProperties {
   '--vision-result-syntax-number': string
 }
 
-function ResultViewWrapper({children}: {children: ReactNode}) {
+function ResultViewWrapper({children, rowActions}: {children: ReactNode; rowActions: boolean}) {
   const {color, font, space} = useThemeV2()
   const codeSize = font.code.sizes[2]
   const style: ResultViewWrapperStyle = {
@@ -46,41 +47,63 @@ function ResultViewWrapper({children}: {children: ReactNode}) {
   }
 
   return (
-    <div className={styles.resultViewWrapper} style={style}>
+    <div
+      className={
+        rowActions
+          ? `${styles.resultViewWrapper} ${styles.withRowActions}`
+          : styles.resultViewWrapper
+      }
+      style={style}
+    >
       {children}
     </div>
   )
 }
 
+/**
+ * A copy button after every property of the tree, copying the property's value. With it, `_id`
+ * and `_ref` values get an edit button next to it instead of the inline link.
+ */
+export interface ResultViewCopy {
+  /** Accessible name and tooltip of the buttons */
+  label: string
+  /**
+   * `keypath` is the property's dotted path from the root, empty for the root itself. Resolves
+   * whether the value was copied.
+   */
+  onCopy: (value: unknown, keypath: string) => Promise<boolean>
+}
+
 interface ResultLabelContextValue {
-  /** Fires when an `_id`/`_ref` IntentLink is clicked; one instance shared across all labels */
-  onDocumentOpened: () => void
+  data: unknown
+  copy: ResultViewCopy | undefined
+  /** `_id` and `_ref` values link to their documents when the result is the workspace's */
+  linkDocuments: boolean
 }
 
 // The inspector takes one component for every label, so what it needs comes through context
 const ResultLabelContext = createContext<ResultLabelContextValue | null>(null)
 
-export function ResultView(props: {data: unknown; datasetName: string}): React.JSX.Element {
-  const {data, datasetName} = props
+export function ResultView(props: {
+  data: unknown
+  datasetName: string
+  copy?: ResultViewCopy
+}): React.JSX.Element {
+  const {data, datasetName, copy} = props
   const workspaceDataset = useDataset()
-  const telemetry = useVisionTelemetry()
-  const labelContext = useMemo(
-    () => ({
-      onDocumentOpened: () => telemetry.documentOpened('result'),
-    }),
-    [telemetry],
-  )
+  const linkDocuments = workspaceDataset === datasetName
+  const labelContext = useMemo(() => ({data, copy, linkDocuments}), [copy, data, linkDocuments])
 
   if (isRecord(data) || Array.isArray(data)) {
     return (
-      <ResultViewWrapper>
+      <ResultViewWrapper rowActions={Boolean(copy)}>
         <ResultLabelContext value={labelContext}>
           <JsonInspector
             data={data}
             search={false}
             isExpanded={isExpanded}
             onClick={toggleExpanded}
-            interactiveLabel={workspaceDataset === datasetName ? DocumentEditLabel : undefined}
+            interactiveLabel={copy || linkDocuments ? InteractiveLabel : undefined}
           />
         </ResultLabelContext>
       </ResultViewWrapper>
@@ -94,15 +117,63 @@ export function ResultView(props: {data: unknown; datasetName: string}): React.J
   )
 }
 
-function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {
-  const context = use(ResultLabelContext)
+interface InteractiveLabelProps {
+  value: string
+  originalValue: unknown
+  isKey: boolean
+  keypath: string
+}
 
+function InteractiveLabel(props: InteractiveLabelProps) {
+  const context = use(ResultLabelContext)
+  if (!context) return null
+  if (context.copy) return <RowActionsLabel {...props} context={context} copy={context.copy} />
+  return context.linkDocuments ? <DocumentEditLabel {...props} /> : null
+}
+
+/**
+ * The inspector renders a label after a line's key, and after its value when the value is a
+ * primitive. The actions follow a primitive's value, and an object's or array's summary: they sit
+ * in its key's label, which the stylesheet moves to the end of the line. The root has the result's
+ * own Copy button instead.
+ */
+function RowActionsLabel(
+  props: InteractiveLabelProps & {context: ResultLabelContextValue; copy: ResultViewCopy},
+) {
+  const {originalValue, isKey, keypath, context, copy} = props
+  const target = isKey && keypath ? getAtKeypath(context.data, keypath) : undefined
+  const composite = typeof target?.value === 'object' && target.value !== null
+  if (isKey ? !composite : !keypath) return null
+
+  const value = isKey ? target?.value : originalValue
+  const editId =
+    !isKey &&
+    context.linkDocuments &&
+    typeof originalValue === 'string' &&
+    isDocumentIdPath(keypath)
+      ? originalValue
+      : undefined
+  return (
+    <ResultViewRowActions
+      copyLabel={copy.label}
+      editId={editId}
+      onCopy={() => copy.onCopy(value, keypath)}
+    />
+  )
+}
+
+function isDocumentIdPath(keypath: string): boolean {
+  const key = keypath.slice(keypath.lastIndexOf('.') + 1)
+  return key === '_id' || key === '_ref'
+}
+
+function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {
   if (props.isKey || (!props.keypath.endsWith('_id') && !props.keypath.endsWith('_ref'))) {
     return null
   }
 
   return (
-    <IntentLink intent="edit" params={{id: props.value}} onClick={context?.onDocumentOpened}>
+    <IntentLink intent="edit" params={{id: props.value}}>
       <LinkIcon />
     </IntentLink>
   )

@@ -1,6 +1,13 @@
-import {type ReactNode, useCallback, useContext, useLayoutEffect, useMemo, useState} from 'react'
+import {
+  type ReactNode,
+  useCallback,
+  use,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  useEffectEvent,
+} from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
-import {useEffectEvent} from 'use-effect-event'
 
 import {type PresentationPluginOptions} from '../types'
 import {type PresentationDocumentContextValue} from './types'
@@ -11,7 +18,7 @@ export function PresentationDocumentProvider(props: {
   options: PresentationPluginOptions
 }): React.JSX.Element {
   const {children, options} = props
-  const parent = useContext(PresentationDocumentContext)
+  const parent = use(PresentationDocumentContext)
   const parentRegister = parent?.register
 
   // Options registered by nested providers (further presentation plugin instances wrapping the
@@ -49,8 +56,8 @@ export function PresentationDocumentProvider(props: {
   )
   // Only a nested provider registers with the root; the root lists its own options directly
   useLayoutEffect(
+    // oxlint-disable-next-line react/set-state-in-effect -- registering updates the parent provider's state, which is what this layout effect synchronizes with
     () => (parentRegister ? registerEffectEvent(options) : undefined),
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- `registerEffectEvent` is an effect event, which `react-hooks/exhaustive-deps` forbids in the dependency array
     [options, parentRegister],
   )
 

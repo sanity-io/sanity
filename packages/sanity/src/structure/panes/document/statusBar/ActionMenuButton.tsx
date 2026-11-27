@@ -1,12 +1,10 @@
 import {Menu} from '@sanity/ui/menu'
 import {memo, type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
-import {
-  ContextMenuButton,
-  type DocumentActionDescription,
-  LegacyLayerProvider,
-  useTranslation,
-} from 'sanity'
+import {type DocumentActionDescription} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
+import {ContextMenuButton} from '../../../../core/components/contextMenuButton/ContextMenuButton'
+import {LegacyLayerProvider} from '../../../../core/components/transitional/LegacyLayerProvider'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {type PopoverProps} from '../../../../ui-components/popover/Popover'

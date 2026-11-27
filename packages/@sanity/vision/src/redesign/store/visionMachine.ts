@@ -1,0 +1,816 @@
+import {uuid} from '@sanity/uuid'
+import {
+  type ActorRefFromLogic,
+  assign,
+  enqueueActions,
+  setup,
+  type SnapshotFrom,
+  type Spawner,
+} from 'xstate'
+
+import {addClosedTab, keepRecentClosedTabs} from './closedTabs'
+import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
+import {
+  type AiQueryChange,
+  type VisionAiSettings,
+  type VisionClosedTab,
+  type VisionEditorSettings,
+  type VisionExportSnippetSettings,
+  type VisionResponseSettings,
+  type VisionDialog,
+  type VisionDrawer,
+  type VisionHistoryDiffSettings,
+  type VisionPanel,
+  type VisionPanelsState,
+  type VisionParamsView,
+  type VisionPersistedState,
+  type VisionResultSourceMap,
+  type VisionResultView,
+  type VisionSavedFunction,
+  type VisionSettings,
+  type VisionSidebarState,
+  type VisionTab,
+  type VisionTabDrawer,
+  type VisionTabInit,
+  type VisionTabOptions,
+} from './types'
+import {
+  clearVisionState,
+  createInitialState,
+  createTab,
+  resolveWorkspaceDataset,
+  sanitizeExportSnippetSettings,
+  type VisionStorageDefaults,
+} from './visionStorage'
+
+/** Where the query a tab fetches as soon as it is shown came from */
+export type FetchOnOpenSource =
+  | 'generated'
+  | 'paste'
+  | 'link'
+  /** A query an AI action wrote, recorded in the fetch's history entry */
+  | {type: 'generated'; ai: AiQueryChange}
+
+export interface VisionContext {
+  projectId: string
+  defaults: VisionStorageDefaults
+  tabs: VisionTab[]
+  activeTabId: string
+  settings: VisionSettings
+  historyDiff: VisionHistoryDiffSettings
+  ai: VisionAiSettings
+  editor: VisionEditorSettings
+  response: VisionResponseSettings
+  exportSnippets: VisionExportSnippetSettings
+  /** The functions library, most recently saved first */
+  functions: VisionSavedFunction[]
+  /** The tabs closed in this browser, most recently closed first (see `closedTab.restore`) */
+  closedTabs: VisionClosedTab[]
+  /** The personal saved queries this browser has opened as tabs (see `savedQueries.open`) */
+  openedSavedQueries: string[]
+  /** One query runner per open tab, keyed by tab id */
+  runners: Record<string, QueryRunnerRef>
+  /**
+   * Bumped whenever a query is loaded into a tab from outside its editors (saved query, pasted
+   * URL), so the mounted editors know to replace their content. Not persisted.
+   */
+  loadRevisions: Record<string, number>
+  /**
+   * Tabs to fetch as soon as they are shown, or right away when they already are, by tab id: a
+   * generated query added in a tab or loaded into one, a query URL pasted into one, or one a
+   * link to the tool opened a tab for. The source decides how the tab runs the query. Not
+   * persisted.
+   */
+  fetchOnOpen: Record<string, FetchOnOpenSource>
+  /** Sidebar state as restored from storage, consumed once by the `restoring` states */
+  restoredSidebar: VisionSidebarState
+  /** The drawer the `open` drawer state shows: the one last opened */
+  drawer: VisionDrawer
+  /** Panel state as restored from storage, consumed once by the `restoring` states */
+  restoredPanels: VisionPanelsState
+}
+
+export type VisionEvent =
+  /** `fetch` has the tab fetch its query once it is shown, as a query from that source */
+  | {type: 'tab.add'; tab?: VisionTabInit; fetch?: FetchOnOpenSource}
+  /** The tab fetched on being shown, as `tab.add` or `tab.load` asked */
+  | {type: 'tab.fetchedOnOpen'; id: string}
+  /** Closes a tab, which the Restore tabs drawer lists unless it holds nothing */
+  | {type: 'tab.close'; id: string}
+  | {type: 'tab.select'; id: string}
+  /** The complete set of open tab ids in their new order */
+  | {type: 'tab.reorder'; ids: string[]}
+  | {type: 'tab.rename'; id: string; title: string | undefined}
+  | {type: 'tab.setQuery'; id: string; query: string}
+  | {type: 'tab.setParams'; id: string; rawParams: string}
+  | {type: 'tab.setAutoRefetch'; id: string; autoRefetch: boolean}
+  | {type: 'tab.setOptions'; id: string; options: Partial<VisionTabOptions>}
+  /** Links the tab to the shared query it is shared as, or unlinks it (see `VisionTab.sharedId`) */
+  | {type: 'tab.setSharedId'; id: string; sharedId: string | undefined}
+  /** The shared query was renamed: the open and closed tabs linked to it take its new title */
+  | {type: 'sharedQuery.renamed'; sharedId: string; title: string}
+  /** The shared query was unshared: the open and closed tabs linked to it are unlinked */
+  | {type: 'sharedQuery.unshared'; sharedId: string}
+  /**
+   * `fetch` has the tab fetch the loaded query (it is the active tab, so right away), as a query
+   * from that source
+   */
+  | {type: 'tab.load'; id: string; tab: Omit<VisionTabInit, 'id'>; fetch?: FetchOnOpenSource}
+  /**
+   * Opens personal saved queries as tabs ahead of the open ones, so the tab the tool opened with
+   * stays last, leaving the active tab as it is, and records their keys so each opens once; a key already recorded is skipped. One without a
+   * `tab` is only recorded: a tab already shows it, or its URL holds no query to show
+   */
+  | {type: 'savedQueries.open'; queries: {key: string; tab: VisionTabInit | null}[]}
+  /** Reopens a closed tab, by its tab id, after the open ones and shows it */
+  | {type: 'closedTab.restore'; id: string}
+  /** Deletes a closed tab for good, by its tab id */
+  | {type: 'closedTab.delete'; id: string}
+  /** Purges the closed tabs kept for `CLOSED_TAB_RETENTION_MS` */
+  | {type: 'closedTabs.purge'}
+  | {type: 'settings.update'; settings: Partial<VisionSettings>}
+  | {type: 'historyDiff.update'; settings: Partial<VisionHistoryDiffSettings>}
+  | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
+  | {type: 'editor.update'; settings: Partial<VisionEditorSettings>}
+  | {type: 'response.update'; settings: Partial<VisionResponseSettings>}
+  /** Hiding the last visible snippet is ignored: the dialog always has a tab to show */
+  | {type: 'exportSnippets.update'; settings: Partial<VisionExportSnippetSettings>}
+  /** Saves a function to the library, replacing the one with its id */
+  | {type: 'functions.save'; fn: VisionSavedFunction}
+  | {type: 'functions.remove'; id: string}
+  | {type: 'sidebar.toggle'}
+  | {type: 'panel.toggle'; panel: VisionPanel}
+  | {type: 'params.view'; view: VisionParamsView}
+  | {type: 'result.view'; view: VisionResultView}
+  | {type: 'drawer.toggle'; drawer: VisionDrawer}
+  | {type: 'drawer.close'}
+  | {type: 'dialog.open'; dialog: VisionDialog}
+  | {type: 'dialog.close'}
+  | {type: 'storage.clear'}
+
+export interface VisionInput {
+  projectId: string
+  persisted: VisionPersistedState
+  defaults: VisionStorageDefaults
+}
+
+type RunnerSpawner = Spawner<{
+  src: 'queryRunner'
+  logic: typeof queryRunnerMachine
+  id: string | undefined
+}>
+
+function spawnRunner(spawn: RunnerSpawner, tabId: string): QueryRunnerRef {
+  return spawn('queryRunner', {id: `runner:${tabId}`, input: {tabId}})
+}
+
+function spawnRunners(spawn: RunnerSpawner, tabs: VisionTab[]): Record<string, QueryRunnerRef> {
+  return Object.fromEntries(tabs.map((tab) => [tab.id, spawnRunner(spawn, tab.id)]))
+}
+
+function updateTab(
+  tabs: VisionTab[],
+  id: string,
+  update: (tab: VisionTab) => VisionTab,
+): VisionTab[] {
+  const index = tabs.findIndex((tab) => tab.id === id)
+  if (index === -1) {
+    return tabs
+  }
+  const updated = update(tabs[index])
+  if (updated === tabs[index]) {
+    return tabs
+  }
+  const next = tabs.slice()
+  next[index] = updated
+  return next
+}
+
+/**
+ * Updates the open and closed tabs linked to a shared query (`VisionTab.sharedId`). A closed tab
+ * is restored with its link, so it follows the shared query like an open one
+ */
+function updateLinkedTabs(
+  context: VisionContext,
+  sharedId: string,
+  update: (tab: VisionTab) => VisionTab,
+): Pick<VisionContext, 'tabs' | 'closedTabs'> {
+  const isLinked = (tab: VisionTab) => tab.sharedId === sharedId
+  return {
+    tabs: context.tabs.some(isLinked)
+      ? context.tabs.map((tab) => (isLinked(tab) ? update(tab) : tab))
+      : context.tabs,
+    closedTabs: context.closedTabs.some(({tab}) => isLinked(tab))
+      ? context.closedTabs.map((closed) =>
+          isLinked(closed.tab) ? {...closed, tab: update(closed.tab)} : closed,
+        )
+      : context.closedTabs,
+  }
+}
+
+/**
+ * The root Vision actor for one project: the open tabs and their settings (persisted), one
+ * spawned {@link queryRunnerMachine} per tab (runtime), and the sidebar, drawer and dialog UI
+ * states. The `restoring` states pick up the persisted sidebar layout on start.
+ */
+export const visionMachine = setup({
+  types: {} as {
+    context: VisionContext
+    events: VisionEvent
+    input: VisionInput
+  },
+  actors: {
+    queryRunner: queryRunnerMachine,
+  },
+  guards: {
+    // Every open tab exactly once, so a stale drag result cannot drop or duplicate tabs
+    isCompleteOrder: ({context, event}) => {
+      if (event.type !== 'tab.reorder') return false
+      const ids = new Set(event.ids)
+      return (
+        ids.size === event.ids.length &&
+        ids.size === context.tabs.length &&
+        context.tabs.every((tab) => ids.has(tab.id))
+      )
+    },
+    wasSidebarExpanded: ({context}) => context.restoredSidebar.expanded,
+    wasPanelExpanded: ({context}, params: {panel: VisionPanel}) =>
+      context.restoredPanels[params.panel],
+    wasParamsForm: ({context}) => context.restoredPanels.paramsView === 'form',
+    wasResultView: ({context}, params: {view: VisionResultView}) =>
+      context.restoredPanels.resultViewer === params.view,
+    isResultView: ({event}, params: {view: VisionResultView}) =>
+      event.type === 'result.view' && event.view === params.view,
+    isParamsView: ({event}, params: {view: VisionParamsView}) =>
+      event.type === 'params.view' && event.view === params.view,
+    wasDrawerOpen: ({context}) => context.restoredSidebar.drawer !== null,
+    isPanel: ({event}, params: {panel: VisionPanel}) =>
+      event.type === 'panel.toggle' && event.panel === params.panel,
+    isOpenDrawer: ({context, event}) =>
+      event.type === 'drawer.toggle' && event.drawer === context.drawer,
+  },
+  actions: {
+    setDrawer: assign(({event}) => (event.type === 'drawer.toggle' ? {drawer: event.drawer} : {})),
+    addTab: assign(({context, event, spawn}) => {
+      if (event.type !== 'tab.add') {
+        return {}
+      }
+      const tab = createTab(context.settings, event.tab)
+      if (context.tabs.some((existing) => existing.id === tab.id)) {
+        return {activeTabId: tab.id}
+      }
+      return {
+        tabs: [...context.tabs, tab],
+        activeTabId: tab.id,
+        runners: {...context.runners, [tab.id]: spawnRunner(spawn, tab.id)},
+        fetchOnOpen: event.fetch
+          ? {...context.fetchOnOpen, [tab.id]: event.fetch}
+          : context.fetchOnOpen,
+      }
+    }),
+    closeTab: enqueueActions(({context, event, enqueue}) => {
+      if (event.type !== 'tab.close') {
+        return
+      }
+      const index = context.tabs.findIndex((tab) => tab.id === event.id)
+      if (index === -1) {
+        return
+      }
+      enqueue.assign({
+        closedTabs: addClosedTab(context.closedTabs, context.tabs[index], Date.now()),
+      })
+      const runner = context.runners[event.id]
+      if (runner) {
+        enqueue.stopChild(runner)
+      }
+      const {[event.id]: _removed, ...runners} = context.runners
+      const remaining = context.tabs.filter((tab) => tab.id !== event.id)
+      if (event.id in context.fetchOnOpen) {
+        const {[event.id]: _pending, ...fetchOnOpen} = context.fetchOnOpen
+        enqueue.assign({fetchOnOpen})
+      }
+
+      if (remaining.length === 0) {
+        const fallback = createTab(context.settings)
+        enqueue.assign(({spawn}) => ({
+          tabs: [fallback],
+          activeTabId: fallback.id,
+          runners: {...runners, [fallback.id]: spawnRunner(spawn, fallback.id)},
+        }))
+        return
+      }
+
+      // Prefer the tab that took the closed tab's place, otherwise the previous one
+      const activeTabId =
+        context.activeTabId === event.id
+          ? remaining[Math.min(index, remaining.length - 1)].id
+          : context.activeTabId
+      enqueue.assign({tabs: remaining, activeTabId, runners})
+    }),
+    openSavedQueries: assign(({context, event, spawn}) => {
+      if (event.type !== 'savedQueries.open') {
+        return {}
+      }
+      const recorded = new Set(context.openedSavedQueries)
+      const queries = event.queries.filter(({key}) => {
+        if (recorded.has(key)) return false
+        recorded.add(key)
+        return true
+      })
+      if (queries.length === 0) {
+        return {}
+      }
+      const tabs = queries.flatMap(({tab}) => (tab ? [createTab(context.settings, tab)] : []))
+      return {
+        tabs: [...tabs, ...context.tabs],
+        runners: {...context.runners, ...spawnRunners(spawn, tabs)},
+        openedSavedQueries: [...recorded],
+      }
+    }),
+    restoreClosedTab: assign(({context, event, spawn}) => {
+      if (event.type !== 'closedTab.restore') {
+        return {}
+      }
+      const closed = context.closedTabs.find(({tab}) => tab.id === event.id)
+      if (!closed) {
+        return {}
+      }
+      // Tab ids key the runners and the React list, so one taken since restores under a new id
+      const tab = context.tabs.some(({id}) => id === closed.tab.id)
+        ? {...closed.tab, id: uuid()}
+        : closed.tab
+      return {
+        tabs: [...context.tabs, tab],
+        activeTabId: tab.id,
+        runners: {...context.runners, [tab.id]: spawnRunner(spawn, tab.id)},
+        closedTabs: context.closedTabs.filter((entry) => entry !== closed),
+      }
+    }),
+    // The saved queries this browser opened stay recorded, so clearing does not open them again
+    clearStorage: enqueueActions(({context, enqueue}) => {
+      for (const runner of Object.values(context.runners)) {
+        enqueue.stopChild(runner)
+      }
+      enqueue(() => clearVisionState(context.projectId))
+      enqueue.assign(({spawn}) => {
+        const fresh = createInitialState(context.defaults)
+        return {
+          tabs: fresh.tabs,
+          activeTabId: fresh.activeTabId,
+          settings: fresh.settings,
+          historyDiff: fresh.historyDiff,
+          ai: fresh.ai,
+          editor: fresh.editor,
+          response: fresh.response,
+          exportSnippets: fresh.exportSnippets,
+          functions: fresh.functions,
+          closedTabs: fresh.closedTabs,
+          runners: spawnRunners(spawn, fresh.tabs),
+          fetchOnOpen: {},
+        }
+      })
+    }),
+  },
+}).createMachine({
+  id: 'vision',
+  type: 'parallel',
+  context: ({input, spawn}) => ({
+    projectId: input.projectId,
+    defaults: input.defaults,
+    tabs: input.persisted.tabs,
+    activeTabId: input.persisted.activeTabId,
+    settings: input.persisted.settings,
+    historyDiff: input.persisted.historyDiff,
+    ai: input.persisted.ai,
+    editor: input.persisted.editor,
+    response: input.persisted.response,
+    exportSnippets: input.persisted.exportSnippets,
+    functions: input.persisted.functions,
+    closedTabs: input.persisted.closedTabs,
+    openedSavedQueries: input.persisted.openedSavedQueries,
+    runners: spawnRunners(spawn, input.persisted.tabs),
+    loadRevisions: {},
+    fetchOnOpen: {},
+    restoredSidebar: input.persisted.sidebar,
+    drawer: input.persisted.sidebar.drawer ?? 'closed-tabs',
+    restoredPanels: input.persisted.panels,
+  }),
+  on: {
+    'tab.add': {actions: 'addTab'},
+    'tab.close': {actions: 'closeTab'},
+    'tab.select': {
+      guard: ({context, event}) => context.tabs.some((tab) => tab.id === event.id),
+      actions: assign({activeTabId: ({event}) => event.id}),
+    },
+    'tab.reorder': {
+      guard: 'isCompleteOrder',
+      actions: assign({
+        tabs: ({context, event}) => {
+          const byId = new Map(context.tabs.map((tab) => [tab.id, tab]))
+          return event.ids.flatMap((id) => byId.get(id) ?? [])
+        },
+      }),
+    },
+    'tab.fetchedOnOpen': {
+      actions: assign({
+        fetchOnOpen: ({context, event}) => {
+          const {[event.id]: _fetched, ...fetchOnOpen} = context.fetchOnOpen
+          return fetchOnOpen
+        },
+      }),
+    },
+    'tab.rename': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) => ({
+            ...tab,
+            title: event.title?.trim() || undefined,
+          })),
+      }),
+    },
+    'tab.setQuery': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) =>
+            tab.query === event.query ? tab : {...tab, query: event.query},
+          ),
+      }),
+    },
+    'tab.setParams': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) =>
+            tab.rawParams === event.rawParams ? tab : {...tab, rawParams: event.rawParams},
+          ),
+      }),
+    },
+    'tab.setAutoRefetch': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) => ({...tab, autoRefetch: event.autoRefetch})),
+      }),
+    },
+    'tab.setOptions': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) => ({
+            ...tab,
+            options: {...tab.options, ...event.options},
+          })),
+      }),
+    },
+    'tab.setSharedId': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) =>
+            tab.sharedId === event.sharedId ? tab : {...tab, sharedId: event.sharedId},
+          ),
+      }),
+    },
+    'sharedQuery.renamed': {
+      actions: assign(({context, event}) =>
+        updateLinkedTabs(context, event.sharedId, (tab) => ({
+          ...tab,
+          title: event.title.trim() || undefined,
+        })),
+      ),
+    },
+    'sharedQuery.unshared': {
+      actions: assign(({context, event}) =>
+        updateLinkedTabs(context, event.sharedId, (tab) => ({...tab, sharedId: undefined})),
+      ),
+    },
+    'tab.load': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) => ({
+            ...tab,
+            ...event.tab,
+            options: {...tab.options, ...event.tab.options},
+          })),
+        loadRevisions: ({context, event}) => ({
+          ...context.loadRevisions,
+          [event.id]: (context.loadRevisions[event.id] || 0) + 1,
+        }),
+        fetchOnOpen: ({context, event}) =>
+          event.fetch ? {...context.fetchOnOpen, [event.id]: event.fetch} : context.fetchOnOpen,
+      }),
+    },
+    'savedQueries.open': {actions: 'openSavedQueries'},
+    'closedTab.restore': {actions: 'restoreClosedTab'},
+    'closedTab.delete': {
+      actions: assign({
+        closedTabs: ({context, event}) => context.closedTabs.filter(({tab}) => tab.id !== event.id),
+      }),
+    },
+    'closedTabs.purge': {
+      actions: assign(({context}) => {
+        const closedTabs = keepRecentClosedTabs(context.closedTabs, Date.now())
+        return closedTabs.length === context.closedTabs.length ? {} : {closedTabs}
+      }),
+    },
+    'settings.update': {
+      actions: assign({
+        settings: ({context, event}) => ({...context.settings, ...event.settings}),
+      }),
+    },
+    'historyDiff.update': {
+      actions: assign({
+        historyDiff: ({context, event}) => ({...context.historyDiff, ...event.settings}),
+      }),
+    },
+    'ai.update': {
+      actions: assign({
+        ai: ({context, event}) => ({...context.ai, ...event.settings}),
+      }),
+    },
+    'editor.update': {
+      actions: assign({
+        editor: ({context, event}) => ({...context.editor, ...event.settings}),
+      }),
+    },
+    'response.update': {
+      actions: assign({
+        response: ({context, event}) => ({...context.response, ...event.settings}),
+      }),
+    },
+    'exportSnippets.update': {
+      guard: ({context, event}) => {
+        const order = event.settings.order ?? context.exportSnippets.order
+        const hidden = event.settings.hidden ?? context.exportSnippets.hidden
+        return order.some((id) => !hidden.includes(id))
+      },
+      actions: assign({
+        exportSnippets: ({context, event}) =>
+          sanitizeExportSnippetSettings({...context.exportSnippets, ...event.settings}),
+      }),
+    },
+    'functions.save': {
+      actions: assign({
+        functions: ({context, event}) => [
+          event.fn,
+          ...context.functions.filter((saved) => saved.id !== event.fn.id),
+        ],
+      }),
+    },
+    'functions.remove': {
+      actions: assign({
+        functions: ({context, event}) => context.functions.filter((saved) => saved.id !== event.id),
+      }),
+    },
+    'storage.clear': {
+      target: [
+        '.sidebar.collapsed',
+        '.paramsPanel.expanded',
+        '.paramsView.json',
+        '.resultView.json',
+        '.requestPanel.collapsed',
+        '.drawer.closed',
+        '.dialog.closed',
+      ],
+      actions: 'clearStorage',
+    },
+  },
+  states: {
+    sidebar: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [{guard: 'wasSidebarExpanded', target: 'expanded'}, {target: 'collapsed'}],
+        },
+        collapsed: {on: {'sidebar.toggle': {target: 'expanded'}}},
+        expanded: {on: {'sidebar.toggle': {target: 'collapsed'}}},
+      },
+    },
+    paramsPanel: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [
+            {guard: {type: 'wasPanelExpanded', params: {panel: 'params'}}, target: 'expanded'},
+            {target: 'collapsed'},
+          ],
+        },
+        collapsed: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'params'}},
+              target: 'expanded',
+            },
+          },
+        },
+        expanded: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'params'}},
+              target: 'collapsed',
+            },
+          },
+        },
+      },
+    },
+    paramsView: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [{guard: 'wasParamsForm', target: 'form'}, {target: 'json'}],
+        },
+        json: {
+          on: {
+            'params.view': {guard: {type: 'isParamsView', params: {view: 'form'}}, target: 'form'},
+          },
+        },
+        form: {
+          on: {
+            'params.view': {guard: {type: 'isParamsView', params: {view: 'json'}}, target: 'json'},
+          },
+        },
+      },
+    },
+    resultView: {
+      initial: 'restoring',
+      on: {
+        'result.view': [
+          {guard: {type: 'isResultView', params: {view: 'tree'}}, target: '.tree'},
+          {guard: {type: 'isResultView', params: {view: 'json'}}, target: '.json'},
+          {guard: {type: 'isResultView', params: {view: 'graph'}}, target: '.graph'},
+          {guard: {type: 'isResultView', params: {view: 'documents'}}, target: '.documents'},
+        ],
+      },
+      states: {
+        restoring: {
+          always: [
+            {guard: {type: 'wasResultView', params: {view: 'tree'}}, target: 'tree'},
+            {guard: {type: 'wasResultView', params: {view: 'graph'}}, target: 'graph'},
+            {guard: {type: 'wasResultView', params: {view: 'documents'}}, target: 'documents'},
+            {target: 'json'},
+          ],
+        },
+        tree: {},
+        json: {},
+        graph: {},
+        documents: {},
+      },
+    },
+    requestPanel: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [
+            {guard: {type: 'wasPanelExpanded', params: {panel: 'request'}}, target: 'expanded'},
+            {target: 'collapsed'},
+          ],
+        },
+        collapsed: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'request'}},
+              target: 'expanded',
+            },
+          },
+        },
+        expanded: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'request'}},
+              target: 'collapsed',
+            },
+          },
+        },
+      },
+    },
+    // One drawer at a time: toggling the open one closes it, toggling another shows that one
+    drawer: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [{guard: 'wasDrawerOpen', target: 'open'}, {target: 'closed'}],
+        },
+        closed: {
+          on: {'drawer.toggle': {target: 'open', actions: 'setDrawer'}},
+        },
+        open: {
+          on: {
+            'drawer.toggle': [{guard: 'isOpenDrawer', target: 'closed'}, {actions: 'setDrawer'}],
+            'drawer.close': {target: 'closed'},
+          },
+        },
+      },
+    },
+    dialog: {
+      initial: 'closed',
+      states: {
+        closed: {on: {'dialog.open': {target: 'shortcuts'}}},
+        shortcuts: {on: {'dialog.close': {target: 'closed'}}},
+      },
+    },
+  },
+})
+
+export type VisionSnapshot = SnapshotFrom<typeof visionMachine>
+export type VisionActorRef = ActorRefFromLogic<typeof visionMachine>
+
+export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedState {
+  return {
+    version: 1,
+    tabs: snapshot.context.tabs,
+    activeTabId: snapshot.context.activeTabId,
+    settings: snapshot.context.settings,
+    sidebar: {
+      expanded: snapshot.matches({sidebar: 'expanded'}),
+      drawer: selectOpenDrawer(snapshot),
+    },
+    panels: {
+      params: isPanelExpanded(snapshot, 'params'),
+      request: isPanelExpanded(snapshot, 'request'),
+      paramsView: selectParamsView(snapshot),
+      resultViewer: selectResultView(snapshot),
+    },
+    historyDiff: snapshot.context.historyDiff,
+    ai: snapshot.context.ai,
+    editor: snapshot.context.editor,
+    response: snapshot.context.response,
+    exportSnippets: snapshot.context.exportSnippets,
+    functions: snapshot.context.functions,
+    closedTabs: snapshot.context.closedTabs,
+    openedSavedQueries: snapshot.context.openedSavedQueries,
+  }
+}
+
+export function selectFunctionLibrary(snapshot: VisionSnapshot): VisionSavedFunction[] {
+  return snapshot.context.functions
+}
+
+export function selectClosedTabs(snapshot: VisionSnapshot): VisionClosedTab[] {
+  return snapshot.context.closedTabs
+}
+
+/** Whether the Content Source Map features are switched on in the settings */
+export function selectSourceMapEnabled(snapshot: VisionSnapshot): boolean {
+  return snapshot.context.response.sourceMapEnabled
+}
+
+/**
+ * The `resultSourceMap` a query asks for when its "Include content source map" option is on;
+ * `undefined` while the Content Source Map features are off
+ */
+export function selectSourceMapRequest(
+  snapshot: VisionSnapshot,
+): VisionResultSourceMap | undefined {
+  const {sourceMapEnabled, resultSourceMap} = snapshot.context.response
+  return sourceMapEnabled ? resultSourceMap : undefined
+}
+
+export function selectParamsView(snapshot: VisionSnapshot): VisionParamsView {
+  return snapshot.matches({paramsView: 'form'}) ? 'form' : 'json'
+}
+
+export function selectResultView(snapshot: VisionSnapshot): VisionResultView {
+  if (snapshot.matches({resultView: 'tree'})) return 'tree'
+  if (snapshot.matches({resultView: 'documents'})) return 'documents'
+  return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'json'
+}
+
+export function isPanelExpanded(snapshot: VisionSnapshot, panel: VisionPanel): boolean {
+  return panel === 'params'
+    ? snapshot.matches({paramsPanel: 'expanded'})
+    : snapshot.matches({requestPanel: 'expanded'})
+}
+
+export function selectActiveTab(snapshot: VisionSnapshot): VisionTab {
+  const {tabs, activeTabId} = snapshot.context
+  return tabs.find((tab) => tab.id === activeTabId) || tabs[0]
+}
+
+export function selectDatasets(snapshot: VisionSnapshot): string[] {
+  return snapshot.context.defaults.datasets
+}
+
+/** The dataset tabs query while they follow the workspace */
+export function selectWorkspaceDataset(snapshot: VisionSnapshot): string {
+  return resolveWorkspaceDataset(snapshot.context.defaults)
+}
+
+export function selectProjectId(snapshot: VisionSnapshot): string {
+  return snapshot.context.projectId
+}
+
+export function selectOpenDialog(snapshot: VisionSnapshot): VisionDialog | null {
+  return snapshot.matches({dialog: 'shortcuts'}) ? 'shortcuts' : null
+}
+
+export function selectOpenDrawer(snapshot: VisionSnapshot): VisionDrawer | null {
+  return snapshot.matches({drawer: 'open'}) ? snapshot.context.drawer : null
+}
+
+const TAB_DRAWERS: readonly VisionTabDrawer[] = ['delta', 'mutate']
+
+/** The drawer when it shows one of the active tab's tools */
+export function toTabDrawer(drawer: VisionDrawer | null): VisionTabDrawer | null {
+  return TAB_DRAWERS.find((tabDrawer) => tabDrawer === drawer) ?? null
+}
+
+/** The open drawer while it shows one of the active tab's tools */
+export function selectOpenTabDrawer(snapshot: VisionSnapshot): VisionTabDrawer | null {
+  return toTabDrawer(selectOpenDrawer(snapshot))
+}

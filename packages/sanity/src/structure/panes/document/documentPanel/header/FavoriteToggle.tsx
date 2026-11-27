@@ -2,15 +2,13 @@ import {StarIcon} from '@sanity/icons/Star'
 import {StarFilledIcon} from '@sanity/icons/StarFilled'
 import {useFavorite, useUpdateFavorite} from '@sanity/sdk-react'
 import {Suspense, useOptimistic, useTransition} from 'react'
-import {
-  getPublishedId,
-  useManageFavorite,
-  useRenderingContextStore,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
+import {useWorkspace} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Icon, Text} from 'ui5'
 
+import {useManageFavorite} from '../../../../../core/hooks/useManageFavorite'
+import {useRenderingContextStore} from '../../../../../core/store/datastores'
+import {getPublishedId} from '../../../../../core/util/draftUtils'
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 

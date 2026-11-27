@@ -1,33 +1,49 @@
 import {type SanityDocument, type ValidationMarker} from '@sanity/types'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
-import {
-  type DocumentActionProps,
-  type EditStateFor,
-  type SystemVariant,
-  type TargetDocumentState,
-  type VersionInfoDocumentStub,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useEditState,
-  useSetImmediateValidation,
-  useSyncState,
-  useValidationStatus,
-} from 'sanity'
+import {type DocumentActionProps, type EditStateFor, type SystemVariant} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {useDocumentOperation} from '../../../core/hooks/useDocumentOperation'
+import {useEditState} from '../../../core/hooks/useEditState'
+import {useSetImmediateValidation} from '../../../core/hooks/useSetImmediateValidation'
+import {useSyncState} from '../../../core/hooks/useSyncState'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {useValidationStatus} from '../../../core/hooks/useValidationStatus'
+import {type VersionInfoDocumentStub} from '../../../core/releases/store/types'
+import {useDocumentPairPermissions} from '../../../core/store/grants/documentPairPermissions'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
 
-vi.mock('sanity', async (importOriginal) => ({
+vi.mock('../../../core/hooks/useDocumentOperation', async (importOriginal) => ({
   ...(await importOriginal()),
   useDocumentOperation: vi.fn(),
+}))
+
+vi.mock('../../../core/store/grants/documentPairPermissions', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDocumentPairPermissions: vi.fn(),
+}))
+
+vi.mock('../../../core/hooks/useEditState', async (importOriginal) => ({
+  ...(await importOriginal()),
   useEditState: vi.fn(),
+}))
+
+vi.mock('../../../core/hooks/useSetImmediateValidation', async (importOriginal) => ({
+  ...(await importOriginal()),
   useSetImmediateValidation: vi.fn(),
+}))
+
+vi.mock('../../../core/hooks/useSyncState', async (importOriginal) => ({
+  ...(await importOriginal()),
   useSyncState: vi.fn(),
+}))
+
+vi.mock('../../../core/hooks/useValidationStatus', async (importOriginal) => ({
+  ...(await importOriginal()),
   useValidationStatus: vi.fn(),
 }))
 

@@ -3,28 +3,25 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type DocumentActionComponent, useCurrentUser, usePerspective} from 'sanity'
+import {useTranslation, type TFunction} from 'sanity/i18n'
+import {Text} from 'ui5'
+
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {useEditState} from '../../core/hooks/useEditState'
+import {useRelativeTime} from '../../core/hooks/useRelativeTime'
+import {useSetImmediateValidation} from '../../core/hooks/useSetImmediateValidation'
+import {useSyncState} from '../../core/hooks/useSyncState'
 import {
-  type DocumentActionComponent,
-  getDefaultVariant,
   getPairTarget,
   getTargetScopeId,
   getTargetSiblings,
-  InsufficientPermissionsMessage,
-  isPublishedPerspective,
-  type TFunction,
-  useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useEditState,
-  usePerspective,
-  useRelativeTime,
-  useSetImmediateValidation,
-  useSyncState,
-  useTranslation,
-  useValidationStatus,
-} from 'sanity'
-import {Text} from 'ui5'
-
+} from '../../core/hooks/useTargetDocumentState'
+import {useValidationStatus} from '../../core/hooks/useValidationStatus'
+import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
+import {isPublishedPerspective} from '../../core/releases/util/util'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {

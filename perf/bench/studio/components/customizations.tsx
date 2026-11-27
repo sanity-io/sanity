@@ -3,23 +3,25 @@ import {combineLatest} from 'rxjs'
 import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
-  getPublishedId,
   type InitialValueTemplateItem,
   type InputProps,
   useClient,
-  useConnectionState,
-  useDocumentOperation,
-  useDocumentPairPermissions,
+  useFormValue,
+} from 'sanity'
+import {
+  getPublishedId,
   useDocumentPreviewStore,
   useDocumentStore,
+  useDocumentOperation,
+  useDocumentPairPermissions,
   useDocumentValues,
   useEditState,
-  useFormValue,
-  useLoadable,
   useSyncState,
-  useTemplatePermissions,
   useValidationStatus,
-} from 'sanity'
+  useConnectionState,
+  useLoadable,
+  useTemplatePermissions,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PREVIEW_PATHS, PREVIEW_TARGET_IDS} from '../../scenarios/fixtures/customizationsFixture'
 import {markRender} from './benchRenderMark'

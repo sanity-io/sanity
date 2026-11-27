@@ -1,0 +1,14 @@
+diff --git a/dist/index.js b/dist/index.js
+index c8145f8a329639eee7cb56d8e37453f0469dba23..ea7d8343f6b2f141bd134f6f35108c1ed886edd7 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,7 +1,8 @@
+ import { t as CodeInputConfigContext } from "./CodeModeContext-3zsJ4sD-.js";
+ import "@sanity/ui/styles.css";
+ import { CodeBlockIcon } from "@sanity/icons/CodeBlock";
+-import { MemberField, definePlugin, defineType, set, setIfMissing, unset } from "sanity";
++import { definePlugin, defineType, set, setIfMissing, unset } from "sanity";
++import { MemberField } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2";
+ import { c } from "react/compiler-runtime";
+ import { Box, Button, Card, Flex, Label, Layer, Portal, Select, Stack, Text } from "@sanity/ui";
+ import { Suspense, lazy, startTransition, useEffect, useRef, useState } from "react";

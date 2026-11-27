@@ -1,11 +1,11 @@
-/** @public */
+/** @internal */
 export interface HookCollectionActionHook<Args, State> {
   (args: Args): State | null
   displayName?: string | undefined
   action?: string
 }
 
-/** @public */
+/** @internal */
 export interface GetHookCollectionStateProps<Args, State> {
   args: Args
   children: (props: {states: State[]}) => React.ReactNode

@@ -33,7 +33,9 @@ export interface FormFieldHeaderTextProps {
 
 const EMPTY_ARRAY: never[] = []
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {

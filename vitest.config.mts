@@ -48,8 +48,10 @@ export default defineConfig({
       'dev/radar',
       // The style widget's corner math — likewise pure, likewise plain node
       'dev/test-studio',
+      'packages/@repo/browser-targets',
       'packages/@repo/debug-proxy',
       'packages/@repo/oxlint-plugin-i18n',
+      'packages/@repo/oxlint-plugin-studio',
       'packages/@repo/release-notes',
       'packages/@repo/stable-suggestion',
       'packages/@repo/bundle-manager',

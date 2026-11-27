@@ -3,9 +3,9 @@ import {htmlToPortableText} from '@portabletext/html'
 import {useCallback, useMemo} from 'react'
 import {
   type OnPasteFn,
-  PortableTextInput,
   type PortableTextInputProps,
   type PortableTextMarker,
+  PortableTextInput,
 } from 'sanity'
 
 import {renderBlockActions} from './blockActions'

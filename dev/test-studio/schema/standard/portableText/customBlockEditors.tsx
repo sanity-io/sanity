@@ -1,4 +1,4 @@
-import {BlockEditor, defineType, type PortableTextInputProps} from 'sanity'
+import {defineType, type PortableTextInputProps, BlockEditor} from 'sanity'
 
 export const ptCustomBlockEditors = defineType({
   name: 'pt_customBlockEditors',

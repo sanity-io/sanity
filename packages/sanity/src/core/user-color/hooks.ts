@@ -1,13 +1,15 @@
-import {useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 import {UserColorManagerContext} from 'sanity/_singletons'
 
 import {type UserColor, type UserColorManager} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export function useUserColorManager(): UserColorManager {
-  const userColorManager = useContext(UserColorManagerContext)
+  const userColorManager = use(UserColorManagerContext)
 
   if (!userColorManager) {
     throw new Error('UserColorManager: missing context value')

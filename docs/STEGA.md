@@ -75,7 +75,8 @@ Use the [migration tooling](https://www.sanity.io/docs/schema-and-content-migrat
 ```ts
 // migrations/strip-stega/index.ts
 import {stegaClean} from '@sanity/client/stega'
-import {defineMigration, set} from 'sanity/migrate'
+import {set} from '@sanity/migrate'
+import {defineMigration} from 'sanity/migrate'
 
 export default defineMigration({
   title: 'Strip stega metadata from all string values',

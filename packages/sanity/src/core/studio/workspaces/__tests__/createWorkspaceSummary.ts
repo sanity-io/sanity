@@ -6,7 +6,7 @@ const THEME = buildTheme()
 
 /**
  * Builds a `WorkspaceSummary` fixture for story harnesses that render under
- * `TestWrapper`: schema, locale source and plugin options come from the
+ * `TestWrapper`: locale source and plugin options come from the
  * mock workspace, so the summary is fully typed without casts. The default
  * `auth` store is the mock workspace's own.
  */
@@ -23,9 +23,8 @@ export function createWorkspaceSummary(
     dataset: workspace.dataset,
     auth: workspace.auth,
     theme: THEME,
-    schema: workspace.schema,
     i18n: workspace.i18n,
-    comments: {v2: false},
+    comments: workspace.comments,
     tasks: {enabled: false},
     scheduledDrafts: {enabled: false},
     variants: {enabled: false},

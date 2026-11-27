@@ -6,14 +6,11 @@ import {
   type VisualEditingControllerMsg,
   type VisualEditingNodeMsg,
 } from '@sanity/presentation-comlink'
-import {type PreviewUrlResolver} from '@sanity/preview-url-secret/define-preview-url'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 import {type DocumentStore, type SanityClient} from 'sanity'
 
 import {type PreviewHeaderProps} from './preview/PreviewHeader'
-
-export type {PreviewUrlResolver}
 
 /**
  * Represents a document location
@@ -249,15 +246,8 @@ export interface PreviewUrlResolverOptions {
   }
 }
 
-/**
- * @deprecated the `previewUrl.initial`, `previewUrl.allowOrigins` and `previewUrl.previewMode.enable` supports async functions that offer advanced control over how preview URLs are resolved
- * @public
- */
-export type DeprecatedPreviewUrlResolver = PreviewUrlResolver<SanityClient>
-
 /** @public */
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export type PreviewUrlOption = string | DeprecatedPreviewUrlResolver | PreviewUrlResolverOptions
+export type PreviewUrlOption = string | PreviewUrlResolverOptions
 
 /**
  * Object of document location resolver definitions per document type
@@ -420,10 +410,6 @@ export interface PresentationPluginOptions {
    * @defaultValue true
    */
   defaultDocumentPanelOpen?: boolean
-  /**
-   * @deprecated this feature flag is no longer needed
-   */
-  unstable_showUnsafeShareUrl?: boolean
 }
 
 /**

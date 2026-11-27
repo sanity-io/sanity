@@ -4,7 +4,7 @@ import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import flatten from 'lodash-es/flatten.js'
 import last from 'lodash-es/last.js'
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field/paths/helpers'
@@ -20,7 +20,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId} from '../../util/draftUtils'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {getResolvableTypeName, resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
-import {transferValue, type TransferValueOptions} from './transferValue'
+import {type TransferValueOptions} from './transferValue'
 import {
   type CopyOptions,
   type DocumentMeta,
@@ -28,8 +28,12 @@ import {
   type SanityClipboardItem,
 } from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
+
+// The provider wraps every studio, and the transfer (schema matching, asset and reference
+// validation) only runs once something is pasted
+const loadTransferValue = () => import('./transferValue.lazy')
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export const CopyPasteProvider: React.FC<{
@@ -268,12 +272,13 @@ export const CopyPasteProvider: React.FC<{
 
       // Workaround for try/catch not being fully supported by the React Compiler yet
       const run = async () => {
+        const {default: transferValue} = await loadTransferValue()
         const {targetValue, errors} = await transferValue(transferValueOptions)
         const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
         const _isEmptyValue = isEmptyValue(targetValue)
 
         if (nonWarningErrors.length > 0) {
-          const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args)
+          const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args ?? {})
 
           toast.push({
             status: 'error',
@@ -284,7 +289,9 @@ export const CopyPasteProvider: React.FC<{
         }
 
         if (errors.length > 0 && !_isEmptyValue) {
-          const description = errors.map((error) => t(error.i18n.key, error.i18n.args)).join(', ')
+          const description = errors
+            .map((error) => t(error.i18n.key, error.i18n.args ?? {}))
+            .join(', ')
 
           toast.push({
             status: 'warning',
@@ -364,11 +371,11 @@ export const CopyPasteProvider: React.FC<{
 }
 
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export const useCopyPaste = () => {
-  const context = useContext(CopyPasteContext)
+  const context = use(CopyPasteContext)
   if (!context) {
     throw new Error('useCopyPaste must be used within a CopyPasteProvider')
   }

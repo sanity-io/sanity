@@ -17,11 +17,7 @@ export {
 export type {DescriptorRequester} from '../descriptors/transport'
 export {isActionEnabled} from '../legacy/actionUtils'
 export {isInternalValidator, markInternalValidator} from '../legacy/internalValidators'
-export {
-  DEFAULT_MAX_FIELD_DEPTH,
-  resolveSearchConfig,
-  resolveSearchConfigForBaseFieldPaths,
-} from '../legacy/searchConfig/resolve'
+export {DEFAULT_MAX_FIELD_DEPTH, resolveSearchConfig} from '../legacy/searchConfig/resolve'
 export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
 export {
   createSchemaFromManifestTypes,

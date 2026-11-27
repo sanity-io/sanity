@@ -27,11 +27,8 @@ import type {
   presentationTool,
   PresentationViewport,
   PreviewHeaderProps,
-  PreviewProps,
   PreviewUrlOption,
-  PreviewUrlResolver,
   PreviewUrlResolverOptions,
-  Serializable,
   SerializableArray,
   SerializableObject,
   SerializablePrimitive,
@@ -115,20 +112,11 @@ describe('sanity/presentation', () => {
   test('PreviewHeaderProps', () => {
     expectTypeOf<PreviewHeaderProps>().toBeObject()
   })
-  test('PreviewProps', () => {
-    expectTypeOf<PreviewProps>().toBeObject()
-  })
   test('PreviewUrlOption', () => {
     expectTypeOf<PreviewUrlOption>().not.toBeNever()
   })
-  test('PreviewUrlResolver', () => {
-    expectTypeOf<PreviewUrlResolver<any>>().not.toBeNever()
-  })
   test('PreviewUrlResolverOptions', () => {
     expectTypeOf<PreviewUrlResolverOptions>().toBeObject()
-  })
-  test('Serializable', () => {
-    expectTypeOf<Serializable>().not.toBeNever()
   })
   test('SerializableArray', () => {
     expectTypeOf<SerializableArray>().not.toBeNever()

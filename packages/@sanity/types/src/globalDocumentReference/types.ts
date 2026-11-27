@@ -46,8 +46,6 @@ export interface GlobalDocumentReferenceType {
   title?: string
   icon: ComponentType
   preview: PreviewConfig
-  /** @deprecated Unused. It's only here for the type to be compatible with createSearchQuery.ts */
-  __experimental_search: never
 }
 
 /** @beta */

@@ -1,9 +1,9 @@
 import {type ResponseQueryOptions} from '@sanity/client'
-import {use, useEffect, useRef, useState} from 'react'
-import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {use, useEffect, useRef, useState, useEffectEvent} from 'react'
+import {useClient} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 import {API_VERSION} from './constants'
 import {
   type DocumentResolver,
@@ -244,7 +244,6 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
 
   return mainDocumentState

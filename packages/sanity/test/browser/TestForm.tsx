@@ -8,32 +8,36 @@ import {
 import {BoundaryElementProvider} from '@sanity/ui'
 import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {
-  createPatchChannel,
   type DocumentFieldAction,
-  EMPTY_ARRAY,
-  FormBuilder,
   type FormBuilderProps,
   type FormNodePresence,
-  getExpandOperations,
-  type PatchEvent,
-  ScrollContainer,
-  setAtPath,
   type StateTree,
-  useCopyPaste,
-  useFormState,
-  useGlobalCopyPasteElementHandler,
-  useSource,
   useWorkspace,
-  validateDocument,
-  VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
+import {
+  EMPTY_ARRAY,
+  ScrollContainer,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  FormBuilder,
+  getExpandOperations,
+  setAtPath,
+  useFormState,
+  useGlobalCopyPasteElementHandler,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {VirtualizerScrollInstanceProvider} from '../../src/core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {applyAll} from '../../src/core/form/patch/applyPatch'
+import {createPatchChannel} from '../../src/core/form/patch/PatchChannel'
+import {type PatchEvent} from '../../src/core/form/patch/PatchEvent'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
 import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
+import {useCopyPaste} from '../../src/core/studio/copyPaste/CopyPasteProvider'
+import {validateDocument} from '../../src/core/validation'
 import {createMockSanityClient} from './createMockSanityClient'
 import {setValidationPending} from './validationPending'
 

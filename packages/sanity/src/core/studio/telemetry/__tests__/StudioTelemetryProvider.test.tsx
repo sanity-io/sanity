@@ -106,7 +106,7 @@ describe('StudioTelemetryProvider', () => {
     beta: {
       variants: {enabled: false},
       documentGroupInventory: {enabled: false},
-      eventsAPI: {documents: true, releases: false},
+      eventsAPI: {releases: false},
     },
     announcements: {enabled: true},
     document: {drafts: {enabled: true}},
@@ -598,7 +598,6 @@ describe('StudioTelemetryProvider', () => {
         canvasEnabled: undefined,
         variantsEnabled: undefined,
         documentGroupInventoryEnabled: undefined,
-        eventsApiDocumentsEnabled: undefined,
         eventsApiReleasesEnabled: undefined,
         announcementsEnabled: undefined,
         partialIndexingEnabled: undefined,
@@ -646,7 +645,7 @@ describe('StudioTelemetryProvider', () => {
       beta: {
         variants: {enabled: false},
         documentGroupInventory: {enabled: true},
-        eventsAPI: {documents: true, releases: false},
+        eventsAPI: {releases: false},
       },
     } as never)
 
@@ -770,7 +769,6 @@ describe('StudioTelemetryProvider', () => {
       canvasEnabled: true,
       variantsEnabled: false,
       documentGroupInventoryEnabled: false,
-      eventsApiDocumentsEnabled: true,
       eventsApiReleasesEnabled: false,
       announcementsEnabled: true,
       draftsEnabled: true,
@@ -793,30 +791,9 @@ describe('StudioTelemetryProvider', () => {
     expect(mockLog).toHaveBeenCalledWith(DeprecatedConfigUsageObserved, {
       deprecatedWorkspaceLogo: false,
       deprecatedStudioComponentsLogo: false,
-      deprecatedBetaCreate: false,
-      deprecatedBetaFormEnhancedObjectDialog: false,
-      deprecatedScheduledPublishingShowReleasesBanner: false,
-      deprecatedThemeAvatar: false,
-      deprecatedThemeButton: false,
-      deprecatedThemeContainer: false,
-      deprecatedThemeFocusRing: false,
-      deprecatedThemeInput: false,
-      deprecatedThemeLayer: false,
-      deprecatedThemeMedia: false,
-      deprecatedThemeRadius: false,
-      deprecatedThemeShadows: false,
-      deprecatedThemeSpace: false,
-      deprecatedThemeStyles: false,
-      deprecatedLegacyThemeScreenMediumBreak: false,
-      deprecatedLegacyThemeScreenDefaultBreak: false,
-      deprecatedLegacyThemeScreenLargeBreak: false,
-      deprecatedLegacyThemeScreenXlargeBreak: false,
       deprecatedPresentationPreviewModeCheck: false,
       deprecatedPresentationPreviewModeDisable: false,
-      deprecatedPresentationUnstableShowUnsafeShareUrl: false,
       deprecatedArrayOptionsDirection: false,
-      deprecatedArrayOptionsTreeEditing: false,
-      deprecatedCrossDatasetReferenceExperimentalSearch: false,
     })
   })
 })

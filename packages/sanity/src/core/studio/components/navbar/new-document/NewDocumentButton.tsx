@@ -2,7 +2,16 @@ import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
 import {isDeprecatedSchemaType} from '@sanity/types'
 import {Card, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  lazy,
+  Suspense,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {Text, Flex, VStack} from 'ui5'
 
@@ -23,9 +32,12 @@ import {
   StyledDialog,
   StyledPopover,
 } from './NewDocumentButton.style'
-import {NewDocumentList, type NewDocumentListProps} from './NewDocumentList'
+import {type NewDocumentListProps} from './NewDocumentList'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
 import {type ModalType, type NewDocumentOption} from './types'
+
+// The list of templates (a virtualized list of previews) only renders while the menu is open
+const NewDocumentList = lazy(() => import('./NewDocumentList.lazy'))
 
 const MAX_DISPLAYED_ITEMS = 10
 
@@ -230,7 +242,9 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
               </DialogHeaderCard>
 
               <Flex flexDirection="column" overflow="hidden">
-                <NewDocumentList {...sharedListProps} />
+                <Suspense fallback={null}>
+                  <NewDocumentList {...sharedListProps} />
+                </Suspense>
               </Flex>
             </RootFlex>
           </StyledDialog>
@@ -273,7 +287,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             flexDirection="column"
             overflow="hidden"
           >
-            <NewDocumentList {...sharedListProps} />
+            {open && (
+              <Suspense fallback={null}>
+                <NewDocumentList {...sharedListProps} />
+              </Suspense>
+            )}
           </PopoverListFlex>
         </RootFlex>
       }

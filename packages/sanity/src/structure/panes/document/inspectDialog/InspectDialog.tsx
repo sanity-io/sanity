@@ -2,7 +2,7 @@ import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
 import {Card, TabList, TabPanel} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Code, Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'

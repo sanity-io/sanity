@@ -29,5 +29,17 @@ export default defineConfig({
   // Lets a studio verify that the static stylesheet loaded, e.g. with auto-updates
   globalCss: {
     '#sanity': {'--static-css-file-loaded-studio': 'true'},
+    // A color scheme change (`startColorSchemeTransition`) crossfades the whole page, with clicks
+    // going through to the page underneath rather than the transition's overlay
+    ':root:active-view-transition-type(sanity-color-scheme)::view-transition': {
+      pointerEvents: 'none',
+    },
+    ':root:active-view-transition-type(sanity-color-scheme)::view-transition-group(root)': {
+      'animationDuration': '300ms',
+      'animationTimingFunction': 'ease',
+      '@media (prefers-reduced-motion: reduce)': {
+        animation: 'none',
+      },
+    },
   },
 } satisfies Config)

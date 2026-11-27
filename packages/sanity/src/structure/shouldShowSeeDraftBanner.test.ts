@@ -1,6 +1,6 @@
-import {type VersionInfoDocumentStub} from 'sanity'
 import {expect, it} from 'vitest'
 
+import {type VersionInfoDocumentStub} from '../core/releases/store/types'
 import {
   type ShouldShowSeeDraftBannerContext,
   shouldShowSeeDraftBanner,

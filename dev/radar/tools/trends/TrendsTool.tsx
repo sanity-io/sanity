@@ -36,7 +36,7 @@ import {ParentSize} from '@visx/responsive'
 import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
-import {useDocumentStore} from 'sanity'
+import {useDocumentStore} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Container, Box, Flex, Grid, VStack} from 'ui5'
 
 import {idSlug} from './acks'

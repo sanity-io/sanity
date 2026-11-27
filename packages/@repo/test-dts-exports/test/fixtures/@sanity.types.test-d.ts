@@ -62,8 +62,6 @@ import type {
   CreateOrReplaceMutation,
   CreateSquashedMutation,
   CrossDatasetReferenceDefinition,
-  CrossDatasetReferenceFilterResolver,
-  CrossDatasetReferenceFilterSearchOptions,
   CrossDatasetReferenceSchemaType,
   CrossDatasetReferenceValue,
   CrossDatasetType,
@@ -361,7 +359,6 @@ import type {
   ValidationMarker,
   Validator,
   Validators,
-  WeakCrossDatasetReferenceValue,
   WeakGlobalDocumentReferenceValue,
   WeakReference,
   WidenInitialValue,
@@ -546,12 +543,6 @@ describe('@sanity/types', () => {
   })
   test('CrossDatasetReferenceDefinition', () => {
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
-  })
-  test('CrossDatasetReferenceFilterResolver', () => {
-    expectTypeOf<CrossDatasetReferenceFilterResolver>().not.toBeNever()
-  })
-  test('CrossDatasetReferenceFilterSearchOptions', () => {
-    expectTypeOf<CrossDatasetReferenceFilterSearchOptions>().not.toBeNever()
   })
   test('CrossDatasetReferenceSchemaType', () => {
     expectTypeOf<CrossDatasetReferenceSchemaType>().toBeObject()
@@ -1443,9 +1434,6 @@ describe('@sanity/types', () => {
   })
   test('Validators', () => {
     expectTypeOf<Validators>().not.toBeNever()
-  })
-  test('WeakCrossDatasetReferenceValue', () => {
-    expectTypeOf<WeakCrossDatasetReferenceValue>().toBeObject()
   })
   test('WeakGlobalDocumentReferenceValue', () => {
     expectTypeOf<WeakGlobalDocumentReferenceValue>().toBeObject()

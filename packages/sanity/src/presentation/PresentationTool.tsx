@@ -16,21 +16,29 @@ import {
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useEffectEvent,
+} from 'react'
 import {
   type CommentIntentGetter,
-  COMMENTS_INSPECTOR_NAME,
   type SanityDocument,
   type Tool,
   useDataset,
   useProjectId,
-  useUnique,
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
+import {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
+import {useUnique} from '../core/util/useUnique'
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
 import {presentationMachine} from './machines/presentation-machine'
@@ -343,7 +351,6 @@ export default function PresentationTool(props: {
       stop()
       setVisualEditingComlink(null)
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [controller, presentationRef, setDocumentsOnPage, targetOrigin])
 
   useEffect(() => {

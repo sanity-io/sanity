@@ -13,14 +13,14 @@ export interface ToolLinkProps {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function ToolLink(
   props: ToolLinkProps &
     Omit<HTMLProps<HTMLAnchorElement>, 'href' | 'name'> &
     RefAttributes<HTMLAnchorElement>,
 ) {
   const {ref, name, ...rest} = props
-  // A tool kept mounted while inactive (`beta.reactActivityMode`) links back to the
+  // A tool kept mounted while inactive (`reactActivityMode`) links back to the
   // state it was last at, so returning to it restores its URL rather than its start page.
   const inactiveToolState = useInactiveToolState(name)
   const state = useMemo(

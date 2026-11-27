@@ -7,24 +7,21 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {type ComponentType, type RefAttributes, useMemo, useRef, useState} from 'react'
-import {
-  DocumentGroupInventory,
-  DocumentVersionIcons,
-  getPublishedId,
-  getReleaseTone,
-  getVersionFromId,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
-  type ReleaseDocument,
-  useActiveReleases,
-  useAllVariants,
-  useDocumentVersions,
-  useDocumentVersionTitle,
-  useTranslation,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
+import {DocumentVersionIcons} from '../../../../core/components/documentStatus/DocumentVersionIcons'
+import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {useDocumentVersionTitle} from '../../../../core/hooks/useDocumentVersionTitle'
+import {useDocumentVersions} from '../../../../core/releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {isAgentBundleName} from '../../../../core/store/agent/createAgentBundlesStore'
+import {getPublishedId, getVersionFromId} from '../../../../core/util/draftUtils'
+import {useAllVariants} from '../../../../core/variants/store/useAllVariants'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
 import {documentGroupPickerMenuPopover} from './DocumentGroupPickerMenu.css'

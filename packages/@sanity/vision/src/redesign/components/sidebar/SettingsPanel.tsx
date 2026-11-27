@@ -1,0 +1,423 @@
+import {RestoreIcon} from '@sanity/icons/Restore'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Button, Card, Select, Stack, TextArea} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {dequal} from 'dequal/lite'
+import {type ChangeEvent, useCallback, useRef, useState} from 'react'
+import {useTranslation} from 'sanity/i18n'
+import {Text, Box, Flex} from 'ui5'
+
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
+import {visionLocaleNamespace} from '../../../i18n'
+import {validateApiVersion} from '../../../util/validateApiVersion'
+import {AI_FEATURE_KEYS, type AiFeature, useConfiguredAiFeatures} from '../../aiFeatures'
+import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {selectDatasets, selectWorkspaceDataset} from '../../store/visionMachine'
+import {DEFAULT_HIDDEN_DIFF_FIELDS} from '../../store/visionStorage'
+import {DatasetField} from '../request/DatasetField'
+import {
+  ApiVersionField,
+  PerspectiveSelect,
+  UseCdnField,
+  VariantSelect,
+} from '../request/OptionFields'
+import {SwitchField} from '../SwitchField'
+import {ExportSnippetsSettings} from './ExportSnippetsSettings'
+import {useSettingsUpdate} from './useSettingsUpdate'
+
+/** One field path per line (commas work too), each once */
+function parseFieldList(text: string): string[] {
+  return [
+    ...new Set(
+      text
+        .split(/[\n,]/)
+        .map((field) => field.trim())
+        .filter(Boolean),
+    ),
+  ]
+}
+
+function HiddenDiffFieldsSetting() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const updateSetting = useSettingsUpdate()
+  const telemetry = useVisionTelemetry()
+  // The fields when the list was focused: typing is recorded once, when the list loses focus
+  const fieldsOnFocus = useRef<string[] | null>(null)
+  const hiddenFields = useVisionSelector((snapshot) => snapshot.context.historyDiff.hiddenFields)
+  // The text as typed, for as long as it lists the stored fields: a new line being started or a
+  // path being typed would otherwise be tidied away under the caret
+  const [draft, setDraft] = useState<{text: string; fields: string[]}>()
+  const text = draft && dequal(draft.fields, hiddenFields) ? draft.text : hiddenFields.join('\n')
+  const update = (fields: string[], options?: {record?: boolean}) =>
+    updateSetting({type: 'historyDiff.update', settings: {hiddenFields: fields}}, options)
+
+  return (
+    <Stack gap={3}>
+      <Stack gap={2}>
+        <Text
+          as="label"
+          htmlFor="vision-settings-hidden-diff-fields"
+          size={1}
+          weight="medium"
+          trim={true}
+        >
+          {t('vision.settings.history-diff.title')}
+        </Text>
+        <Text muted size={1} as="div" trim={true}>
+          {t('vision.settings.history-diff.description')}
+        </Text>
+      </Stack>
+      <TextArea
+        data-testid="vision-settings-hidden-diff-fields"
+        fontSize={1}
+        id="vision-settings-hidden-diff-fields"
+        onBlur={() => {
+          if (fieldsOnFocus.current && !dequal(fieldsOnFocus.current, hiddenFields)) {
+            telemetry.settingsChanged('history-diff')
+          }
+          fieldsOnFocus.current = null
+        }}
+        onChange={(event) => {
+          const next = event.currentTarget.value
+          const fields = parseFieldList(next)
+          setDraft({text: next, fields})
+          update(fields, {record: false})
+        }}
+        onFocus={() => {
+          fieldsOnFocus.current = hiddenFields
+        }}
+        rows={4}
+        value={text}
+      />
+      <Flex>
+        <Button
+          data-testid="vision-settings-hidden-diff-fields-reset"
+          disabled={dequal(hiddenFields, DEFAULT_HIDDEN_DIFF_FIELDS)}
+          fontSize={1}
+          icon={RestoreIcon}
+          mode="ghost"
+          onClick={() => update([...DEFAULT_HIDDEN_DIFF_FIELDS])}
+          padding={2}
+          text={t('vision.settings.history-diff.reset')}
+        />
+      </Flex>
+    </Stack>
+  )
+}
+
+const AI_FEATURE_TEXT = {
+  generateQuery: {
+    title: 'vision.settings.ai.generate-query',
+    description: 'vision.settings.ai.generate-query.description',
+  },
+  editQuery: {
+    title: 'vision.settings.ai.edit-query',
+    description: 'vision.settings.ai.edit-query.description',
+  },
+  fixLint: {
+    title: 'vision.settings.ai.fix-lint',
+    description: 'vision.settings.ai.fix-lint.description',
+  },
+  generateMutations: {
+    title: 'vision.settings.ai.generate-mutations',
+    description: 'vision.settings.ai.generate-mutations.description',
+  },
+  explainQuery: {
+    title: 'vision.settings.ai.explain-query',
+    description: 'vision.settings.ai.explain-query.description',
+  },
+} as const satisfies Record<AiFeature, {title: string; description: string}>
+
+/**
+ * Switches for the AI features the config leaves on; none at all when it leaves none on. They
+ * only switch features off, so a feature the config turns off has no switch.
+ */
+function AiSettings() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const updateSetting = useSettingsUpdate()
+  const configured = useConfiguredAiFeatures()
+  const settings = useVisionSelector((snapshot) => snapshot.context.ai)
+  const features = AI_FEATURE_KEYS.filter((feature) => configured[feature])
+  if (features.length === 0) return null
+
+  return (
+    <Card border data-testid="vision-settings-ai" padding={3} radius={2}>
+      <Stack gap={4}>
+        <Stack gap={2}>
+          <Text size={1} weight="medium" as="div" trim={true}>
+            {t('vision.settings.ai.title')}
+          </Text>
+          <Text muted size={1} as="div" trim={true}>
+            {t('vision.settings.ai.description')}
+          </Text>
+        </Stack>
+        <SwitchField
+          checked={settings.enabled}
+          onChange={(enabled) => updateSetting({type: 'ai.update', settings: {enabled}})}
+          testId="vision-settings-ai-enabled"
+          title={t('vision.settings.ai.enabled')}
+        />
+        {features.map((feature) => (
+          <SwitchField
+            checked={settings.enabled && settings[feature]}
+            description={t(AI_FEATURE_TEXT[feature].description)}
+            disabled={!settings.enabled}
+            key={feature}
+            onChange={(checked) =>
+              updateSetting({type: 'ai.update', settings: {[feature]: checked}})
+            }
+            testId={`vision-settings-ai-${feature}`}
+            title={t(AI_FEATURE_TEXT[feature].title)}
+          />
+        ))}
+      </Stack>
+    </Card>
+  )
+}
+
+/**
+ * The opt-in to the Content Source Map features, and while they are on, whether new tabs include
+ * a source map and which `resultSourceMap` value they send
+ */
+function SourceMapSettings() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const updateSetting = useSettingsUpdate()
+  const includeSourceMap = useVisionSelector(
+    (snapshot) => snapshot.context.settings.includeSourceMap,
+  )
+  const {sourceMapEnabled, resultSourceMap} = useVisionSelector(
+    (snapshot) => snapshot.context.response,
+  )
+
+  return (
+    <Card border data-testid="vision-settings-source-map" padding={3} radius={2}>
+      <Stack gap={4}>
+        <Text size={1} weight="medium" as="div" trim={true}>
+          {t('vision.settings.source-map.title')}
+        </Text>
+        <SwitchField
+          checked={sourceMapEnabled}
+          description={t('vision.settings.source-map.enabled.description')}
+          onChange={(enabled) =>
+            updateSetting({type: 'response.update', settings: {sourceMapEnabled: enabled}})
+          }
+          testId="vision-settings-source-map-enabled"
+          title={t('vision.settings.source-map.enabled')}
+        />
+        {sourceMapEnabled && (
+          <>
+            <SwitchField
+              checked={includeSourceMap}
+              description={t('vision.options.include-source-map.description')}
+              onChange={(checked) =>
+                updateSetting({type: 'settings.update', settings: {includeSourceMap: checked}})
+              }
+              testId="vision-settings-include-source-map"
+              title={t('vision.options.include-source-map')}
+            />
+            <Stack gap={2}>
+              <Text
+                as="label"
+                htmlFor="vision-settings-source-map-format"
+                size={1}
+                weight="medium"
+                trim={true}
+              >
+                {t('vision.settings.source-map.format')}
+              </Text>
+              <Text muted size={1} as="div" trim={true}>
+                {t('vision.settings.source-map.format.description')}
+              </Text>
+              <Select
+                data-testid="vision-settings-source-map-format"
+                fontSize={1}
+                id="vision-settings-source-map-format"
+                onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                  updateSetting({
+                    type: 'response.update',
+                    settings: {
+                      resultSourceMap:
+                        event.currentTarget.value === 'withKeyArraySelector'
+                          ? 'withKeyArraySelector'
+                          : true,
+                    },
+                  })
+                }
+                padding={2}
+                value={String(resultSourceMap)}
+              >
+                <option value="true">{t('vision.settings.source-map.format.default')}</option>
+                <option value="withKeyArraySelector">
+                  {t('vision.settings.source-map.format.with-key-array-selector')}
+                </option>
+              </Select>
+            </Stack>
+          </>
+        )}
+      </Stack>
+    </Card>
+  )
+}
+
+/** The settings, in the sidebar's drawer */
+export function SettingsPanel() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const toast = useToast()
+  const actorRef = useVisionActor()
+  const updateSetting = useSettingsUpdate()
+  const telemetry = useVisionTelemetry()
+  const datasets = useVisionSelector(selectDatasets)
+  const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
+  const settings = useVisionSelector((snapshot) => snapshot.context.settings)
+  const editorSettings = useVisionSelector((snapshot) => snapshot.context.editor)
+  const responseSettings = useVisionSelector((snapshot) => snapshot.context.response)
+  const [confirmClear, setConfirmClear] = useState(false)
+  // The "Other" input may hold an unfinished version; only usable ones become the default
+  const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
+
+  const handleApiVersionChange = useCallback(
+    (apiVersion: string) => {
+      setApiVersionDraft(apiVersion)
+      if (validateApiVersion(apiVersion)) {
+        updateSetting({type: 'settings.update', settings: {apiVersion}})
+      }
+    },
+    [updateSetting],
+  )
+
+  const handleClearStorage = useCallback(() => {
+    setConfirmClear(false)
+    actorRef.send({type: 'storage.clear'})
+    telemetry.settingsChanged('storage-cleared')
+    toast.push({
+      closable: true,
+      status: 'success',
+      title: t('vision.settings.clear-storage.success'),
+    })
+  }, [actorRef, t, telemetry, toast])
+
+  return (
+    <Box data-testid="vision-settings" padding={4}>
+      <Stack gap={5}>
+        <Text muted size={1} as="div" trim={true}>
+          {t('vision.settings.description')}
+        </Text>
+
+        <DatasetField
+          dataset={settings.dataset}
+          datasets={datasets}
+          id="vision-settings-dataset"
+          mode={settings.datasetMode}
+          onChange={(dataset) => updateSetting({type: 'settings.update', settings: dataset})}
+          workspaceDataset={workspaceDataset}
+        />
+
+        <ApiVersionField
+          id="vision-settings-api-version"
+          locked={false}
+          onChange={handleApiVersionChange}
+          value={apiVersionDraft}
+        />
+
+        <PerspectiveSelect
+          apiVersion={apiVersionDraft}
+          id="vision-settings-perspective"
+          onChange={(perspective) =>
+            updateSetting({type: 'settings.update', settings: {perspective}})
+          }
+          value={settings.perspective}
+        />
+
+        <VariantSelect
+          id="vision-settings-variant"
+          onChange={(variant) => updateSetting({type: 'settings.update', settings: {variant}})}
+          value={settings.variant}
+        />
+
+        <UseCdnField
+          checked={settings.useCdn}
+          onChange={(useCdn) => updateSetting({type: 'settings.update', settings: {useCdn}})}
+          testId="vision-settings-use-cdn"
+        />
+
+        <Card border padding={3} radius={2}>
+          <Stack gap={4}>
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {t('vision.settings.editor.title')}
+            </Text>
+            <SwitchField
+              checked={editorSettings.autoFormatOnResize}
+              description={t('vision.settings.editor.auto-format-on-resize.description')}
+              onChange={(autoFormatOnResize) =>
+                updateSetting({type: 'editor.update', settings: {autoFormatOnResize}})
+              }
+              testId="vision-settings-auto-format-on-resize"
+              title={t('vision.settings.editor.auto-format-on-resize')}
+            />
+          </Stack>
+        </Card>
+
+        <Card border padding={3} radius={2}>
+          <Stack gap={4}>
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {t('vision.settings.response.title')}
+            </Text>
+            <SwitchField
+              checked={responseSettings.resolveSyncTags}
+              description={t('vision.settings.response.resolve-sync-tags.description')}
+              onChange={(resolveSyncTags) =>
+                updateSetting({type: 'response.update', settings: {resolveSyncTags}})
+              }
+              testId="vision-settings-resolve-sync-tags"
+              title={t('vision.settings.response.resolve-sync-tags')}
+            />
+          </Stack>
+        </Card>
+
+        <Card border padding={3} radius={2}>
+          <HiddenDiffFieldsSetting />
+        </Card>
+
+        <ExportSnippetsSettings />
+        <SourceMapSettings />
+
+        <AiSettings />
+
+        <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
+          <Stack gap={3}>
+            <Text muted size={1} as="div" trim={true} tone={confirmClear ? 'critical' : undefined}>
+              {t('vision.settings.clear-storage.description')}
+            </Text>
+            <Flex gap={2}>
+              {confirmClear ? (
+                <>
+                  <Button
+                    data-testid="vision-clear-storage-confirm"
+                    icon={TrashIcon}
+                    onClick={handleClearStorage}
+                    text={t('vision.settings.clear-storage.confirm')}
+                    tone="critical"
+                  />
+                  <Button
+                    mode="bleed"
+                    onClick={() => setConfirmClear(false)}
+                    text={t('action.query-cancel')}
+                  />
+                </>
+              ) : (
+                <Button
+                  data-testid="vision-clear-storage"
+                  icon={TrashIcon}
+                  mode="ghost"
+                  onClick={() => setConfirmClear(true)}
+                  text={t('vision.settings.clear-storage')}
+                  tone="critical"
+                />
+              )}
+            </Flex>
+          </Stack>
+        </Card>
+      </Stack>
+    </Box>
+  )
+}

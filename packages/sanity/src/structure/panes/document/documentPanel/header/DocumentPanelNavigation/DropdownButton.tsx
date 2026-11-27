@@ -3,7 +3,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Card, type CardTone} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type MouseEvent, useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {Button, type ButtonProps} from '../../../../../../ui-components/button/Button'
 import {

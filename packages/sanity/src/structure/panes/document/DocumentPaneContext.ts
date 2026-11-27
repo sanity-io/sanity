@@ -9,20 +9,19 @@ import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
   type DocumentFieldAction,
-  type DocumentFormNode,
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
-  type DocumentSyncState,
   type EditStateFor,
   type NodeChronologyProps,
-  type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
   type StateTree,
-  type TargetDocumentState,
-  type TimelineStore,
 } from 'sanity'
 
+import {type PatchEvent} from '../../../core/form/patch/PatchEvent'
+import {type DocumentFormNode} from '../../../core/form/store/types/nodes'
+import {type DocumentSyncState} from '../../../core/hooks/useDocumentSyncState'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
 import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 import {type DocumentHistoryOpenPath} from './__telemetry__/documentPanes.telemetry'
@@ -77,14 +76,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   previewUrl?: string | null
   ready: boolean
   schemaType: ObjectSchemaType
-  /**
-   * @deprecated not used anymore
-   * */
-  setTimelineMode?: undefined
-  /**
-   * @deprecated not used anymore
-   * */
-  timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
   /**
@@ -93,11 +84,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
    */
   targetDocumentState: TargetDocumentState
   timelineError: Error | null
-  /**
-   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
-   */
-  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-  timelineStore?: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike

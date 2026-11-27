@@ -1,7 +1,7 @@
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {useEffect} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 
 import {presentationLocaleNamespace} from './i18n'

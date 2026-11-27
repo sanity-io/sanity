@@ -1,5 +1,5 @@
 import {type ComponentProps, useCallback, useId, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'

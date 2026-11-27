@@ -2,7 +2,10 @@ import {Badge, Box, Card} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
-import {useDocumentPreviewStore, useDocumentValues} from 'sanity'
+import {
+  useDocumentPreviewStore,
+  useDocumentValues,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Flex, VStack} from 'ui5'
 
 /**

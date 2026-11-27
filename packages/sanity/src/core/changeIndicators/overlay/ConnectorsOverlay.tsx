@@ -1,7 +1,6 @@
 import {type Path} from '@sanity/types'
-import {use, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {use, useCallback, useEffect, useMemo, useRef, useState, useEffectEvent} from 'react'
 import {ScrollContext} from 'sanity/_singletons'
-import {useEffectEvent} from 'use-effect-event'
 
 import {type Reported} from '../../components/react-track-elements/types'
 import {useReviewChanges} from '../../hooks/useReviewChanges'
@@ -170,8 +169,8 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   })
 
   useEffect(() => {
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     scheduleUpdate()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- the dependencies are the inputs that move connectors; any change to them re-measures
   }, [allReportedValues, hovered, isReviewChangesOpen, rootElement])
 
   useEffect(() => {
@@ -188,13 +187,11 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     const observer = new ResizeObserver(() => scheduleUpdate())
     observer.observe(rootElement)
     return () => observer.disconnect()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [rootElement])
 
   const scrollContext = use(ScrollContext)
   useEffect(() => {
     return scrollContext?.subscribe(() => scheduleUpdate())
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [scrollContext])
 
   const visibleConnector = useMemo(() => {

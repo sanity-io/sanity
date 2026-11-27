@@ -1,0 +1,35 @@
+.container {
+  container: optionsGrid / inline-size;
+}
+
+/*
+ * The selects and toggles flow into as many 180px-or-wider columns as fit, like the params
+ * form's `fieldGrid`. `auto-fit` collapses the columns no cell lands in, so the cells
+ * share the whole row
+ */
+.grid {
+  /* The height of a picker's control, without its label: the line the toggles centre on */
+  --vision-options-control-height: 25px;
+
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+}
+
+/*
+ * A toggle sits at the bottom of its cell, centred on a line as tall as a picker's control, so
+ * beside the pickers it lines up with their controls rather than their labels
+ */
+.toggle {
+  align-items: center;
+  align-self: end;
+  display: flex;
+  min-height: var(--vision-options-control-height);
+}
+
+/* Two 180px columns and the gap between them: below that a two-column span would overflow */
+@container optionsGrid (min-width: 372px) {
+  .wide {
+    grid-column: span 2;
+  }
+}

@@ -17,7 +17,9 @@ const isSameEditState = (prev: EditStateFor, next: EditStateFor): boolean =>
   prev.ready === next.ready &&
   prev.transactionSyncLock === next.transactionSyncLock
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export function useEditState(
   publishedDocId: string,
   docTypeName: string,

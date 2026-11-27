@@ -1,35 +1,11 @@
-export {ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
-export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
 export {defineIncomingReferenceDecoration} from '../structure/components/incomingReferencesDecoration/defineIncomingReferenceDecoration'
 export {isIncomingReferenceCreation} from '../structure/components/incomingReferencesDecoration/isIncomingReferenceCreation'
 export {
   type IncomingReferenceAction,
   type IncomingReferencesOptions,
 } from '../structure/components/incomingReferencesDecoration/types'
-export {Pane} from '../structure/components/pane/Pane'
-export {PaneContent} from '../structure/components/pane/PaneContent'
-export {PaneLayout} from '../structure/components/pane/PaneLayout'
-export {
-  type BackLinkProps,
-  type ChildLinkProps,
-  type EditReferenceOptions,
-  type PaneRouterContextValue,
-  type ParameterizedLinkProps,
-  type ReferenceChildLinkProps,
-} from '../structure/components/paneRouter/types'
-export {PaneRouterContext, usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
-export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
-export {DocumentPane} from '../structure/panes/document/DocumentPane'
-export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
-export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
-export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
-export {useDocumentTitle, type UseDocumentTitle} from '../structure/panes/document/useDocumentTitle'
-export {usePaneOptions} from '../structure/panes/document/usePaneOptions'
-export {type DocumentListPaneProps} from '../structure/panes/documentList'
-export {ORDER_BY_IDS_PARAM_FIELD} from '../structure/panes/documentList/orderByIdsParam'
-export {PaneContainer as DocumentListPane} from '../structure/panes/documentList/PaneContainer'
 export {
   type ChildObservable,
   type ChildResolver,
@@ -39,73 +15,54 @@ export {
 export {
   type BuildableComponent,
   type Component,
-  ComponentBuilder,
+  type ComponentBuilder,
   type ComponentInput,
 } from '../structure/structureBuilder/Component'
 export {
-  createStructureBuilder,
-  type StructureBuilderOptions,
-} from '../structure/structureBuilder/createStructureBuilder'
-export {
-  DocumentBuilder,
-  documentFromEditor,
-  documentFromEditorWithInitialValue,
-  type DocumentOptions,
+  type DocumentBuilder,
   type PartialDocumentNode,
 } from '../structure/structureBuilder/Document'
 export {
   type DocumentList,
-  DocumentListBuilder,
+  type DocumentListBuilder,
   type DocumentListInput,
   type DocumentListOptions,
-  getTypeNamesFromFilter,
   type PartialDocumentList,
 } from '../structure/structureBuilder/DocumentList'
 export {
   type DocumentListItem,
-  DocumentListItemBuilder,
+  type DocumentListItemBuilder,
   type DocumentListItemInput,
-  isDocumentListItem,
   type PartialDocumentListItem,
 } from '../structure/structureBuilder/DocumentListItem'
 export {
-  DocumentTypeListBuilder,
+  type DocumentTypeListBuilder,
   type DocumentTypeListInput,
 } from '../structure/structureBuilder/DocumentTypeList'
 export {
   type BaseGenericList,
   type BuildableGenericList,
   type GenericList,
-  GenericListBuilder,
+  type GenericListBuilder,
   type GenericListInput,
   type ListDisplayOptions,
-  shallowIntentChecker,
 } from '../structure/structureBuilder/GenericList'
+export {type InitialValueTemplateItemBuilder} from '../structure/structureBuilder/InitialValueTemplateItem'
 export {
-  defaultInitialValueTemplateItems,
-  InitialValueTemplateItemBuilder,
-  maybeSerializeInitialValueTemplateItem,
-  menuItemsFromInitialValueTemplateItems,
-} from '../structure/structureBuilder/InitialValueTemplateItem'
-export {
-  type BaseIntentParams,
-  DEFAULT_INTENT_HANDLER,
-  defaultIntentChecker,
   type Intent,
   type IntentChecker,
-  type IntentJsonParams,
   type IntentParams,
 } from '../structure/structureBuilder/Intent'
 export {
   type BuildableList,
   type List,
-  ListBuilder,
+  type ListBuilder,
   type ListInput,
   type SingletonListBuilder,
 } from '../structure/structureBuilder/List'
 export {
   type ListItem,
-  ListItemBuilder,
+  type ListItemBuilder,
   type ListItemChild,
   type ListItemCount,
   type ListItemDisplayOptions,
@@ -116,26 +73,19 @@ export {
   type UnserializedListItemChild,
 } from '../structure/structureBuilder/ListItem'
 export {
-  getOrderingMenuItem,
-  getOrderingMenuItemsForSchemaType,
   type KnownMenuItemParams,
-  maybeSerializeMenuItem,
   type MenuItem,
   type MenuItemActionType,
-  MenuItemBuilder,
+  type MenuItemBuilder,
   type MenuItemParamsType,
   type PartialMenuItem,
-  type SortMenuItem,
   type MenuItem as StructureToolMenuItem,
 } from '../structure/structureBuilder/MenuItem'
 export {
-  maybeSerializeMenuItemGroup,
   type MenuItemGroup,
-  MenuItemGroupBuilder,
+  type MenuItemGroupBuilder,
 } from '../structure/structureBuilder/MenuItemGroup'
-export {HELP_URL, SerializeError} from '../structure/structureBuilder/SerializeError'
 export {
-  type Builder,
   type Child,
   type Collection,
   type CollectionBuilder,
@@ -156,48 +106,325 @@ export {
   type UserViewComponent,
   type View,
 } from '../structure/structureBuilder/types'
-export {component, form} from '../structure/structureBuilder/views'
 export {
   type ComponentView,
-  ComponentViewBuilder,
+  type ComponentViewBuilder,
 } from '../structure/structureBuilder/views/ComponentView'
-export {type FormView, FormViewBuilder} from '../structure/structureBuilder/views/FormView'
+export {type FormView, type FormViewBuilder} from '../structure/structureBuilder/views/FormView'
 export {
   type BaseView,
-  GenericViewBuilder,
-  maybeSerializeView,
+  type GenericViewBuilder,
   type ViewBuilder,
 } from '../structure/structureBuilder/views/View'
 export {structureTool} from '../structure/structureTool'
-export {
-  StructureToolProvider,
-  type StructureToolProviderProps,
-} from '../structure/StructureToolProvider'
-export {
-  type BaseResolvedPaneNode,
-  type CustomComponentPaneNode,
-  type DocumentFieldMenuActionNode,
-  type DocumentListPaneNode,
-  type DocumentPaneNode,
-  type ListPaneNode,
-  type PaneListItem,
-  type PaneListItemDivider,
-  type PaneMenuItem,
-  type PaneMenuItemGroup,
-  type PaneNode,
-  type PaneNodeResolver,
-  type RouterPaneGroup,
-  type RouterPanes,
-  type RouterPaneSibling,
-  type RouterPaneSiblingContext,
-  type SerializablePaneNode,
-  type StrictVersionLayeringOptions,
-  type StructureResolver,
-  type StructureResolverContext,
-  type StructureToolContextValue,
-  type StructureToolFeatures,
-  type StructureToolOptions,
-  type StructureToolPaneActionHandler,
-  type UnresolvedPaneNode,
-} from '../structure/types'
-export {useStructureTool} from '../structure/useStructureTool'
+export {type StructureResolver, type StructureToolOptions} from '../structure/types'
+
+// <tombstones>
+// Generated by tombstones/generate.mjs from tombstones/manifest.json — do not edit by hand.
+// Type-only: every symbol is `export declare` / `export type … = never`. Nothing here may
+// emit runtime JavaScript. See AGENTS.md ("Export tombstones (v7)").
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type BackLinkProps = never
+/**
+ * @deprecated Moved to `sanity/router`. Import `{BaseIntentParams}` from `sanity/router` instead of `sanity/structure`.
+ */
+export type BaseIntentParams = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type BaseResolvedPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type Builder = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type ChildLinkProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ConfirmDeleteDialog: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type ConfirmDeleteDialogProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type CustomComponentPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DEFAULT_INTENT_HANDLER: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type DocumentFieldMenuActionNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export declare const DocumentInspectorHeader: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentListPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentListPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentListPaneProps = never
+/**
+ * @deprecated Moved to `sanity`. Import `{DocumentOptions}` from `sanity` instead of `sanity/structure`.
+ */
+export type DocumentOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export declare const DocumentPaneProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentPaneProviderProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{EditReferenceOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type EditReferenceOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const HELP_URL: never
+/**
+ * @deprecated Moved to `sanity/router`. Import `{IntentJsonParams}` from `sanity/router` instead of `sanity/structure`.
+ */
+export type IntentJsonParams = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type ListPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ORDER_BY_IDS_PARAM_FIELD: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const Pane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const PaneContent: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export declare const PaneLayout: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneListItem = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneListItemDivider = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneMenuItem = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneMenuItemGroup = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneNodeResolver = never
+/**
+ * @deprecated Moved to `sanity/_singletons`. Import `{PaneRouterContext}` from `sanity/_singletons` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const PaneRouterContext: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type PaneRouterContextValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type ParameterizedLinkProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type ReferenceChildLinkProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type RouterPaneGroup = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type RouterPaneSibling = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type RouterPaneSiblingContext = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type RouterPanes = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type SerializablePaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const SerializeError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type SortMenuItem = never
+/**
+ * @deprecated Moved to `sanity`. Import `{StrictVersionLayeringOptions}` from `sanity` instead of `sanity/structure`.
+ */
+export type StrictVersionLayeringOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureBuilderOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type StructureResolverContext = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolContextValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolFeatures = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolPaneActionHandler = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const StructureToolProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{StructureToolProviderProps}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolProviderProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type UnresolvedPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export type UseDocumentTitle = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const component: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const createStructureBuilder: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultInitialValueTemplateItems: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultIntentChecker: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const documentFromEditor: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const documentFromEditorWithInitialValue: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const form: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getOrderingMenuItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getOrderingMenuItemsForSchemaType: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getTypeNamesFromFilter: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isDocumentListItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const maybeSerializeInitialValueTemplateItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const maybeSerializeMenuItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const maybeSerializeMenuItemGroup: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const maybeSerializeView: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const menuItemsFromInitialValueTemplateItems: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const shallowIntentChecker: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export declare const useDocumentTitle: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const usePaneOptions: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release.
+ */
+export declare const usePaneRouter: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useStructureTool: never
+// </tombstones>

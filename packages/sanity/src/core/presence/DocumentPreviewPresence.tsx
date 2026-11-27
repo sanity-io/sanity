@@ -29,7 +29,9 @@ const AvatarStackBox = styled.div((props) => {
   `
 })
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
   // Previews render in every studio, with or without the releases plugin, so these strings live

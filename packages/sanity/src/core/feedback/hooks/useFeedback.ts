@@ -1,12 +1,8 @@
-import {useCallback, useContext} from 'react'
+import {useCallback, use} from 'react'
 import {FeedbackContext} from 'sanity/_singletons'
 
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {type SendFeedbackOptions} from './useInStudioFeedback'
-
-// re-exported here so the public entry can surface the context without
-// depending on sanity/_singletons directly (boundaries policy)
-export {FeedbackContext}
 
 /** Extends {@link SendFeedbackOptions} with optional user identity for out-of-studio use. */
 export interface FeedbackOptions extends SendFeedbackOptions {
@@ -34,7 +30,7 @@ export interface UseFeedbackReturn {
  * @internal
  */
 export function useFeedback(): UseFeedbackReturn {
-  const {telemetryConsent, userName, userEmail, tags} = useContext(FeedbackContext)
+  const {telemetryConsent, userName, userEmail, tags} = use(FeedbackContext)
 
   const sendFeedback = useCallback(
     (opts: FeedbackOptions): Promise<string> => {

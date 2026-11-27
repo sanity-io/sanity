@@ -3,19 +3,17 @@ import {Card} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  LoadingBlock,
-  useClient,
-  useDocumentPreviewStore,
-  useSchema,
-  useSource,
-  useTranslation,
-} from 'sanity'
+import {useClient} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {useSchema} from '../../../../../core/hooks/useSchema'
+import {useDocumentPreviewStore} from '../../../../../core/store/datastores'
+import {useSource} from '../../../../../core/studio/source'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../core/studioClient'
 import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
   type CrossDatasetIncomingReferenceDocument,

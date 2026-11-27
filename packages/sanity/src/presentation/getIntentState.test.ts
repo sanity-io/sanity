@@ -1,6 +1,6 @@
-import {encodeJsonParams} from 'sanity/router'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {encodeJsonParams} from '../router/utils/jsonParamsEncoding'
 import {getIntentState} from './getIntentState'
 
 vi.mock('@sanity/uuid', () => ({

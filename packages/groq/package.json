@@ -50,7 +50,11 @@
   "scripts": {
     "test": "node --test"
   },
+  "browserslist": [
+    "node >=24.11",
+    "baseline 2026 with downstream"
+  ],
   "engines": {
-    "node": ">=22.12"
+    "node": ">=24.11"
   }
 }

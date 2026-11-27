@@ -16,8 +16,10 @@ import type {
   defineWebWorker,
   defineWindowView,
   getCliClient,
+  getStudioCliTooling,
   getStudioEnvironmentVariables,
   MediaLibraryField,
+  StudioCliTooling,
   StudioEnvVariablesOptions,
   unstable_defineMediaLibrary,
 } from 'sanity/cli'
@@ -63,11 +65,17 @@ describe('sanity/cli', () => {
   test('getCliClient', () => {
     expectTypeOf<typeof getCliClient>().not.toBeNever()
   })
+  test('getStudioCliTooling', () => {
+    expectTypeOf<typeof getStudioCliTooling>().toBeFunction()
+  })
   test('getStudioEnvironmentVariables', () => {
     expectTypeOf<typeof getStudioEnvironmentVariables>().toBeFunction()
   })
   test('MediaLibraryField', () => {
     expectTypeOf<MediaLibraryField>().toBeObject()
+  })
+  test('StudioCliTooling', () => {
+    expectTypeOf<StudioCliTooling>().toBeObject()
   })
   test('StudioEnvVariablesOptions', () => {
     expectTypeOf<StudioEnvVariablesOptions>().toBeObject()

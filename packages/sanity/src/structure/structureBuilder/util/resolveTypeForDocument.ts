@@ -1,5 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, getPublishedId, type SourceClientOptions} from 'sanity'
+import {type SourceClientOptions} from 'sanity'
+
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
+import {getPublishedId} from '../../../core/util/draftUtils'
 
 export async function resolveTypeForDocument(
   getClient: (options: SourceClientOptions) => SanityClient,

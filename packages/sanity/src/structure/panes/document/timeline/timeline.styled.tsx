@@ -1,9 +1,5 @@
 import {css, styled} from 'styled-components'
-import {VStack, Flex, Box} from 'ui5'
-
-export const StackWrapper = styled(VStack)`
-  max-width: 200px;
-`
+import {Flex, Box} from 'ui5'
 
 export const ListWrapper = styled(Flex)<{$maxHeight: string}>`
   max-height: ${(props) => props.$maxHeight};

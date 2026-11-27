@@ -4,7 +4,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import rootJson from '@repo/test-dts-exports/package.json' with {type: 'json'}
-import {Project} from 'ts-morph'
+import {Node, Project} from 'ts-morph'
 
 const diagnosticsEnvFlag = process.env.TEST_DTS_EXPORTS_DIAGNOSTICS || 'none'
 const diagnostics =
@@ -50,7 +50,9 @@ for (const [bareIdentifier, [dtsFilePath, fixturePath]] of fixtures) {
     continue
   }
 
-  const allExports = Array.from(exps.keys()).sort((a, b) => a.localeCompare(b))
+  const allExports = Array.from(exps.keys())
+    .filter((name) => !exps.get(name)?.some(isTombstoneDeclaration))
+    .sort((a, b) => a.localeCompare(b))
   const importsWithDecls = allExports.filter((name) => {
     const decls = exps.get(name)
     return decls && decls.length > 0
@@ -121,6 +123,37 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
 `
 
   await writeFile(fixturePath, testContent)
+}
+
+/**
+ * Type-only `@deprecated` `never` tombstones for removed and moved exports are not real exports,
+ * so the fixtures leave them out; `test/tombstones.test.ts` covers them. Entry barrels re-export
+ * them through rolldown-plugin-dts aliases, so walk to the underlying declaration.
+ *
+ * @param {import('ts-morph').ExportedDeclarations} decl
+ */
+function isTombstoneDeclaration(decl) {
+  let symbol = decl.getSymbol?.() ?? null
+  if (symbol) {
+    for (let depth = 0; depth < 100 && symbol.isAlias(); depth++) {
+      const next = symbol.getImmediatelyAliasedSymbol()
+      if (!next) break
+      symbol = next
+    }
+    return symbol.getDeclarations().some(declarationIsTombstone)
+  }
+  return declarationIsTombstone(decl)
+}
+
+/** @param {import('ts-morph').Node} declaration */
+function declarationIsTombstone(declaration) {
+  if (Node.isTypeAliasDeclaration(declaration)) {
+    return declaration.getTypeNode()?.getText() === 'never'
+  }
+  if (!Node.isVariableDeclaration(declaration)) return false
+  if (declaration.getTypeNode()?.getText() !== 'never') return false
+  const statement = declaration.getFirstAncestor(Node.isVariableStatement)
+  return Boolean(statement?.hasDeclareKeyword())
 }
 
 function getTestContent(syntaxKindName, exportName, genericParams) {

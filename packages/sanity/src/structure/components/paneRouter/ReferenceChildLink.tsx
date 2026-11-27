@@ -1,7 +1,7 @@
 import {toString as pathToString} from '@sanity/util/paths'
 import {type RefAttributes} from 'react'
-import {getPublishedId} from 'sanity'
 
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {ChildLink} from './ChildLink'
 import {type ReferenceChildLinkProps} from './types'
 

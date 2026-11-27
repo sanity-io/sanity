@@ -2,11 +2,11 @@ import {ComposeIcon} from '@sanity/icons/Compose'
 import {DropIcon} from '@sanity/icons/Drop'
 import {ImageIcon} from '@sanity/icons/Image'
 import {
-  BlockEditor,
   defineArrayMember,
   defineField,
   defineType,
   type PortableTextInputProps,
+  BlockEditor,
 } from 'sanity'
 import {Text, Box} from 'ui5'
 

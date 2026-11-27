@@ -1,7 +1,7 @@
-import {type ComponentType, useContext, useMemo, useState} from 'react'
-import {type DocumentLayoutProps} from 'sanity'
+import {type ComponentType, use, useMemo, useState} from 'react'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
+import {type DocumentLayoutProps} from '../../../core/config/types'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {useCreatePathSyncChannel} from '../hooks/useCreatePathSyncChannel'
 import {useDiffViewRouter} from '../hooks/useDiffViewRouter'
@@ -18,7 +18,7 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
   const syncChannel = useCreatePathSyncChannel()
   const [previousPaneElement, setPreviousPaneElement] = useState<HTMLElement | null>(null)
   const [nextPaneElement, setNextPaneElement] = useState<HTMLElement | null>(null)
-  const referenceInputOptionsContext = useContext(ReferenceInputOptionsContext)
+  const referenceInputOptionsContext = use(ReferenceInputOptionsContext)
 
   const diffViewReferenceInputOptionsContext = useMemo(
     () => ({

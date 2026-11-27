@@ -485,9 +485,7 @@ export const documentCommentsEnabledReducer = (opts: {
   // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
   // The last plugin 'wins'.
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver =
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      innerConfig.document?.comments?.enabled ?? innerConfig.document?.unstable_comments?.enabled
+    const resolver = innerConfig.document?.comments?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
     if (typeof resolver === 'function') return resolver(context)
@@ -554,7 +552,7 @@ export const onUncaughtErrorResolver = (opts: {
 export const eventsAPIReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
-  key: 'releases' | 'documents'
+  key: 'releases'
 }): boolean => {
   const {config, initialValue} = opts
   const flattenedConfig = flattenConfig(config, [])
@@ -683,34 +681,6 @@ export const variantsTypesReducer = (opts: {
   }, initialValue)
 }
 
-export const commentsV2EnabledReducer = (opts: {
-  config: PluginOptions
-  initialValue: boolean
-}): boolean => {
-  const {config, initialValue} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  return flattenedConfig.reduce((value: boolean, {config: innerConfig}) => {
-    const comments: unknown = innerConfig.beta?.comments
-
-    if (typeof comments === 'undefined') return value
-    if (!isRecord(comments)) {
-      throw new Error(
-        `Expected \`beta.comments\` to be an object, but received ${getPrintableType(comments)}`,
-      )
-    }
-
-    const v2 = comments.v2
-
-    if (typeof v2 === 'undefined') return value
-    if (typeof v2 === 'boolean') return v2
-
-    throw new Error(
-      `Expected \`beta.comments.v2\` to be a boolean, but received ${getPrintableType(v2)}`,
-    )
-  }, initialValue)
-}
-
 export const documentGroupInventoryEnabledReducer = ({
   config,
   initialValue,
@@ -763,7 +733,7 @@ export const reactActivityModeEnabledReducer = ({
   const flattenedConfig = flattenConfig(config, [])
 
   return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
-    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
+    const reactActivityMode: unknown = innerConfig.reactActivityMode
 
     if (typeof reactActivityMode === 'undefined') {
       return value
@@ -771,7 +741,7 @@ export const reactActivityModeEnabledReducer = ({
 
     if (!isRecord(reactActivityMode)) {
       throw new Error(
-        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+        `Expected \`reactActivityMode\` to be an object, but received ${getPrintableType(
           reactActivityMode,
         )}`,
       )
@@ -788,7 +758,7 @@ export const reactActivityModeEnabledReducer = ({
     }
 
     throw new Error(
-      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )

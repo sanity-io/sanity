@@ -16,8 +16,10 @@ import {
   takeWhile,
   tap,
 } from 'rxjs'
-import {pauseWhileDocumentHidden, type SanityClient} from 'sanity'
+import {type SanityClient} from 'sanity'
 import {fromObservable, type ObservableActorLogic} from 'xstate'
+
+import {pauseWhileDocumentHidden} from '../../core/store/listenerGate/listenerGate'
 
 /**
  * Only the most recent live events can be about the shared secret, the same cap `useLiveEvents` uses

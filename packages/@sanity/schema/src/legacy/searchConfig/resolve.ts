@@ -130,14 +130,6 @@ function getCachedStringFieldPaths(type: any, maxDepth: number) {
   return type[symbol]
 }
 
-function getCachedBaseFieldPaths(type: any, maxDepth: number) {
-  const symbol = getStringFieldSymbol(maxDepth)
-  if (!type[symbol]) {
-    type[symbol] = uniqueByPath([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)])
-  }
-  return type[symbol]
-}
-
 function getStringFieldPaths(type: any, maxDepth: number) {
   const reducer = (accumulator: any, childType: any, path: any) =>
     childType.jsonType === 'string' ? [...accumulator, path] : accumulator
@@ -150,10 +142,6 @@ function getPortableTextFieldPaths(type: any, maxDepth: any) {
     isPortableTextArray(childType) ? [...accumulator, path] : accumulator
 
   return reduceType(type, reducer, [], [], maxDepth)
-}
-
-export function resolveSearchConfigForBaseFieldPaths(type: any, maxDepth?: number) {
-  return getCachedBaseFieldPaths(type, normalizeMaxDepth(maxDepth))
 }
 
 /**

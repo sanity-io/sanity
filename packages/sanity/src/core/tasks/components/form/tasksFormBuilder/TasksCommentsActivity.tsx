@@ -1,7 +1,7 @@
 import {Card} from '@sanity/ui'
 
-import {CommentsProvider as CommentsProviderV2} from '../../../../comments-v2/context/comments/CommentsProvider'
-import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
+import {CommentsProvider} from '../../../../comments-v2/context/comments/CommentsProvider'
+import {CommentsProvider as CommentsProviderLegacy} from '../../../../comments/context/comments/CommentsProvider'
 import {type ObjectInputProps} from '../../../../form/types/inputProps'
 import {useWorkspace} from '../../../../studio/workspace'
 import {getPublishedId} from '../../../../util/draftUtils'
@@ -21,7 +21,7 @@ interface TasksCommentsActivityProps {
  */
 export function TasksCommentsActivity(props: TasksCommentsActivityProps) {
   const {value, onChange, activityData} = props
-  const {beta} = useWorkspace()
+  const {comments} = useWorkspace()
   const taskId = value._id
 
   const activityLog = (
@@ -35,22 +35,27 @@ export function TasksCommentsActivity(props: TasksCommentsActivityProps) {
     </Card>
   )
 
-  if (beta?.comments?.v2) {
+  if (comments.legacy) {
     return (
-      <CommentsProviderV2
-        groupId={getPublishedId(taskId)}
-        versionId={taskId}
+      <CommentsProviderLegacy
+        documentId={taskId}
         documentType="tasks.task"
         sortOrder="asc"
         type="task"
       >
         {activityLog}
-      </CommentsProviderV2>
+      </CommentsProviderLegacy>
     )
   }
 
   return (
-    <CommentsProvider documentId={taskId} documentType="tasks.task" sortOrder="asc" type="task">
+    <CommentsProvider
+      groupId={getPublishedId(taskId)}
+      versionId={taskId}
+      documentType="tasks.task"
+      sortOrder="asc"
+      type="task"
+    >
       {activityLog}
     </CommentsProvider>
   )

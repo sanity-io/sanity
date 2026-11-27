@@ -1,5 +1,5 @@
 import {isHttpError, type SanityClient} from '@sanity/client'
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {useCallback, use, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
@@ -192,11 +192,11 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 /**
  * This provider sets the addon dataset client, currently called `comments` dataset.
  * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
- * @beta
+ * @internal
  * @hidden
  */
 export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
-  const context = useContext(AddonDatasetContext)
+  const context = use(AddonDatasetContext)
   // Avoid mounting the provider if it's already provided by a parent
   if (context) return props.children
   return <AddonDatasetProviderInner {...props} />

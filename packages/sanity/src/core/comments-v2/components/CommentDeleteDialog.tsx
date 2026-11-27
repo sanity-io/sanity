@@ -38,7 +38,7 @@ export interface CommentDeleteDialogProps {
 }
 
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export function CommentDeleteDialog(props: CommentDeleteDialogProps) {

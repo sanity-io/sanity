@@ -1,16 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {type ReactNode} from 'react'
-import {
-  type EditStateFor,
-  getVersionFromId,
-  LocaleProvider,
-  type PerspectiveContextValue,
-  useActiveReleases,
-  useArchivedReleases,
-  useDocumentVersions,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {type EditStateFor, type PerspectiveContextValue} from 'sanity'
 import {
   DocumentPaneContext,
   DocumentPaneInfoContext,
@@ -24,6 +15,12 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../../test/browser/TestWrapper'
+import {LocaleProvider} from '../../../../../../../core/i18n/components/LocaleProvider'
+import {useDocumentVersions} from '../../../../../../../core/releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {useArchivedReleases} from '../../../../../../../core/releases/store/useArchivedReleases'
+import {getVersionFromId} from '../../../../../../../core/util/draftUtils'
 import {type PaneRouterContextValue} from '../../../../../../components/paneRouter/types'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'

@@ -16,6 +16,7 @@ import {resolveFromInvocation} from './benchRoot'
 import {bundleStepsCommand} from './commands/bundleSteps'
 import {certPathCommand, writeCertificateFile} from './commands/certPath'
 import {devCommand} from './commands/dev'
+import {exportCostsCommand} from './commands/exportCosts'
 import {listenerStallCommand} from './commands/listenerStall'
 import {prepareBackfill, prepareBackfillCommand} from './commands/prepareBackfill'
 import {prepareReference, prepareReferenceCommand} from './commands/prepareReference'
@@ -36,6 +37,7 @@ const result = run(
     prepareReferenceCommand,
     prepareBackfillCommand,
     certPathCommand,
+    exportCostsCommand,
   ),
   {
     programName: 'bench',
@@ -89,5 +91,17 @@ switch (result.action) {
     break
   case 'cert-path':
     console.log(await writeCertificateFile())
+    break
+  case 'export-costs':
+    await (
+      await import('../exportCost/run')
+    ).runExportCosts({
+      outDir: resolveFromInvocation(result.outDir),
+      verify: result.verify,
+      verifyNames: [...result.verifyName],
+      repeat: result.repeat,
+      headless: !result.headed,
+      top: result.top,
+    })
     break
 }

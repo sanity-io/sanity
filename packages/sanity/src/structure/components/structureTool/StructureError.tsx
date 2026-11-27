@@ -1,7 +1,7 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Card, Container} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {styled} from 'styled-components'
 import {Heading, Code, Text, Box, Flex, VStack, Link} from 'ui5'
 

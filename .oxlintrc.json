@@ -25,6 +25,7 @@
     {"name": "i18next", "specifier": "eslint-plugin-i18next"},
     {"name": "@sanity/i18n", "specifier": "@sanity/eslint-plugin-i18n"},
     {"name": "@repo/i18n", "specifier": "@repo/oxlint-plugin-i18n"},
+    {"name": "@repo/studio", "specifier": "@repo/oxlint-plugin-studio"},
     {"name": "boundaries", "specifier": "eslint-plugin-boundaries"},
     {"name": "testing-library", "specifier": "eslint-plugin-testing-library"}
   ],
@@ -44,7 +45,6 @@
         "partialMatch": false
       },
       {"type": "sanity/cli__contents", "pattern": "src/cli", "partialMatch": false},
-      {"type": "sanity/desk__contents", "pattern": "src/desk", "partialMatch": false},
       {"type": "sanity/router__contents", "pattern": "src/router", "partialMatch": false},
       {
         "type": "sanity/structure__contents",
@@ -61,13 +61,21 @@
       {"category": "sanity", "pattern": "src/_exports/index.ts"},
       {
         "category": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
-        "pattern": "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts"
+        "pattern": [
+          "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts",
+          "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver-*.ts"
+        ]
       },
       {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
       {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
-      {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
       {"category": "sanity/i18n", "pattern": "src/_exports/i18n.ts"},
       {"category": "sanity/router", "pattern": "src/_exports/router.ts"},
+      {
+        // Leaf router utilities that src/core imports directly, so they can stay off the public
+        // `sanity/router` entry (they are internal)
+        "category": "sanity/router__shared",
+        "pattern": ["src/router/stickyParams.ts", "src/router/utils/jsonParamsEncoding.ts"]
+      },
       {"category": "sanity/structure", "pattern": "src/_exports/structure.ts"},
       {"category": "sanity/_singletons", "pattern": "src/_exports/_singletons.ts"}
     ]
@@ -140,8 +148,8 @@
           },
           {
             "name": "react",
-            "importNames": ["useEffectEvent"],
-            "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+            "importNames": ["useContext"],
+            "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
           },
           {
             "name": "react/jsx-runtime",
@@ -379,6 +387,11 @@
       "rules": {"import/no-cycle": "off"}
     },
     {
+      // A studio evaluates its config before it renders the login screen
+      "files": ["**/sanity.config.{ts,tsx,js,jsx,mjs,mts}"],
+      "rules": {"@repo/studio/no-internals-before-sign-in": "error"}
+    },
+    {
       "files": ["scripts/**/*", "examples/functions/**/*"],
       "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
     },
@@ -546,8 +559,8 @@
               },
               {
                 "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+                "importNames": ["useContext"],
+                "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
               },
               {
                 "name": "react/jsx-runtime",
@@ -629,7 +642,14 @@
                 "from": {"element": {"type": "sanity/_internal__contents"}},
                 "allow": {
                   "to": [
-                    {"file": {"categories": "sanity"}},
+                    {
+                      "file": {
+                        "categories": [
+                          "sanity",
+                          "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                        ]
+                      }
+                    },
                     {"element": {"type": "sanity/_internal__contents"}}
                   ]
                 }
@@ -656,8 +676,19 @@
                 }
               },
               {
+                // getStudioCliTooling() imports the internals entry lazily, and its types come
+                // from the same entry.
                 "from": {"file": {"categories": "sanity/cli"}},
-                "allow": {"to": {"element": {"type": "sanity/cli__contents"}}}
+                "allow": {
+                  "to": [
+                    {"element": {"type": "sanity/cli__contents"}},
+                    {
+                      "file": {
+                        "categories": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                      }
+                    }
+                  ]
+                }
               },
               {
                 "from": {"element": {"type": "sanity/cli__contents"}},
@@ -676,35 +707,11 @@
                 "allow": {
                   "to": [
                     {"element": {"type": "sanity__contents"}},
-                    {"file": {"categories": ["sanity/router", "sanity/_singletons"]}}
-                  ]
-                }
-              },
-              {
-                "from": {"file": {"categories": "sanity/desk"}},
-                "allow": {
-                  "to": [
-                    {"element": {"type": ["sanity/desk__contents", "sanity/structure__contents"]}},
-                    {"file": {"categories": "sanity/structure"}}
-                  ]
-                }
-              },
-              {
-                "from": {"element": {"type": "sanity/desk__contents"}},
-                "allow": {
-                  "to": [
-                    {
-                      "element": {
-                        "type": ["sanity/desk__contents", "sanity/structure__contents"]
-                      }
-                    },
                     {
                       "file": {
                         "categories": [
-                          "sanity",
                           "sanity/router",
-                          "sanity/_internal",
-                          "sanity/structure",
+                          "sanity/router__shared",
                           "sanity/_singletons"
                         ]
                       }
@@ -730,16 +737,28 @@
                 "allow": {"to": {"element": {"type": "sanity/structure__contents"}}}
               },
               {
+                // Structure imports public API through the `sanity` entry and internals
+                // relatively from src/core. It must not import the internals entry: that entry
+                // re-exports structure modules, so the import would be a cycle.
+                //
+                // `sanity__contents` is the whole of src/core, so this rule permits a relative
+                // import of a public core module too, which the paragraph above asks you not to
+                // do. The boundaries plugin matches on file categories, and there is no category
+                // that distinguishes a public core module from an internal one (the release tag
+                // lives in TSDoc, not in the path), so "public API through the entry" stays a
+                // convention here. What the rule does enforce is the part that breaks a build:
+                // no structure file reaches the internals entry.
                 "from": {"element": {"type": "sanity/structure__contents"}},
                 "allow": {
                   "to": [
-                    {"element": {"type": "sanity/structure__contents"}},
+                    {"element": {"type": ["sanity/structure__contents", "sanity__contents"]}},
                     {
                       "file": {
                         "categories": [
                           "sanity",
                           "sanity/i18n",
                           "sanity/router",
+                          "sanity/router__shared",
                           "sanity/_singletons"
                         ]
                       }
@@ -898,8 +917,8 @@
               },
               {
                 "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+                "importNames": ["useContext"],
+                "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
               },
               {
                 "name": "react/jsx-runtime",
@@ -1034,8 +1053,8 @@
               },
               {
                 "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+                "importNames": ["useContext"],
+                "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
               },
               {
                 "name": "react/jsx-runtime",
@@ -1164,8 +1183,8 @@
               },
               {
                 "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+                "importNames": ["useContext"],
+                "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
               },
               {
                 "name": "react/jsx-runtime",
@@ -1213,10 +1232,22 @@
     },
     {
       // Browser-mode tests (harness components included) render real Studio inputs and may
-      // import the public API and test-only deps freely
+      // import the public API and test-only deps freely. Only the `useContext` ban is kept, since
+      // that convention is repository-wide.
       "files": ["packages/sanity/**/*.browser.test.{ts,tsx}"],
       "rules": {
-        "eslint/no-restricted-imports": "off"
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "react",
+                "importNames": ["useContext"],
+                "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -1241,6 +1272,11 @@
                 "name": "react",
                 "importNames": ["default"],
                 "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+              },
+              {
+                "name": "react",
+                "importNames": ["useContext"],
+                "message": "Read context with React 19's `use` instead: `use(Context)`. It returns the same value as useContext and can also be called inside conditions and loops."
               },
               {
                 "name": "date-fns",

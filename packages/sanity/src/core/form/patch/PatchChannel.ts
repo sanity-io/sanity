@@ -49,6 +49,7 @@ export interface PatchChannel {
 }
 
 /**
+ * @hidden
  * @internal
  */
 export function createPatchChannel(): PatchChannel {

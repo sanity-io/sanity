@@ -1,5 +1,6 @@
 import {type ComponentProps} from 'react'
-import {getDefaultVariant, useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
+import {usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {StateLink} from 'sanity/router'
 import {Box, Flex, PressArea} from 'ui5'
 
@@ -8,6 +9,8 @@ import {
   SeparatorItem,
 } from '../../core/form/components/breadcrumbs/DialogBreadcrumbs'
 import {breadcrumbItem} from '../../core/form/components/breadcrumbs/DialogBreadcrumbs.css'
+import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
+import {useDocumentPreviewValues} from '../../core/tasks/hooks/useDocumentPreviewValues'
 import {presentationLocaleNamespace} from '../i18n'
 
 function useCrumbTitle(documentId: string, documentType: string): string | undefined {

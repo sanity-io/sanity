@@ -8,21 +8,23 @@ import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'
 import {type ComponentProps, type ReactNode, Suspense, use, useState} from 'react'
 import {
-  ChangeConnectorRoot,
-  ColorSchemeProvider,
-  CopyPasteProvider,
   defineConfig,
-  EMPTY_ARRAY,
-  type LocaleResourceBundle,
   type PluginOptions,
-  ResourceCacheProvider,
   type SchemaTypeDefinition,
   type SingleWorkspace,
+  type WorkspaceOptions,
+} from 'sanity'
+import {
+  CopyPasteProvider,
+  ColorSchemeProvider,
+  EMPTY_ARRAY,
+  ResourceCacheProvider,
   SourceProvider,
   UserColorManagerProvider,
-  type WorkspaceOptions,
   WorkspaceProvider,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {ChangeConnectorRoot} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
+import {type LocaleResourceBundle} from 'sanity/i18n'
 
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'

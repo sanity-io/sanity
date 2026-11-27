@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {structureLocaleNamespace} from '../../../i18n'
 

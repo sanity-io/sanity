@@ -8,7 +8,7 @@ import resolveDocumentActions from './documentActions'
 /**
  * @internal
  */
-export const RELEASES_NAME = 'sanity/releases'
+const RELEASES_NAME = 'sanity/releases'
 
 /**
  * @internal

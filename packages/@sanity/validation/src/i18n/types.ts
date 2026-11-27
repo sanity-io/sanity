@@ -11,7 +11,7 @@ export interface ValidationLocaleSource {
   /** Loads translation resources needed by built-in or custom validators. */
   loadNamespaces(namespaces: string[]): Promise<void>
   /** Translates a key with optional interpolation and formatting options. */
-  t: (key: string, options?: Record<string, unknown>) => string
+  t: (...args: [key: string] | [key: string, options: Record<string, unknown>]) => string
 }
 
 export interface LocaleSource extends ValidationLocaleSource {

@@ -1,0 +1,20 @@
+{
+  "name": "@repo/oxlint-plugin-studio",
+  "version": "6.9.2",
+  "private": true,
+  "description": "In-repo oxlint jsPlugin with rules for studio code",
+  "type": "module",
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "oxlint": "^1.94.0",
+    "vitest": "catalog:"
+  }
+}

@@ -1,4 +1,4 @@
-import {ALL_FIELDS_GROUP, defineField, defineType} from 'sanity'
+import {defineField, defineType, ALL_FIELDS_GROUP} from 'sanity'
 
 export const allFieldsGroupHidden = defineType({
   name: 'allFieldsGroupHidden',

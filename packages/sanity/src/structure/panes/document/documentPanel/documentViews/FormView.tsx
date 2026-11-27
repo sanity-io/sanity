@@ -1,28 +1,35 @@
 import {focusFirstDescendant, Spinner} from '@sanity/ui'
-import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
+import {
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type RefAttributes,
+  useEffectEvent,
+} from 'react'
 import {tap} from 'rxjs/operators'
 import {
-  createPatchChannel,
-  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
-  FormBuilder,
-  FormContainer,
   type FormDocumentValue,
-  FormRow,
-  fromMutationPatches,
-  getTargetScopeId,
   type PatchMsg,
-  PresenceOverlay,
-  useConditionalToast,
-  useDocumentPresence,
-  useDocumentStore,
   usePerspective,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
+import {Delay} from '../../../../../core/components/Delay'
+import {FormContainer} from '../../../../../core/form/components/layout/FormContainer'
+import {FormRow} from '../../../../../core/form/components/layout/FormRow'
+import {createPatchChannel} from '../../../../../core/form/patch/PatchChannel'
+import {FormBuilder} from '../../../../../core/form/studio/FormBuilder'
+import {fromMutationPatches} from '../../../../../core/form/utils/mutationPatch'
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
+import {PresenceOverlay} from '../../../../../core/presence/overlay/PresenceOverlay'
+import {useDocumentStore} from '../../../../../core/store/datastores'
+import {useDocumentPresence} from '../../../../../core/store/presence/useDocumentPresence'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isDocumentLoading} from '../../isDocumentLoading'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -176,7 +183,6 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
       handleInitialValue()
     }
     // React to changes in hasRev only
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)

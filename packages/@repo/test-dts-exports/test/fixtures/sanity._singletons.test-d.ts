@@ -15,6 +15,7 @@ import type {
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
   ColorSchemeSetValueContext,
+  ColorSchemeSystemValueContext,
   ColorSchemeValueContext,
   CommentInputContext,
   CommentInputContextV2,
@@ -155,7 +156,7 @@ import type {
   UpsellDescriptionSerializerContext,
   UserApplicationCacheContext,
   UserColorManagerContext,
-  ValidationContext,
+  ValidationMarkersContext,
   VariantsModePromiseContext,
   VariantsUpsellContext,
   VirtualizerScrollInstanceContext,
@@ -203,6 +204,9 @@ describe('sanity/_singletons', () => {
   })
   test('ColorSchemeSetValueContext', () => {
     expectTypeOf<typeof ColorSchemeSetValueContext>().not.toBeNever()
+  })
+  test('ColorSchemeSystemValueContext', () => {
+    expectTypeOf<typeof ColorSchemeSystemValueContext>().not.toBeNever()
   })
   test('ColorSchemeValueContext', () => {
     expectTypeOf<typeof ColorSchemeValueContext>().not.toBeNever()
@@ -624,8 +628,8 @@ describe('sanity/_singletons', () => {
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()
   })
-  test('ValidationContext', () => {
-    expectTypeOf<typeof ValidationContext>().not.toBeNever()
+  test('ValidationMarkersContext', () => {
+    expectTypeOf<typeof ValidationMarkersContext>().not.toBeNever()
   })
   test('VariantsModePromiseContext', () => {
     expectTypeOf<typeof VariantsModePromiseContext>().not.toBeNever()

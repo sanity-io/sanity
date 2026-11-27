@@ -14,43 +14,49 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffectEvent,
 } from 'react'
 import {
-  DivergencesProvider,
   type DocumentActionsContext,
   type DocumentFieldAction,
   type EditStateFor,
-  EMPTY_ARRAY,
-  getCreatableVariantTarget,
-  getDefaultVariant,
-  getDocumentVersionType,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
-  isGoingToUnpublish,
-  isPausedCardinalityOneRelease,
-  isPerspectiveWriteable,
-  isVersionId,
-  ParseErrorsProvider,
   type PartialContext,
-  pathToString,
-  selectUpstreamVersion,
-  useActiveReleases,
-  useCopyPaste,
-  useCreatableVariantInitialValue,
-  useDocumentDivergences,
-  useDocumentForm,
   usePerspective,
-  useSchema,
-  useSource,
-  useTargetDocumentState,
-  useUnique,
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
+import {getDocumentVersionType} from '../../../core/config/document/useConfiguredDocumentActionIds'
+import {pathToString} from '../../../core/field/paths/helpers'
+import {
+  DivergencesProvider,
+  useDocumentDivergences,
+} from '../../../core/form/contexts/DivergencesProvider'
+import {ParseErrorsProvider} from '../../../core/form/studio/contexts/ParseErrors'
+import {useDocumentForm} from '../../../core/form/useDocumentForm'
+import {useDocumentIdStack} from '../../../core/hooks/useDocumentIdStack'
+import {useSchema} from '../../../core/hooks/useSchema'
+import {
+  getCreatableVariantTarget,
+  useTargetDocumentState,
+} from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {isPerspectiveWriteable} from '../../../core/perspective/isPerspectiveWriteable'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
+import {selectUpstreamVersion} from '../../../core/store/document/selectUpstreamVersion'
+import {useCopyPaste} from '../../../core/studio/copyPaste/CopyPasteProvider'
+import {useSource} from '../../../core/studio/source'
+import {getPublishedId, isVersionId} from '../../../core/util/draftUtils'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {
+  isCardinalityOneRelease,
+  isPausedCardinalityOneRelease,
+} from '../../../core/util/releaseUtils'
+import {useUnique} from '../../../core/util/useUnique'
+import {useCreatableVariantInitialValue} from '../../../core/variants/hooks/useCreatableVariantInitialValue'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
@@ -92,13 +98,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     onFocusPath,
     onSetMaximizedPane,
     maximized = false,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    forcedVersion,
     historyStore,
   } = props
   const {
-    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-    store: timelineStore,
     error: timelineError,
     ready: timelineReady,
     revisionDocument,
@@ -138,25 +140,14 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const documentType = options.type
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const perspective = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariantNames, selectedPerspective} =
+    usePerspective()
 
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl.enabled
   const isDraftModelEnabled = workspace.document.drafts.enabled
 
   const enhancedObjectDialogEnabled = true
-
-  const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
-    // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
-    if (forcedVersion) {
-      return forcedVersion
-    }
-
-    return {
-      selectedPerspectiveName: perspective.selectedPerspectiveName,
-      selectedReleaseId: perspective.selectedReleaseId,
-    }
-  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
   const {data: releases = EMPTY_ARRAY} = useActiveReleases()
   const selectedRelease = selectedReleaseId
@@ -244,7 +235,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
+    Boolean(getDefaultVariant(selectedVariantNames)) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 
@@ -263,7 +254,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         isVariantTargetReadOnly ||
         (!isPaused &&
           !isPerspectiveWriteable({
-            selectedPerspective: perspective.selectedPerspective,
+            selectedPerspective: selectedPerspective,
             isDraftModelEnabled,
             schemaType,
           }).result)
@@ -274,7 +265,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDeleting,
       isDraftModelEnabled,
       params.rev,
-      perspective.selectedPerspective,
+      selectedPerspective,
       isVariantTargetReadOnly,
       schemaType,
       selectedRelease,
@@ -420,7 +411,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
    * Previously, visiting studio URLs with timeline params would display the 'current' document and then
    * 'snap' in the older revision, which was disorienting and could happen mid-edit.
    *
-   * In the event that the timeline cannot be loaded due to TimelineController errors or blocked requests,
+   * In the event that the timeline cannot be loaded due to events store errors or blocked requests,
    * we skip this readiness check to ensure that users aren't locked out of editing. Trying to select
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
@@ -598,8 +589,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         isDeleting,
         isDeleted,
         timelineError,
-        // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-        timelineStore,
         title,
         value,
         // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -666,7 +655,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDeleting,
       isDeleted,
       timelineError,
-      timelineStore,
       title,
       value,
       selectedReleaseId,
@@ -750,7 +738,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     pathRef.current = paramPath
 
     return undefined
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [paramPath, ready])
 
   // Disable when `formState` or `schemaType` is transiently absent
@@ -788,18 +775,14 @@ const DivergenceAutofocus: ComponentType<
     ? divergenceNavigator.state.focusedDivergence
     : undefined
 
-  const focusDivergentPath = useEffectEvent(() => {
-    if (
-      divergenceNavigator.enabled &&
-      typeof divergenceNavigator.state.focusedDivergence !== 'undefined'
-    ) {
-      onProgrammaticFocus(pathFromString(divergenceNavigator.state.focusedDivergence))
+  const focusDivergentPath = useEffectEvent((divergence: typeof focusedDivergence) => {
+    if (typeof divergence !== 'undefined') {
+      onProgrammaticFocus(pathFromString(divergence))
     }
   })
 
   useEffect(() => {
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-    focusDivergentPath()
+    focusDivergentPath(focusedDivergence)
   }, [focusedDivergence])
 
   return null

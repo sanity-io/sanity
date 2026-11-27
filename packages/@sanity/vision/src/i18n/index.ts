@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {defineLocaleResourceBundle} from 'sanity/i18n'
 
 /**
  * The locale namespace for the vision tool

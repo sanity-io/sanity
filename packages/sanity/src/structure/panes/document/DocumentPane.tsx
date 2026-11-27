@@ -1,23 +1,21 @@
 import {type Path} from '@sanity/types'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, Suspense, useMemo} from 'react'
-import {
-  CopyPasteProvider,
-  getCreatableVariantTarget,
-  getDefaultVariant,
-  getPublishedId,
-  ReferenceInputOptionsProvider,
-  SourceProvider,
-  Translate,
-  useDocumentType,
-  usePerspective,
-  useSource,
-  useTargetDocumentState,
-  useTemplatePermissions,
-  useTranslation,
-} from 'sanity'
+import {usePerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, VStack} from 'ui5'
 
+import {ReferenceInputOptionsProvider} from '../../../core/form/studio/contexts/ReferenceInputOptions'
+import {
+  getCreatableVariantTarget,
+  useTargetDocumentState,
+} from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {useDocumentType} from '../../../core/store/document/hooks/useDocumentType'
+import {useTemplatePermissions} from '../../../core/store/grants/templatePermissions'
+import {CopyPasteProvider} from '../../../core/studio/copyPaste/CopyPasteProvider'
+import {SourceProvider, useSource} from '../../../core/studio/source'
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'

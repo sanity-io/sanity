@@ -1,4 +1,4 @@
-import {useContext, type ComponentType, type PropsWithChildren, type ReactNode} from 'react'
+import {use, type ComponentType, type PropsWithChildren, type ReactNode} from 'react'
 import {FormRowGutterSuppressedContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -32,7 +32,7 @@ export function SuppressFormRowGutter(props: {children: ReactNode}) {
  * @internal
  */
 export const FormRow: ComponentType<FormRowProps> = ({children, gutterStartCell}) => {
-  const gutterSuppressed = useContext(FormRowGutterSuppressedContext)
+  const gutterSuppressed = use(FormRowGutterSuppressedContext)
   const gutterEnabled = useFormGutterEnabled() && !gutterSuppressed
 
   return (

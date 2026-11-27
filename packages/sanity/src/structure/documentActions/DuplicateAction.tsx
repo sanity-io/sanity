@@ -2,19 +2,15 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {
-  type DuplicateDocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
-  InsufficientPermissionsMessage,
-  useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useDocumentStore,
-  useTranslation,
-} from 'sanity'
+import {type DuplicateDocumentActionComponent, useCurrentUser} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
+import {useDocumentStore} from '../../core/store/datastores'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 

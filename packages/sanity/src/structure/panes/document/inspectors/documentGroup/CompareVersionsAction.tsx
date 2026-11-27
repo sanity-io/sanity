@@ -1,5 +1,6 @@
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
+import {useDocumentIdStack} from '../../../../../core/hooks/useDocumentIdStack'
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {getCompareVersionsItem} from '../../menuItems'

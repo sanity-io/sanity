@@ -8,6 +8,7 @@ export interface TimeAgoOpts {
 
 /**
  * @deprecated - Use {@link useRelativeTime} instead
+ * @hidden
  * @internal
  */
 export function useTimeAgo(time: Date | string, options: TimeAgoOpts = {}): string {

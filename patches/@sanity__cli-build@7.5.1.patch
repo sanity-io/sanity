@@ -1,0 +1,52 @@
+diff --git a/dist/actions/manifest/extractWorkspaceManifest.js b/dist/actions/manifest/extractWorkspaceManifest.js
+index a482d4a45529da7dab332a5c9aeed32acc75c49e..6f23465fca8e0827630eea680972d33436d975f1 100644
+--- a/dist/actions/manifest/extractWorkspaceManifest.js
++++ b/dist/actions/manifest/extractWorkspaceManifest.js
+@@ -44,7 +44,7 @@ async function lazyResolveIcon() {
+     const context = {
+         schema
+     };
+-    const { createSchema } = await resolveLocalPackage('sanity', workDir);
++    const { createSchema } = { ...(await resolveLocalPackage('sanity', workDir)), ...(await resolveLocalPackage('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', workDir).catch(()=>({}))) };
+     const studioDefaultTypeNames = createSchema({
+         name: 'default',
+         types: []
+diff --git a/dist/actions/manifest/resolveSchemaIcon.js b/dist/actions/manifest/resolveSchemaIcon.js
+index 04e5edb4f627c0906adbdb2c02bae20648d0462c..3c38983ffd95e3fac8224b89bba866ed0481249e 100644
+--- a/dist/actions/manifest/resolveSchemaIcon.js
++++ b/dist/actions/manifest/resolveSchemaIcon.js
+@@ -35,7 +35,7 @@ import { isValidElementType } from 'react-is';
+ async function normalizeIcon(Icon, title, subtitle, workDir) {
+     if (isValidElementType(Icon)) return /*#__PURE__*/ _jsx(Icon, {});
+     if (/*#__PURE__*/ isValidElement(Icon)) return Icon;
+-    const { createDefaultIcon } = await resolveLocalPackage('sanity', workDir);
++    const { createDefaultIcon } = { ...(await resolveLocalPackage('sanity', workDir)), ...(await resolveLocalPackage('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', workDir).catch(()=>({}))) };
+     return createDefaultIcon(title, subtitle);
+ }
+ export { resolveSchemaIcon };
+diff --git a/dist/actions/schema/uploadSchemaToLexicon.js b/dist/actions/schema/uploadSchemaToLexicon.js
+index 133abe96350611ed19307fa1410fa129db67b93f..fb10f8b3ac94a6d917e61c467e00da566a915b47 100644
+--- a/dist/actions/schema/uploadSchemaToLexicon.js
++++ b/dist/actions/schema/uploadSchemaToLexicon.js
+@@ -21,7 +21,7 @@ const debug = subdebug('uploadSchemaToLexicon');
+         });
+         const [bundleVersion, { generateStudioManifest }] = await Promise.all([
+             getLocalPackageVersion('sanity', workDir),
+-            resolveLocalPackage('sanity', workDir)
++            Promise.all([resolveLocalPackage('sanity', workDir), resolveLocalPackage('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', workDir).catch(()=>({}))]).then(([root, internals])=>({ ...root, ...internals }))
+         ]);
+         if (!bundleVersion) {
+             throw new Error('Failed to find sanity version');
+diff --git a/dist/actions/schema/utils/extractValidationFromSchemaError.js b/dist/actions/schema/utils/extractValidationFromSchemaError.js
+index d9efcc408be3509f6bb9da8908223588de883e29..920933e708be742e1ba3e179c9f33b787c2dd890 100644
+--- a/dist/actions/schema/utils/extractValidationFromSchemaError.js
++++ b/dist/actions/schema/utils/extractValidationFromSchemaError.js
+@@ -2,7 +2,7 @@ import { resolveLocalPackage } from '@sanity/cli-core/package-manager';
+ /**
+  * Extracts validation problem groups from a SchemaError.
+  */ export async function extractValidationFromSchemaError(error, workDir) {
+-    const { SchemaError } = await resolveLocalPackage('sanity', workDir);
++    const { SchemaError } = { ...(await resolveLocalPackage('sanity', workDir)), ...(await resolveLocalPackage('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', workDir).catch(()=>({}))) };
+     if (error instanceof SchemaError) {
+         return error.schema._validation;
+     }

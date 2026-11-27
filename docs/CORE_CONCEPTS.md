@@ -123,7 +123,7 @@ import {
   isPublishedId, // Check if ID is published
   isVersionId, // Check if ID is in a release
   getVersionId, // Get version ID for a release
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 ```
 
 ### Live Edit
@@ -378,7 +378,7 @@ Tools are top-level views or "apps" within Sanity Studio. They appear in the mai
 
 ### Built-in Tools
 
-- **Desk** (or Structure) - Document editing interface
+- **Structure** - Document editing interface
 - **Vision** - GROQ query playground
 - **Scheduled Publishing** - View scheduled publishes
 
@@ -386,7 +386,7 @@ Tools are top-level views or "apps" within Sanity Studio. They appear in the mai
 
 ```typescript
 interface Tool<Options = any> {
-  name: string // URL segment (e.g., 'desk')
+  name: string // URL segment (e.g., 'structure')
   title: string // Display name
   icon?: ComponentType // Navigation icon
   component: ComponentType<{tool: Tool<Options>}>
@@ -743,14 +743,8 @@ import {
   defineType,
   defineField,
 
-  // Document utilities
-  getDraftId,
-  getPublishedId,
-  isDraftId,
-
   // Hooks
   useClient,
-  useSchema,
   usePerspective,
   useActiveReleases,
 
@@ -765,6 +759,16 @@ import {
   type Tool,
   type Plugin,
 } from 'sanity'
+import {
+  // Document utilities
+  getDraftId,
+  getPublishedId,
+  isDraftId,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  // Hooks
+  useSchema,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 ```
 
 ### Directory Structure

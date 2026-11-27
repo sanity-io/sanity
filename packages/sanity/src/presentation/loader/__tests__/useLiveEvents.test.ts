@@ -1,10 +1,13 @@
 import {createClient, type LiveEvent} from '@sanity/client'
 import {act, renderHook} from '@testing-library/react'
 import {Subject} from 'rxjs'
-import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from 'sanity'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
+import {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  listenerGate,
+} from '../../../core/store/listenerGate/listenerGate'
 import {initialState, reducer, useLiveEvents} from '../useLiveEvents'
 
 let releaseListenerGate: (() => void) | undefined

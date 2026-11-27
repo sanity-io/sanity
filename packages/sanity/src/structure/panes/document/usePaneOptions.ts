@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
-import {useTemplates} from 'sanity'
 
+import {useTemplates} from '../../../core/hooks/useTemplates'
 import {type DocumentPaneNode} from '../../types'
 
 type DocumentPaneOptions = DocumentPaneNode['options']

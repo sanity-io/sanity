@@ -7,7 +7,7 @@
  */
 
 import {dequal as isEqual} from 'dequal/lite'
-import {type PropsWithChildren, useCallback, useContext, useEffect} from 'react'
+import {type PropsWithChildren, useCallback, use, useEffect} from 'react'
 import {type SanityDocument} from 'sanity'
 import {PresentationDisplayedDocumentContext} from 'sanity/_singletons'
 
@@ -47,5 +47,5 @@ export function DisplayedDocumentBroadcasterProvider(
 }
 
 export function useDisplayedDocumentBroadcaster(): PresentationDisplayedDocumentContextValue | null {
-  return useContext(PresentationDisplayedDocumentContext)
+  return use(PresentationDisplayedDocumentContext)
 }

@@ -1,4 +1,4 @@
-import {memo, useContext} from 'react'
+import {memo, use} from 'react'
 import {
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
@@ -42,7 +42,7 @@ const EMPTY_ARRAY: Reported<ChangeIndicatorTrackerContextValue>[] = []
  * @internal
  */
 export function useChangeIndicatorsReportedValues(): TrackerContextGetSnapshot<ChangeIndicatorTrackerContextValue> {
-  const snapshot = useContext(ChangeIndicatorTrackerContextGetSnapshot)
+  const snapshot = use(ChangeIndicatorTrackerContextGetSnapshot)
 
   if (snapshot === null) {
     console.warn(
@@ -64,7 +64,7 @@ export const useChangeIndicatorsReporter: ReporterHook<ChangeIndicatorTrackerCon
   value,
   isEqual?,
 ) => {
-  const store = useContext(ChangeIndicatorTrackerContextStore)
+  const store = use(ChangeIndicatorTrackerContextStore)
 
   if (store === null) {
     console.warn(

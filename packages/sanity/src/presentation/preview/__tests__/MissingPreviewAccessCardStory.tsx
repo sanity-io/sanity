@@ -1,10 +1,10 @@
 import {type Role} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {LocaleProvider} from 'sanity'
 import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {LocaleProvider} from '../../../core/i18n/components/LocaleProvider'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
 import {MissingPreviewAccessCard} from '../MissingPreviewAccessCard'
 

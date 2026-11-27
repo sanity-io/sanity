@@ -149,6 +149,7 @@ function SanityDefaultMedia({
 
 /**
  * Used in cases where no custom preview component is provided
+ * @hidden
  * @internal
  * */
 export const SanityDefaultPreview = memo(function SanityDefaultPreview(

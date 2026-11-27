@@ -1,7 +1,7 @@
 import {DialogProvider, type DialogProviderProps, PortalProvider} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useMemo} from 'react'
-import {useZIndex} from 'sanity'
 
+import {useZIndex} from '../../../../core/components/zOffsets/useZIndex'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneFooter} from '../../../components/pane/PaneFooter'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'

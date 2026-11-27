@@ -1,5 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {isDeprecatedSchemaType, Translate, useTranslation} from 'sanity'
+import {isDeprecatedSchemaType} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'

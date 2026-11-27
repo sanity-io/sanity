@@ -2,22 +2,19 @@ import {type SanityDocument} from '@sanity/types'
 import {Container} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  Delay,
-  ErrorActions,
-  type GeneralPreviewLayoutKey,
-  getPublishedId,
-  isDev,
-  LoadingBlock,
-  SanityDefaultPreview,
-  Translate,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {type GeneralPreviewLayoutKey} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Heading, Text, Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../core/components/commandList/types'
+import {Delay} from '../../../core/components/Delay'
+import {ErrorActions} from '../../../core/components/errorActions/ErrorActions'
+import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
+import {isDev} from '../../../core/environment'
+import {useSchema} from '../../../core/hooks/useSchema'
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'

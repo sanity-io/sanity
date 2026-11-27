@@ -1,5 +1,6 @@
 import {Card} from '@sanity/ui'
-import {type DocumentInspectorComponent, type DocumentInspectorProps, useTranslation} from 'sanity'
+import {type DocumentInspectorComponent, type DocumentInspectorProps} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'

@@ -1,6 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Inline, rem} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {styled} from 'styled-components'
 import {Text, Flex, Box, Icon} from 'ui5'
 

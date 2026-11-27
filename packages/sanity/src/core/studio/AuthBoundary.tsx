@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, type ReactNode, useContext, useEffect, useMemo, useState} from 'react'
+import {type ComponentType, type ReactNode, use, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {RouterHistoryContext} from 'sanity/_singletons'
@@ -75,7 +75,7 @@ export function AuthBoundary({
   const [mountTime] = useState(() => performance.now())
   // Read without the throwing hook: an AuthBoundary rendered outside the Studio's router has no
   // history to keep in sync.
-  const routerHistory = useContext(RouterHistoryContext)
+  const routerHistory = use(RouterHistoryContext)
 
   const authStatus$ = useMemo(
     () =>

@@ -1,14 +1,19 @@
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
-import {useDocumentPreviewStore, usePerspective} from 'sanity'
+import {usePerspective} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
+import {useDocumentPreviewStore} from '../../../core/store/datastores'
 import {type PaneListItem} from '../../types'
 import {useListPaneCounts} from './useListPaneCounts'
 
 vi.mock('sanity', () => ({
-  useDocumentPreviewStore: vi.fn(),
   usePerspective: vi.fn(),
+}))
+
+vi.mock('../../../core/store/datastores', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentPreviewStore: vi.fn(),
 }))
 
 const mockUseDocumentPreviewStore = useDocumentPreviewStore as Mock

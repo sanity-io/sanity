@@ -17,32 +17,29 @@ import {
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentType, useMemo} from 'react'
-import {
-  type DocumentLayoutProps,
-  getDraftId,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
-  getVersionFromId,
-  getVersionId,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
-  isSystemBundleName,
-  LATEST,
-  PUBLISHED,
-  ReleaseAvatar,
-  type ReleaseDocument,
-  ReleaseTitle,
-  type TargetPerspective,
-  useActiveReleases,
-  useDocumentVersions,
-  useEditState,
-  useFormatRelativeLocalePublishDate,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
+import {type ReleaseDocument, type TargetPerspective, useWorkspace} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {type DocumentLayoutProps} from '../../../../core/config/types'
+import {useEditState} from '../../../../core/hooks/useEditState'
+import {ReleaseAvatar} from '../../../../core/releases/components/ReleaseAvatar'
+import {ReleaseTitle} from '../../../../core/releases/components/ReleaseTitle'
+import {useDocumentVersions} from '../../../../core/releases/hooks/useDocumentVersions'
+import {useFormatRelativeLocalePublishDate} from '../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseDocument} from '../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
+import {LATEST, PUBLISHED} from '../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isSystemBundleName,
+} from '../../../../core/util/draftUtils'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'

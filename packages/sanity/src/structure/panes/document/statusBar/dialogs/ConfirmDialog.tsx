@@ -1,4 +1,5 @@
-import {type DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
+import {type DocumentActionConfirmDialogProps} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {ConfirmPopover} from '../../../../../ui-components/confirmPopover/ConfirmPopover'
 import {structureLocaleNamespace} from '../../../../i18n'

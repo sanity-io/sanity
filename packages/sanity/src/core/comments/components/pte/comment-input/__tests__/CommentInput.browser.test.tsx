@@ -2,7 +2,6 @@ import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
-import {CommentInput} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
@@ -10,6 +9,7 @@ import {page, server, userEvent} from 'vitest/browser'
 import {expectStable, testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type UserListWithPermissionsHookValue} from '../../../../../hooks/useUserListWithPermissions'
+import {CommentInput as CommentInputLegacy} from '../CommentInput'
 
 const currentUser: CurrentUser = {
   email: '',
@@ -62,7 +62,7 @@ function CommentsInputHarness({
 
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <CommentInput
+      <CommentInputLegacy
         focusOnMount
         placeholder="Your comment..."
         focusLock

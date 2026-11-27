@@ -1,4 +1,4 @@
-import {memo, useContext} from 'react'
+import {memo, use} from 'react'
 import {PresenceTrackerContextGetSnapshot, PresenceTrackerContextStore} from 'sanity/_singletons'
 
 import {
@@ -35,7 +35,7 @@ const EMPTY_ARRAY: Reported<FieldPresenceData>[] = []
  * @internal
  */
 export function usePresenceReportedValues(): TrackerContextGetSnapshot<FieldPresenceData> {
-  const snapshot = useContext(PresenceTrackerContextGetSnapshot)
+  const snapshot = use(PresenceTrackerContextGetSnapshot)
 
   if (snapshot === null) {
     console.warn(
@@ -53,7 +53,7 @@ export function usePresenceReportedValues(): TrackerContextGetSnapshot<FieldPres
  * @internal
  */
 export const usePresenceReporter: ReporterHook<FieldPresenceData> = (id, value, isEqual?) => {
-  const store = useContext(PresenceTrackerContextStore)
+  const store = use(PresenceTrackerContextStore)
 
   if (store === null) {
     console.warn(

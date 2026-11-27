@@ -5,7 +5,6 @@ import {Text, VStack} from 'ui5'
 
 import {NotFoundScreen} from '../NotFoundScreen'
 import {NoToolsScreen} from '../NoToolsScreen'
-import {RedirectingScreen} from '../RedirectingScreen'
 import {ToolNotFoundScreen} from '../ToolNotFoundScreen'
 
 const FRAME_STYLE = {height: 220}
@@ -42,14 +41,6 @@ export const States: Story = {
           </Text>
           <div style={FRAME_STYLE}>
             <ToolNotFoundScreen toolName="vision" />
-          </div>
-        </VStack>
-        <VStack gap={2}>
-          <Text muted size={1} weight="medium" as="div" trim={true}>
-            redirecting
-          </Text>
-          <div style={FRAME_STYLE}>
-            <RedirectingScreen />
           </div>
         </VStack>
         <VStack gap={2}>

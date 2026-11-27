@@ -4,7 +4,8 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
 import {Card} from '@sanity/ui'
 import {useState} from 'react'
-import {usePaneRouter, type UserComponent} from 'sanity/structure'
+import {usePaneRouter} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure'
+import {type UserComponent} from 'sanity/structure'
 import {Code, Text, Flex, Box, VStack, Icon} from 'ui5'
 
 const CHILD_LINK_PARAMETERS: Record<string, string> = {}

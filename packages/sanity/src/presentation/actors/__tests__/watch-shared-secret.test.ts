@@ -1,11 +1,15 @@
 import {type LiveEvent, type RawQueryResponse} from '@sanity/client'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
 import {of, Subject} from 'rxjs'
-import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate, type SanityClient} from 'sanity'
+import {type SanityClient} from 'sanity'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {createActor} from 'xstate'
 
 import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
+import {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  listenerGate,
+} from '../../../core/store/listenerGate/listenerGate'
 import {defineWatchSharedSecretActor} from '../watch-shared-secret'
 
 let releaseListenerGate: (() => void) | undefined

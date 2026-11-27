@@ -1,10 +1,11 @@
 import {dequal} from 'dequal/lite'
 import omit from 'lodash-es/omit.js'
 import {useCallback, useEffect, useState} from 'react'
-import {SourceProvider, type Tool, useWorkspace} from 'sanity'
-import {recordStructureTool} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {type Tool, useWorkspace} from 'sanity'
 import {type RouterState, useRouterState} from 'sanity/router'
 
+import {SourceProvider} from '../../../core/studio/source'
+import {recordStructureTool} from '../../../core/studio/telemetry/paneKindRegistry'
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {setActivePanes} from '../../getIntentState'
 import {StructureToolProvider} from '../../StructureToolProvider'

@@ -42,15 +42,3 @@ export function definePlugin<TOptions = void>(
   validatePlugin(arg)
   return () => arg
 }
-
-/**
- * @deprecated Use `definePlugin` instead
- *
- * @hidden
- * @beta
- */
-export function createPlugin<TOptions = void>(
-  arg: PluginFactory<TOptions> | PluginOptions,
-): Plugin<TOptions> {
-  return definePlugin(arg)
-}

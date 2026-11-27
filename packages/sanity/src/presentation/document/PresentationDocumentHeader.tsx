@@ -1,10 +1,11 @@
 import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ReactNode, useContext} from 'react'
-import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
+import {type ReactNode, use} from 'react'
+import {type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
+import {FormRow} from '../../core/form/components/layout/FormRow'
 import {type PresentationPluginOptions} from '../types'
 import {LocationsBanner} from './LocationsBanner'
 
@@ -30,7 +31,7 @@ export function PresentationDocumentHeader(props: {
   schemaType: ObjectSchemaType
 }): ReactNode {
   const {documentId, options, schemaType, version} = props
-  const context = useContext(PresentationDocumentContext)
+  const context = use(PresentationDocumentContext)
 
   const contextOptions = context?.options || []
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

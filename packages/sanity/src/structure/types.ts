@@ -7,9 +7,9 @@ import {
   type GeneralPreviewLayoutKey,
   type I18nTextRecord,
   type InitialValueTemplateItem,
-  type LocaleSource,
   type PerspectiveStack,
 } from 'sanity'
+import {type LocaleSource} from 'sanity/i18n'
 
 import {type _PaneMenuItem} from './components/pane/types'
 import {type Intent} from './structureBuilder/Intent'
@@ -49,7 +49,7 @@ export interface StructureToolContextValue {
 /**
  *  Structure tool context. Extends from {@link ConfigContext}.
  *  @hidden
- *  @public
+ *  @internal
  */
 export interface StructureResolverContext extends ConfigContext {
   /**
@@ -228,7 +228,7 @@ export interface StructureToolOptions {
  * ```
  *
  * @hidden
- * @beta
+ * @internal
  */
 export type RouterPanes = RouterPaneGroup[]
 
@@ -239,7 +239,7 @@ export type RouterPanes = RouterPaneGroup[]
  *
  *
  * @hidden
- * @beta
+ * @internal
  */
 export type RouterPaneGroup = RouterPaneSibling[]
 
@@ -250,7 +250,7 @@ export type RouterPaneGroup = RouterPaneSibling[]
  *
  *
  * @hidden
- * @beta
+ * @internal
  */
 export interface RouterPaneSibling {
   id: string
@@ -445,30 +445,7 @@ export type UnresolvedPaneNode =
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
   intent?: Intent
-}
-
-/**
- * @internal
- */
-export interface StrictVersionLayeringOptions {
-  /**
-   * By default, version layering includes all document versions, regardless of their expected
-   * publication time—or lack thereof. For example, it includes all ASAP and undecided versions,
-   * despite ASAP and undecided versions having no fixed chronology. There is no way to determine
-   * which ASAP or undecided version is expected to be published before another.
-   *
-   * It also includes any existing draft, which has no fixed chronology, either.
-   *
-   * This functionality is useful for listing all document versions in a deterministic order, but
-   * doesn't accurately portray the upstream and downstream versions based on expected publication
-   * time.
-   *
-   * In strict mode, version layering instead only includes versions that have a fixed chronology.
-   * **Cross-version layering is only effective for scheduled versions, with all other
-   * versions being layered directly onto the published version (if it exists).**
-   */
-  strict?: boolean
 }

@@ -1,16 +1,11 @@
 import {isSameDay} from 'date-fns/isSameDay'
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {SchedulesContext} from 'sanity/_singletons'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
-
-// re-exported here so the public entry can surface the context without
-// depending on sanity/_singletons directly (boundaries policy)
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {SchedulesContext}
 
 const EMPTY_SCHEDULE: Schedule[] = []
 
@@ -136,7 +131,7 @@ function SchedulesProvider({
 
 function useSchedules() {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const context = useContext(SchedulesContext)
+  const context = use(SchedulesContext)
   if (context === undefined) {
     throw new Error('useSchedules must be used within a SchedulesProvider')
   }

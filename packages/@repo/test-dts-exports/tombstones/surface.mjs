@@ -1,0 +1,702 @@
+/**
+ * Compares the export surface of the published `sanity@latest` with the workspace build, so
+ * every export v7 removes or moves is either covered by a tombstone in
+ * `packages/sanity/src/_exports/tombstones/manifest.json` or reported as a to-do.
+ */
+import {execFileSync} from 'node:child_process'
+import {existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync} from 'node:fs'
+import {createRequire} from 'node:module'
+import path from 'node:path'
+
+import {Node, Project} from 'ts-morph'
+
+/** @typedef {'value' | 'type'} ExportKind */
+/**
+ * @typedef {object} ExportInfo
+ * @property {ExportKind} kind
+ * @property {boolean} tombstone
+ * @property {string | undefined} deprecated
+ * @property {string[] | undefined} [shape] the names that characterize the type (see
+ *   `declarationShape`); unset for tombstones, values and declarations the compiler cannot resolve
+ */
+/** @typedef {Record<string, Record<string, ExportInfo>>} Surface */
+/** @typedef {{name: string, kind: ExportKind, message: string}} Tombstone */
+/**
+ * A value whose entry now only exports its type, because the type stays public API while the
+ * runtime value moved to `valueFrom`.
+ *
+ * @typedef {{name: string, valueFrom: string}} TypeOnlyExport
+ */
+/**
+ * @typedef {object} Manifest
+ * @property {string[]} removedEntries
+ * @property {Record<string, Tombstone[]>} tombstones
+ * @property {Record<string, TypeOnlyExport[]>} [typeOnly]
+ */
+
+const require = createRequire(import.meta.url)
+
+const PACKAGE_NAME = 'sanity'
+export const WORKSPACE_PACKAGE_DIR = path.dirname(require.resolve(`${PACKAGE_NAME}/package.json`))
+const MANIFEST_PATH = path.join(WORKSPACE_PACKAGE_DIR, 'src/_exports/tombstones/manifest.json')
+const MANIFEST_REPO_PATH = 'packages/sanity/src/_exports/tombstones/manifest.json'
+
+/**
+ * Under the workspace package so the published `.d.ts` resolves `@sanity/client`, `react` and its
+ * other imports to the same dependencies the workspace build sees.
+ */
+const CACHE_DIR = path.join(WORKSPACE_PACKAGE_DIR, 'node_modules/.cache/sanity-latest')
+
+/** @returns {Manifest} */
+export function readManifest() {
+  return JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'))
+}
+
+/**
+ * Downloads and unpacks the package that the npm `latest` tag points at, once per version.
+ *
+ * @param {string} [tag]
+ * @returns {Promise<{version: string, packageDir: string}>}
+ */
+export async function fetchPublishedPackage(tag = 'latest') {
+  const response = await fetch(`https://registry.npmjs.org/${PACKAGE_NAME}/${tag}`)
+  if (!response.ok) {
+    throw new Error(`Could not read ${PACKAGE_NAME}@${tag} from npm: ${response.status}`)
+  }
+  /** @type {{version: string, dist: {tarball: string}}} */
+  const manifest = await response.json()
+  const versionDir = path.join(CACHE_DIR, manifest.version)
+  const packageDir = path.join(versionDir, 'package')
+  if (existsSync(path.join(packageDir, 'package.json'))) {
+    return {version: manifest.version, packageDir}
+  }
+
+  const tarball = await fetch(manifest.dist.tarball)
+  if (!tarball.ok) {
+    throw new Error(`Could not download ${manifest.dist.tarball}: ${tarball.status}`)
+  }
+  const partialDir = `${versionDir}.partial`
+  rmSync(partialDir, {recursive: true, force: true})
+  mkdirSync(partialDir, {recursive: true})
+  const tarballPath = path.join(partialDir, 'package.tgz')
+  writeFileSync(tarballPath, Buffer.from(await tarball.arrayBuffer()))
+  execFileSync('tar', ['-xzf', tarballPath, '-C', partialDir])
+  rmSync(tarballPath)
+  rmSync(versionDir, {recursive: true, force: true})
+  renameSync(partialDir, versionDir)
+  return {version: manifest.version, packageDir}
+}
+
+/**
+ * The `.d.ts` of every entry in a package's `exports` map that carries code. Works on both the
+ * workspace manifest (`{monorepo, default}` objects) and the published one (plain strings).
+ *
+ * @param {string} packageDir
+ * @returns {Map<string, string>} subpath → absolute `.d.ts` path
+ */
+function listEntries(packageDir) {
+  const {exports} = JSON.parse(readFileSync(path.join(packageDir, 'package.json'), 'utf8'))
+  /** @type {Map<string, string>} */
+  const entries = new Map()
+  for (const [subpath, value] of Object.entries(exports)) {
+    if (subpath === './package.json' || subpath.endsWith('.css')) continue
+    const target = typeof value === 'string' ? value : value?.default
+    if (typeof target !== 'string' || !/\.(m|c)?js$/.test(target)) continue
+    entries.set(subpath, path.join(packageDir, target.replace(/\.(m|c)?js$/, '.d.ts')))
+  }
+  return entries
+}
+
+/** @param {import('ts-morph').Symbol} symbol */
+function resolveAlias(symbol) {
+  let current = symbol
+  for (let depth = 0; depth < 100 && current.isAlias(); depth++) {
+    const next = current.getImmediatelyAliasedSymbol()
+    if (!next) break
+    current = next
+  }
+  return current
+}
+
+/**
+ * `export declare const Name: never` or `export type Name = never`
+ *
+ * @param {import('ts-morph').Node} declaration
+ */
+export function isTombstoneDeclaration(declaration) {
+  if (Node.isTypeAliasDeclaration(declaration)) {
+    return declaration.getTypeNode()?.getText() === 'never'
+  }
+  if (!Node.isVariableDeclaration(declaration)) return false
+  if (declaration.getTypeNode()?.getText() !== 'never') return false
+  const statement = declaration.getFirstAncestor(Node.isVariableStatement)
+  return Boolean(statement?.hasDeclareKeyword())
+}
+
+/** @param {import('ts-morph').Node} declaration */
+function getDeprecatedMessage(declaration) {
+  const host = Node.isVariableDeclaration(declaration)
+    ? declaration.getFirstAncestor(Node.isVariableStatement)
+    : declaration
+  if (!host || !Node.isJSDocable(host)) return undefined
+  for (const doc of host.getJsDocs()) {
+    for (const tag of doc.getTags()) {
+      if (tag.getTagName() === 'deprecated') {
+        return tag.getCommentText()?.replace(/\s+/g, ' ').trim() ?? ''
+      }
+    }
+  }
+  return undefined
+}
+
+/**
+ * The names that characterize a type declaration: the members of an interface or object type, or
+ * the identifiers and literals a type alias is written with. Two declarations of one type share
+ * most of these across majors (a property is added, a bundler renames `Foo` to `Foo$1`); two
+ * unrelated types that happen to share a name share few. `undefined` for values, which a move
+ * can turn from a function into a constant, and for names that do not resolve to a declaration
+ * (a type imported from a package the compiler cannot find).
+ *
+ * @param {import('ts-morph').Symbol} symbol
+ * @returns {string[] | undefined}
+ */
+function declarationShape(symbol) {
+  const declaration = resolveAlias(symbol)
+    .getDeclarations()
+    .find((node) => !isTombstoneDeclaration(node))
+  if (Node.isInterfaceDeclaration(declaration)) return memberNames(declaration)
+  if (!Node.isTypeAliasDeclaration(declaration)) return undefined
+  const typeNode = declaration.getTypeNode()
+  if (!typeNode) return undefined
+  if (Node.isTypeLiteral(typeNode)) return memberNames(typeNode)
+  const tokens = typeNode.getText().match(/[\w$]+|'[^']*'|"[^"]*"/g) ?? []
+  return [...new Set(tokens.map((token) => token.replace(/\$\d+$/, '')))].toSorted()
+}
+
+/** @param {import('ts-morph').InterfaceDeclaration | import('ts-morph').TypeLiteralNode} node */
+function memberNames(node) {
+  return node
+    .getMembers()
+    .map((member) => (Node.hasName(member) ? member.getName() : member.getKindName()))
+    .toSorted()
+}
+
+/** @param {import('ts-morph').Node} node */
+function isTypeOnlyAlias(node) {
+  if ((Node.isExportSpecifier(node) || Node.isImportSpecifier(node)) && node.isTypeOnly()) {
+    return true
+  }
+  const declaration = node.getFirstAncestor(
+    (ancestor) => Node.isExportDeclaration(ancestor) || Node.isImportDeclaration(ancestor),
+  )
+  return (
+    (Node.isExportDeclaration(declaration) || Node.isImportDeclaration(declaration)) &&
+    declaration.isTypeOnly()
+  )
+}
+
+/**
+ * @param {import('ts-morph').Symbol} symbol
+ * @returns {ExportKind}
+ */
+function getExportKind(symbol) {
+  let current = symbol
+  for (let depth = 0; depth < 100 && current.isAlias(); depth++) {
+    if (current.getDeclarations().some(isTypeOnlyAlias)) return 'type'
+    const next = current.getImmediatelyAliasedSymbol()
+    if (!next) break
+    current = next
+  }
+  return current
+    .getDeclarations()
+    .some(
+      (declaration) =>
+        Node.isVariableDeclaration(declaration) ||
+        Node.isFunctionDeclaration(declaration) ||
+        Node.isClassDeclaration(declaration) ||
+        Node.isEnumDeclaration(declaration),
+    )
+    ? 'value'
+    : 'type'
+}
+
+/** @type {WeakMap<import('ts-morph').SourceFile, Map<string, import('ts-morph').Symbol>>} */
+const exportSymbolsCache = new WeakMap()
+
+/** @param {import('ts-morph').SourceFile} sourceFile */
+function getExportSymbolsByName(sourceFile) {
+  let symbols = exportSymbolsCache.get(sourceFile)
+  if (!symbols) {
+    symbols = new Map(sourceFile.getExportSymbols().map((symbol) => [symbol.getName(), symbol]))
+    exportSymbolsCache.set(sourceFile, symbols)
+  }
+  return symbols
+}
+
+/**
+ * The kind a module exports a symbol as. A name that reaches the module only through
+ * `export type * from` stars is a type, even when its declaration is a value, which is how an
+ * entry keeps a value's type while dropping the value.
+ *
+ * @param {import('ts-morph').SourceFile} sourceFile
+ * @param {import('ts-morph').Symbol} symbol
+ * @param {number} [depth]
+ * @returns {ExportKind}
+ */
+function getModuleExportKind(sourceFile, symbol, depth = 0) {
+  const isLocal = symbol.getDeclarations().some((node) => node.getSourceFile() === sourceFile)
+  if (isLocal || depth > 20) return getExportKind(symbol)
+  /** @type {ExportKind | undefined} */
+  let kind
+  for (const declaration of sourceFile.getExportDeclarations()) {
+    if (declaration.hasNamedExports() || declaration.getNamespaceExport()) continue
+    const target = declaration.getModuleSpecifierSourceFile()
+    const reexported = target && getExportSymbolsByName(target).get(symbol.getName())
+    if (!reexported) continue
+    if (
+      !declaration.isTypeOnly() &&
+      getModuleExportKind(target, reexported, depth + 1) === 'value'
+    ) {
+      return 'value'
+    }
+    kind = 'type'
+  }
+  return kind ?? getExportKind(symbol)
+}
+
+/**
+ * Reads every exported name (values and types) of every entry of a built package.
+ *
+ * @param {string} packageDir
+ * @returns {Surface}
+ */
+export function readSurface(packageDir) {
+  const project = new Project({skipAddingFilesFromTsConfig: true})
+  /** @type {Surface} */
+  const surface = {}
+  for (const [subpath, dtsFile] of listEntries(packageDir)) {
+    const sourceFile = project.addSourceFileAtPath(dtsFile)
+    /** @type {Record<string, ExportInfo>} */
+    const names = {}
+    for (const symbol of getExportSymbolsByName(sourceFile).values()) {
+      const declarations = resolveAlias(symbol).getDeclarations()
+      const tombstoneDeclaration = declarations.find(isTombstoneDeclaration)
+      names[symbol.getName()] = {
+        kind: getModuleExportKind(sourceFile, symbol),
+        tombstone: Boolean(tombstoneDeclaration),
+        deprecated: tombstoneDeclaration ? getDeprecatedMessage(tombstoneDeclaration) : undefined,
+        ...(tombstoneDeclaration ? {} : {shape: declarationShape(symbol)}),
+      }
+    }
+    surface[subpath] = names
+  }
+  return surface
+}
+
+/** @param {string} subpath */
+export function entryImportPath(subpath) {
+  return subpath === '.' ? PACKAGE_NAME : `${PACKAGE_NAME}/${subpath.slice(2)}`
+}
+
+/**
+ * @typedef {object} MissingExport
+ * @property {string} entry
+ * @property {string} name
+ * @property {ExportKind} kind what the published package exports the name as
+ * @property {string[]} exportedFrom other workspace entries that export it as that kind, as the
+ *   same type the published package exported
+ * @property {string[]} unrelated other workspace entries that export a different type under
+ *   that name
+ * @property {boolean} [typeOnly] the entry still exports the name, but only as a type
+ */
+
+/**
+ * @typedef {object} SurfaceDiff
+ * @property {MissingExport[]} missing exports of the published package that the workspace
+ *   neither exports (as the same kind) nor tombstones
+ * @property {string[]} missingEntries entries of the published package that the workspace lacks
+ *   and the manifest does not list under `removedEntries`
+ * @property {{entry: string, name: string, reason: string}[]} stale manifest tombstones that
+ *   have nothing left to cover
+ * @property {{entry: string, name: string, kind: ExportKind, target: string, exportedFrom: string[]}[]} misdirected
+ *   tombstones whose message says the name moved to an entry that does not export it
+ * @property {{entry: string, name: string, target: string}[]} unrelated tombstones whose message
+ *   says the name moved to an entry that exports a different type under that name
+ * @property {string[]} staleRemovedEntries `removedEntries` that the workspace still exports or
+ *   that the published package never had
+ * @property {{entry: string, name: string}[]} staleTypeOnly `typeOnly` exports the published
+ *   package did not export as a value
+ */
+
+const MOVED_TO = /^Moved to `([^`]+)`/
+
+/**
+ * Whether two declarations of one name can be the same type. Types change between majors, so
+ * this only tells apart types that share few of the names that characterize them, like a type
+ * from `@sanity/migrate` and a Studio type that happen to be called `Transaction`. Declarations
+ * without a shape (values, types the compiler cannot resolve) are never told apart.
+ *
+ * @param {string[] | undefined} a
+ * @param {string[] | undefined} b
+ */
+export function isSameType(a, b) {
+  if (!a?.length || !b?.length) return true
+  const names = new Set(b)
+  const shared = a.filter((name) => names.has(name)).length
+  return shared / Math.min(a.length, b.length) >= 0.5
+}
+
+/** @param {string} importPath */
+function importPathToEntry(importPath) {
+  if (importPath === PACKAGE_NAME) return '.'
+  return importPath.startsWith(`${PACKAGE_NAME}/`)
+    ? `./${importPath.slice(PACKAGE_NAME.length + 1)}`
+    : undefined
+}
+
+/**
+ * @param {{published: Surface, workspace: Surface, manifest: Manifest}} input
+ * @returns {SurfaceDiff}
+ */
+export function diffSurfaces({published, workspace, manifest}) {
+  /** @type {SurfaceDiff} */
+  const diff = {
+    missing: [],
+    missingEntries: [],
+    stale: [],
+    misdirected: [],
+    unrelated: [],
+    staleRemovedEntries: [],
+    staleTypeOnly: [],
+  }
+  const removedEntries = new Set(manifest.removedEntries)
+
+  /** @type {Map<string, {entry: string, kind: ExportKind, shape?: string[]}[]>} name → its real workspace exports */
+  const realExports = new Map()
+  for (const [entry, names] of Object.entries(workspace)) {
+    for (const [name, info] of Object.entries(names)) {
+      if (info.tombstone) continue
+      realExports.set(name, [
+        ...(realExports.get(name) ?? []),
+        {entry, kind: info.kind, shape: info.shape},
+      ])
+    }
+  }
+  /**
+   * The workspace entries that export `name` as `kind`. With `shape`, only the ones that export
+   * the same type as the published package did (`related`), or only the ones that export a
+   * different type under that name (`unrelated`).
+   *
+   * @param {string} name
+   * @param {ExportKind} kind
+   * @param {{shape: string[] | undefined, match: 'related' | 'unrelated'}} [filter]
+   */
+  const entriesExporting = (name, kind, filter) =>
+    (realExports.get(name) ?? [])
+      .filter((other) => kind === 'type' || other.kind === 'value')
+      .filter(
+        (other) =>
+          !filter || isSameType(filter.shape, other.shape) === (filter.match === 'related'),
+      )
+      .map((other) => other.entry)
+
+  for (const [entry, names] of Object.entries(published)) {
+    const provided = workspace[entry]
+    if (!provided) {
+      if (!removedEntries.has(entry)) diff.missingEntries.push(entry)
+      continue
+    }
+    const tombstoned = new Set((manifest.tombstones[entry] ?? []).map((t) => t.name))
+    const keptTypes = new Set((manifest.typeOnly?.[entry] ?? []).map((t) => t.name))
+    for (const [name, info] of Object.entries(names)) {
+      const current = provided[name]
+      const typeOnly = Boolean(
+        current && !current.tombstone && info.kind === 'value' && current.kind === 'type',
+      )
+      if (current && !current.tombstone && !typeOnly) continue
+      if (tombstoned.has(name)) continue
+      if (typeOnly && keptTypes.has(name)) continue
+      diff.missing.push({
+        entry,
+        name,
+        kind: info.kind,
+        exportedFrom: entriesExporting(name, info.kind, {
+          shape: info.shape,
+          match: 'related',
+        }).filter((other) => other !== entry),
+        unrelated: entriesExporting(name, info.kind, {
+          shape: info.shape,
+          match: 'unrelated',
+        }).filter((other) => other !== entry),
+        ...(typeOnly ? {typeOnly} : {}),
+      })
+    }
+  }
+
+  for (const entry of removedEntries) {
+    if (workspace[entry]) diff.staleRemovedEntries.push(`${entry} (still exported)`)
+    else if (!published[entry])
+      diff.staleRemovedEntries.push(`${entry} (not in the published package)`)
+  }
+
+  for (const [entry, kept] of Object.entries(manifest.typeOnly ?? {})) {
+    for (const {name} of kept) {
+      if (published[entry]?.[name]?.kind !== 'value') diff.staleTypeOnly.push({entry, name})
+    }
+  }
+
+  for (const [entry, tombstones] of Object.entries(manifest.tombstones)) {
+    for (const {name, kind, message} of tombstones) {
+      const current = workspace[entry]?.[name]
+      if (!workspace[entry]) {
+        diff.stale.push({entry, name, reason: `the workspace has no ${entry} entry`})
+        continue
+      }
+      if (current && !current.tombstone) {
+        diff.stale.push({entry, name, reason: 'it is exported'})
+        continue
+      }
+      if (!published[entry]?.[name]) {
+        diff.stale.push({entry, name, reason: 'the published package never exported it'})
+        continue
+      }
+      const importPath = MOVED_TO.exec(message)?.[1]
+      const target = importPath && importPathToEntry(importPath)
+      if (!target) continue
+      const shape = published[entry][name].shape
+      if (!entriesExporting(name, kind).includes(target)) {
+        diff.misdirected.push({
+          entry,
+          name,
+          kind,
+          target,
+          exportedFrom: entriesExporting(name, kind, {shape, match: 'related'}).filter(
+            (other) => other !== entry,
+          ),
+        })
+      } else if (!entriesExporting(name, kind, {shape, match: 'related'}).includes(target)) {
+        diff.unrelated.push({entry, name, target})
+      }
+    }
+  }
+
+  diff.missing.sort((a, b) => a.entry.localeCompare(b.entry) || a.name.localeCompare(b.name))
+  return diff
+}
+
+const REPLACEMENT_IMPORT =
+  /((?:`[^`]+`(?:,? (?:and |or )?)?)+(?: hook)?) from (`[^`]+`|the same entry)/g
+
+/**
+ * Replacement imports a tombstone message names: `` `X` from `sanity/entry` ``, a list of
+ * names (`` `X` and `Y` from … ``), or `` `X` from the same entry `` (the entry the message
+ * named last). Imports from other packages (`@sanity/types`) are not checked.
+ *
+ * @param {string} message
+ * @returns {{names: string[], importPath: string | undefined}[]} `importPath` is undefined when
+ *   the message says "the same entry" without having named one
+ */
+export function parseReplacementImports(message) {
+  /** @type {{names: string[], importPath: string | undefined}[]} */
+  const imports = []
+  /** @type {string | undefined} */
+  let lastEntry
+  for (const match of message.matchAll(REPLACEMENT_IMPORT)) {
+    const names = [...match[1].matchAll(/`\{?([^`}]+)\}?`/g)].map((span) => span[1])
+    const importPath = match[2] === 'the same entry' ? lastEntry : match[2].slice(1, -1)
+    if (match[2] !== 'the same entry') {
+      if (importPath !== PACKAGE_NAME && !importPath?.startsWith(`${PACKAGE_NAME}/`)) continue
+      lastEntry = importPath
+    }
+    imports.push({names, importPath})
+  }
+  return imports
+}
+
+/**
+ * Tombstone messages that tell a consumer to import a name from an entry that does not export
+ * it, or from an entry the workspace does not have.
+ *
+ * @param {{workspace: Surface, manifest: Manifest}} input
+ * @returns {{entry: string, name: string, replacement: string, importPath: string | undefined, reason: string}[]}
+ */
+export function findBrokenReplacementImports({workspace, manifest}) {
+  /** @type {ReturnType<typeof findBrokenReplacementImports>} */
+  const broken = []
+  for (const [entry, tombstones] of Object.entries(manifest.tombstones)) {
+    for (const {name, message} of tombstones) {
+      for (const {names, importPath} of parseReplacementImports(message)) {
+        const target = importPath && importPathToEntry(importPath)
+        for (const replacement of names) {
+          const reason = !target
+            ? 'the message says "the same entry" but names no entry before it'
+            : !workspace[target]
+              ? `the workspace has no ${importPath} entry`
+              : workspace[target][replacement]?.tombstone !== false
+                ? `${importPath} does not export ${replacement}`
+                : undefined
+          if (reason) broken.push({entry, name, replacement, importPath, reason})
+        }
+      }
+    }
+  }
+  return broken
+}
+
+/**
+ * `typeOnly` exports whose entry does not export the name type-only, or whose `valueFrom` entry
+ * does not export the runtime value.
+ *
+ * @param {{workspace: Surface, manifest: Manifest}} input
+ * @returns {{entry: string, name: string, reason: string}[]}
+ */
+export function findBrokenTypeOnlyExports({workspace, manifest}) {
+  /** @type {ReturnType<typeof findBrokenTypeOnlyExports>} */
+  const broken = []
+  for (const [entry, kept] of Object.entries(manifest.typeOnly ?? {})) {
+    for (const {name, valueFrom} of kept) {
+      const current = workspace[entry]?.[name]
+      const value = workspace[valueFrom]?.[name]
+      const reason = !workspace[entry]
+        ? `the workspace has no ${entryImportPath(entry)} entry`
+        : !current || current.tombstone
+          ? `${entryImportPath(entry)} does not export it`
+          : current.kind === 'value'
+            ? `${entryImportPath(entry)} still exports it as a value`
+            : !value || value.tombstone || value.kind !== 'value'
+              ? `${entryImportPath(valueFrom)} does not export it as a value`
+              : undefined
+      if (reason) broken.push({entry, name, reason})
+    }
+  }
+  return broken
+}
+
+const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow_semver'
+
+/**
+ * The tombstone a missing export most likely needs, as a starting point for its manifest entry.
+ *
+ * @param {Pick<MissingExport, 'entry' | 'name' | 'kind' | 'exportedFrom'> & {unrelated?: string[]}} item
+ * @returns {Tombstone}
+ */
+function suggestTombstone(item) {
+  const target = item.exportedFrom[0]
+  if (!target) {
+    const unrelated = item.unrelated?.length
+      ? ` ${item.unrelated.map((entry) => `\`${entryImportPath(entry)}\``).join(', ')} exports an unrelated \`${item.name}\`.`
+      : ''
+    return {
+      name: item.name,
+      kind: item.kind,
+      message: `Removed in v7.${unrelated} <say what to use instead>`,
+    }
+  }
+  if (target === INTERNALS_ENTRY || target.startsWith(`${INTERNALS_ENTRY}-`)) {
+    return {
+      name: item.name,
+      kind: item.kind,
+      message: `Moved to \`${entryImportPath(target)}\`. This export is \`@internal\` and can change or disappear in any release.`,
+    }
+  }
+  return {
+    name: item.name,
+    kind: item.kind,
+    message: `Moved to \`${entryImportPath(target)}\`. Import \`{${item.name}}\` from \`${entryImportPath(target)}\` instead of \`${entryImportPath(item.entry)}\`.`,
+  }
+}
+
+/**
+ * One readable error message for everything the diff found, or `undefined` when it is clean.
+ *
+ * @param {SurfaceDiff} diff
+ * @param {string} version the published version the workspace was compared with
+ */
+export function formatSurfaceDiff(diff, version) {
+  const sections = []
+  if (diff.missingEntries.length > 0) {
+    sections.push(
+      `${PACKAGE_NAME}@${version} has entries the workspace no longer exports. Add each one to ` +
+        `"removedEntries" in ${MANIFEST_REPO_PATH} if the removal is intended:\n` +
+        diff.missingEntries.map((entry) => `  - ${entryImportPath(entry)}`).join('\n'),
+    )
+  }
+  if (diff.missing.length > 0) {
+    const lines = diff.missing.map((item) => {
+      const unrelated = item.unrelated.length
+        ? `, though ${item.unrelated.map(entryImportPath).join(', ')} export${item.unrelated.length === 1 ? 's' : ''} an unrelated type of that name`
+        : ''
+      const where = item.exportedFrom.length
+        ? `now exported from ${item.exportedFrom.map(entryImportPath).join(', ')}`
+        : `not exported${item.kind === 'value' ? ' as a value' : ''} from any other entry${unrelated}`
+      const typeOnly = item.typeOnly
+        ? ' (the entry still exports its type; if only the runtime value moved, list it under "typeOnly" instead)'
+        : ''
+      return `  - ${item.name} (${item.kind}) from ${entryImportPath(item.entry)}${typeOnly}: ${where}. Add to "tombstones"["${item.entry}"]: ${JSON.stringify(suggestTombstone(item))}`
+    })
+    sections.push(
+      `${PACKAGE_NAME}@${version} exports names the workspace removed or moved without a ` +
+        `tombstone. Add a tombstone for each to ${MANIFEST_REPO_PATH} (write a message that names ` +
+        'the replacement by its public import path), run ' +
+        '`node packages/sanity/src/_exports/tombstones/generate.mjs` and rebuild:\n' +
+        lines.join('\n'),
+    )
+  }
+  if (diff.stale.length > 0) {
+    sections.push(
+      `These tombstones in ${MANIFEST_REPO_PATH} cover nothing. Remove them and run ` +
+        '`node packages/sanity/src/_exports/tombstones/generate.mjs`:\n' +
+        diff.stale
+          .map((item) => `  - ${item.name} in ${entryImportPath(item.entry)}: ${item.reason}`)
+          .join('\n'),
+    )
+  }
+  if (diff.misdirected.length > 0) {
+    sections.push(
+      `These tombstones in ${MANIFEST_REPO_PATH} say the name moved to an entry that does not ` +
+        'export it. Point the message at the entry that does and run ' +
+        '`node packages/sanity/src/_exports/tombstones/generate.mjs`:\n' +
+        diff.misdirected
+          .map((item) => {
+            const where = item.exportedFrom.length
+              ? `exported from ${item.exportedFrom.map(entryImportPath).join(', ')}`
+              : 'not exported from any other entry'
+            const suggestion = item.exportedFrom.length
+              ? ` Suggested: ${JSON.stringify(suggestTombstone(item).message)}`
+              : ''
+            return `  - ${item.name} in ${entryImportPath(item.entry)} points at ${entryImportPath(item.target)}, but it is ${where}.${suggestion}`
+          })
+          .join('\n'),
+    )
+  }
+  if (diff.unrelated.length > 0) {
+    sections.push(
+      `These tombstones in ${MANIFEST_REPO_PATH} say the name moved to an entry that exports a ` +
+        'different type under that name, so a consumer who follows the message gets the wrong ' +
+        'type. Say the name was removed, or name the real replacement, and run ' +
+        '`node packages/sanity/src/_exports/tombstones/generate.mjs`:\n' +
+        diff.unrelated
+          .map(
+            (item) =>
+              `  - ${item.name} in ${entryImportPath(item.entry)} points at ${entryImportPath(item.target)}, whose ${item.name} is not the type sanity@${version} exported`,
+          )
+          .join('\n'),
+    )
+  }
+  if (diff.staleRemovedEntries.length > 0) {
+    sections.push(
+      `These "removedEntries" in ${MANIFEST_REPO_PATH} are wrong. Remove them:\n` +
+        diff.staleRemovedEntries.map((entry) => `  - ${entry}`).join('\n'),
+    )
+  }
+  if (diff.staleTypeOnly.length > 0) {
+    sections.push(
+      `These "typeOnly" exports in ${MANIFEST_REPO_PATH} were not values in ` +
+        `${PACKAGE_NAME}@${version}, so there is no runtime value to account for. Remove them:\n` +
+        diff.staleTypeOnly
+          .map((item) => `  - ${item.name} in ${entryImportPath(item.entry)}`)
+          .join('\n'),
+    )
+  }
+  return sections.length > 0 ? sections.join('\n\n') : undefined
+}

@@ -134,6 +134,8 @@
       "ignoreIssues": {
         // The deprecated unstable_useValuePreview is an intentional compatibility alias.
         "src/core/preview/useValuePreview.ts": ["duplicates"],
+        // The deprecated ObjectMembers is an intentional compatibility alias of ObjectInputMembers.
+        "src/core/form/lazy.tsx": ["duplicates"],
       },
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
@@ -193,8 +195,9 @@
       "project": ["src/**/*.ts", "bin/*.ts"],
     },
     "packages/@repo/test-exports": {
-      // Plain `node --test` suite; the test files are the entry points
-      "entry": ["test/**/*.{mjs,cjs}"],
+      // Plain `node --test` suite; the test files are the entry points, and so is the studio
+      // config that the shell-load test builds with Vite
+      "entry": ["test/**/*.{mjs,cjs}", "test/fixtures/shell-load/shellLoadFixture.config.tsx"],
       "ignoreDependencies": [
         // The suite enumerates its own package.json `dependencies` at runtime and
         // dynamically imports every export of each (test/exports.cjs), so everything

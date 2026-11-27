@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {FormValueContext} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field/paths/helpers'
@@ -56,7 +56,7 @@ const ROOT_PATH: Path = []
 
 export function useFormValue(path: Path = ROOT_PATH): unknown {
   const uniquePath = pathFor(path)
-  const ctx = useContext(FormValueContext)
+  const ctx = use(FormValueContext)
   if (!ctx) {
     throw new Error('useFormValue must be used within a FormValueProvider')
   }

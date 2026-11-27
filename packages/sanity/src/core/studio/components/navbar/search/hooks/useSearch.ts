@@ -1,14 +1,7 @@
 import {type Schema} from '@sanity/types'
 import {useActorRef, useSelector} from '@xstate/react'
 import {dequal} from 'dequal/lite'
-import {
-  useCallback,
-  useEffect,
-  // oxlint-disable-next-line no-restricted-imports -- useSearch is only called from plain function components (SearchProvider and the search filter ReferenceAutocomplete), so facebook/react#34818 does not apply
-  useEffectEvent,
-  useMemo,
-  useState,
-} from 'react'
+import {useCallback, useEffect, useEffectEvent, useMemo, useState} from 'react'
 import {fromObservable} from 'xstate'
 
 import {useClient} from '../../../../../hooks/useClient'

@@ -4,7 +4,11 @@ import {type SortOrdering} from './types'
 
 /** @public */
 export interface PrepareViewOptions {
-  /** @beta */
+  /**
+   * The sort order of the document list showing this preview, if one is applied.
+   *
+   * @public
+   */
   ordering?: SortOrdering
 }
 

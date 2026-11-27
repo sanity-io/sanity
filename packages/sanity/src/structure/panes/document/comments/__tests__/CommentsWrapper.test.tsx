@@ -1,7 +1,9 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, useDocumentVersions, usePerspective, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
+import {useDocumentVersions} from '../../../../../core/releases/hooks/useDocumentVersions'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
@@ -10,25 +12,11 @@ const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
 
 const ALPHA_VARIANT = {_id: '_.variants.alpha-audience'}
 
+let capturedCommentsProviderLegacyProps: Record<string, unknown> | undefined
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
-let capturedCommentsProviderV2Props: Record<string, unknown> | undefined
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
-  CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
-  CommentsProvider: (props: Record<string, unknown>) => {
-    capturedCommentsProviderProps = props
-    return <>{props.children}</>
-  },
-  CommentsProviderV2: (props: Record<string, unknown>) => {
-    capturedCommentsProviderV2Props = props
-    return <>{props.children}</>
-  },
-  getTargetScopeId: vi.fn(() => undefined),
-  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
-  useCommentsEnabled: vi.fn(() => true),
-  useCommentsEnabledV2: vi.fn(() => true),
   usePerspective: vi.fn(() => ({
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
@@ -38,8 +26,63 @@ vi.mock('sanity', async (importOriginal) => ({
     excludedPerspectives: [],
   })),
   useWorkspace: vi.fn(() => ({
-    beta: {comments: {v2: false}},
+    comments: {legacy: false},
   })),
+}))
+
+vi.mock('../../../../../core/releases/hooks/useDocumentVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
+}))
+
+// The comments providers and hooks moved off the `sanity` root, so they are mocked where they
+// are now implemented.
+vi.mock(
+  '../../../../../core/comments/context/enabled/CommentsEnabledProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  }),
+)
+vi.mock(
+  '../../../../../core/comments-v2/context/enabled/CommentsEnabledProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  }),
+)
+vi.mock(
+  '../../../../../core/comments/context/comments/CommentsProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderLegacyProps = props
+      return <>{props.children}</>
+    },
+  }),
+)
+vi.mock(
+  '../../../../../core/comments-v2/context/comments/CommentsProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderProps = props
+      return <>{props.children}</>
+    },
+  }),
+)
+vi.mock('../../../../../core/comments/hooks/useCommentsEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useCommentsEnabled: vi.fn(() => true),
+}))
+vi.mock('../../../../../core/comments-v2/hooks/useCommentsEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useCommentsEnabled: vi.fn(() => true),
+}))
+
+vi.mock('../../../../../core/hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getTargetScopeId: vi.fn(() => undefined),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -114,11 +157,11 @@ function draftsPerspective(overrides: Record<string, unknown> = {}) {
 describe('CommentsWrapper', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    capturedCommentsProviderLegacyProps = undefined
     capturedCommentsProviderProps = undefined
-    capturedCommentsProviderV2Props = undefined
 
     mockUseWorkspace.mockReturnValue({
-      beta: {comments: {v2: false}},
+      comments: {legacy: false},
     })
 
     mockUsePerspective.mockReturnValue(draftsPerspective())
@@ -377,6 +420,10 @@ describe('CommentsWrapper', () => {
   })
 
   describe('releaseId (scopeId)', () => {
+    beforeEach(() => {
+      mockUseWorkspace.mockReturnValue({comments: {legacy: true}})
+    })
+
     it('passes the scopeId from getTargetScopeId as releaseId to CommentsProvider', () => {
       const targetDocumentState = {
         status: 'ready' as const,
@@ -396,7 +443,7 @@ describe('CommentsWrapper', () => {
       )
 
       expect(mockGetTargetScopeId).toHaveBeenCalledWith(targetDocumentState)
-      expect(capturedCommentsProviderProps?.releaseId).toBe('varscope')
+      expect(capturedCommentsProviderLegacyProps?.releaseId).toBe('varscope')
     })
 
     it('passes undefined releaseId when the target document is still resolving', () => {
@@ -423,7 +470,7 @@ describe('CommentsWrapper', () => {
 
       expect(mockGetTargetScopeId).toHaveBeenCalledWith(targetDocumentState)
       // Must not fall back to selectedReleaseId while the variant/release target is unresolved.
-      expect(capturedCommentsProviderProps?.releaseId).toBeUndefined()
+      expect(capturedCommentsProviderLegacyProps?.releaseId).toBeUndefined()
     })
 
     it('uses variant scopeId rather than the release id when a variant is selected', () => {
@@ -456,28 +503,27 @@ describe('CommentsWrapper', () => {
         </CommentsWrapper>,
       )
 
-      expect(capturedCommentsProviderProps?.releaseId).toBe('varscope')
-      expect(capturedCommentsProviderProps?.releaseId).not.toBe('rSomeRelease')
+      expect(capturedCommentsProviderLegacyProps?.releaseId).toBe('varscope')
+      expect(capturedCommentsProviderLegacyProps?.releaseId).not.toBe('rSomeRelease')
     })
   })
 
-  describe('beta.comments.v2', () => {
-    it('does not mount the v2 provider when the flag is off', () => {
+  describe('comments.legacy', () => {
+    it('does not mount the v2 provider when legacy is on', () => {
+      mockUseWorkspace.mockReturnValue({comments: {legacy: true}})
+
       render(
         <CommentsWrapper documentId="doc-default" documentType="article">
           <div>children</div>
         </CommentsWrapper>,
       )
 
-      expect(capturedCommentsProviderProps).toBeDefined()
-      expect(capturedCommentsProviderV2Props).toBeUndefined()
-      expect(capturedCommentsProviderProps).not.toHaveProperty('versionId')
+      expect(capturedCommentsProviderLegacyProps).toBeDefined()
+      expect(capturedCommentsProviderProps).toBeUndefined()
+      expect(capturedCommentsProviderLegacyProps).not.toHaveProperty('versionId')
     })
 
-    it('mounts the v2 provider with versionId when the flag is on', () => {
-      mockUseWorkspace.mockReturnValue({
-        beta: {comments: {v2: true}},
-      })
+    it('mounts the v2 provider with versionId when legacy is off', () => {
       mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'drafts.doc-v2'}}))
 
       render(
@@ -486,26 +532,22 @@ describe('CommentsWrapper', () => {
         </CommentsWrapper>,
       )
 
-      expect(capturedCommentsProviderProps).toBeUndefined()
-      expect(capturedCommentsProviderV2Props?.groupId).toBe('doc-v2')
-      expect(capturedCommentsProviderV2Props?.versionId).toBe('drafts.doc-v2')
-      expect(capturedCommentsProviderV2Props).not.toHaveProperty('documentId')
-      expect(capturedCommentsProviderV2Props).not.toHaveProperty('releaseId')
+      expect(capturedCommentsProviderLegacyProps).toBeUndefined()
+      expect(capturedCommentsProviderProps?.groupId).toBe('doc-v2')
+      expect(capturedCommentsProviderProps?.versionId).toBe('drafts.doc-v2')
+      expect(capturedCommentsProviderProps).not.toHaveProperty('documentId')
+      expect(capturedCommentsProviderProps).not.toHaveProperty('releaseId')
     })
   })
 
   describe('versionId (v2)', () => {
-    beforeEach(() => {
-      mockUseWorkspace.mockReturnValue({beta: {comments: {v2: true}}})
-    })
-
     function renderWrapper() {
       render(
         <CommentsWrapper documentId="doc-1" documentType="article">
           <div>children</div>
         </CommentsWrapper>,
       )
-      return capturedCommentsProviderV2Props?.versionId
+      return capturedCommentsProviderProps?.versionId
     }
 
     it('targets the draft in the drafts perspective before the draft exists', () => {

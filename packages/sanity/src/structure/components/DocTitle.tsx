@@ -1,6 +1,7 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {useSchema, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
+import {useSchema} from '../../core/hooks/useSchema'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentTitle} from '../panes/document/useDocumentTitle'
 

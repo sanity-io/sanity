@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {VariantsUpsellContext} from 'sanity/_singletons'
 
 import {type VariantsUpsellContextValue} from './types'
@@ -7,7 +7,7 @@ import {type VariantsUpsellContextValue} from './types'
  * @internal
  */
 export function useVariantsUpsell(): VariantsUpsellContextValue {
-  const value = useContext(VariantsUpsellContext)
+  const value = use(VariantsUpsellContext)
 
   if (!value) return FALLBACK_CONTEXT_VALUE
 

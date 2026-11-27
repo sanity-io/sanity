@@ -5,7 +5,6 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -261,15 +260,14 @@ describe('documentCommentsEnabledReducer', () => {
     ).toBe(true)
   })
 
-  it('reads the last configured value, preferring document.comments over unstable_comments', () => {
+  it('reads document.comments.enabled', () => {
     expect(
       documentCommentsEnabledReducer({
         config: {
           name: 'test',
           document: {
             comments: {enabled: true},
-            unstable_comments: {enabled: false},
-          } as never,
+          },
         },
         context: {documentId: 'doc1', documentType: 'article'},
         initialValue: false,
@@ -277,7 +275,7 @@ describe('documentCommentsEnabledReducer', () => {
     ).toBe(true)
   })
 
-  it('falls back to document.unstable_comments.enabled when comments is absent', () => {
+  it('ignores leftover document.unstable_comments config', () => {
     expect(
       documentCommentsEnabledReducer({
         config: {
@@ -287,7 +285,7 @@ describe('documentCommentsEnabledReducer', () => {
         context: {documentId: 'doc1', documentType: 'article'},
         initialValue: true,
       }),
-    ).toBe(false)
+    ).toBe(true)
   })
 
   it('invokes a function resolver with the document context', () => {
@@ -334,7 +332,7 @@ describe('documentCommentsEnabledReducer', () => {
 
 describe('eventsAPIReducer', () => {
   it('returns the initial value when eventsAPI is not configured', () => {
-    expect(eventsAPIReducer({config: {name: 'test'}, initialValue: false, key: 'documents'})).toBe(
+    expect(eventsAPIReducer({config: {name: 'test'}, initialValue: false, key: 'releases'})).toBe(
       false,
     )
   })
@@ -349,16 +347,6 @@ describe('eventsAPIReducer', () => {
         },
         initialValue: false,
         key: 'releases',
-      }),
-    ).toBe(true)
-  })
-
-  it('still reduces the documents key', () => {
-    expect(
-      eventsAPIReducer({
-        config: {name: 'test', beta: {eventsAPI: {documents: true} as never}},
-        initialValue: false,
-        key: 'documents',
       }),
     ).toBe(true)
   })
@@ -380,7 +368,7 @@ describe('eventsAPIReducer', () => {
       eventsAPIReducer({
         config: {name: 'test', beta: {eventsAPI: {enabled: false} as never}},
         initialValue: true,
-        key: 'documents',
+        key: 'releases',
       }),
     ).toBe(true)
   })
@@ -439,39 +427,6 @@ describe('variantsEnabledReducer', () => {
         initialValue: false,
       }),
     ).toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
-  })
-})
-
-describe('commentsV2EnabledReducer', () => {
-  it('returns the last configured boolean, with the root config winning', () => {
-    expect(
-      commentsV2EnabledReducer({
-        config: {
-          name: 'root',
-          beta: {comments: {v2: false}},
-          plugins: [{name: 'plugin', beta: {comments: {v2: true}}}],
-        },
-        initialValue: false,
-      }),
-    ).toBe(false)
-  })
-
-  it('throws when beta.comments is not an object', () => {
-    expect(() =>
-      commentsV2EnabledReducer({
-        config: {name: 'test', beta: {comments: true as never}},
-        initialValue: false,
-      }),
-    ).toThrow('Expected `beta.comments` to be an object, but received boolean')
-  })
-
-  it('throws when v2 is not a boolean', () => {
-    expect(() =>
-      commentsV2EnabledReducer({
-        config: {name: 'test', beta: {comments: {v2: 'yes' as never}}},
-        initialValue: false,
-      }),
-    ).toThrow('Expected `beta.comments.v2` to be a boolean, but received string')
   })
 })
 

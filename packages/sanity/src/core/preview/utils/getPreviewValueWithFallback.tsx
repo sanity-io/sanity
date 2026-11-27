@@ -39,6 +39,7 @@ const EMPTY: {[key: string]: never} = {}
  * Obtain document preview values used in <SanityPreview> and <SanityDefaultPreview> components.
  * Also displays fallback values if the document cannot be found.
  *
+ * @hidden
  * @internal
  */
 export function getPreviewValueWithFallback({snapshot, original, fallback}: Sources) {

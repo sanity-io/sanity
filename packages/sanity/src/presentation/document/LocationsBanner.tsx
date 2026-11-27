@@ -4,13 +4,14 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Spinner} from '@sanity/ui'
-import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
-import {type ObjectSchemaType, useTranslation} from 'sanity'
+import {type ComponentType, type ReactNode, useCallback, use, useState} from 'react'
+import {type ObjectSchemaType} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
+import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 import {Text, Flex, Box, Icon} from 'ui5'
 
+import {usePaneRouter} from '../../structure/components/paneRouter/usePaneRouter'
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {
@@ -52,7 +53,7 @@ export function LocationsBanner(props: {
   const locationsCount = locations?.length || 0
 
   const {t} = useTranslation(presentationLocaleNamespace)
-  const presentation = useContext(PresentationContext)
+  const presentation = use(PresentationContext)
   const presentationName = presentation?.name
   const [expanded, setExpanded] = useState(false)
   const toggle = useCallback(() => {
@@ -165,7 +166,7 @@ function LocationItem(props: {
   tone?: DocumentLocationsState['tone']
 }) {
   const {documentId, documentType, node, active, toolName, tone} = props
-  const presentation = useContext(PresentationContext)
+  const presentation = use(PresentationContext)
   const currentPresentationToolName = useCurrentPresentationToolName()
   const isCurrentTool = toolName === currentPresentationToolName
   const navigate = presentation?.navigate

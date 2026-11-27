@@ -8,7 +8,7 @@ import {isEqual} from '@sanity/util/paths'
 import {
   type PropsWithChildren,
   useCallback,
-  useContext,
+  use,
   useMemo,
   useState,
   type RefAttributes,
@@ -232,7 +232,7 @@ export function DialogBreadcrumbs({
   onClose,
 }: DialogBreadcrumbsProps): React.JSX.Element | null {
   const {onPathFocus, onPathOpen} = useFormCallbacks()
-  const scrollToTop = useContext(EnhancedObjectDialogScrollContext)
+  const scrollToTop = use(EnhancedObjectDialogScrollContext)
   const {schemaType: documentSchemaType} = useFormBuilder()
   const documentValue = useFormValue([])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)

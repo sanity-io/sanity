@@ -1,6 +1,7 @@
 import {type PreferenceKey} from '@sanity/sdk'
 import {useCallback, useMemo} from 'react'
-import {useStudioPreference} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {useStudioPreference} from '../core/store/preferences/useStudioPreference'
 
 /**
  * @internal

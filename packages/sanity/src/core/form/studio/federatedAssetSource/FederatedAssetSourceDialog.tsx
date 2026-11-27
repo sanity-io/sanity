@@ -6,9 +6,9 @@ import {
 } from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
 import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 import {Box, Flex, Text} from 'ui5'
 
+import {encodeJsonParams} from '../../../../router/utils/jsonParamsEncoding'
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../studio/colorScheme'

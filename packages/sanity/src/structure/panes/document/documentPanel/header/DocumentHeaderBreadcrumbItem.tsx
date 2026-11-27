@@ -1,8 +1,11 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {getDefaultVariant, useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
+import {usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter, useRouterState} from 'sanity/router'
 
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
+import {useDocumentPreviewValues} from '../../../../../core/tasks/hooks/useDocumentPreviewValues'
 import {Button} from '../../../../../ui-components/button/Button'
 import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'

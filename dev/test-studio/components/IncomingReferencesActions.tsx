@@ -1,6 +1,6 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useState} from 'react'
-import {getDraftId} from 'sanity'
+import {getDraftId} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type IncomingReferenceAction} from 'sanity/structure'
 
 export const RemoveReferenceAction: IncomingReferenceAction = ({document, getClient}) => {

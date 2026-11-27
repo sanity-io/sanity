@@ -82,8 +82,9 @@ const playwrightConfig: PlaywrightTestConfig<ChromaticConfig> = {
   globalSetup: './globalSetup',
   testDir: TESTS_PATH,
   // Auth tests use a separate config (playwright.auth.config.ts) with their own
-  // dev server on port 3340. Exclude them from the default config.
-  testIgnore: ['**/tests/auth/**'],
+  // dev server on port 3340. The CDN tests (playwright.cdn.config.ts) serve their own built
+  // bundle and need no studio. Exclude both from the default config.
+  testIgnore: ['**/tests/auth/**', '**/tests/cdn/**'],
 
   /* Maximum time one test can run for. */
   timeout: 60_000,

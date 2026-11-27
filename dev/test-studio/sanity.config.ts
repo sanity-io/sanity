@@ -7,11 +7,13 @@ import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
+import {buildTheme} from '@sanity/themer'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
 import {
   defineConfig,
   defineField,
+  defineType,
   definePlugin,
   type AuthProvider,
   type WorkspaceOptions,
@@ -57,6 +59,9 @@ import {listenerFloodTool} from './plugins/listener-flood/plugin'
 import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
+import {PokeballIcon} from './pokemon/PokeballIcon'
+import {pokemonSchemaTypes} from './pokemon/schema'
+import {pokemonStructure} from './pokemon/structure'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -106,6 +111,11 @@ const sanitySandboxAuth = {
       ? prev
       : [...prev, sanitySandboxSsoProvider],
 }
+
+const warmTheme = buildTheme({
+  light: {accent: '#b4541a', text: '#6b4a32', background: '#fbf6ef'},
+  dark: {accent: '#e0894a', text: '#c9a88a', background: '#1e1510'},
+})
 
 const envConfig = {
   // use this for production workspaces
@@ -422,9 +432,6 @@ const defaultWorkspace = defineConfig({
         },
       },
     },
-    reactActivityMode: {
-      enabled: true,
-    },
     releaseBackgroundListeners: {
       enabled: true,
     },
@@ -489,13 +496,12 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
-    name: 'comments-v2',
-    title: 'Comments v2',
-    subtitle: 'Default workspace with the comments v2 beta enabled',
-    basePath: '/comments-v2',
-    beta: {
-      ...defaultWorkspace.beta,
-      comments: {v2: true},
+    name: 'comments-legacy',
+    title: 'Comments legacy',
+    subtitle: 'Default workspace with legacy comments enabled',
+    basePath: '/comments-legacy',
+    comments: {
+      legacy: true,
     },
   },
   {
@@ -606,7 +612,7 @@ export default defineConfig([
     scheduledPublishing: {
       enabled: false,
     },
-    unstable_tasks: {
+    tasks: {
       enabled: false,
     },
     mediaLibrary: {
@@ -678,7 +684,7 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
-    unstable_tasks: {
+    tasks: {
       enabled: true,
     },
     mediaLibrary: {
@@ -726,7 +732,7 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
-    unstable_tasks: {
+    tasks: {
       enabled: true,
     },
     mediaLibrary: {
@@ -926,6 +932,56 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+  },
+  {
+    name: 'pokemon',
+    title: 'Pokédex',
+    subtitle: 'Pokémon, types and abilities from PokéAPI',
+    projectId: 'ppsg7ml5',
+    dataset: 'pokedex',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/pokemon',
+    icon: PokeballIcon,
+    schema: {types: pokemonSchemaTypes},
+    plugins: [
+      structureTool({icon: PokeballIcon, structure: pokemonStructure}),
+      visionTool(),
+      themerTool(),
+    ],
+    releases: {enabled: false},
+    scheduledDrafts: {enabled: false},
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    mediaLibrary: {enabled: false},
+    apps: {canvas: {enabled: false}},
+  },
+  {
+    name: 'custom-theme',
+    title: 'Custom theme',
+    subtitle: 'A warm custom theme, for checking that tools follow the studio theme',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/custom-theme',
+    schema: {
+      types: [
+        defineType({
+          name: 'note',
+          type: 'document',
+          fields: [defineField({name: 'title', type: 'string'})],
+        }),
+      ],
+    },
+    theme: warmTheme,
+    plugins: [structureTool(), visionTool()],
+    releases: {enabled: false},
+    scheduledDrafts: {enabled: false},
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    mediaLibrary: {enabled: false},
+    apps: {canvas: {enabled: false}},
   },
   {
     name: 'document-form-only',

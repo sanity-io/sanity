@@ -1,7 +1,8 @@
-import {type ReactNode, useContext, useMemo, type RefAttributes} from 'react'
-import {useUnique} from 'sanity'
+import {type ReactNode, use, useMemo, type RefAttributes} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
+
+import {useUnique} from '../../../core/util/useUnique'
 
 interface ParameterizedLinkProps {
   params?: Record<string, string>
@@ -15,7 +16,7 @@ interface ParameterizedLinkProps {
 export function ParameterizedLink(
   props: ParameterizedLinkProps & RefAttributes<HTMLAnchorElement>,
 ) {
-  const {routerPanesState: currentPanes, groupIndex, siblingIndex} = useContext(PaneRouterContext)
+  const {routerPanesState: currentPanes, groupIndex, siblingIndex} = use(PaneRouterContext)
   const {ref, params, payload, ...rest} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const nextParams = useUnique(params)

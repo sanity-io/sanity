@@ -1,7 +1,8 @@
 import {uuid} from '@sanity/uuid'
-import {getPublishedId} from 'sanity'
-import {encodeJsonParams, type RouterState, type SearchParam} from 'sanity/router'
+import {type RouterState, type SearchParam} from 'sanity/router'
 
+import {getPublishedId} from '../core/util/draftUtils'
+import {encodeJsonParams} from '../router/utils/jsonParamsEncoding'
 import {type PresentationSearchParams, type PresentationStateParams} from './types'
 
 const preservedSearchParamKeys: Array<keyof PresentationSearchParams> = ['preview', 'viewport']

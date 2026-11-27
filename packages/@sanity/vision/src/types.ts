@@ -7,24 +7,43 @@ export interface VisionProps {
 }
 
 /**
- * Beta features of the Vision tool.
- *
- * @beta
+ * Vision's AI features, each switched on unless set to `false`. Each one writes with Sanity
+ * Agent Actions and uses the organization's AI credits.
  */
-export interface VisionBetaConfig {
+export interface VisionAiFeatures {
+  /** Generate: writes the tab's GROQ query from a description, with Agent Actions */
+  generateQuery?: boolean
+  /** Generate in the Mutate panel: writes mutations from a description, with Agent Actions */
+  generateMutations?: boolean
   /**
-   * @deprecated Remove this option: this version of Vision is the classic tool only. The
-   * redesigned Vision ships in the stable `@sanity/vision@^7` release, where it needs no option.
+   * "Explain this to me" in the Explain panel: describes the query and its plan in plain words,
+   * with Agent Actions. The query plan itself stays available.
    */
-  redesign?: never
+  explainQuery?: boolean
+  /** Edit: changes the tab's GROQ query as described, with Agent Actions */
+  editQuery?: boolean
+  /** "Fix with AI" in the Lint panel: fixes the problems the linter found, with Agent Actions */
+  fixLint?: boolean
 }
+
+/**
+ * Which of Vision's AI features are on: `true` (the default) for all of them, `false` for none,
+ * or an object that switches off the features set to `false` and leaves the rest on.
+ *
+ * @example
+ * ```ts
+ * visionTool({ai: false})
+ * visionTool({ai: {generateQuery: false}})
+ * ```
+ */
+export type VisionAiConfig = boolean | VisionAiFeatures
 
 export interface VisionConfig {
   datasets?: string[] | ((datasets: DatasetsResponse) => DatasetsResponse)
   defaultApiVersion: string
   defaultDataset?: string
-  /** @beta */
-  beta?: VisionBetaConfig
+  /** Which AI features are on; all of them unless configured otherwise */
+  ai?: VisionAiConfig
 }
 
 export interface VisionToolConfig extends Partial<VisionConfig> {

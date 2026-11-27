@@ -2,10 +2,10 @@ import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {isObjectSchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
-import {useSchema} from 'sanity'
 import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {useSchema} from '../../../core/hooks/useSchema'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
 import {
   type DocumentLocation,

@@ -1,4 +1,4 @@
-import {VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {prefixApiVersion} from './util/prefixApiVersion'
 

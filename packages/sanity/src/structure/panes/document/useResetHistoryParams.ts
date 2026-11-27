@@ -1,6 +1,5 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useEffectEvent} from 'react'
 import {usePerspective} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
@@ -36,7 +35,6 @@ export function useResetHistoryParams() {
     if (isMounted.current) {
       updateHistoryParams(selectedPerspectiveName)
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [selectedPerspectiveName])
 
   useEffect(() => {

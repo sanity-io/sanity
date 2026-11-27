@@ -2,11 +2,12 @@ import {type SanityDocument} from '@sanity/types'
 import {act, render, screen} from '@testing-library/react'
 import {type PropsWithChildren} from 'react'
 import {BehaviorSubject} from 'rxjs'
-import {type DocumentStore, type EditStateFor, useDocumentStore, usePerspective} from 'sanity'
+import {type DocumentStore, type EditStateFor, usePerspective} from 'sanity'
 import {ResolvedPanesProvider} from 'sanity/_singletons'
 import {test as baseTest, describe, expect, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useDocumentStore} from '../../../../../../core/store/datastores'
 import {LOADING_PANE} from '../../../../../constants'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
@@ -17,10 +18,14 @@ vi.mock('sanity', async () => {
   const sanity = await vi.importActual('sanity')
   return {
     ...sanity,
-    useDocumentStore: vi.fn(),
     usePerspective: vi.fn(),
   }
 })
+
+vi.mock('../../../../../../core/store/datastores', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentStore: vi.fn(),
+}))
 
 vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(),

@@ -243,7 +243,7 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 
         // Dynamic (updated on navigation)
         orgId: "org_xyz",
-        activeTool: "desk",
+        activeTool: "structure",
         workspaceCount: 2,
         activeWorkspace: "default",
         activeProjectId: "abc123",
@@ -334,7 +334,7 @@ These events cover the history / review changes side pane. `Document History Ins
 | `Document History Inspector Tab Changed` | The active tab changes while the pane is open   | `{ tab, previousTab }`                                        |
 | `Document Changes Reverted`              | A revert is confirmed in the review changes tab | `{ scope: 'all' \| 'group' \| 'field', changeCount: number }` |
 
-`path` uses the shared [`path`](#path) vocabulary (`status_line`, `change_indicator`, `pane_menu`, `url`). To split opens by events-API rollout, join on `eventsApiDocumentsEnabled` from `Workspace Features Observed` via the envelope's `activeWorkspace`.
+`path` uses the shared [`path`](#path) vocabulary (`status_line`, `change_indicator`, `pane_menu`, `url`).
 
 `Document Changes Reverted` counts confirmed reverts; opening the confirmation dialog logs nothing. `changeCount` is the flat count of field changes, so `all`, `group` and `field` measure at the same depth and compare directly. It runs ahead of the rows on screen, which collapse sibling changes into groups: a 20-block Portable Text edit is one row and 20 changes. One event covers one gesture, so the count will not reconcile against mutations - reverting a group issues a patch per field. Discard changes and release revert are separate events.
 

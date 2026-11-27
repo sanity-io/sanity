@@ -23,7 +23,7 @@ Keep this section at the top of the file. The same rules are restated in [Pull R
 
 ## Prerequisites
 
-- **Node.js**: v24 or latest LTS. Published packages must declare `"engines": { "node": ">=22.12" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing).
+- **Node.js**: v24.11 or newer (24.11.0 is the [first Node 24 LTS release](https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V24.md#24.11.0)). Published packages must declare `"engines": { "node": ">=24.11" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing). Private packages carry the same range, kept in step by hand. CI runs the unit tests on Node 24.11 (the minimum, pinned exactly) and 26.
 - **Package Manager**: pnpm v10+ (exact version managed via `packageManager` field in package.json)
 
 ## Quick Reference
@@ -350,6 +350,35 @@ How the CSS reaches a page:
   the parent renders (`'[data-change-bar-wrapper][data-focused] &'` in
   `ElementWithChangeBar.css.ts`), never on a class that exists only to be targeted.
 
+### Preloading the lazy studio shell (auto-updating studios)
+
+An auto-updating studio loads `sanity` from the module CDN through an import map, so each `import()`
+is only discovered once the code that calls it runs. `preload` in `packages/sanity/package.bundle.ts`
+names the lazy modules every studio needs right after boot (`AuthenticatedStudio`, the workspace
+source resolver, the layout and the navbar) and `preloadModulesPlugin()` in `@repo/package.bundle`
+bakes their chunks, plus the static imports of those chunks that the `index` entry does not already
+load, into the `__SANITY_PRELOAD_MODULES__` global as specifiers relative to the chunk it sits in.
+`renderStudio` (not `<Studio>`, which embedders render and which re-renders and runs twice in
+StrictMode) calls `preloadModule` from `react-dom` once for each. Only that build defines the global;
+the npm package, dev and test builds have no list and preload nothing. The build fails when a listed
+module stops being a lazy chunk of its own or when the list would reach into another entry's chunks
+(`_dangerously…-2`, `structure`, tools). Keep the allowlist to what the navbar on `/404` needs: a
+lazy boundary added there preloads on every studio load.
+
+The CDN redirects cross-origin (`sanity-cdn.com` to `modules.sanity-cdn.com`), and WebKit forces a
+modulepreload that follows a cross-origin redirect into credentialed CORS mode, which the bucket's
+`Access-Control-Allow-Origin: *` rejects: the preload fails and the studio renders blank (the
+reason the CLI's own preload of the `sanity` module was reverted, then gated to Chromium and Gecko).
+The list never goes through the redirect: a module's URL base is the response URL after redirects,
+so `preloadStudioModules()` resolves the relative specifiers against the module host, and skips
+anything that is not a `./` path on that origin. `crossOrigin: 'anonymous'` is the mode `import()`
+uses, so a preload is reused rather than fetched twice. `pnpm --filter e2e test:cdn` proves it in
+Chromium and WebKit (`e2e/tests/cdn`, workflow `e2e-cdn.yml`): it serves the built bundle behind a
+redirecting origin and a bucket with `Access-Control-Allow-Origin: *` only, loads the studio from
+an import map, and asserts the navbar renders, each preload is requested once from the bucket,
+none goes through the redirector, and no request fails. Build the bundle first with
+`pnpm --filter sanity build:bundle`.
+
 ### CSS modules
 
 Outside `packages/sanity`, components are styled with `*.module.css` files, and no workspace uses
@@ -400,9 +429,9 @@ Vite.
   a `@container` query in the module that names the container. Custom properties are not scoped:
   namespace them (`--vision-result-code-family`) and type the inline `style` that sets them
   through an interface extending `CSSProperties`. Third-party class names go in `:global(…)`. A
-  value the code also uses reaches the CSS as a custom property set from that constant, not as a
-  copy. A class that extends another one `composes` it, and exports both names, as Lightning CSS,
-  Vite and `@tsdown/css` all join them.
+  value the code also uses (`GRAPH_METRICS`, which positions the result graph) reaches the CSS as
+  a custom property set from that constant, not as a copy. A class that extends another one
+  `composes` it, and exports both names, as Lightning CSS, Vite and `@tsdown/css` all join them.
 - **Do not list selectors that contain `:global()`.** With browser targets, Lightning CSS wraps
   such a selector list in `:is()`, which gives every selector the specificity of the most
   specific one. Repeat the rule instead.
@@ -439,6 +468,10 @@ does not measure stale output from the previous checkout.
 See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
 
 Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
+
+### Studio v6 vs v7 comparison (Token Required)
+
+`pnpm perf:version-compare` builds one minimal studio (`dev/starter-studio` with its config overwritten, so both refs compile identical configuration) from `main` (v6) and `next-major` (v7), each in its own git worktree, serves them in production mode over HTTP/2 with TLS (`--http-version 1.1` serves plain HTTP/1.1 on `localhost:3339` instead; its six connections per host and per-request latency overstate the cost of many small chunks compared with a CDN) and measures them with Playwright + Chromium. It reports median and p75 over `--runs` interleaved samples (fresh browser context each, HTTP cache disabled) for the login screen becoming interactive (unauthenticated), the `/404` tool page showing the navbar tool list, the Structure tool's root list at `/structure` showing an item for every document type, and the deep link `/structure/post;version-compare-post` showing the opened document's title as an editable input (the last three authenticated through the e2e token mechanism; `--pages login,tools,structure,document` picks a subset, and the schema and the documents the two Structure pages read come from `content.ts`, which seeds them into the dataset before measuring), and JS size (total emitted and downloaded by the login page; raw, gzip, brotli). Load times run under CDP network and CPU emulation, `--network slow-4g,fast-4g` by default (DevTools presets: 150 ms RTT, 1.6 Mbps down / 750 kbps up with 4x CPU throttle; 60 ms RTT, 9 Mbps / 1.5 Mbps, no CPU throttle; `none` disables it) with `--cpu-throttle N` overriding the slowdown; the static server compresses with brotli like a CDN. The HTTP/2 server is reached as `https://version-compare.sanity.dev` (the project's CORS list admits `https://*.sanity.dev` on the default port only), which Chromium maps to the local port and trusts by the certificate's public key. The result is one JSON file with the sizes at the top level and the timings per profile, each with v6, v7 and the difference, written to `--out` (default `version-compare.json`) and to the job summary. Each profile also reports the JS received before ready (transferred and decoded) per page, from the same loads as the timings, and runs one more load per version of every authenticated page (the login page with `--skip-authenticated`) that records a Chrome trace and the CDP network log, both cut off at ready, into `--trace-dir` (default `version-compare-traces/` next to `--out`; open the `.trace.json` in the DevTools Performance panel). That load is kept out of the timings: the summary shows its requests and bytes before ready, API calls, OPTIONS preflights, fonts and other-origin scripts, the main thread's time split into parse/compile, script and render, and the serial request chain to ready (`waterfall.ts`: each request waits on the file that referenced it, its preflight, or for `fetch` and `import()`, the last response before the main-thread task that issued it). Needs `SANITY_E2E_PROJECT_ID`, `SANITY_E2E_SESSION_TOKEN` and `SANITY_E2E_DATASET` as for the e2e suite (`pnpm e2e:setup` creates the dataset); `--skip-authenticated` drops the authenticated pages and the token. Options: `--v6-ref`, `--v7-ref`, `--runs`, `--work-dir`, `--reuse-builds`. `.github/workflows/version-compare.yml` runs it on pushes to `next-major` and on dispatch. Timings include real round trips to the staging API, so compare numbers from the same machine and run only.
 
 ### Engine confidence score (No Auth Required locally)
 
@@ -575,7 +608,50 @@ pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
 
+### Browser support: Baseline 2026
+
+Studio v7 supports [Baseline 2026](https://web.dev/baseline) (`baseline 2026 with downstream`), fixed for the life of the major (see "Browser support" in `packages/sanity/README.md`). Any web platform feature in Baseline 2026 (CSS or JS, `light-dark()`, nesting, `Promise.withResolvers` and so on) can be used without a fallback, a polyfill or a feature check. A feature that is only Baseline Newly available in 2027 or later still needs a fallback.
+
+- **One source of truth.** Every published package declares `"browserslist": ["node >=24.11", "baseline 2026 with downstream"]`, written by `pnpm normalize-pkgfields` and checked by `packages/@repo/test-exports/test/browserslist.test.mjs`. Change the query there, never in a build config.
+- **The builds derive their CSS targets from that field** through `@repo/browser-targets`: the Lightning CSS targets of the `panda` and `css` pipelines in `@repo/tsdown.config` (the published `bundle.css`), and Vite's `build.cssTarget` in `@repo/package.bundle` (the auto-updating CDN bundle) and `dev/test-studio/sanity.cli.ts`. The published JS keeps tsdown's `engines.node` target: Node.js 24.11 ships an older V8 than every Baseline 2026 engine, so it binds JS syntax lowering. Code that also runs in Node.js (schema compilation, validation, the CLI entries, `@sanity/util`) must stick to what Node.js 24.11 supports as well.
+- **Do not raise a Vite build's JS `target` to Baseline 2026.** Rolldown skips its transform for modules that are already JS when the target needs no syntax lowering (any target from Chrome 134 / ES2026 up), and Vite's Oxc plugin has compiled every TSX module to JS by then, so the `styledComponents` transform plugin of the CDN bundle silently stops running (no display names, no `/* @__PURE__ */` annotations). `package.bundle.test.ts` builds a styled component with the bundle's settings to catch this.
+- **Baseline 2026 data can still grow until the year ends**, as features reach Baseline in late 2026. A `browserslist`/`baseline-browser-mapping` bump can then raise the resolved minimum versions; the query itself stays.
+
 Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
+
+### LAW: Dynamic imports of named exports use dedicated entrypoints
+
+Any dynamically imported named export must be exposed through a dedicated entrypoint that exports it
+as `default`. This includes `React.lazy`, equivalent dynamic component loaders, and non-component
+utility imports. Never use `import(...).then(...)` to select or convert a named export: that pattern
+can prevent the bundler from excluding the module's other exports from the async chunk.
+
+Give a module of our own that is only ever loaded dynamically a `default` export and import it
+directly. Otherwise — third-party modules, or modules whose named exports are also imported
+statically — add a sibling `*.lazy.ts` entrypoint that re-exports only the desired symbol as
+`default`, then import that entrypoint directly:
+
+```ts
+// MyComponent.lazy.ts
+export {MyComponent as default} from './MyComponent'
+```
+
+```tsx
+const MyComponent = lazy(() => import('./MyComponent.lazy'))
+```
+
+Do not write:
+
+```tsx
+const MyComponent = lazy(() =>
+  import('./MyComponent').then((module) => ({default: module.MyComponent})),
+)
+```
+
+Selecting the `default` export with `import(...).then(...)` (or by awaiting and destructuring) is
+fine — the rule only concerns named exports. A module that must stay available when no new chunk
+can load (e.g. `ViteDevServerStoppedErrorScreen`, rendered after the dev server is gone) must be
+imported eagerly instead of dynamically.
 
 ### Do Not Weaken the Linter
 
@@ -589,45 +665,78 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
-### `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+### Public `sanity` entries never export `@internal` symbols
 
-Every declaration that `sanity`, `sanity/structure` or `sanity/router` exports under the
-`@internal` TSDoc release tag is also exported from
+Everything a studio or plugin can reach through `sanity`, `sanity/structure`, `sanity/router`,
+`sanity/presentation` and `sanity/i18n` is public API. Symbols tagged `@internal` are exported from
 `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
 (`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts`),
 an entry whose name spells out its contract: anything on it can change or disappear in any
-release. The public entries still export those symbols today; the entry is the migration target
-for consumers that depend on them, ahead of the public entries dropping them in a future major.
-`packages/@repo/test-dts-exports/test/internals-entry-completeness.test.ts` (part of
-`pnpm test:exports`) fails when an `@internal` export of a public entry is missing from the entry,
-when the two entries export different declarations under one name, or when the entry exports
-something that is not tagged `@internal`.
+release. `packages/@repo/test-dts-exports/test/internal-exports.test.ts` (part of
+`pnpm test:exports`) runs against the built `.d.ts` files and enforces both directions: a public
+entry that exports an `@internal` declaration fails, and so does any internals entry (the base
+entry, `…-1`, `…-2`, `…-router`, `…-structure`) that exports a declaration tagged `@public`,
+`@beta` or `@alpha`. The only exception is the runtime value of a type listed under `"typeOnly"`
+in the tombstone manifest.
+
+The public i18n runtime API (`defineLocale`, `defineLocaleResourceBundle`,
+`removeUndefinedLocaleResources`, `useTranslation`, `useCurrentLocale`, `Translate`, `InlineCode`)
+lives on `sanity/i18n` (`src/_exports/i18n.ts`), not on the root: import it from there in
+`src/structure`, `src/presentation`, `@sanity/vision` and the dev studios, and mock
+`sanity/i18n` (not `sanity`) when a test stubs one of them. Its public types are exported from
+both entries, since a type costs nothing at runtime.
 
 Rules that follow from this:
 
-- A new `@internal` export on a public barrel needs a matching line in the internals barrel
-  (grouped by source module, `type` specifiers kept). Consumers outside `packages/sanity`
-  (`@sanity/vision`, the dev studios, plugins) import internals from the entry, never from
-  `sanity`. Inside the package, `src/core`, `src/structure` and `src/router` keep importing
-  relatively: the entry re-exports modules from all three areas, so importing it from any of them
-  is an import cycle, and a lazily loaded module that imports the entry drags the whole barrel in
-  with it. The boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the
-  three areas.
-- The entry is generated from the tags, not curated: whether a symbol belongs there is decided by
-  its `@internal` tag. Retagging a symbol (`@internal` → `@beta`/`@public`, or the other way) is
-  the API decision; check sanity.io/docs and the published first-party plugins before demoting a
-  symbol, and remember that `@sanity/cli`, `@sanity/cli-core` and `@sanity/cli-build` load the
-  studio's local `sanity` package at runtime (`resolveLocalPackage('sanity')`) and destructure
-  `renderStudio`, `resolveConfig`, `createSchema`, `SchemaError`, `createDefaultIcon`,
-  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root. The one
-  deliberate exception is `createAuthStore` (deprecated since v3.15.0): it keeps its
-  `@internal @deprecated` tags because those tell customers to stop using it, it stays off the
-  entry so the deprecated `sanity` import remains the only one, and it is listed in
-  `PUBLIC_BY_USAGE` in the completeness test; its removal is governed by the deprecation, not by
-  the internals moving. Do not retag it.
+- A new `@internal` export goes into the dangerous internals barrel (grouped by source module,
+  `type` specifiers kept), never into `index.ts`, `structure.ts`, `router.ts`, `presentation.ts`
+  or `i18n.ts`. Consumers outside `packages/sanity` (`@sanity/vision`, the dev studios,
+  plugins) import it from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+  Inside the package, `src/core`, `src/structure` and `src/router` import internals relatively;
+  the boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the three
+  areas. Core importing it would pull the whole barrel into `lib/index.js`; structure importing it
+  is a cycle, because the barrel re-exports structure modules (`DocumentPane`, `Pane`,
+  `StructureToolProvider`, …), which in vitest also makes
+  `vi.mock('sanity/_dangerously…', importOriginal)` invisible to the component under test.
+  Structure tests mock the source module they need (`vi.mock('../../core/hooks/useX', …)`), like
+  core tests do. `src/presentation` imports internals relatively for the same reasons, and
+  because a lazily loaded module (an i18n `resources` chunk, a `lazy()` component) that imports
+  the entry drags the whole barrel in with it.
+- The repo's own code imports no `@internal` name from a public entry, including the `@internal`
+  types that are still exported there, and the four areas never import the internals entry.
+  `test/no-internal-imports-from-public-entries.test.ts` in `@repo/test-dts-exports` checks both
+  (it reads the built `.d.ts` files, so build first). When a component switches to a relative
+  import, a test that stubs the name with `vi.mock('sanity', …)` has to mock the declaring
+  module instead.
+- A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
+  declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that,
+  on a public entry. A name that only an internals entry exports is `@internal`, whatever else it
+  carries (`@hidden`, `@deprecated`).
+- Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
+  it off. Both are API changes: removing a named ESM export breaks consumers at module
+  evaluation time, and auto-updating studios pick minors up without a rebuild, so check
+  sanity.io/docs and the published first-party plugins (`@sanity/assist`,
+  `@sanity/document-internationalization`, `sanity-plugin-media`, `@sanity/code-input`, …)
+  before demoting a symbol. The CLI is a consumer too, and an invisible one: `@sanity/cli`,
+  `@sanity/cli-core` and `@sanity/cli-build` load the studio's local `sanity` package at runtime
+  (`resolveLocalPackage('sanity')`) and destructure `renderStudio`, `resolveConfig`,
+  `createSchema`, `SchemaError`, `createDefaultIcon`, `generateStudioManifest`, `uploadSchema`
+  and `validateDocument` from the root, so `sanity schema extract/deploy`, `sanity manifest
+  extract` and `sanity documents validate` break at runtime (not at build time) if one of them
+  leaves the root. They are tagged `@hidden @public`; grep the CLI packages in `node_modules`
+  for `resolveLocalPackage('sanity'` before touching them.
+- Two router leaf modules (`src/router/stickyParams.ts`, `src/router/utils/jsonParamsEncoding.ts`)
+  are the `sanity/router__shared` file category in `.oxlintrc.json`, so `src/core` can import
+  them relatively without them being exported from the public `sanity/router` entry.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
-  404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
+  404 on the module host. The internals subpaths are single segments
+  (`…-1`, `…-2`, `…-structure`, `…-router`) because the module server (`sanity-io/module-server`)
+  only routes one segment after the package name. This is temporary: once
+  [module-server#251](https://github.com/sanity-io/module-server/pull/251) is deployed to
+  production, rename them back to `…/1`, `…/2`, `…/structure` and `…/router` (the TODOs in
+  `tsdown.config.ts` and `package.bundle.ts` mark the spots).
+  `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 - A change to any entry's export list also changes `packages/sanity/test/__snapshots__/exports.test.ts.snap`,
   a unit test in the `sanity` project rather than part of `pnpm test:exports`. It imports the
@@ -661,7 +770,8 @@ each dropped name before regenerating:
 - A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
   it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
   more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
-  `sanity/media-library`, which `sideEffects: true` keeps a consumer from tree-shaking away.
+  `sanity/media-library`, which a consumer could not tree-shake away while the package declared
+  `sideEffects: true` (it now lists only the stylesheet and the barrels that import it).
 - Load-bearing exceptions exist. `@sanity/util`'s `Options` and `Parser` are exported from
   `createSafeJsonParser` because `@sanity/migrate` imports `Parser` in its own `.d.ts`, and
   `lib-check.test.ts` runs with `skipLibCheck: false`.
@@ -669,13 +779,259 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
-### Effect events: use `use-effect-event`, not React's native hook
+### The `sanity` entry's static import graph is the login page
 
-Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
-returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
-([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
-`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
-wraps the native hook, so check the implementation before trusting one.
+With `autoUpdates: true` the studio's import map points `sanity` and `sanity/*` at the module
+host, so the browser downloads `index.mjs` plus every chunk it statically imports before the
+login screen renders, and nothing in that graph is tree-shaken. Only dynamic `import()` keeps
+code off that path. Measure it on the CDN build, not on `sanity build` output:
+`pnpm --filter sanity build:bundle`, then compute the transitive static import closure of
+`packages/sanity/dist/index.mjs` (follow relative specifiers and `sanity/<x>` → `<x>.mjs`; the
+`.map` files attribute chunk bytes back to source modules). Rules that keep the graph small:
+
+- UI that only renders after a click or after login (dialogs, menu contents, the default layout
+  and navbar, filter inputs referenced from search operator definitions) is a `lazy()` component
+  with a `Suspense` at its render site. `prepareConfig` runs before login and statically reaches
+  every default plugin module, so a plugin's document actions, asset sources and schema
+  `components` must reference lazy components for anything heavier than the hook itself.
+- A heavy component that stays exported from `sanity` is exported as a facade from
+  `createLazyComponent` (`packages/sanity/src/core/components/lazy/createLazyComponent.tsx`): the
+  same name and props, and the implementation loaded on first render. `src/core/form/publicLazy.tsx`
+  holds the form facades the root entry exports and nothing else, because every studio loads it
+  before the login screen; the facades only the internals entries export are in
+  `src/core/form/lazy.tsx`, which `first-load.test.mjs` keeps out of that graph. Internal code
+  keeps importing the implementation directly — including `src/structure`, whose document form
+  renders `FormBuilder` from its implementation module, so
+  opening a document does not wait for a chunk that used to arrive with the entry. A facade group
+  only pays off when every export reaching the same modules is covered; check with the closure,
+  not with a single export, and measure the marginal bytes per facade — below a few kB a
+  suspension costs the consumer more than the login page saves.
+- A facade's `Suspense` is opt-in (the `fallback` option), and most should not have one. A form
+  node that renders its own boundary catches a _descendant_ that suspends — lazy form middleware,
+  a lazy custom input — and unmounts the subtree around it, which wipes local state in a custom
+  input; and there is no sensible field-sized fallback, so `fallback: null` reads as the field
+  collapsing and then expanding. Without a boundary it suspends to `FormBuilder`'s or the
+  Portable Text per-block one, which is where form nodes are meant to suspend. The same applies to
+  the navbar: it suspends to `StudioLayout`'s boundary rather than painting a bar whose tone and
+  layering cannot match the real one. Give a facade a fallback only when it can be the first thing
+  to render in its subtree (`FormBuilder`, `PortableTextInput`).
+- `createLazyComponent` holds the resolved component, so only the first render of a given facade
+  can suspend. Do not reach for `React.lazy` here: it calls the loader per lazy component and
+  `import()` returns a fresh pending promise even for a module already in the registry, so every
+  facade's first render suspends even once the chunk is loaded.
+- A `lazy()` target that other modules also import statically is `import()`ed through a
+  dedicated `<Module>.lazy.ts` shim (`export {Foo as default} from './Foo'`), never as
+  `import('./Foo').then((m) => ({default: m.Foo}))`. The implementation lives in a shared chunk,
+  so the `.then` form makes rolldown synthesise a namespace object for it with the `__exportAll`
+  runtime helper, and the helper is emitted into whichever chunk needs it first. On this stack it
+  landed in a structure chunk that a core chunk then imported statically, so evaluating
+  `sanity/structure` before `sanity` (the order the CLI's `schema deploy` worker uses when it
+  evaluates `sanity.config.ts`) hit the helper in its TDZ:
+  `__exportAll is not a function`, then `defineLocaleResourceBundle is not a function`. The
+  shim's default export resolves to its own chunk and needs no namespace object.
+  `@repo/test-exports`'s `entry-evaluation-order.test.mjs` is the guard: it evaluates the built
+  entries in both orders, one fresh process each, so this cannot regress unnoticed. `grep -l
+  __exportAll packages/sanity/lib/*.js` (structure's `List-*.js` is the only expected hit) is the
+  quick manual check.
+- Code that must be fetched right after login (layout, navbar) is preloaded from
+  `PreloadStudioShell`, mounted inside `AuthBoundary`, so the fetch overlaps with workspace loading.
+  It imports the same `.lazy.ts` shims the `lazy()` components do, so the preload warms the chunks
+  they request.
+- The studio's own strings (`src/core/i18n/bundles/studio/resources.ts`) load on demand through
+  `resources: () => import('./resources')`, like the structure and presentation bundles. The
+  fallback i18n instance requests them through the i18n backend when it is created, and
+  `FallbackLocaleProvider` wraps the pre-workspace screens in a `Suspense` whose fallback is a
+  `LoadingBlock` without text (the text variant translates). A test that builds an i18n instance
+  and asserts synchronously awaits `i18next.loadNamespaces(…)` after `init()` (`createTestProvider`
+  does): `init()` resolves before a lazy bundle has arrived.
+- Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
+  `function` in `test/__snapshots__/exports.test.ts.snap`, and the declaration it emits from a
+  `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
+  `not.toBeNever()` to `toBeFunction()`; regenerate both.
+
+### Lazy-only internals: `…-2` is never part of the `/404` shell
+
+After sign-in a studio renders its shell: the navbar, the tool menu and, on a path that matches no
+tool (`/404`), the "Tool not found" screen. Nothing a tool loads belongs there.
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`
+(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver-2.ts`)
+holds the internals that only code behind a lazy boundary uses: the document stack (forms and
+inputs, field diffs and change indicators, presence overlays, comments and tasks UI, document
+panes and the other structure panes). Next to it, `…-1` is what a studio config may import before
+sign-in, and the bare entry is what the shell may import.
+
+- `packages/@repo/test-exports/test/shell-load.test.mjs` (part of `pnpm test:exports`, build
+  first) enforces it. It builds the `perf/bench` and `perf/studio` configs with Vite against the
+  built `lib`, walks from the studio entry through every static import and through the `sanity`
+  package's own dynamic imports (its lazy layout, navbar, plugin providers and preloads load with
+  the shell), stops at dynamic imports in studio or plugin code, and fails with every chain that
+  reaches `lib/…-2.js`. `test/fixtures/shell-load` checks the walk itself: a navbar that imports
+  `-2` is reported, a lazy tool that does is not. In a studio config, the
+  `@repo/studio/no-internals-before-sign-in` lint rule reports a static `-2` import too.
+- A name goes on `-2` when every consumer outside `packages/sanity` uses it from code that is
+  already lazy (an input, a document component, a tool). Moving a name between the bare entry and
+  `-2` takes a tombstone on the entry it left (see Export tombstones), the `v7-export-map` entry,
+  and the regenerated exports snapshot and d.ts fixtures. A plugin that needs a `-2` name at
+  module scope of a statically imported module imports it dynamically and destructures it, as the
+  patched plugins under `patches/` do:
+  `lazy(() => import('sanity/…-2').then(({ArrayOfObjectsItem}) => ({default: ArrayOfObjectsItem})))`.
+- `-2` is listed in `package.bundle.ts`, like `-1`. Both are flattened to a single segment for the
+  module server; see the TODO under the CDN bundle bullet above.
+- Keeping the shell small is about more than `-2`: rolldown puts the lib modules that the same
+  lazy boundaries reach into one chunk, so a module the shell imports statically drags every
+  module in its chunk along. The usual fixes are a `lazy()` component (through a `.lazy.ts` shim)
+  under a `Suspense` at its render site, for dialogs, popover contents and anything else that only
+  renders after a click, and a dynamic `import()` inside the handler or effect that needs a
+  module (the paste handler, the image upload pipeline, the live manifest registration). A
+  `lazy()` component in a `@sanity/ui` `Popover`'s `content` is fetched as soon as its owner
+  renders, because a closed popover keeps its content mounted in a hidden `<Activity>`; render it
+  only while open (`NewDocumentButton`). A test that opens such a dialog wraps the click in an
+  awaited `act` (see Testing components that suspend via `use()`).
+
+### Export tombstones (v7)
+
+When v7 removes or moves an export from `sanity` (or a subpath entry), do **not** delete the name
+silently. Add a type-only tombstone so TypeScript reports the migration at each usage instead of a
+bare "has no exported member" error. Prior art: `@sanity/ui` v4 (`packages/ui/src/exports/index.ts`)
+and `@sanity/icons` v5 (`packages/icons/scripts/generate.ts`).
+
+**Hard rule:** tombstones live only in the `.d.ts` output. No runtime JS exports, stubs, throwing
+functions, or re-exports from a separate tombstones module — TypeScript emits a runtime
+`export {Name} from …` for those and the name then fails to link. Put `export declare const Name:
+never` (values) or `export type Name = never` (types) **inline in the entry barrel**, with a
+`@deprecated` JSDoc that names the replacement or migration path.
+
+**Public import paths in messages and docs:** every `@deprecated` message, `@example`, README,
+and AGENTS.md sample that tells a consumer where to import from must use the public entry
+(`'sanity'`, `'sanity/structure'`, `'sanity/i18n'`,
+`'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'`, …). Never cite relative
+paths (`'./Studio'`) or `src/` paths there.
+
+**What needs a tombstone comes from a diff, not a list.**
+`packages/@repo/test-dts-exports/test/tombstones.test.ts` (part of `pnpm test:exports`, so it runs
+in CI) downloads the package the npm `latest` tag points at, reads every exported name, values and
+types, of every entry of it and of the workspace build with ts-morph
+(`packages/@repo/test-dts-exports/tombstones/surface.mjs`), and fails with a list of:
+
+- exports of `sanity@latest` that the workspace neither exports at the same entry nor tombstones.
+  Each line names the export and its entry, says where the workspace exports it now (if anywhere),
+  and carries a suggested manifest entry to start from. A value the entry now exports only as a
+  type (through `export type * from`) counts as removed: its tombstone shadows the type-only
+  re-export. The exception is a name the manifest lists under `"typeOnly"` (see below);
+- whole entries the workspace dropped that `"removedEntries"` does not list (`./desk` is listed:
+  `sanity/desk` does not resolve in v7 and gets no stub);
+- stale tombstones: names exported again, names `sanity@latest` never exported, or entries the
+  workspace no longer has;
+- tombstones whose kind differs from what `sanity@latest` exported (`value` needs
+  `export declare const`, `type` needs `export type`);
+- tombstones whose message starts with ``Moved to `<entry>` `` while that entry does not export
+  the name, which happens when a name moves again (from the internals entry to one of its
+  subpaths, for example).
+- tombstones whose message names a replacement import (`` `X` from `sanity/entry` ``, a list of
+  names, or `` `X` from the same entry ``) where that entry does not export `X`. This check reads
+  only the workspace build and the manifest, so it runs without the npm download.
+- tombstones whose message starts with ``Moved to `<entry>` `` while that entry exports a
+  different type under that name. Two declarations count as one type when they share at least half
+  of the names that characterize the smaller one (an interface's members, or the identifiers and
+  literals of a type alias), so a type that gained properties still counts as moved and an
+  unrelated type that happens to share the name (`Transaction`, `ConnectionStatus`) does not. Such
+  a name is "Removed", with the real replacement named if there is one. Values are not compared.
+
+The same suite checks that every tombstone in the built `.d.ts` is `never` with exactly its
+manifest message, and that no tombstone is a runtime export of its entry's JS. The download is
+cached per version under `packages/sanity/node_modules/.cache/sanity-latest/`, where the published
+`.d.ts` resolves the same dependencies as the workspace build. The regular dts fixtures
+(`test/fixtures/*.test-d.ts`) and `v7-export-map.json` leave tombstones out: they list real
+exports only.
+
+`pnpm --filter sanity build` runs `tombstones/build.mjs`, which strips the generated
+`// <tombstones>` blocks before `tsdown` and appends them to the matching `lib/*.d.ts` after.
+Feeding hundreds of inline `export declare` lines to rolldown-plugin-dts can mark unrelated value
+re-exports (e.g. `SANITY_VERSION`) as type-only; the strip/append keeps monorepo source tombstones
+intact while the published types stay correct. When the bundled `.d.ts` already imports a name for
+its own declarations (`import {Serializable} from …` for a signature), the appended tombstone for
+that name is declared as `__tombstone_<name>` and exported under the real name, since a second
+declaration of the name is TS2440.
+
+**Every export name comes from exactly one entry.** v6 let a moved export live at its old and new
+entry so plugins could target both majors; v7 does not.
+`packages/@repo/test-dts-exports/test/unique-export-names.test.ts` (part of `pnpm test:exports`)
+fails when a real name is exported by more than one `sanity/package.json#exports` entry. A
+tombstone does not count: it is type-only, has no runtime binding, and exists to name the entry
+that owns the name. Keep a name at one entry, tombstone the others where `sanity@latest` exported
+it, and make the tombstone message say which one (a different declaration of the same name gets
+"Removed from … it was a different `X`", not "Moved to"). `.` wins ties because its wildcard
+re-exports cannot be pruned, and `sanity/_singletons` owns contexts.
+
+**A public type whose runtime value moved is listed under `"typeOnly"`.** The Structure Builder
+classes (`DocumentBuilder`, `ListItemBuilder`, …) are `@public` because they are the return types
+of `S.document()` and the other builder methods, but constructing, extending or
+`instanceof`-checking them is not supported API. `sanity/structure` exports them type-only
+(`export {type DocumentBuilder}`), and their runtime values are exported from
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. A value use of a
+type-only export fails at the use with TS1362 ("cannot be used as a value because it was exported
+using 'export type'"). A `never` tombstone does not work here, because it would shadow the type.
+The manifest lists each name under `"typeOnly"`, keyed by entry, with the entry that exports the
+value:
+`{"name": "DocumentBuilder", "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"}`.
+With that entry:
+
+- the tombstone diff accepts the demotion;
+- `unique-export-names.test.ts` leaves the type-only export out;
+- `internal-exports.test.ts` lets the subpath export these public values;
+- `tombstones.test.ts` fails when the entry stops exporting the name type-only, when `valueFrom`
+  does not export the value, or when `sanity@latest` never exported it as a value. The first two
+  checks run without the npm download.
+
+When the suite reports a missing export:
+
+1. Add it to `packages/sanity/src/_exports/tombstones/manifest.json` under its entry's subpath
+   (`"."`, `"./structure"`, …, the key from the `sanity` package's `exports` map):
+   `{ "name": "Foo", "kind": "value" | "type", "message": "Moved to \`sanity/i18n\`. Import \`{Foo}\` from \`sanity/i18n\` instead of \`sanity\`." }`.
+   Check where the export went before keeping the suggested message: a name that is exported
+   elsewhere may be an unrelated export with the same name.
+2. Run `node packages/sanity/src/_exports/tombstones/generate.mjs`, which rewrites the
+   `// <tombstones>` … `// </tombstones>` block in each barrel the manifest names.
+3. Rebuild (`pnpm --filter sanity build`) and run
+   `pnpm --filter @repo/test-dts-exports exec vitest run test/tombstones.test.ts`.
+
+### v7 export map: v6 exports everything at the path v7 uses
+
+Plugins support Studio v6 (`main`) and v7 (`next-major`) with one version by importing from the
+paths v7 uses, so `main` exports each name at the entry `next-major` exports it from (`sanity/i18n`,
+the `*Legacy` comments names, …), re-exported from the same module as the v6 path. The list is
+`packages/@repo/test-dts-exports/v7-export-map/v7-export-map.json`, generated on `next-major` from
+the built `.d.ts` files (`v7-export-map/exportMap.mjs` is identical on both branches) and copied
+to `main` unchanged. On `main`, `test/v7-exports-on-v6.test.ts` (types) and
+`@repo/test-exports`'s `test/v7-export-map.test.mjs` (runtime values) fail when an entry or name
+in it is missing. On `next-major`, a test fails when the built export map differs from the file,
+and another when the file has entries `origin/main`'s copy lacks. When either fails, add the
+export to `main` first (a re-export, never a copy of the module), then copy the file over.
+On `main`, the internals entry's completeness test accepts the non-`@internal` names v7 puts there.
+Type-only export tombstones are excluded from the map (see [Export tombstones (v7)](#export-tombstones-v7)).
+Exports of features that only exist on v7, which `main` has nothing to re-export for, are listed
+in `V7_ONLY_EXPORTS` in `exportMap.mjs` and excluded too; a moved export never belongs there.
+
+### Effect events: native `useEffectEvent`, never in dependency arrays
+
+Import `useEffectEvent` from `react`. The studio requires React `^19.3.1`: that is the first
+release where the native hook is safe to call, including from `forwardRef` and `memo` components
+([facebook/react#34818](https://github.com/facebook/react/issues/34818)).
+`core/hooks/useEffectEvent.test.tsx` guards that, and CI's React minimum run installs 19.3.1 from
+the `sanity` peer range. The `use-effect-event` ponyfill is gone.
+
+Unlike the ponyfill, the native hook returns a new function on every render. Call it only from
+inside effects or from callbacks an effect creates, and never list it in a dependency array, pass it
+as a prop or key anything on its identity: an effect that depends on it re-runs on every render.
+An older copy of the function still calls the latest callback, so a closure that captured one stays
+correct.
+
+### Context: read it with `use(Context)`, not `useContext`
+
+Read context values with React 19's `use`: `const value = use(MyContext)`. `useContext` is banned
+(`eslint/no-restricted-imports` in `.oxlintrc.json`, repeated in every override that redefines the
+rule). `use` returns the same value and subscribes the same way, but unlike `useContext` it may be
+called inside conditions and loops, so a hook can skip reading a context it does not need.
 
 ### react-rx: stable observables, explicit initial values
 
@@ -732,7 +1088,7 @@ changing which plugin registers one.
 
 ### Locale resources: never delete a key
 
-Never delete a key from an en-US locale resource file (`bundles/studio.ts`, the plugins'
+Never delete a key from an en-US locale resource file (`bundles/studio/resources.ts`, the plugins'
 `i18n/resources.ts`). Studios on older versions still read keys the current code has stopped
 using, and they load translations from the same locale packages, which track these resources.
 Changing a key's value is fine. When a key falls out of use, keep it and add
@@ -742,7 +1098,8 @@ counts as deleting it: add the new key and deprecate the old one.
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
-top-level tools when `beta.reactActivityMode` is on (`StudioLayoutComponent`). Hiding runs
+top-level tools. `reactActivityMode` is on by default (`StudioLayoutComponent`), so the tools
+used most recently stay mounted while inactive. Hiding runs
 every effect cleanup in the subtree and showing runs the effects again, without a remount, so:
 
 - Anything that lives only in an effect-created object is lost on reveal unless the effect can
@@ -763,10 +1120,33 @@ every effect cleanup in the subtree and showing runs the effects again, without 
   `_elementSizeObserver` keeps one `ResizeObserver` per element and disconnects it when the last
   subscriber leaves, but never forgets the element, so the effect re-run after a reveal finds the
   cached entry and creates no new observer: the hook keeps the size from before hiding, also for
-  later resizes. Any layout derived from it inside a tool (`PaneLayout`, `DocumentLayout`, the
-  PTE toolbar) freezes; the fix belongs in `@sanity/ui`.
+  later resizes. Any layout derived from it inside a tool (Vision's column/stacked breakpoints,
+  `PaneLayout`, `DocumentLayout`, the PTE toolbar) freezes. Vision's redesign measures with its
+  own `useContentSize`, which observes afresh on every effect run; the fix belongs in `@sanity/ui`.
 - Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
   boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
+
+### `<ViewTransition>`: key classes on transition types, and honor the skip type
+
+The studio's `<ViewTransition>` boundaries animate only transitions whose types they are keyed on
+(`{default: 'none', [type]: 'class'}`), so a transition elsewhere on the page never pictures them.
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1` exports the shared types
+(that subpath because plugins import them at module scope, which runs before sign-in):
+`STUDIO_SKIP_TRANSITION_TYPE` (`sanity-studio-skip`) takes every
+studio boundary out of a transition, so an app can own the whole animation;
+`STUDIO_RESIZE_TRANSITION_TYPE` (`sanity-studio-resize`) marks layout resizes (side panels, split
+panes, the preview viewport); `STUDIO_SCHEME_TRANSITION_TYPE` (`sanity-studio-scheme`) marks color
+scheme changes. The module is `core/viewTransitions/transitionTypes.ts`.
+
+- Build every class a boundary passes, `default`, `enter`, `exit`, `update` and `share` alike, with
+  `studioViewTransitionClass()` from that module (Vision, outside the package, spreads
+  `[STUDIO_SKIP_TRANSITION_TYPE]: 'none'` into its maps). React lets a `none` match win over every
+  other type of the transition, but an `enter`/`exit`/`update`/`share` class takes over from
+  `default`, so skipping only `default` leaves the others animating.
+- A layout resize the studio runs as a transition adds `STUDIO_RESIZE_TRANSITION_TYPE` next to its
+  own type, and a scheme change adds `STUDIO_SCHEME_TRANSITION_TYPE`, so plugin boundaries can opt in.
+- Test with `stubViewTransitions()` (`test/testUtils/stubViewTransitions.ts`), which records the
+  elements React names for each transition in jsdom.
 
 ### Listeners: pause in hidden tabs
 
@@ -1117,9 +1497,13 @@ revealed. Two consequences for Suspense code:
   it. Tests mock `useUpsellData` with a module-scoped `of(result)`
   (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an observable
   created per render would resubscribe on every commit.
-- The feature requests start when the plugins' providers commit, once the auth state has settled
-  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
-  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+- The feature requests start as soon as the auth state has settled as signed in, not before:
+  nothing probes `/features` or the schedules usage for a visitor who is not logged in or whose
+  credentials the auth probe rejects. `PreloadNavbarData` (`core/studio/preloadNavbarData.tsx`,
+  rendered by `StudioProvider` inside `AuthBoundary`) sends both then, before the authenticated
+  studio, the workspace source and the plugins have loaded, because the navbar's tool menu
+  suspends on them; the providers that publish the promises read the cached answers. A new
+  request the navbar suspends on starts there too. `getFeatures` and
   `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
   both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
 - A default plugin's components never check the workspace flag that enables the plugin:
@@ -1689,13 +2073,13 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
 
   ```bash
-  export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"
+  export PATH="$HOME/.nvm/versions/node/<v24.x>/bin:$PATH"   # see the Node version note below
   pnpm dlx skills add <owner/repo> --skill <name> -y
   pnpm dlx skills add <owner/repo> -y   # all skills in the repo
   pnpm dlx skills list
   ```
 
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` (the installed version differs between VM images — check `ls ~/.nvm/versions/node/`, e.g. `v22.23.3`).
+- **Node version:** the repo requires Node `>=24.11`, and the VM's default Node may be older (it was 22.x as of July 2026). Check `node --version`: below 24.11, `pnpm install` warns `Unsupported engine`, and on old enough versions `pnpm build` fails with `Failed to import module "unrun"` because `tsdown` loads its `tsdown.config.ts` through Node's native TypeScript support. If it is older, put a Node 24.11+ runtime from nvm first on the `PATH`: `export PATH="$HOME/.nvm/versions/node/<v24.x>/bin:$PATH"`, where `<v24.x>` is whichever 24.x release `ls ~/.nvm/versions/node/` lists (the installed versions differ between VM images). If none is installed, run `nvm install 24` first.
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **Every `turbo run` (`pnpm build`, `pnpm test:exports`) appends a `turborepo-agent-rules` block to `AGENTS.md` when it detects an AI agent**, even when its tasks then fail with the spawn error above. The block is not part of your change: revert it with `git checkout -- AGENTS.md`. `pnpm test:exports` fails the same way, so after building through pnpm run its two packages directly: in `packages/@repo/test-dts-exports`, `node generate.mjs && pnpm exec oxfmt "test/fixtures/**"` regenerates the d.ts fixtures (no diff means the export surface is unchanged) and `pnpm exec vitest run` checks them; in `packages/@repo/test-exports`, `pnpm test` runs the ESM/CJS checks.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
@@ -1708,7 +2092,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
   - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
   - The repo-wide check can outgrow the VM's free memory even on its own: its type-aware pass (`tsgolint`) has peaked above 3.5 GB in a VM with about 4.5 GB available. Run it inside a memory-capped cgroup so that only the lint gets killed if it runs out: `sudo mkdir -p /sys/fs/cgroup/lint && echo 3500M | sudo tee /sys/fs/cgroup/lint/memory.max`, then `bash -c 'echo $$ | sudo tee /sys/fs/cgroup/lint/cgroup.procs >/dev/null; exec pnpm check:oxlint'`; `grep oom_kill /sys/fs/cgroup/lint/memory.events` shows whether it was killed. For a change confined to one package, `pnpm exec oxlint --disable-nested-config --quiet packages/<package>` lints and type-checks just that package's files in a few seconds, and CI still runs the full check.
-- **bundledDev serves a lazily imported module's top-level `await` inside a non-async factory the first time it compiles that chunk.** Symptom: `SyntaxError: Unexpected reserved word`, and the browser caches the errored module so retries on that page fail the same way. The served `/@vite/lazy?id=…&rolldown-lazy=1` chunk shows the cause: `registerFactory(id, "esm", (function () { … await … }))`. Classic `sanity dev` (native ESM) and `sanity build` are unaffected. This is upstream vite/rolldown behavior. Do not import a package entry that awaits while it evaluates from a lazily loaded module (the `@sanity-labs/groq-wasm` browser entry fetches its wasm file that way); import an entry that defers the work to first use instead, like `@sanity-labs/groq-wasm/lazy` and its `load()`.
+- **bundledDev serves a lazily imported module's top-level `await` inside a non-async factory the first time it compiles that chunk.** Symptom: `SyntaxError: Unexpected reserved word`, and the browser caches the errored module so retries on that page fail the same way. The served `/@vite/lazy?id=…&rolldown-lazy=1` chunk shows the cause: `registerFactory(id, "esm", (function () { … await … }))`. Classic `sanity dev` (native ESM) and `sanity build` are unaffected. This is upstream vite/rolldown behavior. Vision must not import the `@sanity-labs/groq-wasm` package entry: that browser entry fetches its wasm file while the module evaluates. Format and lint import `@sanity-labs/groq-wasm/lazy` and call `load()` on first use, which has no top-level await. Reintroducing an import of the package entry brings the failure back.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 - **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:
@@ -1722,7 +2106,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 
 The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits. Do not reach for `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` here — those are production tokens and get 401 "Session not found" against `api.sanity.work`.
 
-1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`, then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/<v24.x>/bin:$PATH" && pnpm build` (see the Node version note under Gotchas), then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
 
 2. **Install the browsers** (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
 

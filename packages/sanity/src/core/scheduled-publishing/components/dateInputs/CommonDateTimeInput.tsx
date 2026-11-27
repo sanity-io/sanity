@@ -132,7 +132,7 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
                 level: 'error',
                 message: parseResult.error,
                 path: [],
-              }, // casting to marker to avoid having to implement cloneWithMessage on item
+              },
             ]
           : nodeValidations
       }

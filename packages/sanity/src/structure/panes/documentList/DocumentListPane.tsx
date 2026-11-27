@@ -3,24 +3,20 @@ import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  EMPTY_ARRAY,
-  type GeneralPreviewLayoutKey,
-  getDefaultVariant,
-  useActiveReleases,
-  useClient,
-  useI18nText,
-  usePerspective,
-  useReconnectingToast,
-  useSchema,
-  useShallowUnique,
-  useTranslation,
-  useUnique,
-} from 'sanity'
+import {type GeneralPreviewLayoutKey, useClient, usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {keyframes, styled} from 'styled-components'
 import {Box, VStack} from 'ui5'
 
+import {useReconnectingToast} from '../../../core/hooks/useReconnectingToast'
+import {useSchema} from '../../../core/hooks/useSchema'
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {useShallowUnique} from '../../../core/util/useShallowUnique'
+import {useUnique} from '../../../core/util/useUnique'
 import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'

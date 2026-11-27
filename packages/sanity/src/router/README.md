@@ -50,7 +50,7 @@ router.decode('/about')
 
 ```jsx
 import {route} from 'sanity/router'
-import {RouterProvider, withRouter} from 'sanity/router'
+import {RouterProvider, StateLink, useRouterState} from 'sanity/router'
 
 const router = route('/', [route('/bikes/:bikeId')])
 
@@ -64,9 +64,10 @@ function handleNavigate(nextUrl, {replace} = {}) {
   }
 }
 
-const App = withRouter(function App({router}) {
-  if (router.state.bikeId) {
-    return <BikePage id={router.state.bikeId} />
+function App() {
+  const bikeId = useRouterState((state) => state.bikeId)
+  if (bikeId) {
+    return <BikePage id={bikeId} />
   }
   return (
     <div>
@@ -74,7 +75,7 @@ const App = withRouter(function App({router}) {
       <StateLink state={{bikeId: 22}}>Go to bike 22</StateLink>
     </div>
   )
-})
+}
 
 function render(location) {
   ReactDOM.render(

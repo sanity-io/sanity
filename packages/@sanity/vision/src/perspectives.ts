@@ -37,10 +37,6 @@ export function isVirtualPerspective(
   )
 }
 
-export function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
-  return typeof selectedPerspectiveName !== 'undefined'
-}
-
 export function getActivePerspective({
   visionPerspective,
   perspectiveStack,

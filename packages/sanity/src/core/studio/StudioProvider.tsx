@@ -1,43 +1,33 @@
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {ToastProvider} from '@sanity/ui/toast'
-import {type ReactNode, useEffect, useMemo} from 'react'
+import {lazy, type ReactNode, Suspense, useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
+import {preloadWorkspaceSourceResolver} from '../config/prepareConfig'
 import {errorReporter} from '../error/errorReporter'
-import {LocaleProvider} from '../i18n/components/LocaleProvider'
-import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
-import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
-import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
-import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
-import {AppIdCacheProvider} from '../store/studio-app/AppIdCacheProvider'
-import {UserApplicationCacheProvider} from '../store/userApplications'
+import {
+  ActiveWorkspaceLocaleProvider,
+  FallbackLocaleProvider,
+} from '../i18n/components/LocaleProvider'
 import {UserColorManagerProvider} from '../user-color/provider'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
-import {DashboardRouteHandler} from './components/DashboardRouteHandler'
 import {Z_OFFSET} from './constants'
-import {ListenerGateController} from './listenerGate/ListenerGateController'
-import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
-import {LiveManifestRegisterProvider} from './manifest'
-import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
-import {PluginProviders} from './PluginProviders'
+import {PreloadNavbarData} from './preloadNavbarData'
 import {AuthenticateScreen} from './screens/AuthenticateScreen'
-import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
 import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
 import {NotFoundScreen} from './screens/NotFoundScreen'
 import {type StudioProps} from './Studio'
-import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {ListenerStallTelemetry} from './telemetry/ListenerStallTelemetry'
-import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
-import {UnclaimedProjectProvider} from './unclaimedProject/UnclaimedProjectProvider'
-import {WorkspaceLoader} from './workspaceLoader/WorkspaceLoader'
 import {ConfigErrorGate} from './workspaces/ConfigErrorGate'
 import {VisibleWorkspacesProvider} from './workspaces/VisibleWorkspacesProvider'
 import {WorkspacesProvider} from './workspaces/WorkspacesProvider'
+
+const AuthenticatedStudio = lazy(() => import('./AuthenticatedStudio'))
 
 /**
  * @hidden
@@ -47,8 +37,11 @@ export interface StudioProviderProps extends StudioProps {
 }
 
 /**
+ * Server-rendering `<StudioProvider />` suspends, so the caller must wrap it in its own `<Suspense>`.
+ * See `<Studio />`.
+ *
  * @hidden
- * @beta */
+ * @internal */
 export function StudioProvider({
   children,
   config,
@@ -76,39 +69,13 @@ export function StudioProvider({
 
   const _children = useMemo(
     () => (
-      <UserApplicationCacheProvider>
-        <LiveUserApplicationProvider>
-          <LiveManifestRegisterProvider />
-          <WorkspaceLoader
-            LoadingComponent={LoadingBlock}
-            ConfigErrorsComponent={ConfigErrorsScreen}
-          >
-            <LocaleProvider>
-              <PackageVersionStatusProvider importMapUrl={importMapUrl}>
-                <ResourceCacheProvider>
-                  <StudioTelemetryProvider>
-                    <AppIdCacheProvider>
-                      <ListenerGateController />
-                      <DashboardRouteHandler />
-                      <StudioAnnouncementsProvider>
-                        <GlobalPerspectiveProvider>
-                          <DocumentLimitUpsellProvider>
-                            <AssetLimitUpsellProvider>
-                              <UnclaimedProjectProvider>
-                                <PluginProviders>{children}</PluginProviders>
-                              </UnclaimedProjectProvider>
-                            </AssetLimitUpsellProvider>
-                          </DocumentLimitUpsellProvider>
-                        </GlobalPerspectiveProvider>
-                      </StudioAnnouncementsProvider>
-                    </AppIdCacheProvider>
-                  </StudioTelemetryProvider>
-                </ResourceCacheProvider>
-              </PackageVersionStatusProvider>
-            </LocaleProvider>
-          </WorkspaceLoader>
-        </LiveUserApplicationProvider>
-      </UserApplicationCacheProvider>
+      <>
+        <PreloadWorkspaceSourceResolver />
+        <PreloadNavbarData />
+        <Suspense fallback={<LoadingBlock />}>
+          <AuthenticatedStudio importMapUrl={importMapUrl}>{children}</AuthenticatedStudio>
+        </Suspense>
+      </>
     ),
     [children, importMapUrl],
   )
@@ -118,65 +85,86 @@ export function StudioProvider({
       <ListenerStallTelemetry />
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-          <StudioErrorBoundary>
-            <StudioRootErrorHandler>
-              <WorkspacesProvider
-                config={config}
-                basePath={basePath}
-                LoadingComponent={LoadingBlock}
-                primaryProjectId={primaryProjectId}
-              >
-                <VisibleWorkspacesProvider>
-                  <ActiveWorkspaceMatcher
-                    unstable_history={history}
-                    NotFoundComponent={NotFoundScreen}
-                    LoadingComponent={LoadingBlock}
-                  >
-                    <StudioThemeProvider>
-                      <UserColorManagerProvider>
-                        <ConfigErrorGate>
-                          {noAuthBoundary ? (
-                            _children
-                          ) : (
-                            <AuthBoundary
-                              LoadingComponent={LoadingBlock}
-                              AuthenticateComponent={AuthenticateScreen}
-                              NotAuthenticatedComponent={NotAuthenticatedScreen}
-                            >
-                              {_children}
-                            </AuthBoundary>
-                          )}
-                        </ConfigErrorGate>
-                      </UserColorManagerProvider>
-                    </StudioThemeProvider>
-                  </ActiveWorkspaceMatcher>
-                </VisibleWorkspacesProvider>
-              </WorkspacesProvider>
-            </StudioRootErrorHandler>
-          </StudioErrorBoundary>
+          <FallbackLocaleProvider>
+            <StudioErrorBoundary>
+              <StudioRootErrorHandler>
+                <WorkspacesProvider
+                  config={config}
+                  basePath={basePath}
+                  LoadingComponent={LoadingBlock}
+                  primaryProjectId={primaryProjectId}
+                >
+                  <VisibleWorkspacesProvider>
+                    <ActiveWorkspaceMatcher
+                      unstable_history={history}
+                      NotFoundComponent={NotFoundScreen}
+                      LoadingComponent={LoadingBlock}
+                    >
+                      <ActiveWorkspaceLocaleProvider>
+                        <StudioThemeProvider>
+                          <UserColorManagerProvider>
+                            <ConfigErrorGate>
+                              {noAuthBoundary ? (
+                                _children
+                              ) : (
+                                <AuthBoundary
+                                  LoadingComponent={LoadingBlock}
+                                  AuthenticateComponent={AuthenticateScreen}
+                                  NotAuthenticatedComponent={NotAuthenticatedScreen}
+                                >
+                                  {_children}
+                                </AuthBoundary>
+                              )}
+                            </ConfigErrorGate>
+                          </UserColorManagerProvider>
+                        </StudioThemeProvider>
+                      </ActiveWorkspaceLocaleProvider>
+                    </ActiveWorkspaceMatcher>
+                  </VisibleWorkspacesProvider>
+                </WorkspacesProvider>
+              </StudioRootErrorHandler>
+            </StudioErrorBoundary>
+          </FallbackLocaleProvider>
         </ToastProvider>
       </ColorSchemeProvider>
     </DeferredTelemetryProvider>
   )
 }
 
+/**
+ * Renders next to the lazily loaded authenticated tree, so the workspace source resolver it needs
+ * right away loads in parallel with it rather than after it.
+ */
+function PreloadWorkspaceSourceResolver(): null {
+  useEffect(() => {
+    preloadWorkspaceSourceResolver()
+  }, [])
+  return null
+}
+
 let _refractorRegistered = false
 
-function ensureRefractorLanguages() {
-  if (_refractorRegistered) return
-  _refractorRegistered = true
-  void import('react-refractor').then(({registerLanguage}) =>
+async function registerRefractorLanguages() {
+  const [{default: registerLanguage}, languages] = await Promise.all([
+    import('./registerRefractorLanguage.lazy'),
     Promise.all([
       import('refractor/bash'),
       import('refractor/javascript'),
       import('refractor/json'),
       import('refractor/jsx'),
       import('refractor/typescript'),
-      import('@sanity/prism-groq').then((m) => ({default: m.refractorGroq})),
-    ])
-      .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
-      .catch((error) =>
-        console.warn('Failed to load syntax highlighting languages for code blocks', error),
-      ),
+      import('./refractorGroq.lazy'),
+    ]),
+  ])
+
+  languages.forEach((language) => registerLanguage(language.default))
+}
+
+function ensureRefractorLanguages() {
+  if (_refractorRegistered) return
+  _refractorRegistered = true
+
+  void registerRefractorLanguages().catch((error) =>
+    console.warn('Failed to load syntax highlighting languages for code blocks', error),
   )
 }

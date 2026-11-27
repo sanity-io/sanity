@@ -1,8 +1,13 @@
 import {VersionsIcon} from '@sanity/icons/Versions'
-import {type DocumentInspector, useTranslation} from 'sanity'
+import {type DocumentInspector} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
+import {createLazyComponent} from '../../../../../core/components/lazy/createLazyComponent'
 import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
-import {DocumentGroupInspector} from './DocumentGroupInspector'
+
+const DocumentGroupInspectorLazy = createLazyComponent(
+  () => import('./DocumentGroupInspector.lazy'),
+)
 
 export const documentGroupInspector: DocumentInspector = {
   name: DOCUMENT_GROUP_INSPECTOR_NAME,
@@ -14,5 +19,5 @@ export const documentGroupInspector: DocumentInspector = {
       title: t('document-group-inventory.action.manage-versions'),
     }
   },
-  component: DocumentGroupInspector,
+  component: DocumentGroupInspectorLazy,
 }

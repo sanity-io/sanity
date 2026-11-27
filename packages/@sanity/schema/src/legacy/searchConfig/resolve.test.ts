@@ -2,7 +2,7 @@ import {defineField, defineType, type Schema} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {Schema as SchemaBuilder} from '../Schema'
-import {resolveSearchConfig, resolveSearchConfigForBaseFieldPaths} from './resolve'
+import {resolveSearchConfig} from './resolve'
 
 describe('searchConfig', () => {
   const getTestSchema = (): Schema =>
@@ -259,86 +259,6 @@ describe('searchConfig', () => {
         {path: ['nestedObject', 'field2'], weight: 1},
         {path: ['nestedObject', 'field3', 'nested1'], weight: 1},
         {path: ['nestedObject', 'field3', 'nested2', 'ge'], weight: 1},
-      ])
-    })
-  })
-
-  describe('resolveSearchConfigForBaseFieldPaths', () => {
-    test('resolve default document preview paths (all fields, up to 5 levels)', () => {
-      const schema = getTestSchema()
-      const type = schema.get('author')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, 0)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['name'], weight: 10},
-        {path: ['nestedObject', 'field1'], weight: 5},
-      ])
-    })
-    test('resolve negative level document preview paths', () => {
-      const schema = getTestSchema()
-      const type = schema.get('author')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, -1)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['name'], weight: 10},
-        {path: ['nestedObject', 'field1'], weight: 5},
-      ])
-    })
-    test('resolve 1st level document preview paths', () => {
-      const schema = getTestSchema()
-      const type = schema.get('author')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, 1)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['name'], weight: 10},
-      ])
-    })
-    test('resolve 2nd level document preview paths', () => {
-      const schema = getTestSchema()
-      const type = schema.get('author')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, 2)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['name'], weight: 10},
-        {path: ['nestedObject', 'field1'], weight: 5},
-      ])
-    })
-    test('resolve 3rd level document preview paths', () => {
-      const schema = getTestSchema()
-      const type = schema.get('author')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, 3)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['name'], weight: 10},
-        {path: ['nestedObject', 'field1'], weight: 5},
-      ])
-    })
-    test('resolve 4th level document preview paths', () => {
-      const schema = getTestSchema()
-      const type = schema.get('post')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, 4)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['title'], weight: 10},
-        {path: ['nestedObject', 'field3', 'nested2', 'ge'], weight: 5},
-      ])
-    })
-
-    test('resolve 5th level document preview paths', () => {
-      const schema = getTestSchema()
-      const type = schema.get('post')
-
-      expect(resolveSearchConfigForBaseFieldPaths(type, 5)).toMatchObject([
-        {path: ['_id'], weight: 1},
-        {path: ['_type'], weight: 1},
-        {path: ['title'], weight: 10},
-        {path: ['nestedObject', 'field3', 'nested2', 'ge'], weight: 5},
       ])
     })
   })

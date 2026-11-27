@@ -30,7 +30,7 @@ const EMPTY_ITEM = {title: '', value: undefined}
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function SelectInput(props: StringInputProps) {
   const {

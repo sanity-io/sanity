@@ -1,7 +1,10 @@
-import {Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 
 import {useRenderingContextStore} from '../../store/datastores'
-import {useDashboardRouteHandler} from '../hooks/useDashboardRouteHandler'
+
+// Only a studio running inside a dashboard host syncs its route, and the SDK's dashboard export
+// that does it brings the module federation runtime along, so it loads in its own chunk
+const RouteSync = lazy(() => import('./DashboardRouteSync'))
 
 export function DashboardRouteHandler() {
   const hasDashboardHost = useRenderingContextStore().getCapabilities()?.dashboard === true
@@ -13,9 +16,4 @@ export function DashboardRouteHandler() {
       <RouteSync />
     </Suspense>
   )
-}
-
-function RouteSync(): null {
-  useDashboardRouteHandler()
-  return null
 }

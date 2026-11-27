@@ -1,20 +1,17 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
-import {
-  type InitialValueTemplateItem,
-  type ReleaseId,
-  type Template,
-  type TemplatePermissionsResult,
-  useGetI18nText,
-  usePerspective,
-  useTemplatePermissions,
-  useTemplates,
-  useTranslation,
-  IntentButton,
-} from 'sanity'
+import {type InitialValueTemplateItem, type ReleaseId, type Template, usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
+import {IntentButton} from '../../../core/components/IntentButton'
+import {useTemplates} from '../../../core/hooks/useTemplates'
+import {useGetI18nText} from '../../../core/i18n/hooks/useGetI18nText'
+import {
+  type TemplatePermissionsResult,
+  useTemplatePermissions,
+} from '../../../core/store/grants/templatePermissions'
 import {Button} from '../../../ui-components/button/Button'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'

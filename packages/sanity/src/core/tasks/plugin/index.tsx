@@ -20,7 +20,7 @@ const TasksStudioActiveToolLayout = lazy(lazyTasksStudioActiveToolLayout)
 /**
  * @internal
  */
-export const TASKS_NAME = 'sanity/tasks'
+const TASKS_NAME = 'sanity/tasks'
 
 /**
  * @internal

@@ -1,5 +1,5 @@
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
-import {useContext} from 'react'
+import {use} from 'react'
 import {SortableItemHandleContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -33,7 +33,7 @@ interface DragHandleProps {
 }
 
 export const DragHandle = function DragHandle(props: DragHandleProps) {
-  const handle = useContext(SortableItemHandleContext)
+  const handle = use(SortableItemHandleContext)
   const {mode = 'bleed', readOnly, ...rest} = props
   const {t} = useTranslation()
   const activator = readOnly ? null : handle

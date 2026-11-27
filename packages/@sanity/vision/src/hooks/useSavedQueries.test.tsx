@@ -6,266 +6,246 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 import {type QueryConfig, useSavedQueries} from './useSavedQueries'
 
 const mocks = vi.hoisted(() => ({
-  // The user's saved query items, by item ID
-  items: new Map<string, QueryConfig>(),
-  failRemove: false,
-  listeners: new Set<() => void>(),
+  // The personal saved queries, as the preferences API lists them
+  items: [] as {itemId: string; value: QueryConfig}[],
+  setItem: vi.fn(),
   sharedDocs: [] as {_id: string; authorId: string; savedAt: string; url: string; title?: string}[],
   create: vi.fn(),
+  patch: vi.fn(),
   deleteDoc: vi.fn(),
 }))
 
+const SHARED_FIELDS = {query: '*', rawParams: '', options: {}}
+
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Like the preferences API: one request per item, slow enough for calls to overlap
-let snapshot: {itemId: string; value: QueryConfig}[] = []
-async function setItem(itemId: string, value: QueryConfig | undefined) {
-  await wait(10)
-  if (value === undefined) {
-    if (mocks.failRemove) throw new Error('store is read-only')
-    mocks.items.delete(itemId)
-  } else {
-    mocks.items.set(itemId, value)
-  }
-  publish()
-}
-function publish() {
-  snapshot = [...mocks.items].map(([itemId, value]) => ({itemId, value}))
-  for (const listener of mocks.listeners) listener()
-}
-function subscribe(listener: () => void) {
-  mocks.listeners.add(listener)
-  return () => mocks.listeners.delete(listener)
-}
-
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', async () => {
-  const {useSyncExternalStore} = await import('react')
-  return {
-    useStudioPreferenceList: () => ({
-      items: useSyncExternalStore(subscribe, () => snapshot),
-      error: undefined,
-      set: setItem,
-    }),
-  }
-})
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
+  useStudioPreferenceList: () => ({items: mocks.items, error: undefined, set: mocks.setItem}),
+}))
 
 const client = {
   fetch: () => Promise.resolve(mocks.sharedDocs),
   observable: {listen: () => NEVER},
   create: mocks.create,
+  patch: mocks.patch,
   delete: mocks.deleteDoc,
 } as unknown as SanityClient
 const currentUser = {id: 'user-1'}
 
 vi.mock('sanity', () => ({
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
   useClient: () => client,
   useCurrentUser: () => currentUser,
 }))
 
-const storedUrls = () => [...mocks.items.values()].map((query) => query.url)
+function setup() {
+  let created = 0
+  mocks.create.mockImplementation(async (doc: Record<string, unknown>) => {
+    await wait(5)
+    created += 1
+    return {...doc, _id: `shared-${created}`}
+  })
+  mocks.patch.mockImplementation((id: string) => ({
+    set: (fields: Record<string, unknown>) => ({
+      commit: async () => {
+        await wait(5)
+        const doc = mocks.sharedDocs.find((shared) => shared._id === id)
+        return {...doc, ...fields}
+      },
+    }),
+  }))
+  mocks.deleteDoc.mockImplementation(async () => {
+    await wait(5)
+  })
+  return renderHook(() => useSavedQueries())
+}
 
 describe('useSavedQueries', () => {
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
-    mocks.items.clear()
-    mocks.failRemove = false
+    mocks.items = []
     mocks.sharedDocs = []
-    snapshot = []
   })
 
-  function setup() {
-    publish()
-    let created = 0
-    mocks.create.mockImplementation(async (doc: Record<string, unknown>) => {
-      await wait(5)
-      created += 1
-      return {...doc, _id: `shared-${created}`}
-    })
-    mocks.deleteDoc.mockImplementation(async () => {
-      await wait(5)
-    })
-    return renderHook(() => useSavedQueries())
-  }
-
-  it('stays saving until the last of two overlapping saves has settled', async () => {
+  it('lists the personal queries saved in the classic tool with the shared ones, newest first', async () => {
+    mocks.items = [
+      {itemId: 'saved-b', value: {_key: 'saved-b', url: 'https://b', savedAt: '2026-01-02'}},
+    ]
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-2', savedAt: '2026-01-01', url: 'https://a'},
+      {_id: 'shared-c', authorId: 'user-1', savedAt: '2026-01-03', url: 'https://c'},
+    ]
     const {result} = setup()
 
-    // The shared save settles first (its write is the faster mock), the personal one later
-    let sharedSave: Promise<string>
-    let personalSave: Promise<string>
+    await waitFor(() => expect(result.current.sharedQueriesLoaded).toBe(true))
+    expect(
+      result.current.queries.map(({_key, shared, isOwnedByCurrentUser}) => ({
+        _key,
+        shared,
+        isOwnedByCurrentUser,
+      })),
+    ).toEqual([
+      {_key: 'shared-c', shared: true, isOwnedByCurrentUser: true},
+      {_key: 'saved-b', shared: undefined, isOwnedByCurrentUser: undefined},
+      {_key: 'shared-a', shared: true, isOwnedByCurrentUser: false},
+    ])
+  })
+
+  it('shares a query as a shared query document, writing nothing to the personal queries', async () => {
+    const {result} = setup()
+    await waitFor(() => expect(result.current.sharedQueriesLoaded).toBe(true))
+
+    let sharedId = ''
+    await act(async () => {
+      sharedId = await result.current.shareQuery({
+        url: 'https://a',
+        title: 'Posts',
+        savedAt: '2026-01-01T00:00:00Z',
+        query: '*[_type == "post"]',
+        rawParams: '{}',
+        options: {apiVersion: 'v2025-01-01'},
+      })
+    })
+
+    expect(sharedId).toBe('shared-1')
+    expect(mocks.create).toHaveBeenCalledWith({
+      _type: 'vision.sharedQuery',
+      authorId: 'user-1',
+      savedAt: '2026-01-01T00:00:00Z',
+      title: 'Posts',
+      url: 'https://a',
+      query: '*[_type == "post"]',
+      params: '{}',
+      options: {apiVersion: 'v2025-01-01'},
+    })
+    expect(result.current.queries.map((query) => query._key)).toEqual(['shared-1'])
+    expect(mocks.setItem).not.toHaveBeenCalled()
+  })
+
+  it('stays saving until the last of two overlapping shares has settled', async () => {
+    const {result} = setup()
+    mocks.create
+      .mockImplementationOnce(async (doc: Record<string, unknown>) => {
+        await wait(20)
+        return {...doc, _id: 'shared-slow'}
+      })
+      .mockImplementationOnce(async (doc: Record<string, unknown>) => {
+        await wait(5)
+        return {...doc, _id: 'shared-fast'}
+      })
+
+    let slowShare: Promise<string>
+    let fastShare: Promise<string>
     act(() => {
-      sharedSave = result.current.saveQuery({
-        shared: true,
+      slowShare = result.current.shareQuery({
+        ...SHARED_FIELDS,
         url: 'https://a',
         savedAt: '2026-01-01T00:00:00Z',
       })
-      personalSave = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+      fastShare = result.current.shareQuery({
+        ...SHARED_FIELDS,
+        url: 'https://b',
+        savedAt: '2026-01-02T00:00:00Z',
+      })
     })
     expect(result.current.saving).toBe(true)
 
     await act(async () => {
-      await sharedSave
+      await fastShare
     })
     expect(result.current.saving).toBe(true)
 
     await act(async () => {
-      await personalSave
+      await slowShare
     })
     expect(result.current.saving).toBe(false)
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+    expect(result.current.queries.map((query) => query._key)).toEqual([
+      'shared-fast',
+      'shared-slow',
+    ])
   })
 
-  it('moves both queries when unshares overlap', async () => {
+  it('updates a shared query its author shared, and refuses one a teammate shared', async () => {
     mocks.sharedDocs = [
-      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
-      {_id: 'shared-b', authorId: 'user-1', savedAt: '2026-01-02T00:00:00Z', url: 'https://b'},
+      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01', url: 'https://a'},
+      {_id: 'shared-b', authorId: 'user-2', savedAt: '2026-01-02', url: 'https://b'},
     ]
     const {result} = setup()
     await waitFor(() => expect(result.current.queries).toHaveLength(2))
+    const [teammates, own] = result.current.queries
 
-    let moves: Promise<void[]>
-    act(() => {
-      moves = Promise.all([
-        result.current.unshareQuery('shared-a'),
-        result.current.unshareQuery('shared-b'),
-      ])
-    })
     await act(async () => {
-      await moves
+      await result.current.updateSharedQuery({...own, title: 'Renamed', savedAt: '2026-01-03'})
     })
+    expect(result.current.queries.find((query) => query._key === 'shared-a')?.title).toBe('Renamed')
 
-    expect(storedUrls().toSorted()).toEqual(['https://a', 'https://b'])
-    expect(mocks.deleteDoc.mock.calls.map(([id]) => String(id)).toSorted()).toEqual([
-      'shared-a',
-      'shared-b',
-    ])
-    expect(result.current.queries.every((query) => !query.shared)).toBe(true)
+    await act(async () => {
+      await expect(
+        result.current.updateSharedQuery({...teammates, title: 'Renamed'}),
+      ).rejects.toThrow('Only the author can update a shared query.')
+    })
+    expect(mocks.patch).toHaveBeenCalledTimes(1)
+    expect(result.current.saving).toBe(false)
   })
 
-  it('moves a query once when it is unshared again while the first move is pending', async () => {
+  it('reports the shared queries as loaded once they have been fetched', async () => {
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-2', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
+    ]
+    const {result} = setup()
+    expect(result.current.sharedQueriesLoaded).toBe(false)
+
+    await waitFor(() => expect(result.current.sharedQueriesLoaded).toBe(true))
+    expect(result.current.queries.map((query) => query._key)).toEqual(['shared-a'])
+  })
+
+  it('unshares a shared query by deleting it, without saving a personal copy', async () => {
     mocks.sharedDocs = [
       {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
     ]
     const {result} = setup()
     await waitFor(() => expect(result.current.queries).toHaveLength(1))
 
-    let first: Promise<void>
-    let second: Promise<void>
-    act(() => {
-      first = result.current.unshareQuery('shared-a')
-      // The shared query is still listed until the move has removed it, so it can be picked again
-      second = result.current.unshareQuery('shared-a')
-    })
-    expect(result.current.moving).toEqual(['shared-a'])
     await act(async () => {
-      await Promise.all([first, second])
+      await result.current.unshareQuery('shared-a')
     })
 
-    expect(storedUrls()).toEqual(['https://a'])
-    expect(mocks.deleteDoc).toHaveBeenCalledTimes(1)
-    expect(result.current.queries).toHaveLength(1)
-    expect(result.current.queries[0].shared).toBe(false)
-    expect(result.current.moving).toEqual([])
-  })
-
-  it('shares a query once when it is shared again while the first move is pending', async () => {
-    mocks.items.set('p1', {
-      _key: 'p1',
-      url: 'https://a',
-      savedAt: '2026-01-01T00:00:00Z',
-      title: 'A',
-    })
-    const {result} = setup()
-    await waitFor(() => expect(result.current.queries).toHaveLength(1))
-
-    let moves: Promise<void[]>
-    act(() => {
-      moves = Promise.all([result.current.shareQuery('p1'), result.current.shareQuery('p1')])
-    })
-    expect(result.current.moving).toEqual(['p1'])
-    await act(async () => {
-      await moves
-    })
-
-    expect(mocks.create).toHaveBeenCalledTimes(1)
-    expect(storedUrls()).toEqual([])
-    expect(result.current.queries.map((query) => [query._key, query.shared])).toEqual([
-      ['shared-1', true],
-    ])
-    expect(result.current.moving).toEqual([])
-  })
-
-  it('keeps the copy a move makes moving too, so a move of it joins the pending one', async () => {
-    mocks.sharedDocs = [
-      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
-    ]
-    const {result} = setup()
-    await waitFor(() => expect(result.current.queries).toHaveLength(1))
-    // The move stays pending at its last step until released
-    let releaseDelete = () => {}
-    mocks.deleteDoc.mockImplementation(
-      () =>
-        new Promise<void>((resolve) => {
-          releaseDelete = resolve
-        }),
-    )
-
-    let unshare: Promise<void>
-    act(() => {
-      unshare = result.current.unshareQuery('shared-a')
-    })
-    // The personal copy is in the list, and moving, while the shared original is still there
-    await waitFor(() => expect(result.current.moving).toHaveLength(2))
-    const copy = result.current.queries.find((query) => !query.shared)
-    if (!copy) throw new Error('expected the personal copy')
-    expect(result.current.queries).toHaveLength(2)
-    expect(result.current.moving).toEqual(['shared-a', copy._key])
-
-    // Sharing that copy right away is the pending unshare, not a new move
-    let share: Promise<void>
-    act(() => {
-      share = result.current.shareQuery(copy._key)
-    })
-    releaseDelete()
-    await act(async () => {
-      await Promise.all([unshare, share])
-    })
-
+    expect(mocks.deleteDoc).toHaveBeenCalledWith('shared-a')
     expect(mocks.create).not.toHaveBeenCalled()
-    expect(mocks.deleteDoc).toHaveBeenCalledTimes(1)
-    expect(result.current.queries.map((query) => [query._key, query.shared])).toEqual([
-      [copy._key, false],
-    ])
-    expect(result.current.moving).toEqual([])
+    expect(mocks.setItem).not.toHaveBeenCalled()
+    expect(result.current.queries).toEqual([])
   })
 
-  it('takes a shared copy back when the personal one cannot be removed', async () => {
-    mocks.items.set('p1', {
-      _key: 'p1',
-      url: 'https://a',
-      savedAt: '2026-01-01T00:00:00Z',
-      title: 'A',
-    })
+  it('refuses to unshare a query a teammate shared', async () => {
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-2', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
+    ]
     const {result} = setup()
     await waitFor(() => expect(result.current.queries).toHaveLength(1))
-    // Only the removal fails; adding queries keeps working
-    mocks.failRemove = true
 
-    let move: Promise<void>
-    act(() => {
-      move = result.current.shareQuery('p1')
-    })
     await act(async () => {
-      await expect(move).rejects.toThrow('store is read-only')
+      await expect(result.current.unshareQuery('shared-a')).rejects.toThrow(
+        'Only the author can unshare a shared query.',
+      )
     })
 
-    expect(mocks.create).toHaveBeenCalledTimes(1)
-    expect(mocks.deleteDoc).toHaveBeenCalledWith('shared-1')
-    expect(result.current.queries.map((query) => [query._key, query.shared])).toEqual([
-      ['p1', undefined],
-    ])
-    expect(storedUrls()).toEqual(['https://a'])
+    expect(mocks.deleteDoc).not.toHaveBeenCalled()
+    expect(result.current.queries.map((query) => query._key)).toEqual(['shared-a'])
+  })
+
+  it('rejects and keeps the shared query when deleting it fails', async () => {
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
+    ]
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+    mocks.deleteDoc.mockRejectedValueOnce(new Error('permission denied'))
+
+    await act(async () => {
+      await expect(result.current.unshareQuery('shared-a')).rejects.toThrow('permission denied')
+    })
+
+    expect(result.current.queries.map((query) => query._key)).toEqual(['shared-a'])
   })
 })

@@ -2,16 +2,12 @@ import {DocumentIcon} from '@sanity/icons/Document'
 import {type PreviewValue} from '@sanity/types'
 import {catchError, map, type Observable, of, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {
-  type DocumentAvailability,
-  type DocumentPreviewStore,
-  getPreviewPaths,
-  getPublishedId,
-  isNonNullable,
-  prepareForPreview,
-  type SanityClient,
-} from 'sanity'
+import {type DocumentAvailability, type DocumentPreviewStore, type SanityClient} from 'sanity'
 
+import {getPreviewPaths} from '../../../../core/preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../core/preview/utils/prepareForPreview'
+import {getPublishedId} from '../../../../core/util/draftUtils'
+import {isNonNullable} from '../../../../core/util/isNonNullable'
 import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'
 

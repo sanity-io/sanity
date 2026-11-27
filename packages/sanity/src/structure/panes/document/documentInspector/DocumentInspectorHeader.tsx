@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Card, type CardProps} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -21,7 +21,9 @@ export interface DocumentInspectorHeaderProps {
   title: ReactNode
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {

@@ -36,8 +36,9 @@ export class VisionErrorBoundary extends Component<
     return {error: error instanceof Error ? error.message : `${error}`}
   }
 
-  handleRetryRender = () =>
+  handleRetryRender = () => {
     this.setState((prev) => ({error: null, numRetries: prev.numRetries + 1}))
+  }
 
   handleRetryWithCacheClear = () => {
     clearLocalStorage()

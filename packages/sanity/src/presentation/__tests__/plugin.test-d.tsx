@@ -124,25 +124,11 @@ describe('presentationTool()', () => {
         },
       })
     })
+    test('cannot be a function', () => {
+      // @ts-expect-error the function form of previewUrl is not supported
+      assertType<PreviewUrlOption>(async () => 'https://example.com')
+    })
     describe('deprecated legacy options', () => {
-      test('can be an async function', () => {
-        assertType<PreviewUrlOption>(
-          async ({
-            client,
-            previewUrlSecret,
-            studioPreviewPerspective,
-            previewSearchParam,
-            studioBasePath,
-          }) => {
-            assertType<SanityClient>(client)
-            assertType<string>(previewUrlSecret)
-            assertType<string>(studioPreviewPerspective)
-            assertType<string | null | undefined>(previewSearchParam)
-            assertType<string | null | undefined>(studioBasePath)
-            return 'https://example.com'
-          },
-        )
-      })
       test('can pass object with origin', () => {
         assertType<PreviewUrlOption>({
           origin: 'http://localhost:3000',

@@ -1,15 +1,13 @@
 import {AsteriskIcon} from '@sanity/icons/Asterisk'
 import {Button, Card, Dialog, TextInput} from '@sanity/ui'
 import {useState} from 'react'
+import {useClient, type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 import {
-  useClient,
-  type DocumentActionComponent,
-  type DocumentActionDescription,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   useSetPerspective,
-} from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useDocumentPane} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {Text, Flex, VStack} from 'ui5'
 
 export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
@@ -21,12 +19,11 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
   const {displayed} = useDocumentPane()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: {preventDefault(): void; currentTarget: HTMLFormElement}) => {
     event.preventDefault()
 
     if (!displayed?._id) return
-    const formData = new FormData(event.target as HTMLFormElement)
+    const formData = new FormData(event.currentTarget)
     const name = formData.get('name')
     if (!name || typeof name !== 'string') {
       setError(new Error('Name is required and must be a string'))

@@ -2,22 +2,22 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {UnlockIcon} from '@sanity/icons/Unlock'
 import {useCallback, useMemo, useState} from 'react'
+import {usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
+
+import {ReleaseAvatar} from '../../../../../../../core/releases/components/ReleaseAvatar'
+import {useDocumentVersions} from '../../../../../../../core/releases/hooks/useDocumentVersions'
+import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
+import {useScheduledDraftsEnabled} from '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {getPublishedId} from '../../../../../../../core/util/draftUtils'
 import {
-  DEFAULT_VARIANT_TYPE_KEY,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   isCardinalityOneRelease,
   isPausedCardinalityOneRelease,
-  isReleaseDocument,
-  ReleaseAvatar,
-  useActiveReleases,
-  useDocumentVersions,
-  usePerspective,
-  useScheduledDraftsEnabled,
-  useTranslation,
-} from 'sanity'
-
+} from '../../../../../../../core/util/releaseUtils'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {usePaneRouter} from '../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'

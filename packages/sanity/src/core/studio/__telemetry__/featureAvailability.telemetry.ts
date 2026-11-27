@@ -8,11 +8,9 @@ import {type Workspace, type WorkspaceOptions} from '../../config/types'
 import {
   createEmptyDeprecatedConfigFlags,
   type DeprecatedConfigFlags,
-  detectDeprecatedLegacyThemeOptions,
   detectDeprecatedPresentationOptions,
   detectDeprecatedRawConfigOptions,
   detectDeprecatedSchemaOptions,
-  detectDeprecatedThemeOptions,
 } from './deprecatedConfigDetection'
 
 interface WorkspaceFeaturesObservedInfo {
@@ -27,7 +25,6 @@ interface WorkspaceFeaturesObservedInfo {
   canvasEnabled: boolean | undefined
   variantsEnabled: boolean | undefined
   documentGroupInventoryEnabled: boolean | undefined
-  eventsApiDocumentsEnabled: boolean | undefined
   eventsApiReleasesEnabled: boolean | undefined
   announcementsEnabled: boolean | undefined
   draftsEnabled: boolean
@@ -83,8 +80,6 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     canvasEnabled: workspace.apps?.canvas?.enabled,
     variantsEnabled: workspace.beta?.variants?.enabled,
     documentGroupInventoryEnabled: workspace.beta?.documentGroupInventory?.enabled,
-    // oxlint-disable-next-line no-deprecated -- keep reporting the deprecated opt-out until it is removed
-    eventsApiDocumentsEnabled: workspace.beta?.eventsAPI?.documents,
     eventsApiReleasesEnabled: workspace.beta?.eventsAPI?.releases,
     announcementsEnabled: workspace.announcements?.enabled,
     draftsEnabled: workspace.document.drafts.enabled,
@@ -108,22 +103,10 @@ export function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedCo
   // At runtime this includes workspace-level fields even though typed as SourceOptions
   const rawConfig = workspace.__internal.options as WorkspaceOptions
 
-  // Detect deprecated raw config options (logo, beta.create, beta.form.enhancedObjectDialog, etc.)
   Object.assign(flags, detectDeprecatedRawConfigOptions(rawConfig))
 
-  // Detect deprecated theme options (avatar, button, container, etc.)
-  const theme = rawConfig.theme
-  if (theme && typeof theme === 'object') {
-    Object.assign(flags, detectDeprecatedThemeOptions(theme))
-    // Detect deprecated buildLegacyTheme options (--screen-*-break keys)
-    // These are stored on the theme object by buildLegacyTheme
-    Object.assign(flags, detectDeprecatedLegacyThemeOptions(theme))
-  }
-
-  // Detect deprecated presentation tool options (check, disable, unstable_showUnsafeShareUrl)
   Object.assign(flags, detectDeprecatedPresentationOptions(workspace.tools))
 
-  // Detect deprecated schema options (array direction/treeEditing, cross-dataset __experimental_search)
   Object.assign(flags, detectDeprecatedSchemaOptions(workspace.schema))
 
   return flags

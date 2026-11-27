@@ -24,7 +24,7 @@ export interface StudioProps {
    *
    * ```tsx
    * import {usePrefersDark} from '@sanity/ui'
-   * import {Studio} from 'sanity'
+   * import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
    *
    * export default function StudioPage() {
    *   const prefersDark = usePrefersDark()
@@ -53,7 +53,7 @@ export interface StudioProps {
    *
    * You may setup two-way sync and re-enable the "Appearance" dropdown menu by also providing an `onSchemeChange` callback:
    * ```tsx
-   * import {Studio} from 'sanity'
+   * import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
    * import {useSession} from 'your-app'
    *
    * export default function StudioPage() {
@@ -96,8 +96,13 @@ export interface StudioProps {
 }
 
 /**
+ * Server-rendering `<Studio />` suspends, so the caller must wrap it in its own `<Suspense>`:
+ * the server renders the boundary's fallback and the client renders the Studio when it hydrates.
+ * Without a boundary the server render fails with "client rendering was requested outside a
+ * Suspense boundary". Client-only Studios (`renderStudio`, `sanity dev`, `sanity build`) are not affected.
+ *
  * @hidden
- * @beta */
+ * @internal */
 export function Studio(props: StudioProps): React.JSX.Element {
   const {
     basePath,

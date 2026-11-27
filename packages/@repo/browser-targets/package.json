@@ -1,0 +1,23 @@
+{
+  "name": "@repo/browser-targets",
+  "version": "6.9.2",
+  "private": true,
+  "description": "Browser targets for the build tooling, from the browserslist field of a package",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "browserslist": "^4.29.6",
+    "lightningcss": "^1.33.0"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

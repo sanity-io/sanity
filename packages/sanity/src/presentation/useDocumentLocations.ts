@@ -2,13 +2,9 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {defer, isObservable, map, type Observable, of, tap} from 'rxjs'
 import {startWith} from 'rxjs/operators'
-import {
-  type ObjectSchemaType,
-  type PreviewableType,
-  useDocumentPreviewStore,
-  useDocumentStore,
-} from 'sanity'
+import {type ObjectSchemaType, type PreviewableType} from 'sanity'
 
+import {useDocumentPreviewStore, useDocumentStore} from '../core/store/datastores'
 import {
   type DocumentLocationResolver,
   type DocumentLocationResolvers,
@@ -28,7 +24,7 @@ type DocumentLocationsResult = {
 /**
  * Only a subscription that has never seen `source$` emit starts out with `initial`. The same
  * observable is unsubscribed and subscribed again without a remount when the tool is hidden and
- * shown inside an `<Activity>` boundary (`beta.reactActivityMode`); `useObservable` keeps the last
+ * shown inside an `<Activity>` boundary (`reactActivityMode`); `useObservable` keeps the last
  * value across that, and re-emitting the initial status would flash "Resolving locations..." over
  * locations that are already known.
  */

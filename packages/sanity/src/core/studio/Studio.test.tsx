@@ -13,9 +13,13 @@
  * The purpose of this testing suite is to guarantee that `<Studio />` is fully compatible the APIs that are used for hydration:
  * a) https://beta.reactjs.org/apis/react-dom/client/hydrateRoot
  * b) https://beta.reactjs.org/apis/react-dom/server/renderToString
+ *
+ * Parts of the Studio can only render in the browser, so a server render of `<Studio />` needs a Suspense boundary
+ * around it: the server renders its fallback, and the client renders the Studio when it hydrates.
  */
 import {type SanityClient} from '@sanity/client'
-import {act} from 'react'
+import {render, waitFor} from '@testing-library/react'
+import {act, Suspense} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {describe, expect, it, vi} from 'vitest'
@@ -36,10 +40,22 @@ vi.mock('./components/navbar/new-document/useNewDocumentOptions')
 vi.mock('./components/navbar/presence/PresenceMenu')
 
 describe('Studio', () => {
+  it('SSR without a Suspense boundary around it throws', () => {
+    expect(() => renderToString(<Studio config={config} />)).toThrow(
+      /client rendering was requested outside a Suspense boundary/,
+    )
+  })
+
   it(`SSR to static markup doesn't throw or warn`, () => {
     const spy = vi.spyOn(console, 'error')
 
-    renderToStaticMarkup(<Studio config={config} />)
+    expect(
+      renderToStaticMarkup(
+        <Suspense fallback={null}>
+          <Studio config={config} />
+        </Suspense>,
+      ),
+    ).toBe('')
 
     expect(console.error).not.toHaveBeenCalled()
 
@@ -51,15 +67,35 @@ describe('Studio', () => {
     const node = document.createElement('div')
     document.body.appendChild(node)
 
-    const html = renderToString(<Studio config={config} />)
+    const app = (
+      <Suspense fallback={null}>
+        <Studio config={config} />
+      </Suspense>
+    )
+
+    const html = renderToString(app)
+    expect(html).toMatch(/^<!--\$!-->.*<!--\/\$-->$/s)
     node.innerHTML = html
 
-    const root = await act(() => hydrateRoot(node, <Studio config={config} />))
+    const root = await act(() => hydrateRoot(node, app))
+    expect(node.querySelector('template')).toBeNull()
+    expect(node.childElementCount).toBeGreaterThan(0)
     act(() => root.unmount())
 
     expect(console.error).not.toHaveBeenCalled()
 
     spy.mockReset()
     spy.mockRestore()
+  })
+
+  it('loads the workspace when the auth boundary is disabled', async () => {
+    const types = vi.fn(() => [])
+
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- StudioProvider suspends via lazy/Suspense on mount
+    await act(async () => {
+      render(<Studio config={{...config, schema: {types}}} unstable_noAuthBoundary />)
+    })
+
+    await waitFor(() => expect(types).toHaveBeenCalledOnce())
   })
 })

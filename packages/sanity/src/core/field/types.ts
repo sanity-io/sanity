@@ -151,7 +151,9 @@ export type DiffComponentOptions<T extends Diff = Diff> = {
   showHeader?: boolean
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
   schemaType: T extends ObjectDiff

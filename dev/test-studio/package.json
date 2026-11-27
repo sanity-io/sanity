@@ -9,9 +9,11 @@
     "build": "run-s sanity:build sanity:manifest",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev",
+    "eval:pokemon-queries": "tsx pokemon/eval/evalQueryGenerator.ts",
     "sanity:build": "PKG_BUILD_VERSION=$(./get-version.ts) sanity build --source-maps",
     "sanity:dev": "sanity dev",
     "sanity:manifest": "SANITY_AUTH_TOKEN=${VERCEL_SANITY_API_DEPLOY_TOKEN} sanity schema deploy --workspace default",
+    "seed:pokemon": "tsx pokemon/seed/seed.ts",
     "start": "sanity preview"
   },
   "dependencies": {
@@ -55,6 +57,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
+    "@repo/browser-targets": "workspace:*",
     "@repo/css-modules-kit": "workspace:*",
     "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",

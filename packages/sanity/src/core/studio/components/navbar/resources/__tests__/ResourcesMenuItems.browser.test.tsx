@@ -10,7 +10,6 @@ import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
-import {setSnapshot} from '../../../../colorSchemeStore'
 import {createWorkspaceSummaries} from '../../__tests__/workspaceSummaryFixtures'
 import {type ResourcesResponse} from '../helper-functions/types'
 import {ResourcesMenuItems} from '../ResourcesMenuItems'
@@ -135,8 +134,8 @@ function resolvedColor(element: Element, color: string): string {
 }
 
 describe.each(['light', 'dark'] as const)('the up-to-date version row in %s mode', (scheme) => {
-  beforeEach(() => setSnapshot(scheme))
-  afterEach(() => setSnapshot('system'))
+  beforeEach(() => localStorage.setItem('sanityStudio:ui:colorScheme', scheme))
+  afterEach(() => localStorage.removeItem('sanityStudio:ui:colorScheme'))
 
   test('at rest', async () => {
     const {settleChromaticEndState} = testHelpers()

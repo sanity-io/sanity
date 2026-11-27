@@ -6,31 +6,27 @@ import {
   MenuItem,
 } from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {
-  ContextMenuButton,
-  getReleaseDocumentIdFromReleaseId,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
-  getVersionFromId,
-  isReleaseDocument,
-  type PublishDocumentVersionEvent,
-  ReleaseDetailLinkClicked,
-  RELEASES_INTENT,
-  ReleaseTitle,
-  Translate,
-  useAllReleases,
-  useSetPerspective,
-  useTranslation,
-  useWorkspace,
-  VersionInlineBadge,
-} from 'sanity'
+import {type PublishDocumentVersionEvent, useWorkspace} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {IntentLink} from 'sanity/router'
 import {Text, Flex} from 'ui5'
 
+import {ContextMenuButton} from '../../../../../core/components/contextMenuButton/ContextMenuButton'
+import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
+import {ReleaseDetailLinkClicked} from '../../../../../core/releases/__telemetry__/releases.telemetry'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {RELEASES_INTENT} from '../../../../../core/releases/plugin'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useAllReleases} from '../../../../../core/releases/store/useAllReleases'
+import {getReleaseDocumentIdFromReleaseId} from '../../../../../core/releases/util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {getVersionFromId} from '../../../../../core/util/draftUtils'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
+import {TIMELINE_MENU_PORTAL} from '../../constants'
 
 function VersionBadge({children, tone}: {children?: React.ReactNode; tone?: BadgeTone}) {
   return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>

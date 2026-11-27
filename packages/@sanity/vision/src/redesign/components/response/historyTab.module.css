@@ -1,0 +1,21 @@
+/* What an AI action that wrote a history entry's query was given */
+.trigger {
+  border-left: 2px solid var(--card-border-color);
+}
+
+/* The user's own line breaks stay, and a long word or URL wraps instead of widening the panel */
+.prompt {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}

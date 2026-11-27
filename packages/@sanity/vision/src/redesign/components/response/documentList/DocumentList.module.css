@@ -1,0 +1,94 @@
+/* Fills the pane under its toolbar, and the list scrolls on its own */
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* The AI action over the rows, which keep the rest of the pane */
+.action {
+  flex: none;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+.body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/*
+ * The list keeps its scrollbar's track whether or not it overflows, like the Structure tool's
+ * list panes (see `.paneScroll` in `redesign.module.css`). The doubled class beats
+ * `CommandList`'s own `overflow-y: auto`, which styled-components injects after this stylesheet.
+ */
+.commandList {
+  position: absolute;
+  top: var(--space-1, 4px);
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .commandList.commandList {
+    overflow-y: scroll;
+  }
+}
+
+.row {
+  position: relative;
+  padding-bottom: 2px;
+}
+
+/*
+ * Copying the ID and opening a new tab show on the row that is hovered or holds the focus, over
+ * its status, so the row keeps the width of Structure's list item
+ */
+.rowActions {
+  position: absolute;
+  top: 50%;
+  right: var(--space-1, 4px);
+  transform: translateY(-50%);
+  padding: 2px;
+  border-radius: 4px;
+  background-color: var(--card-bg-color);
+  box-shadow: 0 0 0 1px var(--card-border-color);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.row:hover .rowActions,
+.row:focus-within .rowActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .rowActions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.shape {
+  font-family: var(--font-family-code, ui-monospace, monospace);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowActions {
+    transition: none;
+  }
+}
+
+/*
+ * Never rubber-bands sideways (see "Overscroll" in `redesign.module.css`). The doubled class beats
+ * `CommandList`'s own `overscroll-behavior: contain`, which it loads after this stylesheet; the
+ * vertical axis keeps that.
+ */
+.commandList.commandList {
+  overscroll-behavior-x: none;
+}

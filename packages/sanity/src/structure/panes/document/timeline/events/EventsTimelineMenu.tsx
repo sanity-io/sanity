@@ -2,21 +2,22 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
+import {type DocumentGroupEvent} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
+import {Flex} from 'ui5'
+
+import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../../core/field/diff/components/constants'
+import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {
-  type DocumentGroupEvent,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
-  TIMELINE_ITEM_I18N_KEY_MAPPING,
-  useEvents,
-  useTranslation,
-} from 'sanity'
-import {Flex} from 'ui5'
-
+} from '../../../../../core/store/events/types'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
+import {TIMELINE_MENU_PORTAL} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
@@ -28,9 +29,6 @@ interface TimelineMenuProps {
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const TIMELINE_MENU_PORTAL = 'timeline-menu'
-
 const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},
 }

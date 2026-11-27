@@ -27,7 +27,7 @@
 export const namespaces = {
   'studio': {
     constants: ['studioLocaleNamespace'],
-    resources: ['packages/sanity/src/core/i18n/bundles/studio.ts'],
+    resources: ['packages/sanity/src/core/i18n/bundles/studio/resources.ts'],
     registeredBy: 'the default locale (`core/i18n/locales.ts`)',
   },
   'validation': {
@@ -53,7 +53,7 @@ export const namespaces = {
     ],
     // One of the two comments plugins is always included (`core/config/resolveDefaultPlugins.ts`),
     // so the namespace is always registered, but with either v1's or v2's strings
-    registeredBy: 'the comments default plugin (v1, or v2 with `beta.comments.v2`)',
+    registeredBy: 'the comments default plugin (v2, or v1 with `comments.legacy`)',
   },
   'releases': {
     constants: ['releasesLocaleNamespace'],
@@ -97,7 +97,7 @@ export const namespaces = {
     constants: ['structureLocaleNamespace'],
     resources: ['packages/sanity/src/structure/i18n/resources.ts'],
     registeredBy: '`structureTool()`',
-    allowedIn: ['packages/sanity/src/structure/', 'packages/sanity/src/desk/'],
+    allowedIn: ['packages/sanity/src/structure/'],
   },
   'presentation': {
     constants: ['presentationLocaleNamespace'],

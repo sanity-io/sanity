@@ -1,10 +1,16 @@
 import {dequal as isEqual} from 'dequal/lite'
-import {lazy, memo, Suspense, useEffect} from 'react'
+import {memo, Suspense, useEffect} from 'react'
+
 import {
   recordStructurePaneKind,
   type StructurePaneKind,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../core/studio/telemetry/paneKindRegistry'
+import {
+  documentListPaneChunk,
+  documentPaneChunk,
+  listPaneChunk,
+  userComponentPaneChunk,
+} from '../chunks'
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
@@ -40,10 +46,11 @@ interface StructureToolPaneProps {
 // because `sanity/structure` exports `DocumentPane` and `DocumentListPane` and the entry imports
 // their chunks statically anyway, so those two lazies only add a request and a `LoadingPane` flash
 // on the first mount of each pane type. Kept lazy for now; dropping them is a separate change.
-const UserComponentPane = lazy(() => import('./userComponent'))
-const DocumentPane = lazy(() => import('./document/pane'))
-const DocumentListPane = lazy(() => import('./documentList/pane'))
-const ListPane = lazy(() => import('./list'))
+// `StructureToolPreloader` starts the list and document chunks before the tool renders.
+const UserComponentPane = userComponentPaneChunk.Component
+const DocumentPane = documentPaneChunk.Component
+const DocumentListPane = documentListPaneChunk.Component
+const ListPane = listPaneChunk.Component
 
 const paneMap = {
   component: UserComponentPane,

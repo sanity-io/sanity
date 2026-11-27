@@ -3,7 +3,8 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  VisionBetaConfig,
+  VisionAiConfig,
+  VisionAiFeatures,
   VisionLocaleResourceKeys,
   visionTool,
   VisionToolConfig,
@@ -11,8 +12,11 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/vision', () => {
-  test('VisionBetaConfig', () => {
-    expectTypeOf<VisionBetaConfig>().toBeObject()
+  test('VisionAiConfig', () => {
+    expectTypeOf<VisionAiConfig>().not.toBeNever()
+  })
+  test('VisionAiFeatures', () => {
+    expectTypeOf<VisionAiFeatures>().toBeObject()
   })
   test('VisionLocaleResourceKeys', () => {
     expectTypeOf<VisionLocaleResourceKeys>().not.toBeNever()

@@ -1,14 +1,13 @@
 import {Button} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {useClient, usePerspective} from 'sanity'
 import {
-  getDefaultVariant,
   getDraftId,
+  getDefaultVariant,
   getTargetSiblings,
-  useClient,
-  usePerspective,
   useVariantDocumentOperations,
-} from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useDocumentPane} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {Text, VStack} from 'ui5'
 
 export function CreateDraft() {

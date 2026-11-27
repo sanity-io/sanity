@@ -1,6 +1,6 @@
 import {dequal} from 'dequal/lite'
 import omit from 'lodash-es/omit.js'
-import {memo, type RefObject, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, type RefObject, useCallback, useEffect, useRef, useState, useEffectEvent} from 'react'
 import {
   catchError,
   EMPTY,
@@ -14,10 +14,12 @@ import {
   take,
   timeout,
 } from 'rxjs'
-import {getPublishedId, isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
+import {useDocumentStore} from '../../../../core/store/datastores'
+import {useStudioErrorHandler} from '../../../../core/studio/requestErrors/useStudioErrorHandler'
+import {getPublishedId} from '../../../../core/util/draftUtils'
+import {isRecord} from '../../../../core/util/isRecord'
 import {type StructureContext} from '../../../structureBuilder/types'
 import {resolveIntent} from '../../../structureResolvers/resolveIntent'
 import {

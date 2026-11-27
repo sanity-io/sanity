@@ -6,6 +6,7 @@ import {
 
 /**
  * Options for generating a studio manifest.
+ * @hidden
  * @internal
  */
 export interface GenerateStudioManifestOptions<W extends ManifestWorkspaceInput> {

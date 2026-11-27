@@ -1,5 +1,5 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {type ElementType, type HTMLProps, useContext, useMemo, type RefAttributes} from 'react'
+import {type ElementType, type HTMLProps, use, useMemo, type RefAttributes} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -25,7 +25,7 @@ export interface PreviewCardContextValue {
 
 /** @internal */
 export function usePreviewCard(): PreviewCardContextValue {
-  const context = useContext(PreviewCardContext)
+  const context = use(PreviewCardContext)
 
   if (!context) {
     throw new Error('PreviewCard: missing context value')
@@ -34,7 +34,9 @@ export function usePreviewCard(): PreviewCardContextValue {
   return context
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @internal */
 export function PreviewCard(
   props: CardProps<ElementType> &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &

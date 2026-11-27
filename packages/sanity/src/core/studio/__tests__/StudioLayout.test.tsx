@@ -1,5 +1,5 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -39,7 +39,7 @@ vi.mock('../studio-components-hooks/useActiveToolLayoutComponent', () => ({
 
 vi.mock('sanity/router', () => ({
   RouteScope: ({children}: {children: React.ReactNode}) => <>{children}</>,
-  useRouter: () => ({navigateUrl: vi.fn()}),
+  useRouter: () => ({}),
   useRouterState: vi.fn(),
 }))
 
@@ -65,10 +65,6 @@ vi.mock('../unclaimedProject/UnclaimedProjectNudge', () => ({
 
 vi.mock('../screens/NoToolsScreen', () => ({
   NoToolsScreen: () => <div data-testid="no-tools" />,
-}))
-
-vi.mock('../screens/RedirectingScreen', () => ({
-  RedirectingScreen: () => <div data-testid="redirecting" />,
 }))
 
 vi.mock('../screens/ToolNotFoundScreen', () => ({
@@ -131,6 +127,9 @@ describe('StudioLayoutComponent telemetry', () => {
       name: 'test-workspace',
       title: 'Test Workspace',
       tools,
+      // These tests cover the Studio Ready event. Stay on the unmount path so hidden tools are
+      // not part of the render.
+      reactActivityMode: {enabled: false},
     })
     const {useRouterState} = await import('sanity/router')
     ;(useRouterState as ReturnType<typeof vi.fn>).mockImplementation(
@@ -192,5 +191,14 @@ describe('StudioLayoutComponent telemetry', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(studioReadyCalls()).toHaveLength(1)
+  })
+
+  it('treats the legacy desk tool name as an unknown tool', async () => {
+    await setupWorkspace([makeTool('structure')], 'desk')
+
+    render(<StudioLayoutComponent />, {wrapper})
+
+    expect(screen.getByTestId('tool-not-found')).toBeInTheDocument()
+    expect(screen.queryByTestId('active-tool-structure')).not.toBeInTheDocument()
   })
 })

@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect, useState} from 'react'
+import {lazy, Suspense, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {useColorSchemeValue} from '../../../colorScheme'
@@ -10,10 +10,12 @@ import {
   type TrialDialogDismissedInfo,
   TrialDialogViewed,
 } from './__telemetry__/trialDialogEvents.telemetry'
-import {DialogContent} from './DialogContent'
 import {FreeTrialButtonSidebar, FreeTrialButtonTopbar} from './FreeTrialButton'
 import {useFreeTrialContext} from './FreeTrialContext'
-import {PopoverContent} from './PopoverContent'
+
+// Only a project on a trial renders these, and their content is Portable Text with icons
+const DialogContent = lazy(() => import('./DialogContent.lazy'))
+const PopoverContent = lazy(() => import('./PopoverContent.lazy'))
 
 interface FreeTrialProps {
   type: 'sidebar' | 'topbar'
@@ -137,11 +139,13 @@ export function FreeTrial({type}: FreeTrialProps) {
         portal
         placement={type === 'sidebar' ? 'top' : 'bottom-end'}
         content={
-          <PopoverContent
-            content={dialogToRender}
-            handleClose={handleClose('popover')}
-            handleOpenNext={handlePopoverCTAClick}
-          />
+          <Suspense fallback={null}>
+            <PopoverContent
+              content={dialogToRender}
+              handleClose={handleClose('popover')}
+              handleOpenNext={handlePopoverCTAClick}
+            />
+          </Suspense>
         }
       >
         {button}
@@ -152,13 +156,15 @@ export function FreeTrial({type}: FreeTrialProps) {
   return (
     <>
       {button}
-      <DialogContent
-        content={dialogToRender}
-        onClose={handleClose('modal')}
-        onOpenNext={handleDialogCTAClick('openNext')}
-        onOpenUrlCallback={handleDialogCTAClick('openURL')}
-        open={showDialog}
-      />
+      <Suspense fallback={null}>
+        <DialogContent
+          content={dialogToRender}
+          onClose={handleClose('modal')}
+          onOpenNext={handleDialogCTAClick('openNext')}
+          onOpenUrlCallback={handleDialogCTAClick('openURL')}
+          open={showDialog}
+        />
+      </Suspense>
     </>
   )
 }
