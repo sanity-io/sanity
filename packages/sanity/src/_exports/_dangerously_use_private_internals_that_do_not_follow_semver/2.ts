@@ -372,8 +372,6 @@ export {
 } from '../../core/releases/components/VersionInlineBadge'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {EditScheduleForm} from '../../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
-export {SchedulesContext} from '../../core/scheduled-publishing/tool/contexts/schedules'
 export {usePausedScheduledDraft} from '../../core/singleDocRelease/hooks/usePausedScheduledDraft'
 export {IsLastPaneProvider} from '../../core/tasks/context/isLastPane/IsLastPaneProvider'
 export {useDocumentPreviewValues} from '../../core/tasks/hooks/useDocumentPreviewValues'
@@ -393,7 +391,6 @@ export {MemberItemError} from '../../core/form/members/array/MemberItemError'
 export {VirtualizerScrollInstanceProvider} from '../../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {createPatchChannel} from '../../core/form/patch/PatchChannel'
 export {useAnnotationColor, useDiffAnnotationColor} from '../../core/field/diff/annotations/hooks'
-export {useDocumentPane} from '../../structure/panes/document/useDocumentPane'
 export {ALL_FIELDS_GROUP} from '../../core/form/store/constants'
 export {ArrayOfObjectsFunctions} from '../../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {ArrayOfPrimitivesFunctions} from '../../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'

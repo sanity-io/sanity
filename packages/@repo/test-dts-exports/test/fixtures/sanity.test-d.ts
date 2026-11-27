@@ -407,7 +407,6 @@ import type {
   ImageUrlOrientation,
   ImageUrlParams,
   ImageValue,
-  ImplicitLocaleResourceBundle,
   inc,
   IncompatibleTypeError,
   IndexTuple,
@@ -484,18 +483,6 @@ import type {
   ListenQueryOptions,
   Loadable,
   LoadableLegacy,
-  Locale,
-  LocaleConfigContext,
-  LocaleDefinition,
-  LocaleNestedResource,
-  LocalePluginOptions,
-  LocaleResourceBundle,
-  LocaleResourceKey,
-  LocaleResourceRecord,
-  LocalesBundlesOption,
-  LocalesOption,
-  LocaleSource,
-  LocaleWeekInfo,
   LocalizedValidationMessages,
   LoginComponentProps,
   LoginMethod,
@@ -753,7 +740,6 @@ import type {
   SpanSchemaType,
   SpanTextObjectField,
   StateTree,
-  StaticLocaleResourceBundle,
   StrictDefinition,
   StrictVersionLayeringOptions,
   StringComponents,
@@ -794,7 +780,6 @@ import type {
   TextOptions,
   TextRule,
   TextSchemaType,
-  TFunction,
   TitledListValue,
   Tool,
   ToolLinkProps,
@@ -803,8 +788,6 @@ import type {
   TransactionLogEventWithEffects,
   TransactionLogEventWithMutations,
   TransactionLogMutation,
-  TranslateComponentMap,
-  TranslationProps,
   TypeAliasDefinition,
   TypeAnnotationMismatchError,
   TypedObject,
@@ -853,8 +836,6 @@ import type {
   UserListWithPermissionsOptions,
   UserStore,
   UserWithPermission,
-  UseTranslationOptions,
-  UseTranslationResponse,
   useUnitFormatter,
   UseUnitFormatterOptions,
   useWorkspace,
@@ -2115,9 +2096,6 @@ describe('sanity', () => {
   test('ImageValue', () => {
     expectTypeOf<ImageValue>().toBeObject()
   })
-  test('ImplicitLocaleResourceBundle', () => {
-    expectTypeOf<ImplicitLocaleResourceBundle>().not.toBeNever()
-  })
   test('inc', () => {
     expectTypeOf<typeof inc>().toBeFunction()
   })
@@ -2345,42 +2323,6 @@ describe('sanity', () => {
   })
   test('LoadableLegacy', () => {
     expectTypeOf<LoadableLegacy<any>>().toBeObject()
-  })
-  test('Locale', () => {
-    expectTypeOf<Locale>().toBeObject()
-  })
-  test('LocaleConfigContext', () => {
-    expectTypeOf<LocaleConfigContext>().toBeObject()
-  })
-  test('LocaleDefinition', () => {
-    expectTypeOf<LocaleDefinition>().toBeObject()
-  })
-  test('LocaleNestedResource', () => {
-    expectTypeOf<LocaleNestedResource>().not.toBeNever()
-  })
-  test('LocalePluginOptions', () => {
-    expectTypeOf<LocalePluginOptions>().toBeObject()
-  })
-  test('LocaleResourceBundle', () => {
-    expectTypeOf<LocaleResourceBundle>().toBeObject()
-  })
-  test('LocaleResourceKey', () => {
-    expectTypeOf<LocaleResourceKey>().not.toBeNever()
-  })
-  test('LocaleResourceRecord', () => {
-    expectTypeOf<LocaleResourceRecord>().toBeObject()
-  })
-  test('LocalesBundlesOption', () => {
-    expectTypeOf<LocalesBundlesOption>().not.toBeNever()
-  })
-  test('LocalesOption', () => {
-    expectTypeOf<LocalesOption>().not.toBeNever()
-  })
-  test('LocaleSource', () => {
-    expectTypeOf<LocaleSource>().toBeObject()
-  })
-  test('LocaleWeekInfo', () => {
-    expectTypeOf<LocaleWeekInfo>().toBeObject()
   })
   test('LocalizedValidationMessages', () => {
     expectTypeOf<LocalizedValidationMessages>().toBeObject()
@@ -3159,9 +3101,6 @@ describe('sanity', () => {
   test('StateTree', () => {
     expectTypeOf<StateTree<any>>().toBeObject()
   })
-  test('StaticLocaleResourceBundle', () => {
-    expectTypeOf<StaticLocaleResourceBundle>().not.toBeNever()
-  })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
   })
@@ -3284,9 +3223,6 @@ describe('sanity', () => {
   test('TextSchemaType', () => {
     expectTypeOf<TextSchemaType>().toBeObject()
   })
-  test('TFunction', () => {
-    expectTypeOf<TFunction<any, any>>().toBeObject()
-  })
   test('TitledListValue', () => {
     expectTypeOf<TitledListValue<any>>().toBeObject()
   })
@@ -3310,12 +3246,6 @@ describe('sanity', () => {
   })
   test('TransactionLogMutation', () => {
     expectTypeOf<TransactionLogMutation>().not.toBeNever()
-  })
-  test('TranslateComponentMap', () => {
-    expectTypeOf<TranslateComponentMap<any>>().not.toBeNever()
-  })
-  test('TranslationProps', () => {
-    expectTypeOf<TranslationProps<any>>().toBeObject()
   })
   test('TypeAliasDefinition', () => {
     expectTypeOf<TypeAliasDefinition<any, any>>().toBeObject()
@@ -3462,12 +3392,6 @@ describe('sanity', () => {
   })
   test('UserWithPermission', () => {
     expectTypeOf<UserWithPermission>().toBeObject()
-  })
-  test('UseTranslationOptions', () => {
-    expectTypeOf<UseTranslationOptions<any>>().toBeObject()
-  })
-  test('UseTranslationResponse', () => {
-    expectTypeOf<UseTranslationResponse<any, any>>().not.toBeNever()
   })
   test('useUnitFormatter', () => {
     expectTypeOf<typeof useUnitFormatter>().toBeFunction()

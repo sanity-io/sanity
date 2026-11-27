@@ -155,7 +155,7 @@ import type {
   UpsellDescriptionSerializerContext,
   UserApplicationCacheContext,
   UserColorManagerContext,
-  ValidationContext,
+  ValidationMarkersContext,
   VariantsModePromiseContext,
   VariantsUpsellContext,
   VirtualizerScrollInstanceContext,
@@ -624,8 +624,8 @@ describe('sanity/_singletons', () => {
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()
   })
-  test('ValidationContext', () => {
-    expectTypeOf<typeof ValidationContext>().not.toBeNever()
+  test('ValidationMarkersContext', () => {
+    expectTypeOf<typeof ValidationMarkersContext>().not.toBeNever()
   })
   test('VariantsModePromiseContext', () => {
     expectTypeOf<typeof VariantsModePromiseContext>().not.toBeNever()

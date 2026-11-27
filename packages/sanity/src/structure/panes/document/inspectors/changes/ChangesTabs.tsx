@@ -2,13 +2,8 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Card, TabList, TabPanel} from '@sanity/ui'
 import {useState} from 'react'
-import {
-  type DocumentInspectorProps,
-  type TargetPerspective,
-  type TFunction,
-  usePerspective,
-} from 'sanity'
-import {Translate, useTranslation} from 'sanity/i18n'
+import {type DocumentInspectorProps, type TargetPerspective, usePerspective} from 'sanity'
+import {Translate, useTranslation, type TFunction} from 'sanity/i18n'
 import {Text, Flex, Box, Icon} from 'ui5'
 
 import {isReleaseDocument} from '../../../../../core/releases/store/types'

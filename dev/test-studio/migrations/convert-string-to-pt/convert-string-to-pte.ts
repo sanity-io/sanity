@@ -1,6 +1,7 @@
+import {set} from '@sanity/migrate'
 /* oxlint-disable consistent-return */
 import isEqual from 'lodash-es/isEqual.js'
-import {defineMigration, set} from 'sanity/migrate'
+import {defineMigration} from 'sanity/migrate'
 
 export default defineMigration({
   title: 'Convert string to PortableText at `some.path` in documents of type `someType`',

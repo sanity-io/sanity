@@ -52,7 +52,7 @@ export type MatchResult = never
  */
 export type NextStateOrOptions = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@hidden` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_singletons`. Import `{RouterContext}` from `sanity/_singletons` instead of `sanity/router`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const RouterContext: never
 /**

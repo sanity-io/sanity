@@ -22,8 +22,6 @@ export {
   StudioDiagnosticsBridge,
   type StudioDiagnosticsBridgeApi,
 } from '../../core/studio/diagnostics/StudioDiagnosticsBridge'
-// oxlint-disable-next-line no-deprecated -- deprecated overload stays available on the internals entry until it is removed
-export {renderStudio} from '../../core/studio/renderStudio'
 export {Studio} from '../../core/studio/Studio'
 export {StudioLayout} from '../../core/studio/StudioLayout'
 export {StudioProvider} from '../../core/studio/StudioProvider'

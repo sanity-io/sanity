@@ -560,7 +560,7 @@
       {
         "name": "ConnectionStatus",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/presentation`. Import `{ConnectionStatus}` from `sanity/presentation` instead of `sanity`."
       },
       {
         "name": "ConnectionStatusStore",
@@ -1130,12 +1130,12 @@
       {
         "name": "FeedbackContext",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_singletons`. Import `{FeedbackContext}` from `sanity/_singletons` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "FeedbackContextValue",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_singletons`. Import `{FeedbackContextValue}` from `sanity/_singletons` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "FeedbackDialog",
@@ -1860,7 +1860,7 @@
       {
         "name": "Operation",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. The Studio's document `Operation` type is no longer exported; `sanity/migrate` exports an unrelated `Operation` for migrations."
       },
       {
         "name": "OperationArgs",
@@ -2245,7 +2245,7 @@
       {
         "name": "SchedulesContext",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_singletons`. Import `{SchedulesContext}` from `sanity/_singletons` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "SchemaErrorContext",
@@ -2695,7 +2695,7 @@
       {
         "name": "Transaction",
         "kind": "type",
-        "message": "Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release)."
+        "message": "Moved to `sanity/migrate`. Import `{Transaction}` from `sanity/migrate` instead of `sanity`."
       },
       {
         "name": "TransformPatches",
@@ -5166,6 +5166,101 @@
         "name": "visitDiff",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "ImplicitLocaleResourceBundle",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{ImplicitLocaleResourceBundle}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "Locale",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{Locale}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleConfigContext",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleConfigContext}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleDefinition",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleDefinition}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleNestedResource",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleNestedResource}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocalePluginOptions",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocalePluginOptions}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleResourceBundle",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleResourceBundle}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleResourceKey",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleResourceKey}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleResourceRecord",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleResourceRecord}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocalesBundlesOption",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocalesBundlesOption}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocalesOption",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocalesOption}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleSource",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleSource}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "LocaleWeekInfo",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleWeekInfo}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "StaticLocaleResourceBundle",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{StaticLocaleResourceBundle}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "TFunction",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{TFunction}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "TranslateComponentMap",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{TranslateComponentMap}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "TranslationProps",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{TranslationProps}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "UseTranslationOptions",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{UseTranslationOptions}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "UseTranslationResponse",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{UseTranslationResponse}` from `sanity/i18n` instead of `sanity`."
       }
     ],
     "./_dangerously_use_private_internals_that_do_not_follow_semver": [
@@ -5992,7 +6087,7 @@
       {
         "name": "SchedulesContext",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_singletons`. Import `{SchedulesContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "SetActiveGroupOperation",
@@ -6372,7 +6467,7 @@
       {
         "name": "useDocumentPane",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{useDocumentPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useDocumentPreviewValues",
@@ -6488,6 +6583,191 @@
         "name": "withRouter",
         "kind": "value",
         "message": "Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`."
+      },
+      {
+        "name": "SchemaError",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{SchemaError}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "createDefaultIcon",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{createDefaultIcon}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "defineDocumentFieldAction",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{defineDocumentFieldAction}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "generateStudioManifest",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{generateStudioManifest}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "resolveConfig",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{resolveConfig}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "uploadSchema",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{uploadSchema}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "StrictVersionLayeringOptions",
+        "kind": "type",
+        "message": "Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `StrictVersionLayeringOptions` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `StrictVersionLayeringOptions` from `sanity`."
+      },
+      {
+        "name": "BaseResolvedPaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{BaseResolvedPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "Builder",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{Builder}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "ConnectionStatus",
+        "kind": "type",
+        "message": "Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `ConnectionStatus` than the one `sanity/presentation` exports, and every export name now comes from exactly one entry. Use the `ConnectionStatus` from `sanity/presentation`."
+      },
+      {
+        "name": "CustomComponentPaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{CustomComponentPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "DocumentListPaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{DocumentListPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "DocumentPaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{DocumentPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "FeedbackContext",
+        "kind": "value",
+        "message": "Moved to `sanity/_singletons`. Import `{FeedbackContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "FeedbackContextValue",
+        "kind": "type",
+        "message": "Moved to `sanity/_singletons`. Import `{FeedbackContextValue}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "InternalSearchParam",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{InternalSearchParam}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "ListPaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{ListPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "MatchError",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{MatchError}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "MatchOk",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{MatchOk}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "MatchResult",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{MatchResult}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "NextStateOrOptions",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{NextStateOrOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "Operation",
+        "kind": "type",
+        "message": "Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `Operation` than the one `sanity/migrate` exports, and every export name now comes from exactly one entry. Use the `Operation` from `sanity/migrate`."
+      },
+      {
+        "name": "PaneListItem",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneListItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PaneListItemDivider",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneListItemDivider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PaneMenuItem",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneMenuItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PaneMenuItemGroup",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneMenuItemGroup}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PaneNodeResolver",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneNodeResolver}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "RouterContext",
+        "kind": "value",
+        "message": "Moved to `sanity/_singletons`. Import `{RouterContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "RouterPaneSiblingContext",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{RouterPaneSiblingContext}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "SerializablePaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{SerializablePaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "SortMenuItem",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{SortMenuItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "StructureBuilderOptions",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureBuilderOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "StructureToolContextValue",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureToolContextValue}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "StructureToolFeatures",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureToolFeatures}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "StructureToolPaneActionHandler",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureToolPaneActionHandler}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "UnresolvedPaneNode",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{UnresolvedPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       }
     ],
     "./router": [
@@ -6519,7 +6799,7 @@
       {
         "name": "RouterContext",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@hidden` and can change or disappear in any release."
+        "message": "Moved to `sanity/_singletons`. Import `{RouterContext}` from `sanity/_singletons` instead of `sanity/router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "STICKY_PARAMS",
@@ -6646,7 +6926,7 @@
       {
         "name": "EditReferenceOptions",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@hidden` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{EditReferenceOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "HELP_URL",
@@ -6711,7 +6991,7 @@
       {
         "name": "PaneRouterContext",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@hidden` and can change or disappear in any release."
+        "message": "Moved to `sanity/_singletons`. Import `{PaneRouterContext}` from `sanity/_singletons` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "PaneRouterContextValue",
@@ -6766,7 +7046,7 @@
       {
         "name": "StrictVersionLayeringOptions",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. For an import that follows semver, use `{StrictVersionLayeringOptions}` from `@sanity/types`."
+        "message": "Moved to `sanity`. Import `{StrictVersionLayeringOptions}` from `sanity` instead of `sanity/structure`."
       },
       {
         "name": "StructureBuilderOptions",
@@ -6801,7 +7081,7 @@
       {
         "name": "StructureToolProviderProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{StructureToolProviderProps}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "UnresolvedPaneNode",
@@ -6917,6 +7197,21 @@
         "name": "useStructureTool",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "BaseIntentParams",
+        "kind": "type",
+        "message": "Moved to `sanity/router`. Import `{BaseIntentParams}` from `sanity/router` instead of `sanity/structure`."
+      },
+      {
+        "name": "DocumentOptions",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{DocumentOptions}` from `sanity` instead of `sanity/structure`."
+      },
+      {
+        "name": "IntentJsonParams",
+        "kind": "type",
+        "message": "Moved to `sanity/router`. Import `{IntentJsonParams}` from `sanity/router` instead of `sanity/structure`."
       }
     ],
     "./presentation": [
@@ -6924,6 +7219,489 @@
         "name": "PreviewUrlResolver",
         "kind": "type",
         "message": "Removed in v7 with the function form of the Presentation tool's `previewUrl` option. Pass `previewUrl` as a string or as an object with `initial` and `previewMode`."
+      },
+      {
+        "name": "PreviewProps",
+        "kind": "type",
+        "message": "Removed from `sanity/presentation`: it was a different `PreviewProps` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `PreviewProps` from `sanity`."
+      },
+      {
+        "name": "Serializable",
+        "kind": "type",
+        "message": "Removed from `sanity/presentation`: it was a different `Serializable` than the one `sanity/structure` exports, and every export name now comes from exactly one entry. Use the `Serializable` from `sanity/structure`."
+      }
+    ],
+    "./_unstable-embedded": [
+      {
+        "name": "BaseFormNode",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{BaseFormNode}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FieldMember",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FieldMember}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FieldProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FieldProps}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormDocumentValue",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FormDocumentValue}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormNodePresence",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FormNodePresence}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormPatch",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FormPatch}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormPatchJSONValue",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FormPatchJSONValue}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormSetIfMissingPatch",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FormSetIfMissingPatch}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormUnsetPatch",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FormUnsetPatch}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "InputProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{InputProps}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ItemProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ItemProps}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "LocaleResourceBundle",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleResourceBundle}` from `sanity/i18n` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "LocaleSource",
+        "kind": "type",
+        "message": "Moved to `sanity/i18n`. Import `{LocaleSource}` from `sanity/i18n` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectArrayFormNode",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectArrayFormNode}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectFieldProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectFieldProps}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectInputProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectInputProps}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectMember",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectMember}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "PatchArg",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{PatchArg}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "PreparedSnapshot",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{PreparedSnapshot}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ProjectData",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ProjectData}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "Source",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{Source}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "SourceClientOptions",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{SourceClientOptions}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "StateTree",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{StateTree}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "StringInputProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{StringInputProps}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "StudioLocaleResourceKeys",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{StudioLocaleResourceKeys}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "Workspace",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{Workspace}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "defineArrayMember",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{defineArrayMember}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "defineField",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{defineField}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "defineType",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{defineType}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "isObjectSchemaType",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{isObjectSchemaType}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "set",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{set}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "setIfMissing",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{setIfMissing}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "unset",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{unset}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "useDateTimeFormat",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{useDateTimeFormat}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "useWorkspace",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{useWorkspace}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "validateDocument",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{validateDocument}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ArrayDefinition",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ArrayDefinition}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FieldDefinition",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{FieldDefinition}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "Mutation",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{Mutation}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectDefinition",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectDefinition}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectField",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectField}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ObjectSchemaType",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ObjectSchemaType}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "Path",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{Path}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "ValidationMarker",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{ValidationMarker}` from `sanity` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "FormInput",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FormInput}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "FormBuilder",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FormBuilder}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "ChangeIndicatorsTracker",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{ChangeIndicatorsTracker}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "CopyPasteProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{CopyPasteProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "DivergencesProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{DivergencesProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "EMPTY_ARRAY",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{EMPTY_ARRAY}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "FIXME",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{FIXME}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "FieldPresence",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FieldPresence}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "FormFieldHeaderText",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FormFieldHeaderText}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "LocaleProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{LocaleProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PatchEvent",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{PatchEvent}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PerspectiveProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{PerspectiveProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "PresenceOverlay",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{PresenceOverlay}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "ResourceCacheProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{ResourceCacheProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "ScrollContainer",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{ScrollContainer}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "SourceProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{SourceProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "TransformPatches",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{TransformPatches}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "VirtualizerScrollInstanceProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{VirtualizerScrollInstanceProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "WorkspaceProvider",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{WorkspaceProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "createPatchChannel",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{createPatchChannel}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "defaultLocale",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{defaultLocale}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "getExpandOperations",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{getExpandOperations}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "pathToString",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{pathToString}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "setAtPath",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{setAtPath}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "useFormState",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{useFormState}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "useRelativeTime",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{useRelativeTime}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "useSchema",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. Import `{useSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "Translate",
+        "kind": "value",
+        "message": "Moved to `sanity/i18n`. Import `{Translate}` from `sanity/i18n` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "useCurrentLocale",
+        "kind": "value",
+        "message": "Moved to `sanity/i18n`. Import `{useCurrentLocale}` from `sanity/i18n` instead of `sanity/_unstable-embedded`."
+      },
+      {
+        "name": "useTranslation",
+        "kind": "value",
+        "message": "Moved to `sanity/i18n`. Import `{useTranslation}` from `sanity/i18n` instead of `sanity/_unstable-embedded`."
+      }
+    ],
+    "./migrate": [
+      {
+        "name": "dec",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `dec` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `dec` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "diffMatchPatch",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `diffMatchPatch` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `diffMatchPatch` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "inc",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `inc` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `inc` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "insert",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `insert` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `insert` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "set",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `set` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `set` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "setIfMissing",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `setIfMissing` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `setIfMissing` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "unset",
+        "kind": "value",
+        "message": "Removed from `sanity/migrate`: `sanity` exports a different `unset` (a form patch helper) and every export name now comes from exactly one entry. Import the migration operation `unset` from `@sanity/migrate` instead."
+      },
+      {
+        "name": "CreateIfNotExistsMutation",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `CreateIfNotExistsMutation` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `CreateIfNotExistsMutation` from `sanity` or the one in `@sanity/migrate`."
+      },
+      {
+        "name": "CreateMutation",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `CreateMutation` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `CreateMutation` from `sanity` or the one in `@sanity/migrate`."
+      },
+      {
+        "name": "CreateOrReplaceMutation",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `CreateOrReplaceMutation` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `CreateOrReplaceMutation` from `sanity` or the one in `@sanity/migrate`."
+      },
+      {
+        "name": "DeleteMutation",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `DeleteMutation` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `DeleteMutation` from `sanity` or the one in `@sanity/migrate`."
+      },
+      {
+        "name": "KeyedSegment",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{KeyedSegment}` from `sanity` instead of `sanity/migrate`."
+      },
+      {
+        "name": "Mutation",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `Mutation` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `Mutation` from `sanity` or the one in `@sanity/migrate`."
+      },
+      {
+        "name": "PatchMutation",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `PatchMutation` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `PatchMutation` from `sanity` or the one in `@sanity/migrate`."
+      },
+      {
+        "name": "Path",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{Path}` from `sanity` instead of `sanity/migrate`."
+      },
+      {
+        "name": "SanityDocument",
+        "kind": "type",
+        "message": "Removed from `sanity/migrate`: it was a different `SanityDocument` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `SanityDocument` from `sanity` or the one in `@sanity/migrate`."
+      }
+    ],
+    "./dashboard": [
+      {
+        "name": "AssetSource",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{AssetSource}` from `sanity` instead of `sanity/dashboard`."
+      },
+      {
+        "name": "AssetSourceComponentProps",
+        "kind": "type",
+        "message": "Moved to `sanity`. Import `{AssetSourceComponentProps}` from `sanity` instead of `sanity/dashboard`."
+      }
+    ],
+    "./_singletons": [
+      {
+        "name": "ValidationContext",
+        "kind": "value",
+        "message": "Renamed to `ValidationMarkersContext`, because `sanity` exports the `ValidationContext` type for custom validators. Import `{ValidationMarkersContext}` from `sanity/_singletons` instead (`@internal`, can change or disappear in any release)."
       }
     ]
   }

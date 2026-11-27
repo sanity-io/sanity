@@ -52,6 +52,46 @@ function blockBodyForDts(block) {
     .trim()
 }
 
+/**
+ * Names the bundled `.d.ts` binds at module scope through its own `import` statements, because
+ * other declarations in the file refer to them.
+ * @param {string} dts
+ */
+function importedBindings(dts) {
+  const bindings = new Set()
+  for (const match of dts.matchAll(/^import\s+(?:type\s+)?\{([^}]*)\}\s+from/gm)) {
+    for (const specifier of match[1].split(',')) {
+      const local = specifier
+        .trim()
+        .split(/\s+as\s+/)
+        .pop()
+        ?.replace(/^type\s+/, '')
+      if (local) bindings.add(local)
+    }
+  }
+  return bindings
+}
+
+/**
+ * A tombstone named like a binding the `.d.ts` already imports would declare it twice (TS2440),
+ * so that tombstone is declared under a private name and exported as the public one.
+ * @param {string} body
+ * @param {Set<string>} bindings
+ */
+function avoidImportedBindings(body, bindings) {
+  return body
+    .replace(/^export type (\w+) = never$/gm, (line, name) =>
+      bindings.has(name)
+        ? `type __tombstone_${name} = never\nexport type {__tombstone_${name} as ${name}}`
+        : line,
+    )
+    .replace(/^export declare const (\w+): never$/gm, (line, name) =>
+      bindings.has(name)
+        ? `declare const __tombstone_${name}: never\nexport {__tombstone_${name} as ${name}}`
+        : line,
+    )
+}
+
 const tsdownArgs = process.argv.slice(2)
 
 if (tsdownArgs.includes('--watch')) {
@@ -103,5 +143,6 @@ for (const {source, dts: dtsPath} of targets) {
   const marker = '/* export tombstones (v7) */'
   const current = readFileSync(dtsPath, 'utf8').replace(/\s*$/, '')
   if (current.includes(marker)) continue
-  writeFileSync(dtsPath, `${current}\n\n${marker}\n${body}\n`)
+  const safeBody = avoidImportedBindings(body, importedBindings(current))
+  writeFileSync(dtsPath, `${current}\n\n${marker}\n${safeBody}\n`)
 }

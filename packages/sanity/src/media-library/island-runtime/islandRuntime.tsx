@@ -39,7 +39,7 @@ import {
   useState,
 } from 'react'
 import {createRoot} from 'react-dom/client'
-import {type Locale, set, unset} from 'sanity'
+import {set, unset} from 'sanity'
 import {
   DocumentIdContext,
   FormValueContext,
@@ -47,6 +47,7 @@ import {
   LocaleContext,
   type LocaleContextValue,
 } from 'sanity/_singletons'
+import {type Locale} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {ChangeIndicatorsTracker} from '../../core/changeIndicators/tracker'

@@ -138,17 +138,13 @@ export {
   StudioFeedbackDialog,
   type StudioFeedbackDialogProps,
 } from '../core/feedback/components/StudioFeedbackDialog'
-export {
-  FeedbackContext,
-  useFeedback,
-  type UseFeedbackReturn,
-} from '../core/feedback/hooks/useFeedback'
+export {useFeedback, type UseFeedbackReturn} from '../core/feedback/hooks/useFeedback'
 export {
   useInStudioFeedback,
   type UseInStudioFeedbackReturn,
 } from '../core/feedback/hooks/useInStudioFeedback'
 export {useStudioFeedbackTags} from '../core/feedback/hooks/useStudioFeedbackTags'
-export {type FeedbackContextValue, type Sentiment} from '../core/feedback/types'
+export {type Sentiment} from '../core/feedback/types'
 export {
   findIndex,
   getItemKey,
@@ -352,7 +348,6 @@ export {
   type ConnectedStatus,
   CONNECTING,
   type ConnectingStatus,
-  type ConnectionStatus,
   type ConnectionStatusStore,
   type ConnectionStatusStoreOptions,
   createConnectionStatusStore,
@@ -380,7 +375,6 @@ export {checkoutPair, type CommitError} from '../core/store/document/document-pa
 export {editState} from '../core/store/document/document-pair/editState'
 export {emitOperation, operationEvents} from '../core/store/document/document-pair/operationEvents'
 export {
-  type Operation,
   type OperationArgs,
   type OperationImpl,
   type OperationsAPI,
@@ -728,13 +722,10 @@ export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
 export {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../core/variants/util/variantType'
 export {isVariantId} from '../core/variants/types'
 
-export {Rule as ConcreteRuleClass, type ValidationContext} from '@sanity/validation/_internal'
+export {Rule as ConcreteRuleClass} from '@sanity/validation/_internal'
 
 // From `sanity/structure`
-export {
-  createStructureBuilder,
-  type StructureBuilderOptions,
-} from '../structure/structureBuilder/createStructureBuilder'
+export {createStructureBuilder} from '../structure/structureBuilder/createStructureBuilder'
 export {
   documentFromEditor,
   documentFromEditorWithInitialValue,
@@ -752,44 +743,15 @@ export {
   getOrderingMenuItem,
   getOrderingMenuItemsForSchemaType,
   maybeSerializeMenuItem,
-  type SortMenuItem,
 } from '../structure/structureBuilder/MenuItem'
 export {maybeSerializeMenuItemGroup} from '../structure/structureBuilder/MenuItemGroup'
 export {HELP_URL, SerializeError} from '../structure/structureBuilder/SerializeError'
-export {type Builder} from '../structure/structureBuilder/StructureNodes'
 export {component, form} from '../structure/structureBuilder/views'
 export {maybeSerializeView} from '../structure/structureBuilder/views/View'
-export {
-  type BaseResolvedPaneNode,
-  type CustomComponentPaneNode,
-  type DocumentListPaneNode,
-  type DocumentPaneNode,
-  type ListPaneNode,
-  type PaneListItem,
-  type PaneListItemDivider,
-  type PaneMenuItem,
-  type PaneMenuItemGroup,
-  type PaneNode,
-  type PaneNodeResolver,
-  type RouterPaneSiblingContext,
-  type SerializablePaneNode,
-  type StrictVersionLayeringOptions,
-  type StructureToolContextValue,
-  type StructureToolFeatures,
-  type StructureToolPaneActionHandler,
-  type UnresolvedPaneNode,
-} from '../structure/types'
 
 // From `sanity/router`
 export {_createNode} from '../router/route'
 export {STICKY_PARAMS} from '../router/stickyParams'
-export {
-  type InternalSearchParam,
-  type MatchError,
-  type MatchOk,
-  type MatchResult,
-  type NextStateOrOptions,
-} from '../router/types'
 export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'
 
 // Retagged public in this PR, kept here as well. `sanity@6.17.0` through 6.20.0 shipped these on
@@ -807,16 +769,11 @@ export {type ManifestWorkspaceInput} from '../core/studio/manifest/types'
 export {type ObjectDiff} from '../core/field/types'
 export {Preview} from '../core/preview/components/Preview'
 export {PreviewCard} from '../core/components/previewCard/PreviewCard'
-export {RouterContext} from '../router/useRouter'
 export {SanityDefaultPreview} from '../core/preview/components/SanityDefaultPreview'
-export {SchemaError} from '../core/config/SchemaError'
 export {type StudioManifest} from '../core/studio/manifest/types'
 export {type StudioWorkspaceManifest} from '../core/studio/manifest/types'
 export {collate} from '../core/util/draftUtils'
-export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'
-export {defineDocumentFieldAction} from '../core/config/document/fieldActions/define'
-export {generateStudioManifest} from '../core/studio/manifest/generateStudioManifest'
 export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
 export {getPreviewValueWithFallback} from '../core/preview/utils/getPreviewValueWithFallback'
 export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
@@ -824,10 +781,8 @@ export {isDev} from '../core/environment'
 export {isRecord} from '../core/util/isRecord'
 export {pathToString} from '../core/field/paths/helpers'
 export {pathsAreEqual} from '../core/field/paths/helpers'
-export {resolveConfig} from '../core/config/resolveConfig'
 export {stringToPath} from '../core/field/paths/helpers'
 export {truncateString} from '../core/util/unicodeString'
-export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 export {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 export {useDocumentOperation} from '../core/hooks/useDocumentOperation'
 export {useDocumentPairPermissions} from '../core/store/grants/documentPairPermissions'
@@ -1010,6 +965,14 @@ export type ArrayOfObjectsMemberProps = never
  */
 export type AuthStoreOptions = never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{BaseResolvedPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type BaseResolvedPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{Builder}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type Builder = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const COMMENTS_INSPECTOR_NAME: never
@@ -1110,6 +1073,10 @@ export declare const ConfirmDeleteDialog: never
  */
 export type ConfirmDeleteDialogProps = never
 /**
+ * @deprecated Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `ConnectionStatus` than the one `sanity/presentation` exports, and every export name now comes from exactly one entry. Use the `ConnectionStatus` from `sanity/presentation`.
+ */
+export type ConnectionStatus = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export type ConnectorContextValue = never
@@ -1125,6 +1092,10 @@ export type CreateReferenceOption = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const CrossDatasetReferencePreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{CustomComponentPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type CustomComponentPaneNode = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1238,6 +1209,10 @@ export declare const DocumentInspectorHeader: never
  */
 export declare const DocumentListPane: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{DocumentListPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentListPaneNode = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
  */
 export type DocumentListPaneProps = never
@@ -1245,6 +1220,10 @@ export type DocumentListPaneProps = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const DocumentPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{DocumentPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentPaneNode = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
  */
@@ -1305,6 +1284,14 @@ export type ExpandPathOperation = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const FallbackDiff: never
+/**
+ * @deprecated Moved to `sanity/_singletons`. Import `{FeedbackContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FeedbackContext: never
+/**
+ * @deprecated Moved to `sanity/_singletons`. Import `{FeedbackContextValue}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type FeedbackContextValue = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1502,6 +1489,10 @@ export type HiddenField = never
  */
 export declare const HoveredFieldProvider: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{InternalSearchParam}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type InternalSearchParam = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export type IsEqualFunction = never
@@ -1513,6 +1504,22 @@ export declare const IsLastPaneProvider: never
  * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
  */
 export type LegacyThemeTints = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{ListPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type ListPaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{MatchError}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type MatchError = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{MatchOk}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type MatchOk = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{MatchResult}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type MatchResult = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1546,6 +1553,10 @@ export type MetaInfoProps = never
  */
 export type MutationPatch = never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. Import `{NextStateOrOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type NextStateOrOptions = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const NoChanges: never
@@ -1574,6 +1585,10 @@ export declare const ObjectMembers: never
  */
 export type ObjectMembersProps = never
 /**
+ * @deprecated Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `Operation` than the one `sanity/migrate` exports, and every export name now comes from exactly one entry. Use the `Operation` from `sanity/migrate`.
+ */
+export type Operation = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const Pane: never
@@ -1581,6 +1596,30 @@ export declare const Pane: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const PaneContent: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneListItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneListItem = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneListItemDivider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneListItemDivider = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneMenuItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneMenuItem = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneMenuItemGroup}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneMenuItemGroup = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{PaneNodeResolver}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type PaneNodeResolver = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1642,17 +1681,57 @@ export declare const RevertChangesButton: never
  */
 export declare const RevertChangesConfirmDialog: never
 /**
+ * @deprecated Moved to `sanity/_singletons`. Import `{RouterContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const RouterContext: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{RouterPaneSiblingContext}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type RouterPaneSiblingContext = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const SANITY_PATCH_TYPE: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_singletons`. Import `{SchedulesContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const SchedulesContext: never
+/**
+ * @deprecated Moved to `sanity`. Import `{SchemaError}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const SchemaError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{SerializablePaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type SerializablePaneNode = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export type SetActiveGroupOperation = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{SortMenuItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type SortMenuItem = never
+/**
+ * @deprecated Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `StrictVersionLayeringOptions` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `StrictVersionLayeringOptions` from `sanity`.
+ */
+export type StrictVersionLayeringOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureBuilderOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureBuilderOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureToolContextValue}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolContextValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureToolFeatures}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolFeatures = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{StructureToolPaneActionHandler}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolPaneActionHandler = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1709,6 +1788,10 @@ export type TrackerContextGetSnapshot = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export type TrackerContextStore = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. Import `{UnresolvedPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type UnresolvedPaneNode = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1774,6 +1857,10 @@ export declare const buildRangeDecorationSelectionsFromComments: never
  */
 export declare const buildTextSelectionFromFragment: never
 /**
+ * @deprecated Moved to `sanity`. Import `{createDefaultIcon}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const createDefaultIcon: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const createPatchChannel: never
@@ -1810,6 +1897,10 @@ export declare const defaultRenderItem: never
  */
 export declare const defaultRenderPreview: never
 /**
+ * @deprecated Moved to `sanity`. Import `{defineDocumentFieldAction}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const defineDocumentFieldAction: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const emptyValuesByType: never
@@ -1821,6 +1912,10 @@ export declare const encodePath: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const fromMutationPatches: never
+/**
+ * @deprecated Moved to `sanity`. Import `{generateStudioManifest}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const generateStudioManifest: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1898,6 +1993,10 @@ export declare const renderStudio: never
  */
 export declare const resolveConditionalProperty: never
 /**
+ * @deprecated Moved to `sanity`. Import `{resolveConfig}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const resolveConfig: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const resolveDiffComponent: never
@@ -1909,6 +2008,10 @@ export declare const setAtPath: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const toMutationPatches: never
+/**
+ * @deprecated Moved to `sanity`. Import `{uploadSchema}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const uploadSchema: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1950,7 +2053,7 @@ export declare const useDocumentDivergences: never
  */
 export declare const useDocumentForm: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/structure`. Import `{useDocumentPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const useDocumentPane: never
 /**

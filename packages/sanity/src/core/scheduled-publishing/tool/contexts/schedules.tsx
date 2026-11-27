@@ -7,11 +7,6 @@ import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
 
-// re-exported here so the public entry can surface the context without
-// depending on sanity/_singletons directly (boundaries policy)
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {SchedulesContext}
-
 const EMPTY_SCHEDULE: Schedule[] = []
 
 function SchedulesProvider({
