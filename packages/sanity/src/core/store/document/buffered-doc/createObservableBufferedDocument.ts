@@ -38,6 +38,15 @@ interface CommitAction {
 type Action = MutationAction | CommitAction
 
 /**
+ * Commits the buffered changes without waiting for the result. A failed commit is reported
+ * through the commit handler (see `checkoutPair`), and a terminal error cancels it, which rejects
+ * every commit queued behind it. Those rejections would otherwise go unhandled.
+ */
+function commitInBackground(bufferedDocument: BufferedDocument): void {
+  bufferedDocument.commit().catch(() => {})
+}
+
+/**
  * Represents "commit requests" from the mutator.
  * These are emitted from the BufferedDocument instance's `requestHandler` callback
  *
@@ -211,7 +220,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
           // we received a new snapshot and already got an old one. When we receive a snapshot again
           // it is usually because the connection has been down. Attempt to save pending changes (if any)
           replacedBufferedDocuments.add(bufferedDocument)
-          void bufferedDocument.commit()
+          commitInBackground(bufferedDocument)
         }
         // mark as consistent when a new snapshot is received
         firstMutationReceivedAt = undefined
@@ -257,7 +266,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        void bufferedDocument.commit()
+        commitInBackground(bufferedDocument)
       }
     }),
     // We subscribe to this only for the side effects
@@ -272,12 +281,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
 
   const commit = () => {
-    currentBufferedDocument$
-      .pipe(
-        take(1),
-        tap((bufferedDocument) => bufferedDocument.commit()),
-      )
-      .subscribe()
+    currentBufferedDocument$.pipe(take(1), tap(commitInBackground)).subscribe()
   }
 
   // A stream of this document's snapshot
