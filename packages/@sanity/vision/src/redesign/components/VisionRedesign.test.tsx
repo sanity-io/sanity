@@ -6587,15 +6587,17 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.keyDown(getQueryEditor(), NEXT_TAB_KEYS)
 
     expect(logged(VisionShortcutUsed.name)).toEqual([
-      [VisionShortcutUsed, {shortcut: 'new-tab'}],
-      [VisionShortcutUsed, {shortcut: 'next-tab'}],
-      [VisionShortcutUsed, {shortcut: 'close-tab'}],
-      [VisionShortcutUsed, {shortcut: 'next-tab'}],
+      [VisionShortcutUsed, withVisionVersion({shortcut: 'new-tab'})],
+      [VisionShortcutUsed, withVisionVersion({shortcut: 'next-tab'})],
+      [VisionShortcutUsed, withVisionVersion({shortcut: 'close-tab'})],
+      [VisionShortcutUsed, withVisionVersion({shortcut: 'next-tab'})],
     ])
     expect(logged(VisionTabsChanged.name)).toEqual([
-      [VisionTabsChanged, {count: 2, action: 'add'}],
-      [VisionTabsChanged, {count: 1, action: 'close'}],
+      [VisionTabsChanged, withVisionVersion({count: 2, action: 'add'})],
+      [VisionTabsChanged, withVisionVersion({count: 1, action: 'close'})],
     ])
-    expect(logged(VisionTabUsed.name)).toEqual([[VisionTabUsed, {action: 'select'}]])
+    expect(logged(VisionTabUsed.name)).toEqual([
+      [VisionTabUsed, withVisionVersion({action: 'select'})],
+    ])
   })
 })
