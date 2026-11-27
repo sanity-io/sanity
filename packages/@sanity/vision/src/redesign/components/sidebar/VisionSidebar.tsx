@@ -198,19 +198,19 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
             <Flex flexDirection="column" gap={1}>
               <SidebarItem
                 expanded={expanded}
-                icon={TransferIcon}
-                label={t('vision.panel.delta')}
-                onClick={(event) => toggleDrawer('delta', event)}
-                selected={drawer === 'delta'}
-                testId="vision-sidebar-delta"
-              />
-              <SidebarItem
-                expanded={expanded}
                 icon={EditIcon}
                 label={t('vision.panel.mutate')}
                 onClick={(event) => toggleDrawer('mutate', event)}
                 selected={drawer === 'mutate'}
                 testId="vision-sidebar-mutate"
+              />
+              <SidebarItem
+                expanded={expanded}
+                icon={TransferIcon}
+                label={t('vision.panel.delta')}
+                onClick={(event) => toggleDrawer('delta', event)}
+                selected={drawer === 'delta'}
+                testId="vision-sidebar-delta"
               />
             </Flex>
           </Box>
