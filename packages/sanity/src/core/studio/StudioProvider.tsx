@@ -14,6 +14,7 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMa
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
+import {importAuthenticatedStudio} from './preloadSignedInStudio'
 import {AuthenticateScreen} from './screens/AuthenticateScreen'
 import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
 import {NotFoundScreen} from './screens/NotFoundScreen'
@@ -26,7 +27,7 @@ import {ConfigErrorGate} from './workspaces/ConfigErrorGate'
 import {VisibleWorkspacesProvider} from './workspaces/VisibleWorkspacesProvider'
 import {WorkspacesProvider} from './workspaces/WorkspacesProvider'
 
-const AuthenticatedStudio = lazy(() => import('./AuthenticatedStudio'))
+const AuthenticatedStudio = lazy(importAuthenticatedStudio)
 
 /**
  * @hidden

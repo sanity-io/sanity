@@ -4,8 +4,10 @@ import {useEffect} from 'react'
  * Starts fetching the code-split studio shell (default layout and navbar) so that the fetch
  * overlaps with workspace loading instead of adding a round trip once the workspace is ready.
  * The imports resolve to the same chunks the lazy components request, so nothing is loaded twice.
+ *
+ * @internal
  */
-function preloadStudioShell(): void {
+export function preloadStudioShell(): void {
   Promise.all([
     import('./StudioLayoutComponent.lazy'),
     import('./components/navbar/StudioNavbar.lazy'),

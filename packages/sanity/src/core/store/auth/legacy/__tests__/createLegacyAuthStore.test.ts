@@ -12,7 +12,11 @@ import {stubMessageBusHost} from '../../../../../../test/testUtils/stubMessageBu
 import {promiseWithResolvers} from '../../../../util/promiseWithResolvers'
 import {type AuthStore} from '../../types'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
-import {_createLegacyAuthStore, createLegacyAuthStore} from '../createLegacyAuthStore'
+import {
+  _createLegacyAuthStore,
+  createLegacyAuthStore,
+  hasSessionHint,
+} from '../createLegacyAuthStore'
 import {consumeHashToken} from '../hashToken'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
@@ -1622,6 +1626,75 @@ describe('createLegacyAuthStore: currentUser attributes', () => {
 
     const state = await waitForState(store, (s) => s.authenticated)
     expect(state.currentUser?.attributes).toEqual(MOCK_USER.attributes)
+  })
+})
+
+describe('createLegacyAuthStore: hasSessionHint', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+    vi.restoreAllMocks()
+  })
+
+  function createStore(loginMethod: 'cookie' | 'token' | 'dual', authenticated = true) {
+    const mock = createMockClientFactory()
+    mock.setAuthenticated(authenticated)
+    return _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod,
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+  }
+
+  it('has no hint without a stored token or a previous cookie session', () => {
+    expect(hasSessionHint(createStore('dual'))).toBe(false)
+  })
+
+  it('hints at a session when a token is stored, unless the store only signs in with cookies', () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
+
+    expect(hasSessionHint(createStore('token'))).toBe(true)
+    expect(hasSessionHint(createStore('dual'))).toBe(true)
+    expect(hasSessionHint(createStore('cookie'))).toBe(false)
+  })
+
+  it.each(['cookie', 'dual'] as const)(
+    'hints at a session on the next visit after a cookie sign-in (%s)',
+    async (loginMethod) => {
+      const previousVisit = createStore('cookie')
+      await waitForState(previousVisit, (s) => s.authenticated)
+
+      expect(hasSessionHint(createStore(loginMethod))).toBe(true)
+    },
+  )
+
+  it('ignores a previous cookie session when the store only signs in with tokens', async () => {
+    const previousVisit = createStore('cookie')
+    await waitForState(previousVisit, (s) => s.authenticated)
+
+    expect(hasSessionHint(createStore('token'))).toBe(false)
+  })
+
+  it('has no hint on the next visit after the cookie session was rejected', async () => {
+    const previousVisit = createStore('cookie', false)
+    await waitForState(previousVisit, (s) => !s.authenticated)
+
+    expect(hasSessionHint(createStore('cookie'))).toBe(false)
+  })
+
+  it('has no hint for a store it did not create', () => {
+    const client = createMockClientFactory().factory({projectId: PROJECT_ID})
+    const store: AuthStore = {state: of({authenticated: true, currentUser: MOCK_USER, client})}
+
+    expect(hasSessionHint(store)).toBe(false)
   })
 })
 

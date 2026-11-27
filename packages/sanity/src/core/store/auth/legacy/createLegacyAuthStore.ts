@@ -42,9 +42,14 @@ import {isStaging} from '../../../environment/isStaging'
 import {type RequestFailureDiagnostics} from '../../../studio/requestErrors/diagnoseRequestFailure'
 import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
 import {canonicalHash} from '../../../util/canonicalHash'
+import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
 import {type AuthProbeResult, type AuthState, type AuthStore} from '../types'
 import {createAuthIdProbe} from '../utils/createAuthIdProbe'
-import {createBroadcastState} from '../utils/createBroadcastState'
+import {
+  createBroadcastState,
+  createLocalStorageStorage,
+  createMemoryStorage,
+} from '../utils/createBroadcastState'
 import {getCurrentUser, withoutRequestHandler} from '../utils/getCurrentUser'
 import {isCookielessCompatibleLoginMethod} from './asserters'
 import {
@@ -212,6 +217,20 @@ const dashboardAuthStores = new WeakSet<AuthStore>()
  */
 export function isDashboardAuthStore(store: AuthStore): boolean {
   return dashboardAuthStores.has(store)
+}
+
+const sessionHints = new WeakMap<AuthStore, () => boolean>()
+
+/**
+ * Whether the store has a credential it is likely signed in with: a stored token, or a cookie
+ * session the previous visit ended signed in with. Answers synchronously, without a request, so
+ * the studio can start loading what a signed-in visit needs before `/users/me` has answered. The
+ * API may still reject the credential. `false` for stores that cannot tell without asking.
+ *
+ * @internal
+ */
+export function hasSessionHint(store: AuthStore): boolean {
+  return sessionHints.get(store)?.() ?? false
 }
 
 /**
@@ -385,9 +404,17 @@ function createStandaloneAuthStore({
   // But whenever we fetch the user in one tab we can broadcast the status to other tabs. If a tab
   // has a different status that what it received from another tab, it fetches. This ensures all
   // tabs converge on the same auth state
+  // The state is stored so the next visit can tell it was signed in, which is only a hint: the
+  // cookie may have expired since.
+  let hadCookieSession = false
+  const cookieAuthStateKey = getCookieAuthStateKey(projectId)
   const cookieAuthState = createBroadcastState<{authenticated: boolean | 'pending'}>(
-    getCookieAuthStateKey(projectId),
-    () => ({authenticated: 'pending'}),
+    cookieAuthStateKey,
+    (previous) => {
+      hadCookieSession = previous?.authenticated === true
+      return {authenticated: 'pending'}
+    },
+    supportsLocalStorage ? createLocalStorageStorage(cookieAuthStateKey) : createMemoryStorage(),
   )
 
   const clientFactory = clientFactoryOption ?? createSanityClient
@@ -975,7 +1002,7 @@ function createStandaloneAuthStore({
     isHandlingCallback: () => _isHandlingCallback,
   })
 
-  return {
+  const store: AuthStore = {
     handleCallbackUrl,
     state: authState$,
     token: tokenStorage.value.pipe(map((t) => t?.token || null)),
@@ -990,6 +1017,13 @@ function createStandaloneAuthStore({
       cookieState: cookieAuthState,
     }),
   }
+  sessionHints.set(
+    store,
+    () =>
+      (loginMethod !== 'cookie' && Boolean(tokenStorage.get()?.token)) ||
+      (loginMethod !== 'token' && hadCookieSession),
+  )
+  return store
 }
 
 /**
