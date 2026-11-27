@@ -697,7 +697,10 @@ Rules that follow from this:
   them relatively without them being exported from the public `sanity/router` entry.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
-  404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
+  404 on the module host. A nested entry (`…/1`, `…/structure`) is uploaded to
+  `bare/<entry>.mjs` with its directory kept (`@repo/bundle-manager`), and it also needs the
+  module server (`sanity-io/module-server`) to route subpaths with more than one segment.
+  `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 - A change to any entry's export list also changes `packages/sanity/test/__snapshots__/exports.test.ts.snap`,
   a unit test in the `sanity` project rather than part of `pnpm test:exports`. It imports the
