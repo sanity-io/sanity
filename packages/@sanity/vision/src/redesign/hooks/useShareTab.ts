@@ -143,9 +143,7 @@ export function useShareTab(
       return parsed !== null && tabMatchesParsedQuery(current.tab, parsed, resolved)
     })
     if (duplicate) {
-      if (duplicate.isOwnedByCurrentUser) {
-        actorRef.send({type: 'tab.setSharedId', id: tab.id, sharedId: duplicate._key})
-      }
+      actorRef.send({type: 'tab.setSharedId', id: tab.id, sharedId: duplicate._key})
       toast.push({
         closable: true,
         status: 'info',

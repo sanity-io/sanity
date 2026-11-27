@@ -38,7 +38,7 @@ import {
   type VisionTab,
   type VisionTabOptions,
 } from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {redesignEditorTheme, redesignFolding} from '../../util/editorTheme'
@@ -58,6 +58,7 @@ import {queryParamHighlight} from '../../util/paramHighlight'
 import {isParamLintFinding, type ParamLintTarget, paramValueRange} from '../../util/paramLint'
 import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
+import {findLinkedSharedQuery} from '../../util/savedQueryTab'
 import {createQuerySchema} from '../../util/schemaCheck'
 import {VISION_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
@@ -86,6 +87,7 @@ import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {RequestOverrideChips} from './RequestOverrideChips'
+import {SharedQueryPresence} from './SharedQueryPresence'
 
 export interface RequestPanelProps {
   tab: VisionTab
@@ -194,6 +196,8 @@ export function RequestPanel(props: RequestPanelProps) {
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const telemetry = useVisionTelemetry()
+  const {queries} = useSavedQueriesApi()
+  const sharedQueryId = findLinkedSharedQuery(tab, queries)?._key
   // The GROQ editor setup, the diagnostics reporting to the Lint tab, and the documentation,
   // completions and extraction of functions, which know the library. Only the library's facet
   // changes when a function is saved; the rest of the setup stays as it is
@@ -786,9 +790,12 @@ export function RequestPanel(props: RequestPanelProps) {
             data-scrolled={queryScrolled}
             data-testid="vision-query-toolbar"
           >
-            <Label aria-label={t('query.label')} className={styles.paneToolbarLabel} muted size={1}>
-              {t('query.label')}
-            </Label>
+            <Flex alignItems="center" className={styles.paneToolbarLabel} gap={2}>
+              <Label aria-label={t('query.label')} muted size={1}>
+                {t('query.label')}
+              </Label>
+              {sharedQueryId !== undefined && <SharedQueryPresence documentId={sharedQueryId} />}
+            </Flex>
             <Flex alignItems="center" data-testid="vision-query-toolbar-actions" gap={1}>
               <EditorCornerActions
                 copied={copied === 'query'}
