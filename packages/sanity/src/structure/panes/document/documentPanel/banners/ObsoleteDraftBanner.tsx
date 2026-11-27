@@ -12,7 +12,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Text, Flex} from 'ui5'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
@@ -23,7 +23,7 @@ import {
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
-import {Banner, BannerPrimaryAction} from './Banner'
+import {Banner} from './Banner'
 
 interface ObsoleteDraftBannerProps {
   displayed: Partial<SanityDocument> | null
@@ -46,7 +46,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {t} = useTranslation(structureLocaleNamespace)
   const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
-  // With Variants off the banner keeps its earlier layout and its green Publish button
+  // With Variants on, Publish is the neutral default primary and Compare and Discard are ghost;
+  // with Variants off they keep their earlier tones (green Publish, filled caution Discard)
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
@@ -118,77 +119,53 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
       <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
     </Text>
   )
-  const compareButton = (
-    <Button
-      text={t('banners.obsolete-draft.actions.compare-draft.text')}
-      mode="ghost"
-      disabled={!publishedId || Boolean(actionRequested)}
-      tooltipProps={{
-        content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
-        disabled: Boolean(publishedId),
-      }}
-      onClick={compareDraft}
-    />
-  )
-  const publishButton = (
-    <Button
-      onClick={handlePublish}
-      text={t('banners.obsolete-draft.actions.publish-draft.text')}
-      disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
-      tooltipProps={
-        publishDisabledReason
-          ? {content: publishDisabledReason}
-          : isEditBlocking
-            ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
-            : undefined
-      }
-      loading={isPublishing}
-      tone={variantsEnabled ? 'default' : 'positive'}
-    />
-  )
-  const discardButton = (
-    <Button
-      onClick={handleDiscard}
-      disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
-      text={t('banners.obsolete-draft.actions.discard-draft.text')}
-      tooltipProps={
-        discardDisabledReason
-          ? {content: discardDisabledReason}
-          : isEditBlocking
-            ? {content: t('banners.live-edit-draft-banner.discard.tooltip')}
-            : undefined
-      }
-      loading={isDiscarding}
-      mode={variantsEnabled ? 'ghost' : undefined}
-      tone="caution"
-    />
-  )
-
-  if (!variantsEnabled) {
-    return (
-      <Banner
-        content={
-          <Flex alignItems="center" justifyContent="space-between" gap={2}>
-            {message}
-            {compareButton}
-            {publishButton}
-            {discardButton}
-          </Flex>
-        }
-        data-testid="live-edit-type-banner"
-        icon={ErrorOutlineIcon}
-      />
-    )
-  }
 
   return (
     <Banner
       content={message}
       actions={
         <>
-          {compareButton}
-          <BannerPrimaryAction>{publishButton}</BannerPrimaryAction>
-          {discardButton}
+          <Button
+            text={t('banners.obsolete-draft.actions.compare-draft.text')}
+            mode="ghost"
+            disabled={!publishedId || Boolean(actionRequested)}
+            tooltipProps={{
+              content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
+              disabled: Boolean(publishedId),
+            }}
+            onClick={compareDraft}
+          />
+          <Button
+            onClick={handlePublish}
+            text={t('banners.obsolete-draft.actions.publish-draft.text')}
+            disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
+            tooltipProps={
+              publishDisabledReason
+                ? {content: publishDisabledReason}
+                : isEditBlocking
+                  ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
+                  : undefined
+            }
+            loading={isPublishing}
+            // Variants on: the neutral default primary. Off: green, as before
+            tone={variantsEnabled ? 'default' : 'positive'}
+          />
+          <Button
+            onClick={handleDiscard}
+            disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
+            text={t('banners.obsolete-draft.actions.discard-draft.text')}
+            tooltipProps={
+              discardDisabledReason
+                ? {content: discardDisabledReason}
+                : isEditBlocking
+                  ? {content: t('banners.live-edit-draft-banner.discard.tooltip')}
+                  : undefined
+            }
+            loading={isDiscarding}
+            // Variants on: ghost (secondary). Off: filled, as before
+            mode={variantsEnabled ? 'ghost' : undefined}
+            tone="caution"
+          />
         </>
       }
       data-testid="live-edit-type-banner"
