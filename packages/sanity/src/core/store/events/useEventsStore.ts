@@ -36,6 +36,7 @@ import {type EventsStore, INITIAL_EVENTS_VALUE} from './types'
  *
  * Also exposes per-revision document fetching (`getDocumentAtRevision`, plus resolved `revision` /
  * `sinceRevision` snapshots), `getChangesList` (diff between the resolved revisions),
+ * `getEditChanges` (what a range of edit transactions changed),
  * `expandEvent`, `loadMoreEvents` and `lastNonDeletedRevId` (newest event that isn't a delete —
  * used to restore deleted documents).
  *
@@ -155,6 +156,7 @@ export function useEventsStore({
     loadMoreEvents: eventsStore.loadMoreEvents,
     expandEvent: eventsStore.handleExpandEvent,
     getChangesList,
+    getEditChanges: eventsStore.getEditChanges,
     getDocumentAtRevision,
     lastNonDeletedRevId,
   }

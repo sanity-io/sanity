@@ -467,8 +467,15 @@ export interface EditDocumentVersionEvent extends BaseEvent {
   }[]
   /**
    * Present when an edit was already published, then the user decided to expand the event.
+   * For an event with `isTransaction`, this is the id of the grouped edit event it belongs to.
    */
   parentId?: string
+  /**
+   * This is added client side to enhance the UI.
+   * Set on the events listing the single transactions of a grouped edit event, so the user can
+   * expand the group and select any of them.
+   */
+  isTransaction?: boolean
 }
 
 /**
@@ -495,6 +502,15 @@ export interface EventsStore {
   findRangeForSince: (nextSince: string) => [string | null, string | null]
   loadMoreEvents: () => void
   getChangesList: () => Observable<{
+    diff: ObjectDiff | null
+    loading: boolean
+    error: Error | null
+  }>
+  /**
+   * What the edit transactions from `fromRevisionId` to `toRevisionId` (both included) changed,
+   * attributed to the transaction that made each change.
+   */
+  getEditChanges: (range: {fromRevisionId: string; toRevisionId: string}) => Observable<{
     diff: ObjectDiff | null
     loading: boolean
     error: Error | null

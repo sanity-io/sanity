@@ -1,6 +1,6 @@
 import {type AvatarSize, AvatarStack, Skeleton} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
@@ -69,6 +69,12 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   minimal: true,
   useTemporalPhrase: true,
 }
+
+const DATE_TIME_FORMAT_OPTIONS = {dateStyle: 'medium', timeStyle: 'short'} as const
+// The transactions of an edit event happen within minutes of each other, so they are told apart
+// by their time, down to the second.
+const TRANSACTION_DATE_TIME_FORMAT_OPTIONS = {dateStyle: 'medium', timeStyle: 'medium'} as const
+const TRANSACTION_TIME_FORMAT_OPTIONS = {timeStyle: 'medium'} as const
 
 const AvatarSkeleton = styled(Skeleton)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -160,18 +166,24 @@ function PublishEventReleaseBadge({releaseId}: {releaseId: string | undefined}) 
 interface TimelineItemProps {
   event: DocumentGroupEvent
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
+  /** The fields the event changed, shown next to its label. */
+  changedFields?: ReactNode
 }
 /**
  * @internal
  */
-export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
+export function Event({event, showChangesBy = 'tooltip', changedFields}: TimelineItemProps) {
   const {t} = useTranslation('studio')
   const {type, timestamp, documentVariantType} = event
 
   const IconComponent = TIMELINE_ICON_COMPONENTS[type]
   const contributors = 'contributors' in event ? event.contributors || [] : []
+  const isTransaction = isEditDocumentVersionEvent(event) && Boolean(event.isTransaction)
 
-  const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
+  const dateFormat = useDateTimeFormat(
+    isTransaction ? TRANSACTION_DATE_TIME_FORMAT_OPTIONS : DATE_TIME_FORMAT_OPTIONS,
+  )
+  const timeFormat = useDateTimeFormat(TRANSACTION_TIME_FORMAT_OPTIONS)
   const date = new Date(timestamp)
 
   const updatedTimeAgo = useRelativeTime(date || '', RELATIVE_TIME_OPTIONS)
@@ -198,16 +210,19 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             {IconComponent && <Icon icon={IconComponent} size={0} />}
           </IconBox>
         </div>
-        <VStack gap={2}>
-          <Text size={1} weight="medium" as="div" trim={true}>
-            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
-            {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
-              <>
-                {' '}
-                <PublishEventReleaseBadge releaseId={event.releaseId} />
-              </>
-            )}
-          </Text>
+        <VStack gap={2} style={{minWidth: 0}}>
+          <Flex alignItems="center" gap={2} style={{minWidth: 0}}>
+            <Text size={1} weight="medium" as="div" trim={true} style={{flexShrink: 0}}>
+              {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
+              {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
+                <>
+                  {' '}
+                  <PublishEventReleaseBadge releaseId={event.releaseId} />
+                </>
+              )}
+            </Text>
+            {changedFields}
+          </Flex>
 
           <Text
             as="time"
@@ -217,7 +232,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             title={formattedTimestamp}
             trim={true}
           >
-            {updatedTimeAgo}
+            {isTransaction ? timeFormat.format(date) : updatedTimeAgo}
           </Text>
         </VStack>
 

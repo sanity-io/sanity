@@ -61,12 +61,15 @@ describe('getExpandEvents', () => {
       versionRevisionId: 'published-version-rev',
       creationEvent,
     })
-    mockGetDocumentTransactions.mockResolvedValue([
-      editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)}),
-    ])
+    const transaction = editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)})
+    mockGetDocumentTransactions.mockResolvedValue([transaction])
 
-    const {handleExpandEvent, expandedEvents$} = getExpandEvents({client, documentId: DRAFT_ID})
+    const {handleExpandEvent, expandedEvents$, expandedTransactions$} = getExpandEvents({
+      client,
+      documentId: DRAFT_ID,
+    })
     const {values, subscription} = collectEmissions(expandedEvents$)
+    const transactions = collectEmissions(expandedTransactions$)
 
     await handleExpandEvent(publish)
 
@@ -83,6 +86,9 @@ describe('getExpandEvents', () => {
         parentId: publish.id,
       }),
     ])
+    // Kept, so what the edits changed is rebuilt without fetching them again.
+    expect(transactions.values.at(-1)).toEqual([[transaction]])
+    transactions.subscription.unsubscribe()
     subscription.unsubscribe()
   })
 
@@ -117,6 +123,66 @@ describe('getExpandEvents', () => {
     expect(values.at(-1)).toEqual([])
     consoleError.mockRestore()
     subscription.unsubscribe()
+  })
+
+  it('freezes an expanded edit group without fetching anything', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const {client} = createMockClient()
+    const group = editDocumentVersionEvent({
+      id: 'tx-2',
+      revisionId: 'tx-2',
+      transactions: [
+        {
+          type: 'editTransaction',
+          author: 'author-1',
+          timestamp: minutesAfterBase(2),
+          revisionId: 'tx-2',
+        },
+        {
+          type: 'editTransaction',
+          author: 'author-1',
+          timestamp: minutesAfterBase(1),
+          revisionId: 'tx-1',
+        },
+      ],
+    })
+
+    const {handleExpandEvent, expandedEvents$, frozenEditGroups$} = getExpandEvents({
+      client,
+      documentId: DRAFT_ID,
+    })
+    const expanded = collectEmissions(expandedEvents$)
+    const frozen = collectEmissions(frozenEditGroups$)
+
+    await handleExpandEvent(group)
+    // Expanding it again doesn't emit a new value.
+    await handleExpandEvent(group)
+
+    expect(mockGetDocumentTransactions).not.toHaveBeenCalled()
+    expect(consoleError).not.toHaveBeenCalled()
+    expect(expanded.values).toEqual([[]])
+    expect(frozen.values).toHaveLength(2)
+    expect(frozen.values.at(-1)).toEqual(
+      new Map([
+        ['tx-2', 'tx-2'],
+        ['tx-1', 'tx-2'],
+      ]),
+    )
+    consoleError.mockRestore()
+    expanded.subscription.unsubscribe()
+    frozen.subscription.unsubscribe()
+  })
+
+  it('does not freeze edit events nested under a publish, nor listed transactions', async () => {
+    const {client} = createMockClient()
+    const {handleExpandEvent, frozenEditGroups$} = getExpandEvents({client, documentId: DRAFT_ID})
+    const frozen = collectEmissions(frozenEditGroups$)
+
+    await handleExpandEvent(editDocumentVersionEvent({parentId: 'tx-publish'}))
+    await handleExpandEvent(editDocumentVersionEvent({parentId: 'tx-group', isTransaction: true}))
+
+    expect(frozen.values).toEqual([new Map()])
+    frozen.subscription.unsubscribe()
   })
 
   it('propagates transaction fetch failures as a rejected promise (known quirk: callers do not catch)', async () => {

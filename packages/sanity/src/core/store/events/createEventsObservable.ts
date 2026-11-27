@@ -1,7 +1,7 @@
 import {combineLatest, map, type Observable} from 'rxjs'
 
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
-import {mergeEditEvents} from './getEditEvents'
+import {addEditTransactionEvents, type FrozenEditGroups, mergeEditEvents} from './getEditEvents'
 import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
@@ -15,6 +15,7 @@ interface CreateEventsObservableOptions {
   events$: Observable<EventsObservableValue>
   remoteEdits$: Observable<(UpdateLiveDocumentEvent | EditDocumentVersionEvent)[]>
   expandedEvents$: Observable<EditDocumentVersionEvent[]>
+  frozenEditGroups$: Observable<FrozenEditGroups>
 }
 
 const addDocumentVariantTypeToEvents = (
@@ -54,25 +55,32 @@ export function applyVariantTransforms(
  * into the final event list the UI consumes.
  *
  * Per emission, merges and sorts all events newest-first ({@link sortEvents}), regroups the
- * fetched and live edit events together ({@link mergeEditEvents}), then applies the variant
- * transforms ({@link applyVariantTransforms}).
+ * fetched and live edit events together keeping the edit groups the user expanded as they are
+ * ({@link mergeEditEvents}), applies the variant transforms ({@link applyVariantTransforms}),
+ * then lists the transactions of every grouped edit event after it
+ * ({@link addEditTransactionEvents}).
  */
 export function createEventsObservable({
   events$,
   remoteEdits$,
   expandedEvents$,
+  frozenEditGroups$,
   documentId,
 }: CreateEventsObservableOptions) {
   const documentVariantType = getDocumentVariantType(documentId)
-  return combineLatest([events$, remoteEdits$, expandedEvents$]).pipe(
-    map(([{events, nextCursor, loading, error}, remoteEdits, expandedEvents]) => ({
-      events: applyVariantTransforms(
-        mergeEditEvents(sortEvents({remoteEdits, events, expandedEvents})),
-        documentVariantType,
-      ),
-      nextCursor,
-      loading,
-      error,
-    })),
+  return combineLatest([events$, remoteEdits$, expandedEvents$, frozenEditGroups$]).pipe(
+    map(
+      ([{events, nextCursor, loading, error}, remoteEdits, expandedEvents, frozenEditGroups]) => ({
+        events: addEditTransactionEvents(
+          applyVariantTransforms(
+            mergeEditEvents(sortEvents({remoteEdits, events, expandedEvents}), frozenEditGroups),
+            documentVariantType,
+          ),
+        ),
+        nextCursor,
+        loading,
+        error,
+      }),
+    ),
   )
 }

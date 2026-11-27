@@ -1,9 +1,13 @@
 import {type SanityDocument} from '@sanity/types'
-import {of, Subject} from 'rxjs'
+import {applyPatch} from 'mendoza'
+import {defer, of, startWith, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
-import {type WithVersion} from '../document/document-pair/checkoutPair'
+import {
+  type RemoteSnapshotVersionEvent,
+  type WithVersion,
+} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
 import {collectEmissions} from './__fixtures__/collect.fixture'
 import {
@@ -119,28 +123,37 @@ const revision = (revisionId: string, document: SanityDocument): EventsStoreRevi
 /**
  * A draft as the backend sees it: the events API and the translog answer from the current state,
  * and every committed transaction reaches the listener of every open store, the way two panes
- * showing the same document both receive it.
+ * showing the same document both receive it. A store that starts listening gets the current
+ * document first, as the listener replays it.
  */
-function createDraftBackend(
-  draftId: string,
-  snapshots$: Subject<WithVersion<DocumentRemoteMutationEvent>>,
-) {
+function createDraftBackend(draftId: string, snapshots$: Subject<RemoteSnapshotVersionEvent>) {
   let events: DocumentGroupEvent[] = []
+  let head: SanityDocument | null = null
   const translog: TranslogEntry[] = []
-  vi.stubGlobal(
-    'fetch',
-    createTranslogFetchStub((url) => {
-      const params = new URL(url).searchParams
-      const from = translog.findIndex((entry) => entry.id === params.get('fromTransaction'))
-      const to = translog.findIndex((entry) => entry.id === params.get('toTransaction'))
-      return translog.slice(Math.max(from, 0), to === -1 ? undefined : to + 1)
-    }).fetch,
+  const translogStub = createTranslogFetchStub((url) => {
+    const params = new URL(url).searchParams
+    const from = translog.findIndex((entry) => entry.id === params.get('fromTransaction'))
+    const to = translog.findIndex((entry) => entry.id === params.get('toTransaction'))
+    return translog.slice(Math.max(from, 0), to === -1 ? undefined : to + 1)
+  })
+  vi.stubGlobal('fetch', translogStub.fetch)
+  mockRemoteSnapshots.mockImplementation(() =>
+    defer(() =>
+      snapshots$.pipe(
+        startWith<RemoteSnapshotVersionEvent>({
+          type: 'snapshot',
+          version: 'draft',
+          document: head as SanityDocument,
+        }),
+      ),
+    ),
   )
 
   return {
+    translogCalls: translogStub.calls,
     /** Opens the draft: a store that fetches the current state and listens from now on. */
     open() {
-      const {client} = createMockClient({
+      const {client, requests} = createMockClient({
         respond: () => ({events: {[draftId]: events}, nextCursor: ''}),
       })
       const store = createEventsStore({
@@ -153,51 +166,75 @@ function createDraftBackend(
       const listener = store.remoteTransactionsListener()
       return {
         values,
+        requests,
+        expand: store.handleExpandEvent,
+        getEditChanges: store.getEditChanges,
         close: () => {
           listener.unsubscribe()
           subscription.unsubscribe()
         },
       }
     },
-    /** Commits `transaction`; `nextEvents` is what the events API lists from then on. */
-    commit(transaction: TranslogEntry, nextEvents: DocumentGroupEvent[] = events) {
+    /** The listener reconnecting: it starts again from a snapshot of the current document. */
+    reconnect() {
+      snapshots$.next({type: 'snapshot', version: 'draft', document: head as SanityDocument})
+    },
+    /**
+     * Commits `transaction`; `nextEvents` is what the events API lists from then on. A listener
+     * that is disconnected never delivers it.
+     */
+    commit(
+      transaction: TranslogEntry,
+      nextEvents: DocumentGroupEvent[] = events,
+      {delivered = true}: {delivered?: boolean} = {},
+    ) {
       translog.push(transaction)
       events = nextEvents
+      const effects = transaction.effects[draftId]!
+      const nextHead: SanityDocument = {
+        ...applyPatch(head, effects.apply),
+        _id: draftId,
+        _type: 'author',
+        _createdAt: BASE_TIME,
+        _updatedAt: transaction.timestamp,
+        _rev: transaction.id,
+      }
+      head = nextHead
+      if (!delivered) return
       snapshots$.next(
         remoteMutationEvent({
           version: 'draft',
           transactionId: transaction.id,
           author: transaction.author,
           timestamp: new Date(transaction.timestamp),
-          head: {
-            _id: draftId,
-            _type: 'author',
-            _createdAt: BASE_TIME,
-            _updatedAt: transaction.timestamp,
-            _rev: transaction.id,
-          },
-          effects: transaction.effects[draftId]!,
+          head: nextHead,
+          effects,
         }),
       )
     },
   }
 }
 
-/** The events as the timeline lists them, edit events with the transactions they group. */
+/**
+ * The events as the timeline lists them while no event is expanded, edit events with the
+ * transactions they group.
+ */
 function timeline(events: DocumentGroupEvent[] | undefined) {
-  return events?.map((event) =>
-    isEditDocumentVersionEvent(event)
-      ? {
-          type: event.type,
-          id: event.id,
-          transactions: event.transactions.map((tx) => tx.revisionId),
-        }
-      : {type: event.type, id: event.id},
-  )
+  return events
+    ?.filter((event) => !(isEditDocumentVersionEvent(event) && event.isTransaction))
+    .map((event) =>
+      isEditDocumentVersionEvent(event)
+        ? {
+            type: event.type,
+            id: event.id,
+            transactions: event.transactions.map((tx) => tx.revisionId),
+          }
+        : {type: event.type, id: event.id},
+    )
 }
 
 describe('createEventsStore (integration)', () => {
-  let snapshots$: Subject<WithVersion<DocumentRemoteMutationEvent>>
+  let snapshots$: Subject<RemoteSnapshotVersionEvent>
 
   beforeEach(() => {
     snapshots$ = new Subject()
@@ -571,8 +608,158 @@ describe('createEventsStore (integration)', () => {
       expect(timeline(creatorPane.values.at(-1)?.events)).toEqual(expected)
       expect(timeline(otherPane.values.at(-1)?.events)).toEqual(expected)
     })
+    // Both edits are also listed on their own under the group, for when the user expands it.
+    for (const pane of [creatorPane, otherPane]) {
+      expect(pane.values.at(-1)?.events.slice(1, 3)).toEqual([
+        expect.objectContaining({id: 'tx-edit-2', parentId: 'tx-edit-2', isTransaction: true}),
+        expect.objectContaining({id: 'tx-edit-1', parentId: 'tx-edit-2', isTransaction: true}),
+      ])
+    }
     creatorPane.close()
     otherPane.close()
+  })
+
+  it('keeps an expanded edit group as it is while new edits arrive', async () => {
+    const draftId = 'drafts.int-frozen'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-frozen',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    backend.commit(
+      editTransaction({id: 'tx-edit-1', documentId: draftId, timestamp: minutesAfterBase(1)}),
+    )
+    const pane = backend.open()
+    await vi.waitFor(() => expect(pane.values.at(-1)?.loading).toBe(false))
+    // A live edit joins the fetched one, the group is now identified by the live edit.
+    backend.commit(
+      editTransaction({id: 'tx-edit-2', documentId: draftId, timestamp: minutesAfterBase(2)}),
+    )
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toEqual({
+        type: 'editDocumentVersion',
+        id: 'tx-edit-2',
+        transactions: ['tx-edit-2', 'tx-edit-1'],
+      }),
+    )
+
+    await pane.expand(pane.values.at(-1)!.events[0])
+    backend.commit(
+      editTransaction({id: 'tx-edit-3', documentId: draftId, timestamp: minutesAfterBase(3)}),
+    )
+
+    // The new edit is within the merge window, but the expanded group keeps its transactions.
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)).toEqual([
+        {type: 'editDocumentVersion', id: 'tx-edit-3', transactions: ['tx-edit-3']},
+        {type: 'editDocumentVersion', id: 'tx-edit-2', transactions: ['tx-edit-2', 'tx-edit-1']},
+        {type: 'createDocumentVersion', id: 'tx-create'},
+      ]),
+    )
+    expect(pane.values.at(-1)?.events[3]).toMatchObject({
+      id: 'tx-edit-1',
+      parentId: 'tx-edit-2',
+      isTransaction: true,
+    })
+    pane.close()
+  })
+
+  it('rebuilds what fetched and live edits changed without fetching anything again', async () => {
+    const draftId = 'drafts.int-edit-changes'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-edit-changes',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+    const setName = (id: string, minutes: number, name: string, previous: string) => ({
+      ...editTransaction({id, documentId: draftId, timestamp: minutesAfterBase(minutes)}),
+      effects: {[draftId]: {apply: [17, name, 'name'], revert: [17, previous, 'name']}},
+    })
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    backend.commit(setName('tx-edit-1', 1, 'Ada', 'created'))
+    const pane = backend.open()
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toMatchObject({id: 'tx-edit-1'}),
+    )
+    const fetches = {requests: pane.requests.length, translog: backend.translogCalls.length}
+
+    const fetched = collectEmissions(
+      pane.getEditChanges({fromRevisionId: 'tx-edit-1', toRevisionId: 'tx-edit-1'}),
+    )
+    expect(fetched.values.at(-1)?.diff?.fields.name).toMatchObject({
+      fromValue: 'created',
+      toValue: 'Ada',
+    })
+
+    // A live edit joins the fetched one in the same group.
+    backend.commit(setName('tx-edit-2', 2, 'Ada Lovelace', 'Ada'))
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toMatchObject({
+        id: 'tx-edit-2',
+        transactions: ['tx-edit-2', 'tx-edit-1'],
+      }),
+    )
+    const group = collectEmissions(
+      pane.getEditChanges({fromRevisionId: 'tx-edit-1', toRevisionId: 'tx-edit-2'}),
+    )
+    expect(group.values.at(-1)?.diff?.fields.name).toMatchObject({
+      fromValue: 'created',
+      toValue: 'Ada Lovelace',
+    })
+
+    expect({requests: pane.requests.length, translog: backend.translogCalls.length}).toEqual(
+      fetches,
+    )
+    pane.close()
+  })
+
+  it('refetches the edits it missed while the listener was disconnected, and rebuilds them', async () => {
+    const draftId = 'drafts.int-reconnect'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-reconnect',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+    const setName = (id: string, minutes: number, name: string, previous: string) => ({
+      ...editTransaction({id, documentId: draftId, timestamp: minutesAfterBase(minutes)}),
+      effects: {[draftId]: {apply: [17, name, 'name'], revert: [17, previous, 'name']}},
+    })
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    backend.commit(setName('tx-edit-1', 1, 'Ada', 'created'))
+    const pane = backend.open()
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toMatchObject({id: 'tx-edit-1'}),
+    )
+
+    backend.commit(setName('tx-edit-2', 2, 'Ada Lovelace', 'Ada'), undefined, {delivered: false})
+    backend.reconnect()
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toMatchObject({
+        id: 'tx-edit-2',
+        transactions: ['tx-edit-2', 'tx-edit-1'],
+      }),
+    )
+
+    const missed = collectEmissions(
+      pane.getEditChanges({fromRevisionId: 'tx-edit-2', toRevisionId: 'tx-edit-2'}),
+    )
+    const group = collectEmissions(
+      pane.getEditChanges({fromRevisionId: 'tx-edit-1', toRevisionId: 'tx-edit-2'}),
+    )
+    expect(missed.values.at(-1)?.diff?.fields.name).toMatchObject({
+      fromValue: 'Ada',
+      toValue: 'Ada Lovelace',
+    })
+    expect(group.values.at(-1)?.diff?.fields.name).toMatchObject({
+      fromValue: 'created',
+      toValue: 'Ada Lovelace',
+    })
+    expect(pane.requests.filter(({tag}) => tag === 'get-document-revision')).toHaveLength(0)
+    pane.close()
   })
 
   it('never groups edits on both sides of a publish, even within the merge window', async () => {

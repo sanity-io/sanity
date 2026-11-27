@@ -34,6 +34,28 @@ const EDIT_EVENT: EditDocumentVersionEvent = {
   ],
 }
 
+// One of the transactions listed under an expanded edit event.
+const TRANSACTION_EVENT: EditDocumentVersionEvent = {
+  type: 'editDocumentVersion',
+  id: 'rev-1',
+  timestamp: '2020-06-15T11:58:07.000Z',
+  author: 'doug',
+  documentVariantType: 'draft',
+  documentId: 'article-1',
+  contributors: ['doug'],
+  revisionId: 'rev-1',
+  transactions: [
+    {
+      type: 'editTransaction',
+      author: 'doug',
+      timestamp: '2020-06-15T11:58:07.000Z',
+      revisionId: 'rev-1',
+    },
+  ],
+  parentId: 'edit-1',
+  isTransaction: true,
+}
+
 const CREATE_EVENT: CreateDocumentVersionEvent = {
   type: 'createDocumentVersion',
   id: 'create-1',
@@ -115,6 +137,9 @@ function EventHarness() {
             <EventRow label="editDocumentVersion, changes-by inline" testId="event-edit-inline">
               <Event event={EDIT_EVENT} showChangesBy="inline" />
             </EventRow>
+            <EventRow label="editDocumentVersion, listed transaction" testId="event-transaction">
+              <Event event={TRANSACTION_EVENT} showChangesBy="hidden" />
+            </EventRow>
           </VStack>
         </Card>
       </LocaleProvider>
@@ -153,5 +178,20 @@ describe('Event', () => {
     await expect.poll(openTooltipText).toEqual(['Changes byDDoug'])
 
     await settleOpenTooltip()
+  })
+
+  it('shows the time of a listed transaction down to the second', async () => {
+    void render(<EventHarness />)
+
+    const transaction = page.getByTestId('event-transaction')
+    await expect.element(transaction.getByText('Edited', {exact: true})).toBeVisible()
+    const time = transaction.element().querySelector('time')!
+    // Rendered in the browser's time zone, which the seconds don't depend on.
+    expect(time.textContent).toMatch(/^\d{1,2}:\d{2}:07\b/)
+    expect(time.getAttribute('title')).toMatch(/^Jun 15, 2020, \d{1,2}:\d{2}:07\b/)
+    expect(time.getAttribute('dateTime')).toBe(TRANSACTION_EVENT.timestamp)
+    // A group (not a listed transaction) keeps its relative time.
+    const edit = page.getByTestId('event-edit').element().querySelector('time')!
+    expect(edit.textContent).toBe('Jun 15, 2020')
   })
 })

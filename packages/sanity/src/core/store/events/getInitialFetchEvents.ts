@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 
@@ -127,6 +128,8 @@ export function accumulateEvents(
  *   with `fromTransaction: ''` — the entire translog (tracked as a known issue).
  * - A synthetic `historyCleared` event (id `history-cleared`, timestamped 1ms before the oldest
  *   edit event) is prepended when the API returns no events but edit transactions exist.
+ * - Every list of transactions fetched for edit events is appended to `editTransactions$`, before
+ *   the events emit, so what the edit events changed can be rebuilt without fetching them again.
  *
  * Accumulation (`scan`):
  * - New batches merge into the previous list via `removeDupes` (existing events are kept).
@@ -138,6 +141,7 @@ export function accumulateEvents(
  */
 export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOptions) {
   const documentVariantType = getDocumentVariantType(documentId)
+  const editTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[][]>([])
   const refetchEventsTrigger$ = new BehaviorSubject<{
     cursor: string | null
     origin: 'loadMore' | 'reload' | 'initial'
@@ -184,6 +188,7 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
         toTransaction: undefined, // We need to get up to the present moment
       }),
     ).pipe(
+      tap((transactions) => editTransactions$.next([...editTransactions$.value, transactions])),
       map((transactions) =>
         withHistoryClearedEvent(getEditEvents(transactions, documentId), {
           apiEvents: events,
@@ -227,6 +232,8 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
       }),
       shareReplay(1),
     ),
+    /** The lists of transactions fetched for edit events, oldest fetch first. */
+    editTransactions$: editTransactions$.asObservable(),
     /**
      * Loads new events for the document, fetching the latest events from the API.
      */

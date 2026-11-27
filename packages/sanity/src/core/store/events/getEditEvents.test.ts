@@ -1,8 +1,14 @@
 import {describe, expect, it} from 'vitest'
 
-import {createDocumentVersionEvent, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {
+  createDocumentVersionEvent,
+  DRAFT_ID,
+  minutesAfterBase,
+  publishDocumentVersionEvent,
+} from './__fixtures__/events.fixture'
 import {editTransaction} from './__fixtures__/transactions.fixture'
 import {
+  addEditTransactionEvents,
   getEditEvents,
   getEffectState,
   mergeEditEvents,
@@ -385,6 +391,133 @@ describe('getEditEvents()', () => {
       const [expanded] = getEditEvents([fetchedEdit], DRAFT_ID)
       const events = [...getEditEvents([liveEdit], DRAFT_ID), {...expanded, parentId: 'tx-publish'}]
       expect(mergeEditEvents(events)).toEqual(events)
+    })
+
+    describe('with frozen edit groups', () => {
+      const older = editTransaction({id: 'tx-0', timestamp: minutesAfterBase(0)})
+      const frozenOldest = editTransaction({id: 'tx-6', timestamp: minutesAfterBase(6)})
+      const frozenNewest = editTransaction({id: 'tx-7', timestamp: minutesAfterBase(7)})
+      const newer = editTransaction({
+        id: 'tx-8',
+        author: 'author-2',
+        timestamp: minutesAfterBase(8),
+      })
+      const frozenGroups = new Map([
+        ['tx-6', 'tx-7'],
+        ['tx-7', 'tx-7'],
+      ])
+      const summary = (events: ReturnType<typeof mergeEditEvents>) =>
+        events.map((event) => ({
+          id: event.id,
+          transactions:
+            'transactions' in event ? event.transactions.map((tx) => tx.revisionId) : [],
+        }))
+
+      it('keeps a frozen group as it is when a newer edit arrives within the merge window', () => {
+        const fetched = getEditEvents([older, frozenOldest, frozenNewest], DRAFT_ID)
+        const live = getEditEvents([newer], DRAFT_ID)
+        // Without freezing, the newer edit takes over the group and changes its id.
+        expect(summary(mergeEditEvents([...live, ...fetched]))).toEqual([
+          {id: 'tx-8', transactions: ['tx-8', 'tx-7', 'tx-6']},
+          {id: 'tx-0', transactions: ['tx-0']},
+        ])
+
+        expect(summary(mergeEditEvents([...live, ...fetched], frozenGroups))).toEqual([
+          {id: 'tx-8', transactions: ['tx-8']},
+          {id: 'tx-7', transactions: ['tx-7', 'tx-6']},
+          {id: 'tx-0', transactions: ['tx-0']},
+        ])
+      })
+
+      it('splits a single edit event that holds frozen transactions', () => {
+        // Live edits are grouped by getEditEvents alone, which doesn't know about frozen groups.
+        const live = getEditEvents([frozenOldest, frozenNewest, newer], DRAFT_ID)
+        expect(live).toHaveLength(1)
+
+        const merged = mergeEditEvents(live, frozenGroups)
+        expect(summary(merged)).toEqual([
+          {id: 'tx-8', transactions: ['tx-8']},
+          {id: 'tx-7', transactions: ['tx-7', 'tx-6']},
+        ])
+        expect(merged[1]).toMatchObject({author: 'author-1', contributors: ['author-1']})
+      })
+
+      it('leaves a run without frozen transactions untouched', () => {
+        const events = getEditEvents([newer], DRAFT_ID)
+        expect(mergeEditEvents(events, frozenGroups)[0]).toBe(events[0])
+      })
+    })
+  })
+
+  describe('addEditTransactionEvents()', () => {
+    const transactions = [
+      editTransaction({id: 'tx-1', timestamp: minutesAfterBase(1), author: 'author-1'}),
+      editTransaction({id: 'tx-2', timestamp: minutesAfterBase(2), author: 'author-2'}),
+      editTransaction({id: 'tx-3', timestamp: minutesAfterBase(3), author: 'author-1'}),
+    ]
+
+    it('lists every transaction of the group after it, newest first', () => {
+      const [group] = getEditEvents(transactions, DRAFT_ID)
+      const create = createDocumentVersionEvent()
+
+      const result = addEditTransactionEvents([group, create])
+
+      expect(result).toEqual([
+        group,
+        // The newest transaction is the group's own revision, so they share the id.
+        expect.objectContaining({id: 'tx-3', parentId: 'tx-3', isTransaction: true}),
+        {
+          type: 'editDocumentVersion',
+          documentId: DRAFT_ID,
+          documentVariantType: 'draft',
+          id: 'tx-2',
+          revisionId: 'tx-2',
+          timestamp: minutesAfterBase(2),
+          author: 'author-2',
+          contributors: ['author-2'],
+          transactions: [group.transactions[1]],
+          parentId: 'tx-3',
+          isTransaction: true,
+        },
+        expect.objectContaining({id: 'tx-1', parentId: 'tx-3', isTransaction: true}),
+        create,
+      ])
+    })
+
+    it('lists nothing for an edit event with a single transaction', () => {
+      const events = getEditEvents(transactions.slice(0, 1), DRAFT_ID)
+      expect(addEditTransactionEvents(events)).toEqual(events)
+    })
+
+    it('lists the publish revision too when the group id was re-pointed at its second transaction', () => {
+      // `addParentToEvents` moves the id of the last edit before a publish to its second
+      // transaction, as the first one is the revision the publish event already stands for.
+      const [group] = getEditEvents(transactions, DRAFT_ID)
+      const publish = publishDocumentVersionEvent({id: 'tx-3', versionRevisionId: 'tx-3'})
+      const nested = {...group, id: 'tx-2', parentId: publish.id}
+
+      const result = addEditTransactionEvents([publish, nested])
+
+      expect(result.map((event) => event.id)).toEqual(['tx-3', 'tx-2', 'tx-3', 'tx-2', 'tx-1'])
+      expect(result.slice(2)).toEqual([
+        expect.objectContaining({parentId: 'tx-2', isTransaction: true}),
+        expect.objectContaining({parentId: 'tx-2', isTransaction: true}),
+        expect.objectContaining({parentId: 'tx-2', isTransaction: true}),
+      ])
+    })
+
+    it('lists the transactions of edit events nested under an expanded publish', () => {
+      const [group] = getEditEvents(transactions, DRAFT_ID)
+      const nested = {...group, parentId: 'tx-publish'}
+
+      const result = addEditTransactionEvents([nested])
+
+      expect(result.map((event) => [event.id, 'parentId' in event && event.parentId])).toEqual([
+        ['tx-3', 'tx-publish'],
+        ['tx-3', 'tx-3'],
+        ['tx-2', 'tx-3'],
+        ['tx-1', 'tx-3'],
+      ])
     })
   })
 

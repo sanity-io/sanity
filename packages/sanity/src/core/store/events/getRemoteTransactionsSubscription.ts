@@ -1,11 +1,18 @@
 import {type SanityClient} from '@sanity/client'
-import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
-import {BehaviorSubject, filter, map} from 'rxjs'
+import {
+  type MendozaPatch,
+  type SanityDocument,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
+import {BehaviorSubject, map} from 'rxjs'
 
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
-import {type WithVersion} from '../document/document-pair/checkoutPair'
+import {
+  type RemoteSnapshotVersionEvent,
+  type WithVersion,
+} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
 import {getEditEvents, getEffectState, toUpdateLiveDocumentEvents} from './getEditEvents'
 import {remoteMutationToTransaction} from './utils'
@@ -68,9 +75,23 @@ export function classifyRemoteMutation(
  *   `remoteTransactions$`; `remoteEdits$` groups those transactions with `getEditEvents`, then
  *   projects them to `updateLiveDocument` events when the document is live edit.
  *
+ * A snapshot of the viewed variant after the first one means the listener reconnected, and the
+ * mutations made meanwhile never arrive: it refetches and clears the accumulated transactions too,
+ * so the refetch brings them back.
+ *
  * Returns `remoteTransactions$` (consumed by `getDocumentChanges` for diffing while viewing the
- * latest version), `remoteEdits$` (merged into the events list), and `subscribe` which activates
- * the listener and returns the rxjs subscription.
+ * latest version), `remoteEdits$` (merged into the events list), `remoteTransactionsStartRev$`,
+ * `liveDocument$` and `subscribe` which activates the listener and returns the rxjs subscription.
+ *
+ * `remoteTransactionsStartRev$` is the revision of the document `remoteTransactions$` continue
+ * from, when known: the listener's snapshot, or the created/deleted transaction they were cleared
+ * at. It is set before the transactions it applies to.
+ *
+ * `liveDocument$` is the document of the variant being viewed as the server has it, with its
+ * `_rev`: the snapshot the listener starts from (replayed to late subscribers), then the `head` of
+ * every remote mutation. It is `undefined` until the listener delivered one, and `null` when the
+ * document doesn't exist. Remote transactions are appended before it moves, so it never points at a
+ * transaction `remoteTransactions$` doesn't have yet.
  *
  * Known quirk: `remoteTransactions$` only resets on created/deleted effects, so it accumulates
  * without bound during long editing sessions (tracked as a known issue).
@@ -83,6 +104,9 @@ export function getRemoteTransactionsSubscription({
   onRefetch,
 }: GetRemoteTransactionsSubscriptionOptions) {
   const remoteTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[]>([])
+  const remoteTransactionsStartRev$ = new BehaviorSubject<string | undefined>(undefined)
+  const liveDocument$ = new BehaviorSubject<SanityDocument | null | undefined>(undefined)
+  let hasListened = false
   const remoteEdits$ = remoteTransactions$.pipe(
     map((transactions) => getEditEvents(transactions, documentId)),
     map((events) => (isLiveEdit ? toUpdateLiveDocumentEvents(events) : events)),
@@ -106,6 +130,7 @@ export function getRemoteTransactionsSubscription({
         return
       case 'refetch-and-clear':
         onRefetch()
+        remoteTransactionsStartRev$.next(remoteMutation.transactionId)
         remoteTransactions$.next([])
         return
       case 'append':
@@ -119,7 +144,21 @@ export function getRemoteTransactionsSubscription({
     }
   }
 
-  const subscription = remoteSnapshots(
+  const onSnapshotReceived = (event: RemoteSnapshotVersionEvent) => {
+    if (event.type === 'remoteMutation') onMutationReceived(event)
+    if (event.version !== documentVariantType) return
+    if (event.type === 'snapshot') {
+      remoteTransactionsStartRev$.next(event.document?._rev)
+      if (hasListened) {
+        onRefetch()
+        remoteTransactions$.next([])
+      }
+    }
+    hasListened = true
+    liveDocument$.next((event.type === 'snapshot' ? event.document : event.head) ?? null)
+  }
+
+  const snapshots$ = remoteSnapshots(
     client,
     {
       draftId: getDraftId(documentId),
@@ -131,11 +170,13 @@ export function getRemoteTransactionsSubscription({
         : {}),
     },
     documentType,
-  ).pipe(filter((event) => event.type === 'remoteMutation'))
+  )
 
   return {
     remoteTransactions$,
     remoteEdits$,
-    subscribe: () => subscription.subscribe(onMutationReceived),
+    remoteTransactionsStartRev$: remoteTransactionsStartRev$.asObservable(),
+    liveDocument$: liveDocument$.asObservable(),
+    subscribe: () => snapshots$.subscribe(onSnapshotReceived),
   }
 }

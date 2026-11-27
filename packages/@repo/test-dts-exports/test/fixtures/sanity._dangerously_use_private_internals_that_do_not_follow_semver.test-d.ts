@@ -331,6 +331,7 @@ import type {
   getAnnotationColor,
   getApiErrorCode,
   getCalendarLabels,
+  getChangedFieldTitles,
   getConfigContextFromSource,
   getCreatableVariantTarget,
   getDefaultVariant,
@@ -1904,6 +1905,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('getCalendarLabels', () => {
     expectTypeOf<typeof getCalendarLabels>().toBeFunction()
+  })
+  test('getChangedFieldTitles', () => {
+    expectTypeOf<typeof getChangedFieldTitles>().toBeFunction()
   })
   test('getConfigContextFromSource', () => {
     expectTypeOf<typeof getConfigContextFromSource>().toBeFunction()

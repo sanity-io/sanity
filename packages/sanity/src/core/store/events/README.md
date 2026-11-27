@@ -87,3 +87,15 @@ The **Edit Event** is a special case. It is not returned directly by the API but
 2. Processing new transactions as they are received in real-time through change listeners.
 
 Each source groups its own transactions, so `createEventsObservable` regroups consecutive edit events together (`mergeEditEvents`): edits made within the merge window end up in the same event whether the studio fetched them or received them live.
+
+An edit event keeps the transactions it grouped, so the last step of `createEventsObservable` lists them right after it (`addEditTransactionEvents`): one `editDocumentVersion` event per transaction of a group of more than one, newest first, with `isTransaction: true` and `parentId` pointing at the group. The newest one shares its id with the group, as they are the same revision. The timeline hides them until the user expands the group, and selecting one shows the document at that transaction. They are always part of the events list, so a `rev` pointing at a transaction resolves after a reload too.
+
+Expanding a top-level edit event calls `expandEvent`, which freezes the group (`getExpandEvents`): `mergeEditEvents` keeps its transactions together and groups nothing else with them, so new edits arriving within the merge window start a group of their own and the expanded group keeps its id.
+
+What an edit event changed (`getEditChanges`, shown on the timeline cards and in their popover) is rebuilt from the transactions the store already has, without fetching them again. The store keeps every list of transactions it fetched or received as a chain of transactions that follow each other. To rebuild the document before an edit, it starts from a known document after one of the chain's transactions and reverts the transactions down to the edit:
+
+- The live chain (the newest fetch for edit events, then the transactions received live) starts from the live document the listener has, so it needs no request, also while the document is being edited. The transactions received live only continue the fetch when they are known to follow it: they start from a revision the fetch has, or the fetch has some of them. Otherwise transactions may be missing in between (e.g. the listener reconnected), so they are a chain of their own.
+- A transaction deleting the document anchors the edits before it for free: there is no document after it, and its revert has all of the document before it.
+- Other chains (the transactions fetched for an expanded publish, or an older fetch) start from the document at their newest transaction, fetched once from the history API.
+
+The listener reconnecting (a new snapshot of the document) refetches the events and clears the transactions received live, like a created or deleted document does, as the mutations made while it was disconnected never arrive.

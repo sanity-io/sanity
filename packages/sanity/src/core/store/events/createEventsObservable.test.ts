@@ -15,7 +15,11 @@ import {
 import {editTransaction} from './__fixtures__/transactions.fixture'
 import {applyVariantTransforms, createEventsObservable} from './createEventsObservable'
 import {getEditEvents} from './getEditEvents'
-import {type DocumentGroupEvent, type EventsObservableValue} from './types'
+import {
+  type DocumentGroupEvent,
+  type EditDocumentVersionEvent,
+  type EventsObservableValue,
+} from './types'
 
 function eventsValue(events: DocumentGroupEvent[]): EventsObservableValue {
   return {events, nextCursor: '', loading: false, error: null}
@@ -28,6 +32,7 @@ function setup({documentId, events}: {documentId: string; events: DocumentGroupE
     events$,
     remoteEdits$: of([]),
     expandedEvents$: of([]),
+    frozenEditGroups$: of(new Map()),
   })
   return {observable, events$}
 }
@@ -162,6 +167,7 @@ describe('createEventsObservable', () => {
       events$: of(eventsValue([...getEditEvents([fetchedEdit], DRAFT_ID), create])),
       remoteEdits$: of(getEditEvents([liveEdit], DRAFT_ID)),
       expandedEvents$: of([]),
+      frozenEditGroups$: of(new Map()),
     })
     const {values, subscription} = collectEmissions(observable)
     subscription.unsubscribe()
@@ -176,7 +182,112 @@ describe('createEventsObservable', () => {
           expect.objectContaining({revisionId: 'tx-fetched'}),
         ],
       }),
+      expect.objectContaining({
+        type: 'editDocumentVersion',
+        id: 'tx-live',
+        parentId: 'tx-live',
+        isTransaction: true,
+      }),
+      expect.objectContaining({
+        type: 'editDocumentVersion',
+        id: 'tx-fetched',
+        parentId: 'tx-live',
+        isTransaction: true,
+      }),
       expect.objectContaining({type: 'createDocumentVersion', id: create.id}),
+    ])
+  })
+
+  it('lists the transactions of grouped edit events after the variant transforms', () => {
+    const create = createDocumentVersionEvent({timestamp: minutesAfterBase(0)})
+    const [publishedEdits] = getEditEvents(
+      [
+        editTransaction({id: 'tx-1', timestamp: minutesAfterBase(1)}),
+        editTransaction({id: 'tx-2', timestamp: minutesAfterBase(2)}),
+      ],
+      DRAFT_ID,
+    )
+    const publish = publishDocumentVersionEvent({
+      id: 'tx-published-version',
+      versionRevisionId: 'tx-published-version',
+      timestamp: minutesAfterBase(3),
+    })
+    const [draftEdits] = getEditEvents(
+      [
+        editTransaction({id: 'tx-4', timestamp: minutesAfterBase(4)}),
+        editTransaction({id: 'tx-5', timestamp: minutesAfterBase(5)}),
+      ],
+      DRAFT_ID,
+    )
+
+    const {observable} = setup({
+      documentId: DRAFT_ID,
+      events: [draftEdits, publish, publishedEdits, create],
+    })
+    const {values, subscription} = collectEmissions(observable)
+    subscription.unsubscribe()
+
+    expect(
+      values[0].events.map((event) => ({
+        id: event.id,
+        parentId: 'parentId' in event ? event.parentId : undefined,
+        isTransaction: 'isTransaction' in event ? event.isTransaction : undefined,
+      })),
+    ).toEqual([
+      {id: 'tx-5', parentId: undefined, isTransaction: undefined},
+      {id: 'tx-5', parentId: 'tx-5', isTransaction: true},
+      {id: 'tx-4', parentId: 'tx-5', isTransaction: true},
+      {id: 'tx-published-version', parentId: undefined, isTransaction: undefined},
+      // addParentToEvents nests the published edits under the publish, but not their transactions.
+      {id: 'tx-2', parentId: 'tx-published-version', isTransaction: undefined},
+      {id: 'tx-2', parentId: 'tx-2', isTransaction: true},
+      {id: 'tx-1', parentId: 'tx-2', isTransaction: true},
+      {id: create.id, parentId: 'tx-published-version', isTransaction: undefined},
+    ])
+    expect(values[0].events.every((event) => event.documentVariantType === 'draft')).toBe(true)
+  })
+
+  it('keeps an expanded edit group as it is while live edits arrive', () => {
+    const fetched = getEditEvents(
+      [
+        editTransaction({id: 'tx-1', timestamp: minutesAfterBase(1)}),
+        editTransaction({id: 'tx-2', timestamp: minutesAfterBase(2)}),
+      ],
+      DRAFT_ID,
+    )
+    const create = createDocumentVersionEvent()
+    const remoteEdits$ = new BehaviorSubject<EditDocumentVersionEvent[]>([])
+    const frozenEditGroups$ = new BehaviorSubject<ReadonlyMap<string, string>>(new Map())
+
+    const observable = createEventsObservable({
+      documentId: DRAFT_ID,
+      events$: of(eventsValue([...fetched, create])),
+      remoteEdits$,
+      expandedEvents$: of([]),
+      frozenEditGroups$,
+    })
+    const {values, subscription} = collectEmissions(observable)
+    frozenEditGroups$.next(
+      new Map([
+        ['tx-1', 'tx-2'],
+        ['tx-2', 'tx-2'],
+      ]),
+    )
+    remoteEdits$.next(
+      getEditEvents([editTransaction({id: 'tx-3', timestamp: minutesAfterBase(3)})], DRAFT_ID),
+    )
+    subscription.unsubscribe()
+
+    expect(
+      values
+        .at(-1)
+        ?.events.map((event) => [event.id, 'parentId' in event ? event.parentId : undefined]),
+    ).toEqual([
+      ['tx-3', undefined],
+      ['tx-2', undefined],
+      ['tx-2', 'tx-2'],
+      ['tx-1', 'tx-2'],
+      [create.id, undefined],
     ])
   })
 

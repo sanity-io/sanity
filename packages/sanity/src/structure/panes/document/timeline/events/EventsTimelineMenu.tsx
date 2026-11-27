@@ -1,7 +1,13 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {
+  type Placement,
+  PortalProvider,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentGroupEvent,
   isDeleteDocumentGroupEvent,
@@ -21,6 +27,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
 import {root} from './EventsTimelineMenu.css'
+import {isEditTransactionEvent} from './timelineRows'
 
 interface TimelineMenuProps {
   event: DocumentGroupEvent | null
@@ -33,6 +40,45 @@ const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
 const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},
+}
+
+// The transactions of an edit event are told apart by their time, down to the second.
+const transactionFormatParams = {
+  timestamp: {dateStyle: 'medium', timeStyle: 'medium'},
+}
+
+/**
+ * Closes the menu on Escape, Tab or a click outside of it, but only while it is the top layer: a
+ * popover opened from the menu (the changes of an edit) is outside of it, and interacting with it
+ * must not close the menu.
+ */
+function TimelineMenuContent({
+  button,
+  children,
+  onClose,
+  popover,
+}: {
+  button: HTMLButtonElement | null
+  children: ReactNode
+  onClose: () => void
+  popover: HTMLElement | null
+}) {
+  const {isTopLayer} = useLayer()
+
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (isTopLayer && (event.key === 'Escape' || event.key === 'Tab')) {
+          onClose()
+          button?.focus()
+        }
+      },
+      [button, isTopLayer, onClose],
+    ),
+  )
+  useClickOutsideEvent(isTopLayer && onClose, () => [button, popover])
+
+  return children
 }
 
 export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) {
@@ -60,19 +106,6 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   const handleClose = useCallback(() => {
     setOpen(false)
   }, [])
-
-  const handleGlobalKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (open && (e.key === 'Escape' || e.key === 'Tab')) {
-        handleClose()
-        button?.focus()
-      }
-    },
-    [button, handleClose, open],
-  )
-
-  useGlobalKeyDown(handleGlobalKeyDown)
-  useClickOutsideEvent(open && handleClose, () => [button, popoverRef])
 
   const selectRev = useCallback(
     (revEvent: DocumentGroupEvent) => {
@@ -155,23 +188,19 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     selectRev,
   ])
 
-  const revLabel = event
+  const eventLabel = event
     ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
-        formatParams,
+        formatParams: isEditTransactionEvent(event) ? transactionFormatParams : formatParams,
       })
-    : t('timeline.latest-revision')
+    : null
 
-  const sinceLabel = event
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
-        context: 'timestamp',
-        timestamp: new Date(event.timestamp),
-        formatParams,
-      })
-    : events.length > 0
-      ? t('timeline.since-version-missing')
-      : t('timeline.no-previous-events')
+  const revLabel = eventLabel ?? t('timeline.latest-revision')
+
+  const sinceLabel =
+    eventLabel ??
+    (events.length > 0 ? t('timeline.since-version-missing') : t('timeline.no-previous-events'))
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
   const portalElements = useMemo(
@@ -187,7 +216,13 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         className={root}
         data-testid="timeline-menu"
         constrainSize
-        content={open && content}
+        content={
+          open && (
+            <TimelineMenuContent button={button} onClose={handleClose} popover={popoverRef}>
+              {content}
+            </TimelineMenuContent>
+          )
+        }
         data-ui="versionMenu"
         open={open}
         placement={placement}
