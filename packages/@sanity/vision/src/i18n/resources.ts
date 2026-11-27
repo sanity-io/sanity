@@ -599,6 +599,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.generate.progress-retry': 'Fixing the query (attempt {{attempt}} of {{max}})…',
   /** Button generating the query */
   'vision.generate.submit': 'Generate',
+  /** Link at the bottom of a help popover, to the docs page about what it explains */
+  'vision.help.read-docs': 'Read docs',
   /** Heading of the explanation summary an AI improvement of the query followed, in the history */
   'vision.history.ai.explanation': 'Explanation',
   /** In a history entry, what the AI was asked when it fitted the query to the document list */
@@ -950,6 +952,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   'vision.options.perspective.default.subtitle-for-version':
     'Defaults to {{perspective}} on API version {{apiVersion}}',
+  /** Names the help button beside the perspective menu, which explains perspectives */
+  'vision.options.perspective.help': 'About perspectives',
   /** Heading of the perspective menu's group of perspectives only Vision offers */
   'vision.options.perspective.more': 'More perspectives',
   /** Shown in the perspective menu when the search matches no perspective */

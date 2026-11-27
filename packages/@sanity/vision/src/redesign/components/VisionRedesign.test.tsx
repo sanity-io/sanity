@@ -1127,6 +1127,7 @@ describe('VisionRedesign', () => {
     await pickParamsView('form')
     expect(screen.queryByTestId('vision-params-editor')).toBeNull()
     expect(formInput('limit').value).toBe('3')
+    fireEvent.click(screen.getByTestId('vision-params-form-limit-details'))
     expect(text(screen.getByTestId('vision-params-form-limit-type'))).toBe(
       'vision.params-form.type-detail',
     )
@@ -1902,6 +1903,24 @@ describe('VisionRedesign', () => {
     // Tab order is DOM order only while nothing jumps the queue with a positive tabindex
     const tabbable = grid.querySelectorAll<HTMLElement>('select, input, button, [tabindex]')
     expect([...tabbable].filter((element) => element.tabIndex > 0)).toEqual([])
+  })
+
+  it('explains the perspective and the API CDN in help popovers that link the docs', () => {
+    renderRedesign()
+    openRequestTab('options')
+    const docsOf = {
+      'vision-option-perspective-help': 'https://www.sanity.io/docs/content-lake/perspectives',
+      'vision-option-use-cdn-info': 'https://www.sanity.io/docs/content-lake/api-cdn',
+    }
+    for (const [testId, docsUrl] of Object.entries(docsOf)) {
+      const help = screen.getByTestId(testId)
+      fireEvent.click(help)
+      expect(help.getAttribute('aria-expanded')).toBe('true')
+      expect(screen.getByTestId(`${testId}-docs`).getAttribute('href')).toBe(docsUrl)
+    }
+    expect(text(screen.getByTestId('vision-option-perspective-help-content'))).toContain(
+      'settings.perspectives.description',
+    )
   })
 
   it('sends queries to the API CDN when asked, unless the perspective is one it does not serve', async () => {

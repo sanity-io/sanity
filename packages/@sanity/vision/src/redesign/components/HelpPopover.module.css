@@ -1,0 +1,11 @@
+/* The help reads like body text: it can be selected and copied, and its lines stay short */
+.content {
+  max-width: 280px;
+  cursor: auto;
+  user-select: text;
+}
+
+/* The dialog takes focus when it opens, so Tab reaches its docs link; the button shows it is open */
+.content:focus {
+  outline: none;
+}

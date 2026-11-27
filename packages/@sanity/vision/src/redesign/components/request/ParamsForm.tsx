@@ -2,7 +2,6 @@ import {type SanityClient} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Stack, Switch, TextArea, TextInput} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
@@ -28,11 +27,13 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type Params} from '../../../util/parseParams'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {cx} from '../../util/cx'
+import {GROQ_PARAMETERS_DOCS_URL} from '../../util/docsUrls'
 import {splitMessage} from '../../util/groqLint'
 import {isObjectParam} from '../../util/objectParams'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import {type ParamLintFinding, withParamSuggestion} from '../../util/paramLint'
 import * as fieldGrid from '../fieldGrid.module.css'
+import {HelpPopover} from '../HelpPopover'
 import * as styles from '../redesign.module.css'
 import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
@@ -772,7 +773,8 @@ function ParamField(props: {
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
         </Text>
-        <InfoTip
+        <HelpPopover
+          docsUrl={GROQ_PARAMETERS_DOCS_URL}
           label={t('vision.params-form.details', {name: param.name})}
           testId={`vision-params-form-${param.name}-details`}
         >
@@ -797,7 +799,7 @@ function ParamField(props: {
               {t('vision.params-form.no-schema')}
             </Text>
           )}
-        </InfoTip>
+        </HelpPopover>
         {required && (
           <VisionTooltip
             content={
@@ -877,30 +879,6 @@ function ParamField(props: {
         </Card>
       )}
     </Stack>
-  )
-}
-
-/** A pressable info icon, with the details in its tooltip */
-function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
-  const {label, testId, children} = props
-  return (
-    <VisionTooltip
-      content={
-        <Stack data-testid={`${testId}-content`} gap={2}>
-          {children}
-        </Stack>
-      }
-      placement="top"
-    >
-      <Button
-        aria-label={label}
-        data-testid={testId}
-        fontSize={1}
-        icon={InfoOutlineIcon}
-        mode="bleed"
-        padding={1}
-      />
-    </VisionTooltip>
   )
 }
 
@@ -991,14 +969,14 @@ export function ParamsForm({
                 {t('vision.params-form.unused')}
               </Text>
               {schemaUnavailable && (
-                <InfoTip
+                <HelpPopover
                   label={t('vision.params-form.types-details')}
                   testId="vision-params-form-no-schema"
                 >
                   <Text size={1} as="div" trim={true}>
                     {t('vision.params-form.no-schema')}
                   </Text>
-                </InfoTip>
+                </HelpPopover>
               )}
               <Box flexGrow={1} />
               <Button
