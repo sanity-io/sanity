@@ -1,6 +1,16 @@
 import {type Browser, type BrowserContextOptions} from '@playwright/test'
 
+import {recordNetwork, type NetworkEvent, type RequestEntry} from './network'
 import {applyThrottle, type ThrottleProfile} from './throttle'
+import {
+  cutTrace,
+  findTraceWindow,
+  READY_MARK,
+  startTrace,
+  stopTrace,
+  type TraceEvent,
+  type TraceWindow,
+} from './trace'
 
 /**
  * What marks a page as ready, evaluated in the page on every DOM mutation. The first time it
@@ -28,7 +38,10 @@ function readyScript(kind: ReadyKind): string {
   return `(() => {
     const isReady = (${READY_PREDICATES[kind]})
     const check = () => {
-      if (window.__readyAt === undefined && isReady()) window.__readyAt = performance.now()
+      if (window.__readyAt === undefined && isReady()) {
+        window.__readyAt = performance.now()
+        performance.mark(${JSON.stringify(READY_MARK)})
+      }
     }
     new MutationObserver(check).observe(document, {attributes: true, childList: true, subtree: true})
     check()
@@ -40,6 +53,10 @@ export interface Sample {
   readyMs: number
   /** Request paths of every JS file loaded until then. */
   scriptPaths: string[]
+  /** Every request started until then, and the CDP Network events for them up to ready. */
+  network: {events: NetworkEvent[]; requests: RequestEntry[]}
+  /** Only for traced samples: the Chrome trace up to ready, and where ready is in it. */
+  trace: {events: TraceEvent[]; window: TraceWindow | null} | null
 }
 
 export interface SampleOptions {
@@ -51,6 +68,8 @@ export interface SampleOptions {
   /** Network and CPU emulation applied before the navigation; none when omitted. */
   throttle?: ThrottleProfile
   timeoutMs?: number
+  /** Record a Chrome trace, which slows the page down: keep traced samples out of the timings. */
+  trace?: boolean
   url: string
 }
 
@@ -58,7 +77,7 @@ const JS_PATH = /\.m?js$/
 
 /** Loads `path` in a fresh browser context (cold cache, no shared storage) and times it. */
 export async function takeSample(options: SampleOptions): Promise<Sample> {
-  const {auth, browser, kind, path, throttle, timeoutMs = 120_000, url} = options
+  const {auth, browser, kind, path, throttle, timeoutMs = 120_000, trace = false, url} = options
   const contextOptions: BrowserContextOptions = {
     reducedMotion: 'reduce',
     viewport: {height: 1000, width: 1728},
@@ -83,10 +102,10 @@ export async function takeSample(options: SampleOptions): Promise<Sample> {
   const context = await browser.newContext(contextOptions)
   try {
     const page = await context.newPage()
-    await applyThrottle(
-      await context.newCDPSession(page),
-      throttle ?? {cpuThrottle: 1, network: null},
-    )
+    const cdp = await context.newCDPSession(page)
+    await applyThrottle(cdp, throttle ?? {cpuThrottle: 1, network: null})
+    const network = recordNetwork(cdp)
+    if (trace) await startTrace(cdp)
     const scriptPaths: string[] = []
     let collecting = true
     page.on('response', (response) => {
@@ -110,8 +129,23 @@ export async function takeSample(options: SampleOptions): Promise<Sample> {
       })
     }
     collecting = false
-    const readyMs = await page.evaluate(() => (window as {__readyAt?: number}).__readyAt!)
-    return {readyMs, scriptPaths}
+    const traceEvents = trace ? await stopTrace(cdp) : null
+    const {readyMs, timeOriginMs} = await page.evaluate(() => ({
+      readyMs: (window as {__readyAt?: number}).__readyAt!,
+      timeOriginMs: performance.timeOrigin,
+    }))
+    const traceWindow = traceEvents ? findTraceWindow(traceEvents, readyMs) : null
+    return {
+      network: network.finish({readyMs, timeOriginMs}),
+      readyMs,
+      scriptPaths,
+      trace: traceEvents
+        ? {
+            events: traceWindow ? cutTrace(traceEvents, traceWindow) : traceEvents,
+            window: traceWindow,
+          }
+        : null,
+    }
   } finally {
     await context.close()
   }

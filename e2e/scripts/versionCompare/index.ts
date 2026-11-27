@@ -7,6 +7,12 @@
  * Load times are measured under emulated network and CPU conditions (--network, --cpu-throttle;
  * `slow-4g` and `fast-4g` by default), each sample in a fresh context with the HTTP cache off.
  *
+ * One more load of the authenticated `/404` page (the login page with --skip-authenticated) per
+ * version and profile records a Chrome trace and the CDP network log, both cut off at ready, into
+ * --trace-dir. That load is kept out of the timings: the job summary and the JSON report get its
+ * request waterfall (serial request chain, bytes and request count before ready) and the main
+ * thread's time split into parse/compile, script and render.
+ *
  * Each ref is checked out into its own git worktree under --work-dir, so the run never touches
  * the working tree it started from. The authenticated metric uses the same token mechanism as
  * the e2e suite (SANITY_E2E_SESSION_TOKEN, SANITY_E2E_PROJECT_ID, SANITY_E2E_DATASET against
@@ -23,7 +29,7 @@ import {chromium, type Browser} from '@playwright/test'
 import {readEnv} from '../../envVars'
 import {prepareVersion, type BuiltVersion} from './build'
 import {measureBuild, measureRequested, type JsSize} from './bundleSize'
-import {takeSample} from './measure'
+import {takeSample, type ReadyKind} from './measure'
 import {
   compareMetric,
   renderSummary,
@@ -34,6 +40,8 @@ import {
 } from './report'
 import {startStaticServer} from './server'
 import {isProfileName, PROFILES, type ProfileName, type ThrottleProfile} from './throttle'
+import {mainThreadTasks, mainThreadTime} from './trace'
+import {buildWaterfall, countBytes, type ByteCount, type Waterfall} from './waterfall'
 
 // `pnpm --filter` runs the script from e2e/, so relative paths resolve against where pnpm was run.
 const INVOKED_FROM = process.env.INIT_CWD ?? process.cwd()
@@ -54,6 +62,7 @@ function parseOptions() {
       'reuse-builds': {default: false, type: 'boolean'},
       'runs': {default: '15', type: 'string'},
       'skip-authenticated': {default: false, type: 'boolean'},
+      'trace-dir': {type: 'string'},
       'v6-ref': {default: 'main', type: 'string'},
       'v7-ref': {default: 'next-major', type: 'string'},
       'work-dir': {default: path.join(os.tmpdir(), 'studio-version-compare'), type: 'string'},
@@ -75,13 +84,17 @@ function parseOptions() {
     const preset: ThrottleProfile = PROFILES[name]
     return {name, throttle: {...preset, cpuThrottle: cpuOverride ?? preset.cpuThrottle}}
   })
+  const out = path.resolve(INVOKED_FROM, values.out)
   return {
-    out: path.resolve(INVOKED_FROM, values.out),
+    out,
     profiles,
     port: Number(values.port),
     reuse: values['reuse-builds'],
     runs,
     skipAuthenticated: values['skip-authenticated'],
+    traceDir: values['trace-dir']
+      ? path.resolve(INVOKED_FROM, values['trace-dir'])
+      : path.join(path.dirname(out), 'version-compare-traces'),
     v6Ref: values['v6-ref'],
     v7Ref: values['v7-ref'],
     workDir: path.resolve(INVOKED_FROM, values['work-dir']),
@@ -105,6 +118,7 @@ async function main(): Promise<void> {
   const token = authenticated ? readEnv('SANITY_E2E_SESSION_TOKEN') : undefined
 
   await mkdir(options.workDir, {recursive: true})
+  await mkdir(options.traceDir, {recursive: true})
   const builds = {} as Record<Side, BuiltVersion>
   for (const [side, ref] of [
     ['v6', options.v6Ref],
@@ -131,35 +145,66 @@ async function main(): Promise<void> {
       string,
       {login: Record<Side, number[]>; tools: Record<Side, number[]>}
     >()
+    // JS received before ready, per sample, next to the timings of the same loads.
+    const jsBytes = new Map<string, Record<ReadyKind, Record<Side, ByteCount[]>>>()
+    const waterfalls = new Map<string, Partial<Record<Side, Waterfall>>>()
+    const pagePath = (kind: ReadyKind) => (kind === 'tools' ? '/404' : '/')
 
-    const measure = async (
-      kind: 'login' | 'tools',
-      side: Side,
-      profile: NamedProfile,
-      record: boolean,
-    ) => {
+    const sample = (kind: ReadyKind, side: Side, profile: NamedProfile, trace: boolean) => {
       server.setRoot(builds[side].distDir)
-      const sample = await takeSample({
+      return takeSample({
         auth: kind === 'tools' && token ? {projectId, token} : undefined,
         browser,
         kind,
-        path: kind === 'tools' ? '/404' : '/',
+        path: pagePath(kind),
         throttle: profile.throttle,
+        trace,
         url: server.url,
       })
+    }
+
+    const measure = async (kind: ReadyKind, side: Side, profile: NamedProfile, record: boolean) => {
+      const result = await sample(kind, side, profile, false)
       if (!record) return
-      const result = timings.get(profile.name)!
-      result[kind][side].push(sample.readyMs)
+      timings.get(profile.name)![kind][side].push(result.readyMs)
+      jsBytes.get(profile.name)![kind][side].push(countBytes(result.network.requests, ['js']))
       // The files a cold load fetches do not depend on how fast the network is.
-      initialJs[side] ??= await measureRequested(builds[side].distDir, sample.scriptPaths)
+      initialJs[side] ??= await measureRequested(builds[side].distDir, result.scriptPaths)
+    }
+
+    const traceLoad = async (kind: ReadyKind, side: Side, profile: NamedProfile) => {
+      const result = await sample(kind, side, profile, true)
+      const name = `${profile.name}-${side}-${kind}`
+      const files = {network: `${name}.network.json`, trace: `${name}.trace.json`}
+      const {events, window} = result.trace!
+      await writeFile(
+        path.join(options.traceDir, files.trace),
+        JSON.stringify({traceEvents: events}),
+      )
+      await writeFile(
+        path.join(options.traceDir, files.network),
+        JSON.stringify({readyMs: result.readyMs, ...result.network}, null, 1),
+      )
+      const waterfall = buildWaterfall({
+        files,
+        mainThread: window ? mainThreadTime(events, window) : null,
+        path: pagePath(kind),
+        readyMs: result.readyMs,
+        requests: result.network.requests,
+        tasks: window ? mainThreadTasks(events, window) : [],
+      })
+      waterfalls.get(profile.name)![side] = waterfall
     }
 
     // One discarded pass per side, metric and profile warms DNS, TLS, the API's own caches and the
     // server's compressed copies. After that the sides alternate within every run, so slow drift
     // of the machine hits both equally.
-    const kinds: Array<'login' | 'tools'> = authenticated ? ['login', 'tools'] : ['login']
+    const kinds: ReadyKind[] = authenticated ? ['login', 'tools'] : ['login']
+    const tracedKind: ReadyKind = authenticated ? 'tools' : 'login'
     for (const profile of options.profiles) {
       timings.set(profile.name, {login: {v6: [], v7: []}, tools: {v6: [], v7: []}})
+      jsBytes.set(profile.name, {login: {v6: [], v7: []}, tools: {v6: [], v7: []}})
+      waterfalls.set(profile.name, {})
       for (const kind of kinds) {
         for (const side of sides) {
           // oxlint-disable-next-line no-await-in-loop -- samples must not overlap
@@ -173,6 +218,12 @@ async function main(): Promise<void> {
           }
           console.log(`${profile.name} ${kind}: run ${run}/${options.runs}`)
         }
+        if (kind !== tracedKind) continue
+        for (const side of sides) {
+          // oxlint-disable-next-line no-await-in-loop -- samples must not overlap
+          await traceLoad(kind, side, profile)
+        }
+        console.log(`${profile.name} ${kind}: traced`)
       }
     }
 
@@ -201,29 +252,41 @@ async function main(): Promise<void> {
     }
 
     const profiles: Record<string, ProfileResult> = {}
+    const readyDescriptions: Record<ReadyKind, string> = {
+      login: 'Login page: navigation to login screen interactive, unauthenticated',
+      tools: '`/404` tool page: navigation to navbar tool list, authenticated',
+    }
+    const pageLabels: Record<ReadyKind, string> = {login: 'Login page', tools: '`/404` tool page'}
     for (const {name, throttle} of options.profiles) {
-      const {login, tools} = timings.get(name)!
-      const profileMetrics: Record<string, MetricComparison> = {
-        loginReady: compareMetric(
-          'Login page: navigation to login screen interactive, unauthenticated',
+      const ready = timings.get(name)!
+      const bytes = jsBytes.get(name)!
+      const profileMetrics: Record<string, MetricComparison> = {}
+      for (const kind of kinds) {
+        profileMetrics[`${kind}Ready`] = compareMetric(
+          readyDescriptions[kind],
           'ms',
-          login.v6,
-          login.v7,
-        ),
-      }
-      if (authenticated) {
-        profileMetrics['toolsReady'] = compareMetric(
-          '`/404` tool page: navigation to navbar tool list, authenticated',
-          'ms',
-          tools.v6,
-          tools.v7,
+          ready[kind].v6,
+          ready[kind].v7,
         )
+        for (const [key, label] of [
+          ['transferBytes', 'transferred'],
+          ['decodedBytes', 'decoded'],
+        ] as const) {
+          profileMetrics[`${kind}Js.${key}`] = compareMetric(
+            `${pageLabels[kind]}: JS received before ready, ${label}`,
+            'bytes',
+            bytes[kind].v6.map((count) => count[key]),
+            bytes[kind].v7.map((count) => count[key]),
+          )
+        }
       }
+      const traced = waterfalls.get(name)!
       profiles[name] = {
         cacheDisabled: true,
         cpuThrottle: throttle.cpuThrottle,
         metrics: profileMetrics,
         network: throttle.network ? {...throttle.network} : null,
+        ...(traced.v6 && traced.v7 ? {waterfall: {v6: traced.v6, v7: traced.v7}} : {}),
       }
     }
 
@@ -243,14 +306,14 @@ async function main(): Promise<void> {
       generatedAt: new Date().toISOString(),
       metrics,
       profiles,
-      schemaVersion: 2,
+      schemaVersion: 3,
       versions: {v6: versionInfo(builds.v6), v7: versionInfo(builds.v7)},
     }
 
     await mkdir(path.dirname(options.out), {recursive: true})
     await writeFile(options.out, `${JSON.stringify(report, null, 2)}\n`)
     const summary = renderSummary(report)
-    console.log(`\n${summary}\nWrote ${options.out}`)
+    console.log(`\n${summary}\nWrote ${options.out} and traces to ${options.traceDir}`)
     if (process.env.GITHUB_STEP_SUMMARY) {
       await appendFile(process.env.GITHUB_STEP_SUMMARY, summary)
     }
