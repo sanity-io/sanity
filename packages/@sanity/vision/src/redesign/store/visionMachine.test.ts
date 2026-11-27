@@ -314,29 +314,29 @@ describe('visionMachine', () => {
     expect(selectPersistedState(harness.snapshot())).not.toHaveProperty('fetchOnOpen')
   })
 
-  it('restores and toggles the params and options panels independently', () => {
+  it('restores and toggles the params and request panels independently', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: false, paramsView: 'json', resultViewer: 'tree'},
+      panels: {params: true, request: false, paramsView: 'json', resultViewer: 'tree'},
     })
 
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
-    expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(false)
+    expect(isPanelExpanded(harness.snapshot(), 'request')).toBe(false)
 
     harness.actor.send({type: 'panel.toggle', panel: 'params'})
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(false)
-    expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(false)
+    expect(isPanelExpanded(harness.snapshot(), 'request')).toBe(false)
 
-    harness.actor.send({type: 'panel.toggle', panel: 'options'})
+    harness.actor.send({type: 'panel.toggle', panel: 'request'})
     harness.actor.send({type: 'panel.toggle', panel: 'params'})
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
-    expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(true)
+    expect(isPanelExpanded(harness.snapshot(), 'request')).toBe(true)
   })
 
   it('restores, switches and persists how the params are edited', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'form', resultViewer: 'tree'},
+      panels: {params: true, request: true, paramsView: 'form', resultViewer: 'tree'},
     })
     expect(selectParamsView(harness.snapshot())).toBe('form')
 
@@ -364,7 +364,7 @@ describe('visionMachine', () => {
   it('restores, switches and persists how the result shows', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'tree'},
+      panels: {params: true, request: true, paramsView: 'json', resultViewer: 'tree'},
     })
     expect(selectResultView(harness.snapshot())).toBe('tree')
 
@@ -388,13 +388,13 @@ describe('visionMachine', () => {
 
     const restored = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'graph'},
+      panels: {params: true, request: true, paramsView: 'json', resultViewer: 'graph'},
     })
     expect(selectResultView(restored.snapshot())).toBe('graph')
 
     const restoredDocuments = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'documents'},
+      panels: {params: true, request: true, paramsView: 'json', resultViewer: 'documents'},
     })
     expect(selectResultView(restoredDocuments.snapshot())).toBe('documents')
   })
@@ -420,7 +420,7 @@ describe('visionMachine', () => {
     const harness = createHarness()
     harness.actor.send({type: 'sidebar.toggle'})
     harness.actor.send({type: 'drawer.toggle', drawer: 'closed-tabs'})
-    harness.actor.send({type: 'panel.toggle', panel: 'options'})
+    harness.actor.send({type: 'panel.toggle', panel: 'request'})
 
     const persisted = selectPersistedState(harness.snapshot())
     expect(persisted).toEqual({
@@ -429,7 +429,7 @@ describe('visionMachine', () => {
       activeTabId: harness.snapshot().context.activeTabId,
       settings: harness.snapshot().context.settings,
       sidebar: {expanded: true, drawer: 'closed-tabs'},
-      panels: {params: true, options: false, paramsView: 'json', resultViewer: 'json'},
+      panels: {params: true, request: true, paramsView: 'json', resultViewer: 'json'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
       ai: {
         enabled: true,
@@ -853,6 +853,7 @@ describe('visionMachine', () => {
     harness.actor.send({type: 'tab.add', tab: {query: 'extra'}})
     harness.actor.send({type: 'sidebar.toggle'})
     harness.actor.send({type: 'panel.toggle', panel: 'params'})
+    harness.actor.send({type: 'panel.toggle', panel: 'request'})
     harness.actor.send({type: 'drawer.toggle', drawer: 'settings'})
     harness.actor.send({type: 'dialog.open', dialog: 'shortcuts'})
 
@@ -866,6 +867,7 @@ describe('visionMachine', () => {
     expect(harness.runnerIds()).toEqual([tabs[0].id])
     expect(harness.snapshot().matches({sidebar: 'collapsed'})).toBe(true)
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
+    expect(isPanelExpanded(harness.snapshot(), 'request')).toBe(false)
     expect(selectOpenDrawer(harness.snapshot())).toBeNull()
     expect(selectOpenDialog(harness.snapshot())).toBeNull()
     expect(localStorage.getItem(getVisionStorageKey('proj'))).toBeNull()
