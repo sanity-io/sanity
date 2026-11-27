@@ -13,10 +13,10 @@
  * matching `sanity` and are rebuilt whenever an internal changes.
  *
  * This entry is a superset of what the public entries hide: every `@internal` declaration a
- * public entry exports is also exported here, so this is always a working import path, and names
- * that have since become public API stay exported here too for the consumers that already
- * migrated. The `internal-exports` test in the `@repo/test-dts-exports` workspace enforces the
- * superset direction and keeps the compatibility list on the public entries explicit.
+ * public entry exports is also exported here, so this is always a working import path. Nothing
+ * tagged `@public`, `@beta` or `@alpha` is exported from any internals entry: a name people can
+ * rely on lives on `sanity` or its public subpath, and is not exported here as well. The
+ * `internal-exports` test in the `@repo/test-dts-exports` workspace enforces both directions.
  *
  * Two subpaths split off what a studio does not need while it boots: `…-1` holds what code that
  * runs before sign-in may import, and `…-2` the internals only lazily loaded code uses (the
@@ -802,8 +802,6 @@ export {useUserColorManager} from '../core/user-color/hooks'
 // oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 
-export {type HotkeysProps} from '../core/components/Hotkeys'
-
 export {type BlockImagePreviewProps} from '../core/components/previews/portableText/BlockImagePreview'
 
 export {type CompactPreviewProps} from '../core/components/previews/general/CompactPreview'
@@ -818,7 +816,6 @@ export {type InlinePreviewProps} from '../core/components/previews/portableText/
 
 // SAPP-5036: moved off the public `sanity` root entry
 export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
-export {AvatarSkeleton} from '../core/components/userAvatar/UserAvatar'
 export {BlockImagePreview} from '../core/components/previews/portableText/BlockImagePreview'
 export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
 export {CircularProgress} from '../core/components/progress/CircularProgress'
@@ -833,14 +830,12 @@ export {
 export {DRAFTS_FOLDER} from '../core/util/draftUtils'
 export {DefaultPreview} from '../core/components/previews/general/DefaultPreview'
 export {DetailPreview} from '../core/components/previews/general/DetailPreview'
-export {Hotkeys} from '../core/components/Hotkeys'
 export {InlinePreview} from '../core/components/previews/portableText/InlinePreview'
 export {IntentButton} from '../core/components/IntentButton'
 export {LinearProgress} from '../core/components/progress/LinearProgress'
 export {MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME} from '@sanity/types'
 export {MediaPreview} from '../core/components/previews/general/MediaPreview'
 
-export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
 export {
   type RovingFocusNavigationType,
@@ -848,22 +843,14 @@ export {
 } from '../core/components/rovingFocus/types'
 export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {UserAvatar, type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
-export {useDialogStack} from '../core/hooks/useDialogStack'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
-export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
 export {useTemplates} from '../core/hooks/useTemplates'
 export {useTools} from '../core/hooks/useTools'
-export {useUserListWithPermissions} from '../core/hooks/useUserListWithPermissions'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
-export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
 export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
-export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
 export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
-export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
-export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
-export {getDocumentIsInPerspective} from '../core/releases/util/util'
 export {
   useDocumentPreviewStore,
   useDocumentStore,
@@ -894,10 +881,8 @@ export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
 export {ToolLink} from '../core/studio/components/navbar/tools/ToolLink'
 export {useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {isTimeoutError} from '../core/studio/requestErrors/classify'
-export {useStudioErrorHandler} from '../core/studio/requestErrors/useStudioErrorHandler'
 export {
   VERSION_FOLDER,
-  documentIdEquals,
   getDraftId,
   getPublishedId,
   getVersionFromId,
@@ -905,18 +890,7 @@ export {
   isDraftId,
   isPublishedId,
   isVersionId,
-  systemBundles,
 } from '../core/util/draftUtils'
-export {getDocumentVariantType} from '../core/util/getDocumentVariantType'
-export {getReferencePaths} from '../core/util/getReferencePaths'
-export {userHasRole} from '../core/util/userHasRole'
-export {
-  isDraftVersion,
-  isPublishedVersion,
-  isReleaseVersion,
-  isVariantVersion,
-  readVersionType,
-} from '../core/util/versionsUtils'
 export {getProviderTitle} from '@sanity/access-ui'
 export {
   isCreateIfNotExistsMutation,

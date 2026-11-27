@@ -30,7 +30,7 @@ const EMPTY_ARRAY: never[] = []
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {validation = EMPTY_ARRAY, __unstable_showSummary: showSummary, fontSize, placement} = props
 

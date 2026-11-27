@@ -1,11 +1,8 @@
 import {type ClientError, ServerError} from '@sanity/client'
 import {Button, Card, Tab, TabList, TabPanel} from '@sanity/ui'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useClient, useProjectId} from 'sanity'
-import {
-  useStudioErrorHandler,
-  CorsOriginErrorScreen,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useClient, useProjectId, useStudioErrorHandler} from 'sanity'
+import {CorsOriginErrorScreen} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 import {Heading, Code, Text, Container, Flex, Box, VStack} from 'ui5'
 

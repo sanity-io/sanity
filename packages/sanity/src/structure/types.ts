@@ -49,7 +49,7 @@ export interface StructureToolContextValue {
 /**
  *  Structure tool context. Extends from {@link ConfigContext}.
  *  @hidden
- *  @public
+ *  @internal
  */
 export interface StructureResolverContext extends ConfigContext {
   /**
@@ -228,7 +228,7 @@ export interface StructureToolOptions {
  * ```
  *
  * @hidden
- * @beta
+ * @internal
  */
 export type RouterPanes = RouterPaneGroup[]
 
@@ -239,7 +239,7 @@ export type RouterPanes = RouterPaneGroup[]
  *
  *
  * @hidden
- * @beta
+ * @internal
  */
 export type RouterPaneGroup = RouterPaneSibling[]
 
@@ -250,7 +250,7 @@ export type RouterPaneGroup = RouterPaneSibling[]
  *
  *
  * @hidden
- * @beta
+ * @internal
  */
 export interface RouterPaneSibling {
   id: string
@@ -445,7 +445,7 @@ export type UnresolvedPaneNode =
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
   intent?: Intent
 }

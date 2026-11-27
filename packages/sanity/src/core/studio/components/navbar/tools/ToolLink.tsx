@@ -13,7 +13,7 @@ export interface ToolLinkProps {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function ToolLink(
   props: ToolLinkProps &
     Omit<HTMLProps<HTMLAnchorElement>, 'href' | 'name'> &

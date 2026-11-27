@@ -7,7 +7,7 @@ import {type UserColor, type UserColorManager} from './types'
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useUserColorManager(): UserColorManager {
   const userColorManager = use(UserColorManagerContext)
 

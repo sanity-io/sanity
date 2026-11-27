@@ -274,7 +274,7 @@ function ColorSchemeStateProvider({
   )
 }
 
-/** @alpha */
+/** @internal */
 export function useColorSchemeSetValue():
   | false
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -292,7 +292,7 @@ export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
   return value
 }
 
-/** @alpha */
+/** @internal */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function useColorSchemeValue(): ThemeColorSchemeKey {
   const scheme = useColorSchemeInternalValue()

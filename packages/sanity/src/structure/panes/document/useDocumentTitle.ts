@@ -10,7 +10,7 @@ import {useDocumentPane} from './useDocumentPane'
 /**
  * useDocumentTitle hook return type.
  *
- * @beta
+ * @internal
  * @hidden
  */
 export interface UseDocumentTitle {
@@ -21,7 +21,7 @@ export interface UseDocumentTitle {
 /**
  * React hook that returns the document title for the current document in the document pane.
  *
- * @beta
+ * @internal
  * @hidden
  *
  * @returns The document title or error. See {@link UseDocumentTitle}

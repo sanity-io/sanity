@@ -14,6 +14,7 @@ const PICKED = '2026-03-04T05:06:00.000Z'
 
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  useSchema: () => schema,
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
@@ -41,9 +42,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2',
       </button>
     </div>
   ),
-}))
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1', () => ({
-  useSchema: () => schema,
 }))
 
 // @sanity/ui's ThemeProvider reads the color scheme preference

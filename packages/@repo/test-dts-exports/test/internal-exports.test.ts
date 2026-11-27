@@ -25,9 +25,10 @@
  * `sanity/structure`, `sanity/router` and `sanity/presentation` are the exception: Studio 7 moves
  * their types too, to subpaths of the internals entry (see the last test in this file).
  *
- * The internals entry is deliberately *not* checked for "nothing but `@internal` here": versions
- * 6.17.0 through 6.20.0 shipped it as the migration target for names that have since become
- * public API, and a re-export costs nothing, so those stay exported from both places.
+ * The reverse holds as well: nothing exported from an internals entry is tagged `@public`, `@beta`
+ * or `@alpha` (the last test in this file). Every name has a single home, so a name people were
+ * told they can rely on lives on a public entry, and the internals entries hold only what can
+ * change in any release.
  *
  * Symbols re-exported from dependencies are skipped: their release tags belong to the dependency.
  */
@@ -274,6 +275,75 @@ describe('structure, router and presentation keep their internals on subpaths', 
           `the runtime value belongs here, export the type from \`${entry}\` with ` +
           '`export {type X}` and list it under "typeOnly" in ' +
           '`packages/sanity/src/_exports/tombstones/manifest.json`.',
+      ).toEqual([])
+    })
+  }
+})
+
+/**
+ * Every internals entry: the base entry, its numbered entries (`-1`, `-2`) and the `-router` and
+ * `-structure` subpaths.
+ */
+const INTERNALS_ENTRIES = {
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver': INTERNALS_ENTRY_DTS,
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1':
+    '_dangerously_use_private_internals_that_do_not_follow_semver-1.d.ts',
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2':
+    '_dangerously_use_private_internals_that_do_not_follow_semver-2.d.ts',
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router':
+    '_dangerously_use_private_internals_that_do_not_follow_semver-router.d.ts',
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure':
+    '_dangerously_use_private_internals_that_do_not_follow_semver-structure.d.ts',
+} as const
+
+const PUBLIC_TAGS = new Set(['public', 'beta', 'alpha'])
+
+function publicTagsOf(declaration: ExportedDeclarations): string[] {
+  const docs = Node.isVariableDeclaration(declaration)
+    ? (declaration.getVariableStatement()?.getJsDocs() ?? [])
+    : Node.isJSDocable(declaration)
+      ? declaration.getJsDocs()
+      : []
+  return docs.flatMap((doc) =>
+    doc
+      .getTags()
+      .map((tag) => tag.getTagName())
+      .filter((tag) => PUBLIC_TAGS.has(tag)),
+  )
+}
+
+/**
+ * A public name is one people were told they can rely on, so it never lives on an internals
+ * entry: export it from `sanity` or the public subpath it belongs to, or tag it `@internal`. The
+ * only public declarations an internals entry may export are the runtime values of public types
+ * that their entry only exports type-only, which the manifest lists under `typeOnly` with the
+ * internals entry as `valueFrom` (the Structure Builder classes).
+ */
+describe('the internals entries export nothing tagged @public, @beta or @alpha', () => {
+  const project = new Project({skipAddingFilesFromTsConfig: true})
+
+  for (const [entry, dtsFile] of Object.entries(INTERNALS_ENTRIES)) {
+    test(entry, {timeout: DTS_PARSE_TIMEOUT}, () => {
+      const valuesOfPublicTypes = new Set(
+        Object.values(manifest.typeOnly ?? {})
+          .flat()
+          .filter(({valueFrom}) => valueFrom === `./${entry.slice('sanity/'.length)}`)
+          .map(({name}) => name),
+      )
+      const exported = project
+        .addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
+        .getExportedDeclarations()
+      expect(exported.size).toBeGreaterThan(0)
+      const tagged: string[] = []
+      for (const [name, declarations] of exported) {
+        if (valuesOfPublicTypes.has(name) || declarations.every(isTombstoneDeclaration)) continue
+        const tags = new Set(ownDeclarations(declarations).flatMap(publicTagsOf))
+        if (tags.size > 0) tagged.push(`${name} (@${[...tags].join(', @')})`)
+      }
+      expect(
+        tagged,
+        `\`${entry}\` is for @internal declarations only. Export these from \`sanity\` or the ` +
+          'public subpath they belong to (and remove their tombstone there), or tag them `@internal`.',
       ).toEqual([])
     })
   }

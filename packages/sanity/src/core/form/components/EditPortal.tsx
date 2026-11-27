@@ -14,14 +14,14 @@ interface SharedProps {
   header: string
   width: ResponsiveWidthProps['width']
 }
-interface DialogProps extends SharedProps {
+export interface DialogProps extends SharedProps {
   type: 'dialog'
   id?: string
   autofocus?: boolean
   onClose?: () => void
 }
 
-interface PopoverProps extends SharedProps {
+export interface PopoverProps extends SharedProps {
   type: 'popover'
   legacy_referenceElement: HTMLElement | null
   onClose: () => void

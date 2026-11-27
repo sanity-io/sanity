@@ -57,7 +57,7 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function TemplatePreview(props: TemplatePreviewProps) {
   const {
     description,

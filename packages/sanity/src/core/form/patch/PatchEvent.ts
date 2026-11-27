@@ -7,7 +7,7 @@ import {type FormPatch, type PatchArg} from './types'
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export class PatchEvent {
   static from(input: PatchArg | PatchEvent): PatchEvent {

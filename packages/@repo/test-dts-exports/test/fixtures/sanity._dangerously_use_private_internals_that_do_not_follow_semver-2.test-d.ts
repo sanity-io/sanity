@@ -3,7 +3,6 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  ALL_FIELDS_GROUP,
   ArrayOfObjectOptionsInput,
   ArrayOfObjectsFunctions,
   ArrayOfObjectsInput,
@@ -17,7 +16,6 @@ import type {
   ArrayOfPrimitivesFunctions,
   ArrayOfPrimitivesInput,
   ArrayOfPrimitivesItem,
-  BlockEditor,
   BooleanInput,
   buildCommentRangeDecorations,
   buildCommentRangeDecorationsLegacy,
@@ -120,14 +118,12 @@ import type {
   DocumentVersionIcons,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
-  EditPortal,
   EditReferenceLinkComponentProps,
   EditReferenceOptions,
   EditScheduleForm,
   EmailInput,
   emptyValuesByType,
   encodePath,
-  EnhancedObjectDialog,
   Event,
   ExpandFieldSetOperation,
   ExpandOperation,
@@ -228,7 +224,6 @@ import type {
   ParseError,
   ParseErrorsProvider,
   PatchEvent,
-  PortableTextInput,
   PortableTextMemberItem,
   prefixPath,
   PresenceOverlay,
@@ -247,8 +242,6 @@ import type {
   RevertChangesButton,
   RevertChangesConfirmDialog,
   SANITY_PATCH_TYPE,
-  ScheduleAction,
-  ScheduledBadge,
   SelectInput,
   SetActiveGroupOperation,
   setAtPath,
@@ -323,9 +316,6 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2', () => {
-  test('ALL_FIELDS_GROUP', () => {
-    expectTypeOf<typeof ALL_FIELDS_GROUP>().not.toBeNever()
-  })
   test('ArrayOfObjectOptionsInput', () => {
     expectTypeOf<typeof ArrayOfObjectOptionsInput>().not.toBeNever()
   })
@@ -364,9 +354,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('ArrayOfPrimitivesItem', () => {
     expectTypeOf<typeof ArrayOfPrimitivesItem>().not.toBeNever()
-  })
-  test('BlockEditor', () => {
-    expectTypeOf<typeof BlockEditor>().not.toBeNever()
   })
   test('BooleanInput', () => {
     expectTypeOf<typeof BooleanInput>().toBeFunction()
@@ -674,9 +661,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('DocumentVersionsStatusIndicator', () => {
     expectTypeOf<typeof DocumentVersionsStatusIndicator>().toBeFunction()
   })
-  test('EditPortal', () => {
-    expectTypeOf<typeof EditPortal>().toBeFunction()
-  })
   test('EditReferenceLinkComponentProps', () => {
     expectTypeOf<EditReferenceLinkComponentProps>().toBeObject()
   })
@@ -694,9 +678,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('encodePath', () => {
     expectTypeOf<typeof encodePath>().toBeFunction()
-  })
-  test('EnhancedObjectDialog', () => {
-    expectTypeOf<typeof EnhancedObjectDialog>().not.toBeNever()
   })
   test('Event', () => {
     expectTypeOf<typeof Event>().toBeFunction()
@@ -998,9 +979,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('PatchEvent', () => {
     expectTypeOf<PatchEvent>().not.toBeNever()
   })
-  test('PortableTextInput', () => {
-    expectTypeOf<typeof PortableTextInput>().not.toBeNever()
-  })
   test('PortableTextMemberItem', () => {
     expectTypeOf<PortableTextMemberItem>().toBeObject()
   })
@@ -1054,12 +1032,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('SANITY_PATCH_TYPE', () => {
     expectTypeOf<typeof SANITY_PATCH_TYPE>().not.toBeNever()
-  })
-  test('ScheduleAction', () => {
-    expectTypeOf<typeof ScheduleAction>().not.toBeNever()
-  })
-  test('ScheduledBadge', () => {
-    expectTypeOf<typeof ScheduledBadge>().not.toBeNever()
   })
   test('SelectInput', () => {
     expectTypeOf<typeof SelectInput>().toBeFunction()

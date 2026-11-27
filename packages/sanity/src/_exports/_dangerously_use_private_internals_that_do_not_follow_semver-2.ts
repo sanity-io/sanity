@@ -243,15 +243,12 @@ export {
   CrossDatasetReferenceInput,
   DateInput,
   DateTimeInput,
-  EnhancedObjectDialog,
   FileInput,
   FormField,
   FormInput,
   ImageInput,
-  PortableTextInput as BlockEditor,
   ArrayOfObjectsInput,
   ObjectInput,
-  PortableTextInput,
   ReferenceInput,
   SlugInput,
   StringInput,
@@ -382,7 +379,6 @@ export {MemberItemError} from '../core/form/members/array/MemberItemError'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {createPatchChannel} from '../core/form/patch/PatchChannel'
 export {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
-export {ALL_FIELDS_GROUP} from '../core/form/store/constants'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
 export {BooleanInput} from '../core/form/inputs/BooleanInput'
@@ -390,7 +386,6 @@ export {BooleanInput} from '../core/form/inputs/BooleanInput'
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 // oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
-export {EditPortal} from '../core/form/components/EditPortal'
 export {EmailInput} from '../core/form/inputs/EmailInput'
 export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
 export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
@@ -404,7 +399,3 @@ export {UrlInput} from '../core/form/inputs/UrlInput'
 export {PatchEvent} from '../core/form/patch/PatchEvent'
 export {useFormBuilder} from '../core/form/useFormBuilder'
 export {TransformPatches} from '../core/form/utils/TransformPatches'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API kept until it is removed
-export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API kept until it is removed
-export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'

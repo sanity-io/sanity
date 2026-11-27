@@ -17,13 +17,11 @@
  */
 
 export {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
-export {useSchema} from '../core/hooks/useSchema'
 export {
   StudioDiagnosticsBridge,
   type StudioDiagnosticsBridgeApi,
 } from '../core/studio/diagnostics/StudioDiagnosticsBridge'
 export {Studio} from '../core/studio/Studio'
-export {StudioLayout} from '../core/studio/StudioLayout'
 export {StudioProvider} from '../core/studio/StudioProvider'
 export {
   STUDIO_RESIZE_TRANSITION_TYPE,

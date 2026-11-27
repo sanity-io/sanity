@@ -7,7 +7,7 @@ import {useDocumentPreviewStore} from '../../datastores'
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useDocumentValues<T = Record<string, unknown>>(
   documentId: string,
   paths: string[],

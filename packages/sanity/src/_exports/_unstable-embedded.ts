@@ -295,7 +295,7 @@ export declare const useFormState: never
  */
 export declare const useRelativeTime: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. Import `{useSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity`. Import `{useSchema}` from `sanity` instead of `sanity/_unstable-embedded`.
  */
 export declare const useSchema: never
 /**

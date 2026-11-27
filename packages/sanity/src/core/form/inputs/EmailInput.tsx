@@ -12,7 +12,7 @@ export type EmailInputProps = StringInputProps
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function EmailInput(props: EmailInputProps) {
   const {validationError, elementProps} = props

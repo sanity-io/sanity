@@ -40,7 +40,7 @@ const EMPTY: {[key: string]: never} = {}
  * Also displays fallback values if the document cannot be found.
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function getPreviewValueWithFallback({snapshot, original, fallback}: Sources) {
   return snapshot || original || getMissingDocumentFallback(fallback || EMPTY)

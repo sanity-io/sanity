@@ -5,7 +5,7 @@ import {PreviewLoader} from './PreviewLoader'
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export function Preview(
   props: RenderPreviewCallbackProps & {perspectiveStack?: PerspectiveStack; variant?: string},

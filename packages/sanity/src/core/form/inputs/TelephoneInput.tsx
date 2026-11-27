@@ -12,7 +12,7 @@ export type TelephoneInputProps = StringInputProps
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function TelephoneInput(props: TelephoneInputProps) {
   const {schemaType, validationError, value, elementProps} = props

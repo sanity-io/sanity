@@ -2,7 +2,6 @@ import {type ComponentProps} from 'react'
 
 import {createLazyComponent} from '../components/lazy/createLazyComponent'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
-import {type EnhancedObjectDialogProps} from './components/EnhancedObjectDialog'
 import {type FormField as FormFieldImplementation} from './components/formField/FormField'
 import {type FormInput as FormInputImplementation} from './components/FormInput'
 import {type DateInputProps} from './inputs/DateInputs/DateInput'
@@ -26,11 +25,12 @@ import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type ObjectInputProps,
-  type PortableTextInputProps,
   type StringInputProps,
 } from './types/inputProps'
 
-// Code-split facades for the form components that `sanity` exports. The form runtime is by far
+// Code-split facades for the form components that the internals entries export (the two that the
+// root `sanity` entry exports, `PortableTextInput` and `EnhancedObjectDialog`, are in
+// `./publicLazy`, so this module stays out of a studio's first load). The form runtime is by far
 // the largest part of the package, and nothing renders it before a document is opened, yet every
 // studio downloads it up front when these components are statically reachable from the entry
 // (with `autoUpdates: true` the entry graph is fetched through the import map, untouched by
@@ -39,7 +39,7 @@ import {
 // wait for a chunk the entry already pulled before this change. All facades load the same
 // `./publicComponents.lazy` chunk (see the comment there for why it is one chunk).
 //
-// Only `FormBuilder` and `PortableTextInput` carry a fallback. They are the two that can be the
+// Only `FormBuilder` and `PortableTextInput` (in `./publicLazy`) carry a fallback. They are the two that can be the
 // first thing to render in their subtree, and `FormBuilder` is where a form's loading state
 // belongs. The in-form facades deliberately have no boundary of their own: a boundary here would
 // catch a suspending descendant (lazy form middleware, a lazy custom input) and unmount the
@@ -55,7 +55,7 @@ import {
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const FormField = createLazyComponent<ComponentProps<typeof FormFieldImplementation>>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.FormField})),
@@ -63,25 +63,15 @@ export const FormField = createLazyComponent<ComponentProps<typeof FormFieldImpl
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const FormInput = createLazyComponent<ComponentProps<typeof FormInputImplementation>>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.FormInput})),
 )
 
 /**
- * The default Portable Text input. Loads the editor on first render.
- *
- * @public
- */
-export const PortableTextInput = createLazyComponent<PortableTextInputProps>(
-  () => import('./publicComponents.lazy').then((module) => ({default: module.PortableTextInput})),
-  {fallback: <LoadingBlock />},
-)
-
-/**
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfObjectsItem = createLazyComponent<MemberItemProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfObjectsItem})),
@@ -89,7 +79,7 @@ export const ArrayOfObjectsItem = createLazyComponent<MemberItemProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const MemberField = createLazyComponent<MemberFieldProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.MemberField})),
@@ -97,21 +87,21 @@ export const MemberField = createLazyComponent<MemberFieldProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const MemberFieldError = createLazyComponent<{member: FieldError}>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.MemberFieldError})),
 )
 
 /**
- * @public
+ * @internal
  */
 export const ObjectInputMember = createLazyComponent<ObjectInputMemberProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ObjectInputMember})),
 )
 
 /**
- * @alpha
+ * @internal
  */
 export const FormBuilder = createLazyComponent<FormBuilderProps>(
   () => import('./publicComponents.lazy').then((module) => ({default: module.FormBuilder})),
@@ -122,7 +112,7 @@ export const FormBuilder = createLazyComponent<FormBuilderProps>(
  * Like the form components it resolves, it has no Suspense boundary of its own: a consumer that
  * renders it outside `FormBuilder` wraps it in `<Suspense>`.
  *
- * @alpha This API might change.
+ * @internal This API might change.
  */
 export const FormProvider = createLazyComponent<FormProviderProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.FormProvider})),
@@ -130,7 +120,7 @@ export const FormProvider = createLazyComponent<FormProviderProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const StringInput = createLazyComponent<StringInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.StringInput})),
@@ -138,7 +128,7 @@ export const StringInput = createLazyComponent<StringInputProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const DateInput = createLazyComponent<DateInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.DateInput})),
@@ -146,7 +136,7 @@ export const DateInput = createLazyComponent<DateInputProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const DateTimeInput = createLazyComponent<DateTimeInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.DateTimeInput})),
@@ -154,7 +144,7 @@ export const DateTimeInput = createLazyComponent<DateTimeInputProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const SlugInput = createLazyComponent<SlugInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.SlugInput})),
@@ -162,7 +152,7 @@ export const SlugInput = createLazyComponent<SlugInputProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const TagsArrayInput = createLazyComponent<TagsArrayInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.TagsArrayInput})),
@@ -170,7 +160,7 @@ export const TagsArrayInput = createLazyComponent<TagsArrayInputProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const ObjectInput = createLazyComponent<ObjectInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ObjectInput})),
@@ -181,7 +171,7 @@ export const ObjectInput = createLazyComponent<ObjectInputProps>(() =>
  * Useful as a fallback/last resort input for an array type
  *
  * @hidden
- * @beta
+ * @internal
  */
 export const UniversalArrayInput = createLazyComponent<
   ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps
@@ -189,7 +179,7 @@ export const UniversalArrayInput = createLazyComponent<
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfObjectsInput = createLazyComponent<ArrayOfObjectsInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfObjectsInput})),
@@ -197,7 +187,7 @@ export const ArrayOfObjectsInput = createLazyComponent<ArrayOfObjectsInputProps>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfPrimitivesInput = createLazyComponent<ArrayOfPrimitivesInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfPrimitivesInput})),
@@ -205,7 +195,7 @@ export const ArrayOfPrimitivesInput = createLazyComponent<ArrayOfPrimitivesInput
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfOptionsInput = createLazyComponent<
   ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps
@@ -216,7 +206,7 @@ export const ArrayOfOptionsInput = createLazyComponent<
  * Note: this input can handle only object values
  *
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfObjectOptionsInput = createLazyComponent<ArrayOfObjectsInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfObjectOptionsInput})),
@@ -227,7 +217,7 @@ export const ArrayOfObjectOptionsInput = createLazyComponent<ArrayOfObjectsInput
  * Note: this input can only handle primitive values
  *
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfPrimitiveOptionsInput = createLazyComponent<ArrayOfPrimitivesInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({
@@ -237,7 +227,7 @@ export const ArrayOfPrimitiveOptionsInput = createLazyComponent<ArrayOfPrimitive
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const ArrayOfPrimitivesItem = createLazyComponent<PrimitiveMemberItemProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfPrimitivesItem})),
@@ -263,21 +253,8 @@ export const MemberFieldSet = createLazyComponent<
 >(() => import('./publicComponents.lazy').then((module) => ({default: module.MemberFieldSet})))
 
 /**
- * Creates a dialog or a popover for editing content.
- * Handles presence and virtual scrolling.
- *
- * When multiple dialogs are open, only the top-most dialog is visible.
- * Non-top dialogs are hidden via CSS while preserving their state.
- *
- * @beta
- */
-export const EnhancedObjectDialog = createLazyComponent<EnhancedObjectDialogProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.EnhancedObjectDialog})),
-)
-
-/**
  * @hidden
- * @beta
+ * @internal
  */
 export const ReferenceInput = createLazyComponent<StudioReferenceInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.StudioReferenceInput})),
@@ -285,7 +262,7 @@ export const ReferenceInput = createLazyComponent<StudioReferenceInputProps>(() 
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const CrossDatasetReferenceInput =
   createLazyComponent<StudioCrossDatasetReferenceInputProps>(() =>
@@ -296,7 +273,7 @@ export const CrossDatasetReferenceInput =
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const FileInput = createLazyComponent<FileInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.StudioFileInput})),
@@ -304,7 +281,7 @@ export const FileInput = createLazyComponent<FileInputProps>(() =>
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const ImageInput = createLazyComponent<ImageInputProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.StudioImageInput})),

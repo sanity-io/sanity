@@ -20,7 +20,7 @@ export interface FormCallbacksValue {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   props: FormCallbacksValue & {children: ReactNode},
 ) {
@@ -91,7 +91,7 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useFormCallbacks(): FormCallbacksValue {
   const ctx = use(FormCallbacksContext)
   if (!ctx) {

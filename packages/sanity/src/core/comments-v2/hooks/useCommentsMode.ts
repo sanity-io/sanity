@@ -10,7 +10,7 @@ import {type CommentsMode} from '../context/enabled/types'
  * differently per mode, under a `Suspense` boundary; never on a path whose suspension would hold
  * up a layout, and never awaited in an event handler.
  *
- * @beta
+ * @internal
  * @hidden
  */
 export function useCommentsMode(): Promise<CommentsMode> {

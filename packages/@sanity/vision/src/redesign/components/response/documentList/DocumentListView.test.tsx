@@ -21,6 +21,7 @@ const schema = {
 vi.mock('sanity', () => ({
   useDataset: () => 'workspace-dataset',
   useProjectId: () => 'workspace-project',
+  useSchema: () => schema,
 }))
 
 const previews = new Map<string, {title?: string; subtitle?: string}>()
@@ -88,9 +89,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     ) : (
       <div>{children}</div>
     ),
-}))
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1', () => ({
-  useSchema: () => schema,
 }))
 
 vi.mock('sanity/router', () => ({

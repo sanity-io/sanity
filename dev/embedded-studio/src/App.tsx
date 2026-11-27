@@ -1,9 +1,8 @@
 import {Button, Card, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {type StudioThemeColorSchemeKey} from 'sanity'
+import {type StudioThemeColorSchemeKey, StudioLayout} from 'sanity'
 import {
   Studio,
-  StudioLayout,
   StudioProvider,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {Flex} from 'ui5'
