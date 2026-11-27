@@ -1,3 +1,4 @@
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
 import {
@@ -12,6 +13,7 @@ import {
   useConditionalToast,
   useTranslation,
   useVersionOperations,
+  useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
 import {Text, type TextProps} from 'ui5'
@@ -31,19 +33,29 @@ function VersionBadge({
   children,
   currentRelease,
   fallbackTitle,
+  lead,
 }: {
   children?: React.ReactNode
   currentRelease?: Exclude<TargetPerspective, SystemBundle>
   fallbackTitle?: string
+  /** The type word before the chip ("release"), kept next to the chip's first word. */
+  lead?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
-  if (typeof currentRelease === 'string' || !currentRelease) {
-    return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
-  }
+  const badge =
+    typeof currentRelease === 'string' || !currentRelease ? (
+      <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
+    ) : (
+      <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
+        {() => <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>}
+      </ReleaseTitle>
+    )
+  if (!lead) return badge
+  // A no-break space ties the lead to the start of the chip; the chip itself can still wrap, so a long release name never overflows the text column.
   return (
-    <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
-      {() => <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>}
-    </ReleaseTitle>
+    <>
+      {lead}&nbsp;{badge}
+    </>
   )
 }
 
@@ -56,12 +68,13 @@ export function DocumentNotInReleaseBanner({
   currentRelease: Exclude<TargetPerspective, SystemBundle>
   isScheduledRelease?: boolean
 }) {
-  const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
+  // With Variants off the banner keeps its earlier release tint, copy and button tone
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const tone = getReleaseTone(currentRelease ?? LATEST)
 
   const {createVersion} = useVersionOperations()
-
   const isAnonymousBundle = typeof currentRelease === 'string'
   const releaseTitle = isAnonymousBundle
     ? currentRelease
@@ -109,13 +122,58 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
+  // One sentence for every release type. A scheduled release is locked, so it drops the "yet".
+  const i18nKey = isScheduledRelease
+    ? 'banners.release.not-in-release-scheduled'
+    : 'banners.release.not-in-release-yet'
+
+  if (!variantsEnabled) {
+    return (
+      <Banner
+        tone={tone}
+        content={
+          <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
+            <Translate
+              i18nKey="banners.release.not-in-release"
+              t={t}
+              values={{
+                title: releaseTitle,
+              }}
+              components={{VersionBadge}}
+              componentProps={{
+                currentRelease,
+                fallbackTitle: tCore('release.placeholder-untitled-release'),
+              }}
+            />
+          </Text>
+        }
+        // Adding to a scheduled release is not allowed
+        action={
+          isScheduledRelease
+            ? undefined
+            : {
+                text: isAgentBundleName(currentRelease)
+                  ? t('banners.release.action.add-to-bundle')
+                  : t('banners.release.action.add-to-release'),
+                tone: tone,
+                disabled: Boolean(versionCreateState),
+                onClick: handleAddToRelease,
+                mode: 'default',
+              }
+        }
+      />
+    )
+  }
+
   return (
     <Banner
-      tone={tone}
+      // Neutral with the info icon, as every release banner; the chip carries the release's colour.
+      tone="neutral"
+      icon={InfoOutlineIcon}
       content={
-        <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
+        <Text size={1} as="div" trim={true}>
           <Translate
-            i18nKey="banners.release.not-in-release"
+            i18nKey={i18nKey}
             t={t}
             values={{
               title: releaseTitle,
@@ -124,6 +182,11 @@ export function DocumentNotInReleaseBanner({
             componentProps={{
               currentRelease,
               fallbackTitle: tCore('release.placeholder-untitled-release'),
+              // The kind before the chip, by the same check as the action's label: an agent bundle
+              // is a bundle; anything else, including a release still loading, is a release
+              lead: isAgentBundleName(currentRelease)
+                ? t('banners.release.lead.bundle')
+                : t('banners.release.lead.release'),
             }}
           />
         </Text>
@@ -136,9 +199,11 @@ export function DocumentNotInReleaseBanner({
               text: isAgentBundleName(currentRelease)
                 ? t('banners.release.action.add-to-bundle')
                 : t('banners.release.action.add-to-release'),
-              tone: tone,
               disabled: Boolean(versionCreateState),
               onClick: handleAddToRelease,
+              // Always the filled default primary, whether or not the document inventory is open:
+              // it is the view's one filled button, and the inventory's Create variant steps down
+              // to a secondary button while it shows.
               mode: 'default',
             }
       }

@@ -10,8 +10,9 @@ import {
   useDocumentOperation,
   usePerspective,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
-import {Text, Flex} from 'ui5'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
@@ -45,6 +46,9 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {t} = useTranslation(structureLocaleNamespace)
   const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
+  // With Variants on, Publish is the neutral default primary and Compare and Discard are ghost;
+  // with Variants off they keep their earlier tones (green Publish, filled caution Discard)
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
   const {targetDocumentState} = useDocumentPane()
@@ -110,13 +114,17 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     })
   }
 
+  const message = (
+    <Text size={1} weight="medium" as="div" trim={true}>
+      <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
+    </Text>
+  )
+
   return (
     <Banner
-      content={
-        <Flex alignItems="center" justifyContent="space-between" gap={2}>
-          <Text size={1} weight="medium" as="div" trim={true}>
-            <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
-          </Text>
+      content={message}
+      actions={
+        <>
           <Button
             text={t('banners.obsolete-draft.actions.compare-draft.text')}
             mode="ghost"
@@ -139,7 +147,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
                   : undefined
             }
             loading={isPublishing}
-            tone="positive"
+            // Variants on: the neutral default primary. Off: green, as before
+            tone={variantsEnabled ? 'default' : 'positive'}
           />
           <Button
             onClick={handleDiscard}
@@ -153,9 +162,11 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
                   : undefined
             }
             loading={isDiscarding}
+            // Variants on: ghost (secondary). Off: filled, as before
+            mode={variantsEnabled ? 'ghost' : undefined}
             tone="caution"
           />
-        </Flex>
+        </>
       }
       data-testid="live-edit-type-banner"
       icon={ErrorOutlineIcon}
