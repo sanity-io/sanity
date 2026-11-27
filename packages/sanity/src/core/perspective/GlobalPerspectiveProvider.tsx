@@ -1,7 +1,6 @@
 import {type ReactNode, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useReleasesEnabled} from '../releases/hooks/useReleasesEnabled'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
@@ -24,10 +23,13 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
+    releases,
   } = useWorkspace()
 
   const {data: activeReleases, loading: activeLoading} = useActiveReleases()
-  const releasesEnabled = useReleasesEnabled()
+  // Not whether the releases tool is mounted: a tools filter (often per role) removes the tool
+  // while releases stay on, and a link to a release must still open there.
+  const releasesEnabled = Boolean(releases?.enabled)
   const stickyPerspective = router.stickyParams.perspective ?? undefined
   const {name: selectedPerspectiveName, ignored} = useMemo(
     () =>

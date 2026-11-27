@@ -9,7 +9,6 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
-import {useReleasesEnabled} from '../../hooks/useReleasesEnabled'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -31,13 +30,14 @@ export function ReleaseDetail() {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {beta, releases} = useWorkspace()
   // Behind beta.variants the action cluster moves to the top rail and the footer is dropped.
-  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
+  const releasesEnabled = Boolean(releases?.enabled)
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-  const releasesEnabled = useReleasesEnabled()
 
   const {
     loading: documentsLoading,
