@@ -261,32 +261,27 @@ export function PaneItemVersionsFlyout(props: {
   useEffect(() => {
     if (!row) return undefined
     row.setAttribute('aria-haspopup', 'menu')
+    row.setAttribute('aria-expanded', String(open))
     return () => {
       row.removeAttribute('aria-haspopup')
       row.removeAttribute('aria-expanded')
     }
-  }, [row])
-  useEffect(() => {
-    row?.setAttribute('aria-expanded', String(open))
   }, [open, row])
 
   // A touch screen has no hover, so a tap on the dots opens the flyout (and a second tap closes
   // it). The tap would also follow the row's link, so the click that comes after it is stopped.
-  const handleDotsPointerUp = useCallback(
-    (event: ReactPointerEvent<HTMLSpanElement>) => {
-      if (event.pointerType !== 'touch') return
-      touchToggled.current = true
-      clearTimers()
-      setOpen((current) => !current)
-    },
-    [clearTimers],
-  )
-  const handleDotsClick = useCallback((event: MouseEvent<HTMLSpanElement>) => {
+  const handleDotsPointerUp = (event: ReactPointerEvent<HTMLSpanElement>) => {
+    if (event.pointerType !== 'touch') return
+    touchToggled.current = true
+    clearTimers()
+    setOpen((current) => !current)
+  }
+  const handleDotsClick = (event: MouseEvent<HTMLSpanElement>) => {
     if (!touchToggled.current) return
     touchToggled.current = false
     event.preventDefault()
     event.stopPropagation()
-  }, [])
+  }
 
   // Only one flyout is open at a time: this one opening closes any other, by hover or keyboard. A
   // flyout closed that way gives focus back to the list if it had it.
@@ -307,13 +302,12 @@ export function PaneItemVersionsFlyout(props: {
     }
   }, [close, open, restoreFocus, row])
 
-  // With the pointer over the open flyout and focus elsewhere, ArrowDown and ArrowUp move focus into
-  // it: to its first and its last row. Hover itself never takes focus, and a field being typed in
-  // keeps its arrow keys.
+  // While open: with the pointer over the flyout and focus elsewhere, ArrowDown and ArrowUp move
+  // focus into it, to its first and its last row (hover itself never takes focus, and a field being
+  // typed in keeps its arrow keys). Escape, scrolling and a tap outside close it.
   useEffect(() => {
     if (!open) return undefined
-    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+    const moveFocusIn = (event: globalThis.KeyboardEvent) => {
       if (isTextEntry(document.activeElement)) return
       const flyout = flyoutRef.current
       if (!flyout?.matches(':hover') || flyout.contains(document.activeElement)) return
@@ -331,24 +325,20 @@ export function PaneItemVersionsFlyout(props: {
       }
       next.focus()
     }
-    // Capture: before the focused list moves its own active row
-    document.addEventListener('keydown', handleKeyDown, true)
-    return () => document.removeEventListener('keydown', handleKeyDown, true)
-  }, [clearTimers, open, row])
-
-  // Escape and scrolling close it. Escape is the flyout's own only when focus is in the flyout, in
-  // the row's list or nowhere; focus anywhere else (a dialog, an editor) still gets its Escape.
-  useEffect(() => {
-    if (!open) return undefined
-    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'Escape') return
+    // Escape is the flyout's own only when focus is in the flyout, in the row's list or nowhere;
+    // focus anywhere else (a dialog, an editor) still gets its Escape.
+    const handleEscape = () => {
       const focused = document.activeElement
       const hadFocus = flyoutRef.current?.contains(focused) ?? false
       const ownsEscape =
         hadFocus || !focused || focused === document.body || (row !== null && focused.contains(row))
-      if (ownsEscape) event.stopPropagation()
       close()
       if (hadFocus) restoreFocus()
+      return ownsEscape
+    }
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') moveFocusIn(event)
+      else if (event.key === 'Escape' && handleEscape()) event.stopPropagation()
     }
     // A touch screen has no pointer leaving to close it: a tap outside the flyout and the dots does
     const handleTouchOutside = (event: PointerEvent) => {
@@ -357,6 +347,7 @@ export function PaneItemVersionsFlyout(props: {
       if (flyoutRef.current?.contains(target) || dotsRef.current?.contains(target)) return
       close()
     }
+    // Capture: before the focused list moves its own active row
     document.addEventListener('keydown', handleKeyDown, true)
     document.addEventListener('scroll', close, true)
     document.addEventListener('pointerdown', handleTouchOutside, true)
@@ -365,13 +356,13 @@ export function PaneItemVersionsFlyout(props: {
       document.removeEventListener('scroll', close, true)
       document.removeEventListener('pointerdown', handleTouchOutside, true)
     }
-  }, [close, open, restoreFocus, row])
+  }, [clearTimers, close, open, restoreFocus, row])
 
   // After a keyboard open, focus lands on the first item as soon as the flyout is on screen.
   useEffect(() => {
     if (!open || !focusFirst.current) return undefined
     let frame = requestAnimationFrame(function focus() {
-      const first = flyoutRef.current?.querySelector<HTMLElement>('[role="menuitem"]')
+      const [first] = menuItems(flyoutRef.current)
       if (first) {
         focusFirst.current = false
         first.focus()
@@ -384,96 +375,73 @@ export function PaneItemVersionsFlyout(props: {
 
   // The row's own link opens the document in the next pane; these open it there too, with the
   // document group inventory beside it.
-  const documentWithInventory = useCallback(
-    (paneParams?: Record<string, string>) => ({
-      panes: [
-        ...routerPanesState.slice(0, groupIndex + 1),
-        [{id: childId, params: {...paneParams, inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}],
-      ],
-    }),
-    [childId, groupIndex, routerPanesState],
-  )
+  const documentWithInventory = (paneParams?: Record<string, string>) => ({
+    panes: [
+      ...routerPanesState.slice(0, groupIndex + 1),
+      [{id: childId, params: {...paneParams, inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}],
+    ],
+  })
 
-  const openInventory = useCallback(() => {
+  // Navigating away leaves focus where the navigation puts it, not on the list
+  const closeAndGo = (go: () => void) => {
     close()
     returnFocus.current = null
-    navigate(documentWithInventory())
-  }, [close, documentWithInventory, navigate])
+    go()
+  }
 
   // A pick also switches to the picked audience, in the same navigation, so the document opens in
   // the version the row stands for.
-  const pick = useCallback(
-    (variantId: string | null, paneParams?: Record<string, string>) => {
-      close()
-      returnFocus.current = null
-      setVariant({
-        variantId: isVariantId(variantId) ? variantId : undefined,
-        state: documentWithInventory(paneParams),
-      })
-    },
-    [close, documentWithInventory, setVariant],
-  )
+  const actions: PaneItemVersionsFlyoutActions = {
+    onOpenInventory: () => closeAndGo(() => navigate(documentWithInventory())),
+    onPick: (variantId, paneParams) =>
+      closeAndGo(() =>
+        setVariant({
+          variantId: isVariantId(variantId) ? variantId : undefined,
+          state: documentWithInventory(paneParams),
+        }),
+      ),
+    onPickVersion: (perspective) =>
+      closeAndGo(() =>
+        setVariant({variantId: undefined, perspective, state: documentWithInventory()}),
+      ),
+  }
 
-  const pickVersion = useCallback(
-    (perspective: SystemBundle | ReleaseId) => {
-      close()
-      returnFocus.current = null
-      setVariant({variantId: undefined, perspective, state: documentWithInventory()})
-    },
-    [close, documentWithInventory, setVariant],
-  )
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      const items = [
-        ...(flyoutRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []),
-      ]
-      const at = items.indexOf(document.activeElement as HTMLElement)
-      let next: HTMLElement | undefined
-      switch (event.key) {
-        case 'ArrowDown':
-          next = items[(at + 1) % items.length]
-          break
-        case 'ArrowUp':
-          next = items[(at - 1 + items.length) % items.length]
-          break
-        case 'Home':
-          next = items[0]
-          break
-        case 'End':
-          next = items[items.length - 1]
-          break
-        case 'ArrowLeft':
-          event.preventDefault()
-          event.stopPropagation()
-          close()
-          restoreFocus()
-          return
-        default:
-          return
-      }
-      event.preventDefault()
-      event.stopPropagation()
-      next?.focus()
-    },
-    [close, restoreFocus],
-  )
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const items = menuItems(flyoutRef.current)
+    const at = items.indexOf(document.activeElement as HTMLElement)
+    let next: HTMLElement | undefined
+    switch (event.key) {
+      case 'ArrowDown':
+        next = items[(at + 1) % items.length]
+        break
+      case 'ArrowUp':
+        next = items[(at - 1 + items.length) % items.length]
+        break
+      case 'Home':
+        next = items[0]
+        break
+      case 'End':
+        next = items[items.length - 1]
+        break
+      case 'ArrowLeft':
+        event.preventDefault()
+        event.stopPropagation()
+        close()
+        restoreFocus()
+        return
+      default:
+        return
+    }
+    event.preventDefault()
+    event.stopPropagation()
+    next?.focus()
+  }
 
   // Like the row: a touch pointer leaves as the finger lifts, and that is not a reason to close
-  const handleFlyoutPointerLeave = useCallback(
-    (event: ReactPointerEvent<HTMLDivElement>) => {
-      if (event.pointerType === 'touch') return
-      closeSoon()
-    },
-    [closeSoon],
-  )
-
-  // The flyout is portalled but still inside the row's React tree: a click on it must not also
-  // open the row's document.
-  const stopRowClick = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => event.stopPropagation(),
-    [],
-  )
+  const handleFlyoutPointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') return
+    closeSoon()
+  }
 
   return (
     <>
@@ -495,18 +463,15 @@ export function PaneItemVersionsFlyout(props: {
           arrow={false}
           content={
             <div
-              onClick={stopRowClick}
+              // Portalled, but still inside the row's React tree: a click on it must not also open
+              // the row's document
+              onClick={(event) => event.stopPropagation()}
               onKeyDown={handleKeyDown}
               onPointerEnter={keepOpen}
               onPointerLeave={handleFlyoutPointerLeave}
               ref={flyoutRef}
             >
-              <RenderList
-                onOpenInventory={openInventory}
-                onPick={pick}
-                onPickVersion={pickVersion}
-                renderList={renderList}
-              />
+              <RenderList actions={actions} renderList={renderList} />
             </div>
           }
           // Beside the row only, never over the rows above or below it. `flip` checks the cross
@@ -529,11 +494,9 @@ export function PaneItemVersionsFlyout(props: {
   )
 }
 
-function RenderList(
-  props: PaneItemVersionsFlyoutActions & {
-    renderList: (actions: PaneItemVersionsFlyoutActions) => ReactNode
-  },
-) {
-  const {renderList, ...actions} = props
-  return renderList(actions)
+function RenderList(props: {
+  actions: PaneItemVersionsFlyoutActions
+  renderList: (actions: PaneItemVersionsFlyoutActions) => ReactNode
+}) {
+  return props.renderList(props.actions)
 }
