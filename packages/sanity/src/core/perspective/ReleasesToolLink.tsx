@@ -43,10 +43,7 @@ export function ReleasesToolLink(): React.JSX.Element {
         radius="full"
         data-testid="releases-tool-link"
         selected={activeToolName === SCHEDULES_TOOL_NAME}
-      >
-        {/* `ToolLink` requires children, but the icon is the whole control */}
-        {null}
-      </Button>
+      />
     </Tooltip>
   )
 }
