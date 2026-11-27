@@ -1,14 +1,12 @@
-import {css, styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
+import {root} from './StyledChangeIndicatorWithProvidedFullPath.css'
 
-export const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicator)(() => {
-  return css`
-    width: 1px;
-    height: 100%;
-
-    & > div {
-      height: 100%;
-    }
-  `
-})
+export function StyledChangeIndicatorWithProvidedFullPath(
+  props: ComponentProps<typeof ChangeIndicator>,
+) {
+  const {className, ...rest} = props
+  return <ChangeIndicator {...rest} className={clsx(root, className)} />
+}
