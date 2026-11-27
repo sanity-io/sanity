@@ -40,14 +40,16 @@ vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(() => telemetryMock),
 }))
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
+vi.mock('../../../../../../core/releases/store/useAllReleases', () => ({
   useAllReleases: vi.fn(() => ({
     data: [release],
     error: undefined,
     loading: false,
     map: new Map([[release._id, release]]),
   })),
+}))
+
+vi.mock('../../../../../../core/perspective/useSetPerspective', () => ({
   useSetPerspective: vi.fn(() => vi.fn()),
 }))
 
