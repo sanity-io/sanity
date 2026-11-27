@@ -183,7 +183,7 @@ describe('DocumentNavigationMenu: section labels', () => {
   })
 })
 
-/** Enough rows to fill the list to its whole-row cap and scroll. */
+/** Enough rows to fill the list past its 400px cap, so it scrolls. */
 const MANY_ROWS = Array.from({length: 20}, (_, index) => `Row ${index + 1}`)
 
 describe('DocumentNavigationMenu: reopening a scrolled list', () => {
@@ -200,22 +200,18 @@ describe('DocumentNavigationMenu: reopening a scrolled list', () => {
       row.getBoundingClientRect(),
     )
     const visible = rows.filter((row) => row.bottom > box.top + 0.5 && row.top < box.bottom - 0.5)
-    const lastVisible = visible[visible.length - 1]
     return {
       fieldBottom: field.bottom,
       firstVisibleTop: visible[0].top,
-      lastVisibleTop: lastVisible.top,
-      lastVisibleBottom: lastVisible.bottom,
-      lastVisibleHeight: lastVisible.height,
+      lastVisibleBottom: visible[visible.length - 1].bottom,
       listBottom: box.bottom,
     }
   }
 
-  /** Waits past the opening animation, after which the list is fitted for the last time. */
+  /** Waits past the opening animation, until the list stops moving. */
   async function open() {
     await page.getByTestId('open-menu').click()
     await expect.element(page.getByTestId('pill-menu')).toBeVisible()
-    await new Promise((resolve) => setTimeout(resolve, 400))
     await expectStable(() => `${list().scrollTop}|${JSON.stringify(geometry())}`)
   }
 
@@ -230,21 +226,15 @@ describe('DocumentNavigationMenu: reopening a scrolled list', () => {
     list().scrollTop = row.height * 3 + row.height / 2
   }
 
-  /** No row is cut at either end: the list ends 4px below a row, and starts 8px below the field. */
-  function expectWholeRows() {
-    const {fieldBottom, firstVisibleTop, lastVisibleBottom, listBottom} = geometry()
-    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
-    expect(Math.abs(listBottom - lastVisibleBottom - 4)).toBeLessThanOrEqual(1)
+  /** The row lies whole inside the list, clear of its 4px scroll padding. */
+  function expectWhole(name: string) {
+    const row = page.getByRole('menuitem', {name, exact: true}).element().getBoundingClientRect()
+    const {fieldBottom, listBottom} = geometry()
+    expect(row.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+    expect(row.bottom).toBeLessThanOrEqual(listBottom - 4 + 1)
   }
 
-  /** The first row starts 8px below the field, and the list ends half way through a row: it scrolls. */
-  function expectHalfRow() {
-    const {fieldBottom, firstVisibleTop, lastVisibleTop, lastVisibleHeight, listBottom} = geometry()
-    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
-    expect(Math.abs(listBottom - lastVisibleTop - lastVisibleHeight / 2)).toBeLessThanOrEqual(1)
-  }
-
-  it('reopens at the top with nothing selected, with half the next row peeking', async () => {
+  it('reopens at the top with nothing selected, with the last row in view cut by the edge', async () => {
     void render(<MenuStory rows={MANY_ROWS} withLeadingItem />)
     await open()
     scrollToHalfRow()
@@ -252,10 +242,13 @@ describe('DocumentNavigationMenu: reopening a scrolled list', () => {
     await open()
 
     expect(list().scrollTop).toBe(0)
-    expectHalfRow()
+    const {fieldBottom, firstVisibleTop, lastVisibleBottom, listBottom} = geometry()
+    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+    // The cut row shows the list scrolls
+    expect(lastVisibleBottom).toBeGreaterThan(listBottom + 1)
   })
 
-  it('reopens with Row 12, when selected, whole, with half the next row below it', async () => {
+  it('reopens with Row 12, when selected, whole', async () => {
     // A leading row and a section heading above the rows, as in the Variants pill
     void render(<MenuStory rows={MANY_ROWS} selected="Row 12" withLeadingItem />)
     await open()
@@ -263,32 +256,17 @@ describe('DocumentNavigationMenu: reopening a scrolled list', () => {
     await close()
     await open()
 
-    expectHalfRow()
-    const row = page
-      .getByRole('menuitem', {name: 'Row 12', exact: true})
-      .element()
-      .getBoundingClientRect()
-    const {fieldBottom, lastVisibleTop} = geometry()
-    expect(row.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
-    // Whole: the half row is the one after it
-    expect(row.bottom).toBeLessThanOrEqual(lastVisibleTop + 0.5)
+    expectWhole('Row 12')
   })
 
-  it('reopens with Row 20, the last row, when selected, whole and no row cut at either end', async () => {
-    // A leading row and a section heading above the rows, as in the Variants pill
+  it('reopens with Row 20, the last row, when selected, whole', async () => {
     void render(<MenuStory rows={MANY_ROWS} selected="Row 20" withLeadingItem />)
     await open()
     scrollToHalfRow()
     await close()
     await open()
 
-    expectWholeRows()
-    const row = page
-      .getByRole('menuitem', {name: 'Row 20', exact: true})
-      .element()
-      .getBoundingClientRect()
-    const {fieldBottom, listBottom} = geometry()
-    expect(row.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
-    expect(row.bottom).toBeLessThanOrEqual(listBottom - 4 + 1)
+    expectWhole('Row 20')
+    expect(list().scrollTop + list().clientHeight).toBeGreaterThanOrEqual(list().scrollHeight - 1)
   })
 })

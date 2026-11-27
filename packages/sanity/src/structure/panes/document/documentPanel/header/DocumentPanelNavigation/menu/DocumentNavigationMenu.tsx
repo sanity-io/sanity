@@ -67,7 +67,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
   const {t} = useTranslation()
   const menuId = useId()
   const focusSearchField = useFocusSearchOnOpen()
-  const scrollerRef = useMenuOverflow()
+  const {scrollerRef, onOpen: scrollListToSelection} = useMenuOverflow()
 
   const visibleSections = sections.filter((section) => section.items.length > 0)
   const hasMatches = Boolean(leadingItems) || visibleSections.length > 0
@@ -83,6 +83,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
       button={button}
       id={menuId}
       onClose={handleClose}
+      onOpen={scrollListToSelection}
       menu={
         <Menu className={documentNavigationMenu} data-testid={testId} padding={1}>
           <Box flexShrink={0} padding={1}>

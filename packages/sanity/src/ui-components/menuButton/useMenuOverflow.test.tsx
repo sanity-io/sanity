@@ -1,23 +1,25 @@
-import {act, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useMenuOverflow} from './useMenuOverflow'
 
-function Probe({items}: {items: number}) {
-  const ref = useMenuOverflow()
+function Probe() {
+  const {scrollerRef} = useMenuOverflow()
 
   return (
-    <div data-testid="scroller" ref={ref}>
-      {Array.from({length: items}, (_, index) => (
-        <div key={index} />
-      ))}
+    <div data-testid="scroller" ref={scrollerRef}>
+      <div />
     </div>
   )
 }
 
-function setSize(element: HTMLElement, size: {clientHeight: number; scrollHeight: number}) {
+function setSize(
+  element: HTMLElement,
+  size: {clientHeight: number; scrollHeight: number; scrollTop?: number},
+) {
   Object.defineProperty(element, 'clientHeight', {configurable: true, value: size.clientHeight})
   Object.defineProperty(element, 'scrollHeight', {configurable: true, value: size.scrollHeight})
+  element.scrollTop = size.scrollTop ?? 0
 }
 
 describe('useMenuOverflow', () => {
@@ -52,63 +54,59 @@ describe('useMenuOverflow', () => {
     })
   }
 
-  it('does not mark a list that fits', () => {
-    render(<Probe items={2} />)
+  it('marks no edge of a list that fits', () => {
+    render(<Probe />)
+    const scroller = screen.getByTestId('scroller')
 
-    expect(screen.getByTestId('scroller')).not.toHaveAttribute('data-overflowing')
+    expect(scroller).not.toHaveAttribute('data-scroll-up')
+    expect(scroller).not.toHaveAttribute('data-scroll-down')
   })
 
-  it('marks the scroller once its content grows taller than it, and clears it when it fits again', async () => {
-    render(<Probe items={2} />)
+  it('observes the scroller and its child', () => {
+    render(<Probe />)
+    const scroller = screen.getByTestId('scroller')
+
+    expect(observed).toEqual([scroller, scroller.firstElementChild])
+  })
+
+  it('marks the bottom edge once the contents grow taller than the list, and clears it when they fit', async () => {
+    render(<Probe />)
     const scroller = screen.getByTestId('scroller')
 
     setSize(scroller, {clientHeight: 100, scrollHeight: 240})
     await resize()
-    expect(scroller).toHaveAttribute('data-overflowing')
+    expect(scroller).toHaveAttribute('data-scroll-down')
+    expect(scroller).not.toHaveAttribute('data-scroll-up')
 
     setSize(scroller, {clientHeight: 100, scrollHeight: 100})
     await resize()
-    expect(scroller).not.toHaveAttribute('data-overflowing')
+    expect(scroller).not.toHaveAttribute('data-scroll-down')
   })
 
-  it('measures the width the scrollbar takes from the contents while the list overflows', async () => {
-    render(<Probe items={2} />)
+  it('marks the edges with rows beyond them as the list scrolls', () => {
+    render(<Probe />)
     const scroller = screen.getByTestId('scroller')
-    Object.defineProperty(scroller, 'offsetWidth', {configurable: true, value: 280})
-    Object.defineProperty(scroller, 'clientWidth', {configurable: true, value: 268})
 
-    setSize(scroller, {clientHeight: 100, scrollHeight: 240})
+    setSize(scroller, {clientHeight: 100, scrollHeight: 240, scrollTop: 60})
+    fireEvent.scroll(scroller)
+    expect(scroller).toHaveAttribute('data-scroll-up')
+    expect(scroller).toHaveAttribute('data-scroll-down')
+
+    setSize(scroller, {clientHeight: 100, scrollHeight: 240, scrollTop: 140})
+    fireEvent.scroll(scroller)
+    expect(scroller).toHaveAttribute('data-scroll-up')
+    expect(scroller).not.toHaveAttribute('data-scroll-down')
+  })
+
+  it('removes the attributes on unmount', async () => {
+    const {unmount} = render(<Probe />)
+    const scroller = screen.getByTestId('scroller')
+    setSize(scroller, {clientHeight: 100, scrollHeight: 240, scrollTop: 60})
     await resize()
-    expect(scroller.style.getPropertyValue('--menu-scrollbar-width')).toBe('12px')
-
-    setSize(scroller, {clientHeight: 100, scrollHeight: 100})
-    await resize()
-    expect(scroller.style.getPropertyValue('--menu-scrollbar-width')).toBe('')
-  })
-
-  it('observes the scroller and its children, and re-observes when the children change', async () => {
-    const {rerender} = render(<Probe items={2} />)
-    const scroller = screen.getByTestId('scroller')
-
-    expect(observed).toContain(scroller)
-    expect(observed).toHaveLength(3)
-
-    observed.length = 0
-    rerender(<Probe items={3} />)
-    await act(async () => {
-      await Promise.resolve()
-    })
-
-    expect(observed).toHaveLength(4)
-  })
-
-  it('removes the attribute on unmount', () => {
-    const {unmount} = render(<Probe items={1} />)
-    const scroller = screen.getByTestId('scroller')
-    scroller.setAttribute('data-overflowing', '')
 
     unmount()
 
-    expect(scroller).not.toHaveAttribute('data-overflowing')
+    expect(scroller).not.toHaveAttribute('data-scroll-up')
+    expect(scroller).not.toHaveAttribute('data-scroll-down')
   })
 })
