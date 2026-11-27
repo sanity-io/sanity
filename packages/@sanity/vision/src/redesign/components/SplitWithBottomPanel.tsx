@@ -27,12 +27,12 @@ import {
   PANEL_HEADER_HEIGHT,
 } from './CollapsiblePanel'
 import {type BottomPanelColumn, bottomPanelSizeToFit, defaultBottomPanelSize} from './fitPanelSize'
-import {usePanelSnapShut} from './panelSnapShut'
+import {COLLAPSE_BELOW, usePanelSnapShut} from './panelSnapShut'
 import {PANEL_PANE, PANEL_TRANSITION, startLayoutTransition} from './panelTransitions'
 import * as styles from './redesign.module.css'
 import {ResizableSplit, SPLIT_HANDLE_SIZE} from './ResizableSplit'
 
-/** The main area may never be dragged smaller than this */
+/** The main area may never be dragged smaller than this, unless the column asks for more */
 const MIN_MAIN_HEIGHT = 120
 
 /**
@@ -76,6 +76,8 @@ export interface SplitWithBottomPanelProps {
   onStateChange?: Dispatch<SetStateAction<BottomPanelState>>
   /** Double-clicking a tab sizes the panel to that tab. A single click only selects it. */
   fitOnTabDoubleClick?: boolean
+  /** The main area may never be dragged smaller than this, 120 pixels by default */
+  minMainHeight?: number
   ref?: Ref<SplitWithBottomPanelHandle | null>
 }
 
@@ -95,6 +97,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     state,
     onStateChange,
     fitOnTabDoubleClick = false,
+    minMainHeight = MIN_MAIN_HEIGHT,
     ref,
   } = props
   const telemetry = useVisionTelemetry()
@@ -117,10 +120,13 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     bodyBorder: PANEL_BODY_BORDER,
     footerHeight: BOTTOM_BAR_HEIGHT,
     columnHeight,
-    minMainHeight: MIN_MAIN_HEIGHT,
+    minMainHeight,
     handleSize: SPLIT_HANDLE_SIZE,
   })
   const bottomSize = panelState.bottomSizes[layout] ?? defaultSize
+  // The size the divider is being dragged to. A collapsed panel follows it without its stored
+  // height changing, which is the one it opens to when the drag ends.
+  const [dragSize, setDragSize] = useState<number | null>(null)
   const [fitRequest, setFitRequest] = useState(0)
 
   const selectTab = useCallback(
@@ -152,13 +158,29 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     },
     [column, layout, setPanelState, telemetry],
   )
+  const expandDragged = useCallback(() => {
+    telemetry.panelToggled(column, true)
+    setDragSize(null)
+    setPanelState((current) => (current.collapsed ? {...current, collapsed: false} : current))
+  }, [column, setPanelState, telemetry])
   const snapShut = usePanelSnapShut({
     containerRef,
     handleTestId: `${testId}-split-handle`,
     toggleTestId: `${id}-panel-toggle`,
     defaultSize,
     collapse: collapseShrunk,
+    expand: expandDragged,
   })
+  const resizeEnded = useCallback(
+    (size: number, startSize: number) => {
+      snapShut(size, startSize)
+      // A panel dragged open lets go of the dragged size in the transition that expands it, so it
+      // never shows collapsed in between
+      if (startSize >= COLLAPSE_BELOW || size < COLLAPSE_BELOW) setDragSize(null)
+    },
+    [snapShut],
+  )
+  const shownCollapsed = panelState.collapsed && (dragSize === null || dragSize < COLLAPSE_BELOW)
   const requestFit = useCallback(
     (tabId?: string) => {
       const update = () => {
@@ -201,7 +223,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
           (toolbar?.offsetHeight ?? 0) +
           (content.parentElement?.parentElement?.clientTop ?? 0),
         containerHeight: split.clientHeight,
-        minMainHeight: MIN_MAIN_HEIGHT,
+        minMainHeight,
         handleSize: SPLIT_HANDLE_SIZE,
       })
       if (size === null) return
@@ -220,7 +242,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     apply()
     const frame = requestAnimationFrame(apply)
     return () => cancelAnimationFrame(frame)
-  }, [fitRequest, id, layout, setPanelState, testId])
+  }, [fitRequest, id, layout, minMainHeight, setPanelState, testId])
 
   // Tooltips, popovers and menus opened in this column stay inside it, rather than spilling over
   // the divider into the other one
@@ -229,17 +251,18 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
       <BoundaryElementProvider element={boundaryElement}>
         <Box className={styles.splitPaneContainer} ref={containerRef}>
           <ResizableSplit
-            allowResize={!panelState.collapsed}
             label={t('vision.split.bottom-panel')}
-            minSecondarySize={MIN_MAIN_HEIGHT}
+            minSecondarySize={minMainHeight}
             minSize={PANEL_HEADER_HEIGHT}
-            onChange={(size) =>
-              setPanelState((current) => ({
-                ...current,
-                bottomSizes: {...current.bottomSizes, [layout]: size},
-              }))
-            }
-            onResizeEnd={snapShut}
+            onChange={(size) => {
+              setDragSize(size)
+              setPanelState((current) =>
+                current.collapsed
+                  ? current
+                  : {...current, bottomSizes: {...current.bottomSizes, [layout]: size}},
+              )
+            }}
+            onResizeEnd={resizeEnded}
             onReset={() =>
               setPanelState((current) => ({
                 ...current,
@@ -247,7 +270,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
               }))
             }
             primary="second"
-            size={panelState.collapsed ? PANEL_HEADER_HEIGHT : bottomSize}
+            size={dragSize ?? (panelState.collapsed ? PANEL_HEADER_HEIGHT : bottomSize)}
             split="horizontal"
             testId={`${testId}-split`}
           >
@@ -258,7 +281,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
               <Box className={styles.paneFill}>
                 <CollapsiblePanel
                   activeTabId={panelState.activeTabId}
-                  collapsed={panelState.collapsed}
+                  collapsed={shownCollapsed}
                   id={id}
                   onTabChange={selectTab}
                   onTabDoubleClick={fitOnTabDoubleClick ? requestFit : undefined}

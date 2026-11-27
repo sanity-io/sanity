@@ -103,7 +103,7 @@ describe('SplitWithBottomPanel', () => {
   })
 })
 
-function ControlledPane() {
+function ControlledPane({minMainHeight}: {minMainHeight?: number}) {
   const [state, setState] = useState<BottomPanelState>({
     activeTabId: 'first',
     collapsed: false,
@@ -113,9 +113,13 @@ function ControlledPane() {
     <SplitWithBottomPanel
       column="response"
       id="vision-response"
+      minMainHeight={minMainHeight}
       onStateChange={setState}
       state={state}
-      tabs={[{id: 'first', label: 'First', content: <div data-testid="first-content" />}]}
+      tabs={[
+        {id: 'first', label: 'First', content: <div data-testid="first-content" />},
+        {id: 'second', label: 'Second', content: <div data-testid="second-content" />},
+      ]}
       testId="vision-response"
     >
       <div />
@@ -123,7 +127,7 @@ function ControlledPane() {
   )
 }
 
-function renderPane() {
+function renderPane({minMainHeight}: {minMainHeight?: number} = {}) {
   // Every box measures 800 × 600, so the split has room to resize
   vi.stubGlobal(
     'ResizeObserver',
@@ -141,7 +145,7 @@ function renderPane() {
     <ThemeProvider theme={theme}>
       <LayerProvider>
         <VisionExperienceContext value={EXPERIENCE}>
-          <ControlledPane />
+          <ControlledPane minMainHeight={minMainHeight} />
         </VisionExperienceContext>
       </LayerProvider>
     </ThemeProvider>,
@@ -179,6 +183,42 @@ describe('SplitWithBottomPanel resizing', () => {
     fireEvent.pointerUp(handle)
     expect(toggle.getAttribute('aria-expanded')).toBe('true')
     expect(size()).toBe(snapBelow)
+  })
+
+  it('reopens on the last tab at the earlier height when the divider of a panel that snapped shut is dragged open', () => {
+    const {handle, toggle, size} = renderPane()
+    fireEvent.click(screen.getByRole('tab', {name: 'Second'}))
+    fireEvent.pointerDown(handle, {button: 0, clientY: 400, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientY: 600})
+    fireEvent.pointerUp(handle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(handle.getAttribute('aria-disabled')).toBeNull()
+
+    // Not far enough for a line of body: it stays shut
+    fireEvent.pointerDown(handle, {button: 0, clientY: 600, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientY: 600 - MIN_PANEL_BODY_HEIGHT + 1})
+    fireEvent.pointerUp(handle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(size()).toBe(PANEL_HEADER_HEIGHT)
+
+    fireEvent.pointerDown(handle, {button: 0, clientY: 600, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientY: 600 - 80})
+    // The panel follows the pointer open, on its last tab
+    expect(size()).toBe(PANEL_HEADER_HEIGHT + 80)
+    expect(screen.getByTestId('second-content')).toBeTruthy()
+    fireEvent.pointerUp(handle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(size()).toBe(200)
+    expect(screen.getByRole('tab', {name: 'Second'}).getAttribute('aria-selected')).toBe('true')
+    expect(screen.getByTestId('second-content')).toBeTruthy()
+  })
+
+  it('keeps the main area at the height the column asks for', () => {
+    const {handle, size} = renderPane({minMainHeight: 200})
+    expect(handle.getAttribute('aria-valuemax')).toBe(String(600 - 200 - 1))
+    handle.focus()
+    fireEvent.keyDown(handle, {key: 'End'})
+    expect(size()).toBe(600 - 200 - 1)
   })
 
   it('snaps shut from the keyboard, and hands focus to the toggle', () => {

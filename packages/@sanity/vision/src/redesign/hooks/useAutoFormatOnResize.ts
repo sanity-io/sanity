@@ -4,6 +4,20 @@ import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import {type AutoFormatOnResize, createAutoFormatOnResize} from '../util/autoFormatOnResize'
 import {formatGroq} from '../util/groqWasm'
 
+/**
+ * A divider being dragged that resizes the query editor: the request/response split changes its
+ * width, and the request column's bottom panel and the params change its height, which can show or
+ * hide the scrollbar and so its columns. Panning the result graph sets `data-dragging` too, and
+ * that drag does not resize the editor.
+ */
+const RESIZING_EDITOR = [
+  'vision-split-handle',
+  'vision-request-column-split-handle',
+  'vision-query-params-split-handle',
+]
+  .map((testId) => `[data-testid="${testId}"][data-dragging="true"]`)
+  .join(', ')
+
 export interface UseAutoFormatOnResizeOptions {
   /** The query tab's panel, holding the split and the query editor */
   container: HTMLElement | null
@@ -51,12 +65,8 @@ export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): bo
       getQuery: readQuery,
       isEnabled,
       isBusy: () =>
-        // The request/response split changes the editor's width. The request column's bottom
-        // panel changes its height, which can show or hide the scrollbar and so its columns.
-        // Panning the result graph sets data-dragging too, and that drag does not resize the editor.
-        container.querySelector(
-          '[data-testid="vision-split-handle"][data-dragging="true"], [data-testid="vision-request-column-split-handle"][data-dragging="true"]',
-        ) !== null || editorRef.current?.isEditing() === true,
+        container.querySelector(RESIZING_EDITOR) !== null ||
+        editorRef.current?.isEditing() === true,
       format: formatGroq,
       formatForEditor: formatForEditorEvent,
       apply,
