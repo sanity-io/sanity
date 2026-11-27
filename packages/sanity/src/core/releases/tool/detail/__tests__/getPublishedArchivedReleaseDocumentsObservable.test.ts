@@ -5,6 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {createMockSanityClientAsClient} from '../../../../../../test/mocks/mockSanityClient'
 import {
   getPublishedArchivedReleaseDocumentsObservable,
+  MAX_CACHED_RELEASES,
   resetPublishedArchivedReleaseDocumentsCacheForTests,
 } from '../getPublishedArchivedReleaseDocumentsObservable'
 
@@ -199,6 +200,43 @@ describe('getPublishedArchivedReleaseDocumentsObservable', () => {
       'production',
     ])
     expect((await fromStaging).results.map(({document}) => document._rev)).toEqual(['staging'])
+  })
+
+  it('keeps the most recently read releases, dropping the least recently used first', async () => {
+    const releaseIds = Array.from({length: MAX_CACHED_RELEASES + 1}, (_, index) => `rCap${index}`)
+    const {getClient, requestedIds} = setup({
+      documentIds: releaseIds.map((releaseId) => `versions.${releaseId}.doc1`),
+    })
+    const read = async (ids: string[]) => {
+      const results = Promise.all(
+        ids.map((releaseId) =>
+          firstValueFrom(
+            getPublishedArchivedReleaseDocumentsObservable({
+              getClient,
+              release: createRelease(releaseId, ['doc1']),
+            }),
+          ),
+        ),
+      )
+      await vi.advanceTimersByTimeAsync(20)
+      return results
+    }
+    const requestedReleaseIds = () => requestedIds.flat().map((id) => id.split('.')[1])
+
+    await read(releaseIds.slice(0, MAX_CACHED_RELEASES))
+    expect(requestedReleaseIds()).toHaveLength(MAX_CACHED_RELEASES)
+
+    // Reading the oldest release again makes it the most recently used
+    await read(['rCap0'])
+    expect(requestedReleaseIds()).toHaveLength(MAX_CACHED_RELEASES)
+
+    await read([`rCap${MAX_CACHED_RELEASES}`])
+    await read(['rCap0'])
+    expect(requestedReleaseIds()).toHaveLength(MAX_CACHED_RELEASES + 1)
+
+    await read(['rCap1'])
+    expect(requestedReleaseIds()).toHaveLength(MAX_CACHED_RELEASES + 2)
+    expect(requestedReleaseIds().at(-1)).toBe('rCap1')
   })
 
   it('reads the documents again once the release has a new revision', async () => {

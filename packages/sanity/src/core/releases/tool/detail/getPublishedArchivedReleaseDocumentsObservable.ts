@@ -11,16 +11,22 @@ import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 import {type DocumentInRelease} from './types'
 import {type BundleDocumentsObservableResult} from './useBundleDocuments'
 
-const publishedArchivedReleaseDocumentsCache: Record<string, BundleDocumentsObservableResult> =
-  Object.create(null)
+/**
+ * How many releases the session cache keeps, dropping the least recently used first. Above the
+ * length of the archived lists seen so far, so scrolling one back up reads nothing again.
+ *
+ * @internal
+ */
+export const MAX_CACHED_RELEASES = 200
+
+// In least recently used order: a read moves its release to the end
+const publishedArchivedReleaseDocumentsCache = new Map<string, BundleDocumentsObservableResult>()
 
 /**
  * @internal
  */
 export function resetPublishedArchivedReleaseDocumentsCacheForTests(): void {
-  for (const key of Object.keys(publishedArchivedReleaseDocumentsCache)) {
-    delete publishedArchivedReleaseDocumentsCache[key]
-  }
+  publishedArchivedReleaseDocumentsCache.clear()
 }
 
 const buildPublishedArchivedReleaseDocumentsObservable = ({
@@ -57,8 +63,9 @@ const buildPublishedArchivedReleaseDocumentsObservable = ({
  * {@link loadLastRevisionDocuments}. No validation or availability checks are performed.
  *
  * Published and archived releases are terminal states, so the result is cached for the session and
- * shared across subscribers, keyed by the dataset, release id and revision. A failed read is not
- * cached, so the next subscriber tries again.
+ * shared across subscribers, keyed by the dataset, release id and revision, for the
+ * {@link MAX_CACHED_RELEASES} most recently read releases. A failed read is not cached, so the next
+ * subscriber tries again.
  *
  * @internal
  */
@@ -74,18 +81,26 @@ export const getPublishedArchivedReleaseDocumentsObservable = ({
   // The same release id can exist in another dataset of the studio. An archived release that is
   // restored and archived again has a new revision, and its documents a new last revision
   const cacheKey = `${client.config().dataset}-${getReleaseIdFromReleaseDocumentId(release._id)}-${release._rev}`
-  const cached = publishedArchivedReleaseDocumentsCache[cacheKey]
-  if (cached) return cached
+  const cached = publishedArchivedReleaseDocumentsCache.get(cacheKey)
+  if (cached) {
+    publishedArchivedReleaseDocumentsCache.delete(cacheKey)
+    publishedArchivedReleaseDocumentsCache.set(cacheKey, cached)
+    return cached
+  }
 
   const documents$: BundleDocumentsObservableResult =
     buildPublishedArchivedReleaseDocumentsObservable({client, release}).pipe(
       tap(({error}) => {
-        if (error && publishedArchivedReleaseDocumentsCache[cacheKey] === documents$) {
-          delete publishedArchivedReleaseDocumentsCache[cacheKey]
+        if (error && publishedArchivedReleaseDocumentsCache.get(cacheKey) === documents$) {
+          publishedArchivedReleaseDocumentsCache.delete(cacheKey)
         }
       }),
       shareReplay(1),
     )
-  publishedArchivedReleaseDocumentsCache[cacheKey] = documents$
+  publishedArchivedReleaseDocumentsCache.set(cacheKey, documents$)
+  if (publishedArchivedReleaseDocumentsCache.size > MAX_CACHED_RELEASES) {
+    const [leastRecentlyUsed] = publishedArchivedReleaseDocumentsCache.keys()
+    publishedArchivedReleaseDocumentsCache.delete(leastRecentlyUsed)
+  }
   return documents$
 }
