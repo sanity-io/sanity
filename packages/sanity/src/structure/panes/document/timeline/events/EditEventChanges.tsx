@@ -12,7 +12,8 @@ import {Box, Flex, Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
-import {useEditEventChanges} from './useEditEventChanges'
+import {ChangesErrorBoundary} from './ChangesErrorBoundary'
+import {getEditEventRange, useEditEventChanges} from './useEditEventChanges'
 
 function PassThroughFieldWrapper(props: {
   path: Path
@@ -22,14 +23,31 @@ function PassThroughFieldWrapper(props: {
   return props.children
 }
 
+function ChangesError() {
+  const {t} = useTranslation(structureLocaleNamespace)
+  return (
+    <Text muted size={1} as="div" trim={true}>
+      {t('timeline-item.changes.error')}
+    </Text>
+  )
+}
+
 /**
  * What an edit event changed, condensed: the diff of its transactions, with who made each change
- * but without revert actions.
+ * but without revert actions. When they can't be rebuilt or shown, it says so.
  */
 export function EditEventChanges({event}: {event: EditDocumentVersionEvent}) {
+  const {fromRevisionId, toRevisionId} = getEditEventRange(event)
+  return (
+    <ChangesErrorBoundary key={`${fromRevisionId}:${toRevisionId}`} fallback={<ChangesError />}>
+      <Changes event={event} />
+    </ChangesErrorBoundary>
+  )
+}
+
+function Changes({event}: {event: EditDocumentVersionEvent}) {
   const {documentId, schemaType, value} = useDocumentPane()
   const {t} = useTranslation('studio')
-  const {t: tStructure} = useTranslation(structureLocaleNamespace)
   const {loading, diff, error} = useEditEventChanges(event)
 
   const documentContext = useMemo<DocumentChangeContextInstance>(
@@ -56,11 +74,7 @@ export function EditEventChanges({event}: {event: EditDocumentVersionEvent}) {
     )
   }
   if (error) {
-    return (
-      <Text muted size={1} as="div" trim={true}>
-        {tStructure('timeline-item.changes.error')}
-      </Text>
-    )
+    return <ChangesError />
   }
   if (!diff?.isChanged) {
     return (

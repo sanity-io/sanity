@@ -284,6 +284,18 @@ describe('createEditChanges', () => {
     expect(requests).toHaveLength(0)
   })
 
+  it('emits an error when a transaction fails to apply, instead of throwing', () => {
+    // E.g. a patch applied to another revision of the document than the one it was made for.
+    const unappliable = {...tx3, effects: {[DRAFT_ID]: {apply: [999], revert: [999]}}}
+    const {changesOf} = setup({chains: [live(tx1, tx2, unappliable)], liveDocument: AT_TX_3})
+
+    expect(changesOf('tx-1', 'tx-2').last()).toEqual({
+      loading: false,
+      diff: null,
+      error: new Error('Unknown opcode: 999'),
+    })
+  })
+
   it('emits an error when the document of a chain is missing', async () => {
     const {changesOf} = setup({chains: [live(tx3), closed(tx1, tx2)], liveDocument: AT_TX_3})
 

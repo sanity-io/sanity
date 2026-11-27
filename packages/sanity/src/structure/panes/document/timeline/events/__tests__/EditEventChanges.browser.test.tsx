@@ -308,6 +308,28 @@ describe('EventTimelineItem changes', () => {
     await expect.element(page.getByText('There are no changes')).toBeVisible()
   })
 
+  it('keeps a crash showing what an edit changed to its titles and its changes', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const {changes$} = renderItem(EDIT_EVENT)
+    // A diff the change list can't walk, so showing it throws while rendering.
+    const unrenderable = {
+      type: 'object',
+      action: 'changed',
+      isChanged: true,
+      fromValue: {},
+      toValue: {},
+      fields: null,
+    } as unknown as ObjectDiff
+    changes$.next({loading: false, error: null, diff: unrenderable})
+
+    const card = page.getByTestId('timeline-item-button')
+    await expect.element(card.getByText('Edited', {exact: true})).toBeVisible()
+    expect(page.getByTestId('changed-field-titles').elements()).toHaveLength(0)
+    await userEvent.hover(card)
+    await expect.element(page.getByText('Could not load the changes')).toBeVisible()
+    await expect.element(card).toBeVisible()
+  })
+
   it('does not show changes for other events', async () => {
     const {getEditChanges} = renderItem(PUBLISH_EVENT)
 
