@@ -6,8 +6,9 @@ import {VersionContextMenuItemStory} from './VersionContextMenuItemStory'
 /**
  * Chromatic sentinel: the copy-to-release menu row for every release
  * timing (asap, undecided, scheduled with and without a date, locked once
- * scheduled) plus the untitled fallback. The menu stays closed besides each
- * single row.
+ * scheduled) plus the untitled fallback and a selected asap row so the
+ * muted timing line follows the menu card tone. The menu stays closed
+ * besides each single row.
  */
 const meta = {
   title: 'Releases/Version Context Menu Item',
