@@ -182,6 +182,7 @@ function transformCommonTypeFields(
     ...globalRefProps,
     ...ensureConditional('readOnly', type.readOnly),
     ...ensureConditional('hidden', type.hidden),
+    ...transformVersions(type.versions),
     ...transformFieldsets(type),
     // fieldset prop gets instrumented via getCustomFields
     ...ensureString('fieldset', type.fieldset),
@@ -251,6 +252,7 @@ function retainCustomTypeProps(type: SchemaType): Record<string, SerializablePro
     'description',
     'readOnly',
     'hidden',
+    'versions',
     'validation',
     'fieldsets',
     'fields',
@@ -495,6 +497,13 @@ function ensureCustomTitle(typeName: string, value: unknown) {
     return {}
   }
   return titleObject
+}
+
+/** Generic serialization drops empty arrays, but `versions: []` means no versions at all. */
+function transformVersions(versions: unknown): Pick<ManifestSchemaType, 'versions'> {
+  return Array.isArray(versions)
+    ? {versions: versions.filter((kind): kind is string => typeof kind === 'string')}
+    : {}
 }
 
 function ensureString<Key extends string>(key: Key, value: unknown) {

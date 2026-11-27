@@ -249,6 +249,7 @@ function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Option
     readOnly: conditionalTrue(ownProps.readOnly),
     hidden: conditionalTrue(ownProps.hidden),
     liveEdit: maybeTrue(ownProps.liveEdit),
+    versions: maybeVersions(ownProps.versions),
     options: convertUnknown(ownProps.options),
     initialValue: convertUnknown(ownProps.initialValue),
     deprecated: typeof reason === 'string' ? {reason} : undefined,
@@ -393,6 +394,14 @@ function maybeNumberAsString(val: unknown): string | undefined {
 /** Returns `true` for `true` and undefined for everything else. */
 function maybeTrue(val: unknown): true | undefined {
   return val === true ? true : undefined
+}
+
+const VERSION_KINDS = ['releases', 'scheduled-drafts', 'variants'] as const
+
+/** Returns the known `versions` entries in a stable order, and undefined for a non-array. */
+function maybeVersions(val: unknown): Array<(typeof VERSION_KINDS)[number]> | undefined {
+  if (!Array.isArray(val)) return undefined
+  return VERSION_KINDS.filter((kind) => val.includes(kind))
 }
 
 function conditionalTrue(val: unknown): true | undefined | FunctionMarker {

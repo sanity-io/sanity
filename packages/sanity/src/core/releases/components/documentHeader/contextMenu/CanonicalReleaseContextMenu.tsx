@@ -7,8 +7,10 @@ import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
+import {isReleaseVersionAllowed} from '../../../../util/documentVersions'
 import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
@@ -64,8 +66,11 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
   const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
-  const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
-  const isReleasesEnabled = !!useWorkspace().releases?.enabled
+  const releasesAllowed = isReleaseVersionAllowed(useSchema().get(documentType))
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled && releasesAllowed
+  const copyToReleaseOptions = releasesAllowed
+    ? releases.filter((r) => !isReleaseScheduledOrScheduling(r))
+    : []
 
   const showCopyToReleaseMenuItem = isReleasesEnabled || hasCopyToDraftOption
 

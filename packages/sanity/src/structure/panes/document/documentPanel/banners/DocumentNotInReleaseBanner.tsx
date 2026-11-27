@@ -51,10 +51,13 @@ export function DocumentNotInReleaseBanner({
   documentId,
   currentRelease,
   isScheduledRelease,
+  releasesAllowed = true,
 }: {
   documentId: string
   currentRelease: Exclude<TargetPerspective, SystemBundle>
   isScheduledRelease?: boolean
+  /** `false` when the schema type doesn't allow releases, which disables adding to the release. */
+  releasesAllowed?: boolean
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -137,9 +140,12 @@ export function DocumentNotInReleaseBanner({
                 ? t('banners.release.action.add-to-bundle')
                 : t('banners.release.action.add-to-release'),
               tone: tone,
-              disabled: Boolean(versionCreateState),
+              disabled: !releasesAllowed || Boolean(versionCreateState),
               onClick: handleAddToRelease,
               mode: 'default',
+              tooltipProps: releasesAllowed
+                ? undefined
+                : {content: t('banners.release.action.releases-not-supported')},
             }
       }
     />

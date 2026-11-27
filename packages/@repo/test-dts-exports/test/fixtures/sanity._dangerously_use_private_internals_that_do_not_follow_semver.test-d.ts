@@ -438,7 +438,9 @@ import type {
   isReleaseDocument,
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
+  isReleaseVersionAllowed,
   isRemovedItemDiff,
+  isScheduledDraftVersionAllowed,
   isString,
   isSystemBundle,
   isSystemBundleName,
@@ -449,6 +451,7 @@ import type {
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
   isVariantId,
+  isVariantVersionAllowed,
   ItemDiff,
   joinPath,
   KeyValueStore,
@@ -2227,8 +2230,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isReleaseScheduledOrScheduling', () => {
     expectTypeOf<typeof isReleaseScheduledOrScheduling>().toBeFunction()
   })
+  test('isReleaseVersionAllowed', () => {
+    expectTypeOf<typeof isReleaseVersionAllowed>().toBeFunction()
+  })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
+  })
+  test('isScheduledDraftVersionAllowed', () => {
+    expectTypeOf<typeof isScheduledDraftVersionAllowed>().toBeFunction()
   })
   test('isString', () => {
     expectTypeOf<typeof isString>().toBeFunction()
@@ -2259,6 +2268,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isVariantId', () => {
     expectTypeOf<typeof isVariantId>().toBeFunction()
+  })
+  test('isVariantVersionAllowed', () => {
+    expectTypeOf<typeof isVariantVersionAllowed>().toBeFunction()
   })
   test('ItemDiff', () => {
     expectTypeOf<ItemDiff>().not.toBeNever()

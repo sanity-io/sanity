@@ -12,6 +12,7 @@ import {
   getVersionId,
   isAgentBundleName,
   isDefaultVariant,
+  isVariantVersionAllowed,
   LATEST,
   PUBLISHED,
   type SystemVariant,
@@ -140,7 +141,8 @@ function withoutOtherAgentBundles(
 export function DocumentVariantsMenu() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tStudio} = useTranslation()
-  const {documentId} = useDocumentPane()
+  const {documentId, schemaType} = useDocumentPane()
+  const variantsAllowed = isVariantVersionAllowed(schemaType)
   const {data: variants} = useAllVariants()
   const {versions} = useDocumentVersions({documentId})
   const {data: activeReleases} = useActiveReleases()
@@ -274,6 +276,12 @@ export function DocumentVariantsMenu() {
         button={
           <DropdownButton
             data-testid="document-variants-menu-button"
+            disabled={!variantsAllowed}
+            tooltipProps={
+              variantsAllowed
+                ? null
+                : {content: t('document-panel-navigation.variants.button.not-supported')}
+            }
             icon={RhombusIcon}
             onClear={selectedVariant ? handleSelectDefault : undefined}
             tone="suggest"

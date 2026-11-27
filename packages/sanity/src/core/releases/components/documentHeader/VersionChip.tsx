@@ -10,7 +10,9 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {INITIAL_COMPANION_DOCS} from '../../../canvas/store/createCanvasCompanionDocsStore'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
+import {useSchema} from '../../../hooks/useSchema'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {isReleaseVersionAllowed} from '../../../util/documentVersions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionContextMenu} from '../../hooks/useVersionContextMenu'
@@ -129,7 +131,11 @@ export const VersionChip = memo(function VersionChip(props: {
     onCopyToDraftsComplete,
   })
 
-  const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
+  // Copying to a release is the only option on the published chip.
+  const hasContextMenu =
+    isReleaseVersionAllowed(useSchema().get(documentType)) || bundleId !== 'published'
+  const contextMenuHandler =
+    disabled || !releasesToolAvailable || !hasContextMenu ? undefined : handleContextMenu
 
   const isPaused = isPausedCardinalityOneRelease(release)
   // Draft chips may act on the published document when no draft exists (so "add

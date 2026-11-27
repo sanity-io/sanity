@@ -50,6 +50,7 @@ function ReleaseInactiveVersionBadge({
  *
  * - The published perspective (unless the schema type supports live-editing).
  * - Any release that's locked.
+ * - Any release, when the schema type doesn't allow releases.
  */
 export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
   schemaType,
@@ -93,6 +94,10 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
               t('banners.choose-new-document-destination.cannot-create-published-document')}
             {reason === 'DRAFTS_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-draft-document')}
+            {reason === 'RELEASES_NOT_SUPPORTED' &&
+              t('banners.choose-new-document-destination.releases-not-supported')}
+            {reason === 'SCHEDULED_DRAFTS_NOT_SUPPORTED' &&
+              t('banners.choose-new-document-destination.scheduled-drafts-not-supported')}
             {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
               <Translate
                 t={t}

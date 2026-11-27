@@ -14,10 +14,27 @@ export interface DocumentOptions extends BaseSchemaTypeOptions {}
 /** @public */
 export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
 
+/**
+ * A kind of version documents of a type can have, listed in the document type's `versions`.
+ *
+ * @beta
+ */
+export type DocumentVersionKind = 'releases' | 'scheduled-drafts' | 'variants'
+
 /** @public */
 export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   type: 'document'
   liveEdit?: boolean
+  /**
+   * The kinds of versions documents of this type can have: `'releases'`, `'scheduled-drafts'`
+   * and `'variants'`. Leave it unset to allow all of them, list the ones to allow (for example
+   * `['variants']`), or use `[]` for none. Combine `[]` with `liveEdit: true` to also skip drafts,
+   * so the document is only ever edited in place.
+   *
+   * @defaultValue ['releases', 'scheduled-drafts', 'variants']
+   * @beta
+   */
+  versions?: DocumentVersionKind[]
   /** @beta */
   orderings?: SortOrdering[]
   options?: DocumentOptions

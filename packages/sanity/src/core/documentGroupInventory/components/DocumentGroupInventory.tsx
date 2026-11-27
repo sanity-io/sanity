@@ -40,6 +40,7 @@ import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAva
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {isVariantVersionAllowed} from '../../util/documentVersions'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
@@ -151,10 +152,10 @@ export function DocumentGroupInventory(
   const components = props.mode === 'readOnly' ? undefined : props.components
 
   const {beta} = useWorkspace()
-  const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
+  const variantsEnabled = beta?.variants?.enabled && isVariantVersionAllowed(schema)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
   const {state$: agentBundles} = useAgentBundlesStore()
