@@ -1,11 +1,39 @@
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
-import {type ComponentType} from 'react'
-import {createGlobalStyle, css} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {useInsertionEffect, useState} from 'react'
 
-import {useWorkspace} from './workspace'
+import {
+  GLOBAL_STYLES_ATTRIBUTE,
+  GLOBAL_STYLES_BUILD_ID,
+  GLOBAL_STYLE_VARIABLE_NAMES,
+  GLOBAL_STYLE_VARIABLES,
+  type GlobalStyleVariableName,
+} from './globalStyleConstants'
 
-const SCROLLBAR_SIZE = 12 // px
-const SCROLLBAR_BORDER_SIZE = 4 // px
+interface InitialVariable {
+  priority: string
+  value: string
+}
+
+interface GlobalStyleInstance {
+  buildId: string
+  variables?: GlobalStyleVariables
+}
+
+interface GlobalStyleRegistry {
+  initialAttributeValue: string | null
+  initialVariables: Map<GlobalStyleVariableName, InitialVariable>
+  instances: Map<symbol, GlobalStyleInstance>
+  root: HTMLElement
+}
+
+type GlobalStyleVariables = Record<GlobalStyleVariableName, string>
+
+const GLOBAL_STYLE_REGISTRY = Symbol.for('sanity.globalStyleRegistry.v1')
+
+interface GlobalStyleRegistryDocument extends Document {
+  [GLOBAL_STYLE_REGISTRY]?: GlobalStyleRegistry
+}
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -14,73 +42,159 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle: ComponentType = () => {
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-  } = useWorkspace()
-
-  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+function restoreVariable(root: HTMLElement, name: string, initial: InitialVariable) {
+  if (initial.value) {
+    root.style.setProperty(name, initial.value, initial.priority)
+  } else {
+    root.style.removeProperty(name)
+  }
 }
 
-interface Props {
-  $documentEditorGutterEnabled: boolean
+function applyVariables(registry: GlobalStyleRegistry, variables: GlobalStyleVariables) {
+  for (const [name, initial] of registry.initialVariables) {
+    if (Object.hasOwn(variables, name)) {
+      registry.root.style.setProperty(name, variables[name])
+    } else {
+      restoreVariable(registry.root, name, initial)
+    }
+  }
 }
 
-const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
-  const {color, font} = getTheme_v2(theme)
+function restoreVariables(registry: GlobalStyleRegistry) {
+  for (const [name, initial] of registry.initialVariables) {
+    restoreVariable(registry.root, name, initial)
+  }
+}
 
-  return css`
-    ::-webkit-resizer {
-      background-image: ${buildResizeHandleDataUri(color.icon)};
-      background-repeat: no-repeat;
-      background-position: bottom right;
+function captureInitialVariables(
+  registry: GlobalStyleRegistry,
+  variableNames: readonly GlobalStyleVariableName[],
+) {
+  for (const name of variableNames) {
+    if (registry.initialVariables.has(name)) continue
+
+    registry.initialVariables.set(name, {
+      priority: registry.root.style.getPropertyPriority(name),
+      value: registry.root.style.getPropertyValue(name),
+    })
+  }
+}
+
+function getLatestInstance(instances: Map<symbol, GlobalStyleInstance>) {
+  let latest: GlobalStyleInstance | undefined
+
+  for (const instance of instances.values()) {
+    latest = instance
+  }
+
+  return latest
+}
+
+function applyInstance(registry: GlobalStyleRegistry, instance: GlobalStyleInstance) {
+  registry.root.setAttribute(GLOBAL_STYLES_ATTRIBUTE, instance.buildId)
+
+  if (instance.variables) {
+    applyVariables(registry, instance.variables)
+  } else {
+    restoreVariables(registry)
+  }
+}
+
+function registerGlobalStyles(ownerDocument: Document, instanceId: symbol) {
+  const root = ownerDocument.documentElement
+  const registryDocument = ownerDocument as GlobalStyleRegistryDocument
+  let registry = registryDocument[GLOBAL_STYLE_REGISTRY]
+
+  if (!registry) {
+    registry = {
+      initialAttributeValue: root.getAttribute(GLOBAL_STYLES_ATTRIBUTE),
+      initialVariables: new Map(),
+      instances: new Map(),
+      root,
+    }
+    registryDocument[GLOBAL_STYLE_REGISTRY] = registry
+  }
+
+  captureInitialVariables(registry, GLOBAL_STYLE_VARIABLE_NAMES)
+  const instance = {buildId: GLOBAL_STYLES_BUILD_ID}
+  registry.instances.set(instanceId, instance)
+  applyInstance(registry, instance)
+
+  return () => {
+    const currentRegistry = registryDocument[GLOBAL_STYLE_REGISTRY]
+
+    if (!currentRegistry?.instances.delete(instanceId)) return
+
+    const latestInstance = getLatestInstance(currentRegistry.instances)
+    if (latestInstance) {
+      applyInstance(currentRegistry, latestInstance)
+      return
     }
 
-    ::-webkit-scrollbar {
-      width: ${SCROLLBAR_SIZE}px;
-      height: ${SCROLLBAR_SIZE}px;
+    restoreVariables(currentRegistry)
+
+    if (currentRegistry.initialAttributeValue === null) {
+      currentRegistry.root.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+    } else {
+      currentRegistry.root.setAttribute(
+        GLOBAL_STYLES_ATTRIBUTE,
+        currentRegistry.initialAttributeValue,
+      )
     }
 
-    ::-webkit-scrollbar-corner {
-      background-color: transparent;
-    }
+    delete registryDocument[GLOBAL_STYLE_REGISTRY]
+  }
+}
 
-    ::-webkit-scrollbar-thumb {
-      background-clip: content-box;
-      background-color: var(--card-border-color, ${color.border});
-      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
-    }
+function updateGlobalStyles(
+  ownerDocument: Document,
+  instanceId: symbol,
+  variables: GlobalStyleVariables,
+) {
+  const registry = (ownerDocument as GlobalStyleRegistryDocument)[GLOBAL_STYLE_REGISTRY]
+  const instance = registry?.instances.get(instanceId)
+  if (!registry || !instance) return
 
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: var(--card-muted-fg-color, ${color.muted.fg});
-    }
+  instance.variables = variables
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
+  let latestInstanceId: symbol | undefined
+  for (const id of registry.instances.keys()) {
+    latestInstanceId = id
+  }
 
-    *::selection {
-      background-color: ${rgba(color.focusRing, 0.3)};
-    }
+  if (latestInstanceId === instanceId) {
+    applyInstance(registry, instance)
+  }
+}
 
-    html {
-      background-color: ${color.bg};
-    }
+export function GlobalStyle(): null {
+  const [instanceId] = useState(Symbol)
+  const {color, font} = useThemeV2()
+  const webkitResizerBackgroundImageValue = buildResizeHandleDataUri(color.icon)
+  const selectionBackgroundColorValue = rgba(color.focusRing, 0.3)
 
-    body {
-      scrollbar-gutter: stable;
-    }
+  useInsertionEffect(() => registerGlobalStyles(document, instanceId), [instanceId])
 
-    #sanity {
-      font-family: ${font.text.family};
-    }
+  useInsertionEffect(() => {
+    updateGlobalStyles(document, instanceId, {
+      [GLOBAL_STYLE_VARIABLES.selectionBackgroundColor]: selectionBackgroundColorValue,
+      [GLOBAL_STYLE_VARIABLES.uiColorBg]: color.bg,
+      [GLOBAL_STYLE_VARIABLES.uiColorBorder]: color.border,
+      [GLOBAL_STYLE_VARIABLES.uiColorMutedFg]: color.muted.fg,
+      [GLOBAL_STYLE_VARIABLES.uiFontTextFamily]: font.text.family,
+      [GLOBAL_STYLE_VARIABLES.uiFontTextWeightMedium]: font.text.weights.medium.toString(),
+      [GLOBAL_STYLE_VARIABLES.webkitResizerBackgroundImage]: webkitResizerBackgroundImageValue,
+    })
+  }, [
+    color.bg,
+    color.border,
+    color.muted.fg,
+    font.text.family,
+    font.text.weights.medium,
+    instanceId,
+    selectionBackgroundColorValue,
+    webkitResizerBackgroundImageValue,
+  ])
 
-    b {
-      font-weight: ${font.text.weights.medium};
-    }
-
-    strong {
-      font-weight: ${font.text.weights.medium};
-    }
-  `
-})
+  return null
+}
