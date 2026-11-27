@@ -534,6 +534,40 @@ describe('PaneItemVersionsFlyout', () => {
     })
   })
 
+  it('leaves the arrow keys and Escape to a field being typed in while a flyout is under the pointer', async () => {
+    const onNavigate: OnNavigate = vi.fn()
+    const onFieldEscape = vi.fn()
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <input
+          aria-label="Title"
+          defaultValue="Winterhold"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') onFieldEscape()
+          }}
+        />
+        <DocumentList onNavigate={onNavigate} />
+      </TestWrapper>,
+    )
+    const field = page.getByRole('textbox', {name: 'Title'})
+    await expect.element(field).toBeVisible()
+    ;(field.element() as HTMLInputElement).focus()
+
+    await page.getByTestId('row-riften').hover()
+    await page.getByRole('menuitem', {name: 'German'}).hover()
+    await expect.element(field).toHaveFocus()
+
+    await userEvent.keyboard('{ArrowDown}')
+    await userEvent.keyboard('{ArrowUp}')
+    await expect.element(field).toHaveFocus()
+
+    // Escape still closes the flyout, and the field gets it too
+    await userEvent.keyboard('{Escape}')
+    await expect.poll(() => page.getByRole('menu', {name: 'Versions'}).elements().length).toBe(0)
+    expect(onFieldEscape).toHaveBeenCalledTimes(1)
+    await expect.element(field).toHaveFocus()
+  })
+
   describe('near the bottom of the screen', () => {
     it('opens beside the row on the right and slides up, never over the rows above', async () => {
       renderBottomRow('left')
