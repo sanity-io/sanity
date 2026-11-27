@@ -68,6 +68,7 @@ import {
   type VisualEditingConnection,
 } from './types'
 import {useAllowPatterns} from './useAllowPatterns'
+import {useDocumentPanel} from './useDocumentPanel'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
 import {useNavigatePreviewFrame} from './useNavigatePreviewFrame'
@@ -88,13 +89,13 @@ const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePrevi
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
 
-// Fall back to the preview if the navigator tab is selected but no longer enabled.
+// Fall back to the preview if the selected tab is no longer available.
 function resolveActiveTab(
   activeTab: PresentationLayoutTab,
-  navigatorEnabled: boolean,
+  {documentPanelOpen, navigatorEnabled}: {documentPanelOpen: boolean; navigatorEnabled: boolean},
 ): PresentationLayoutTab {
-  if (activeTab === 'navigator' && navigatorEnabled) return 'navigator'
-  if (activeTab === 'navigator') return 'preview'
+  if (activeTab === 'navigator' && !navigatorEnabled) return 'preview'
+  if (activeTab === 'content' && !documentPanelOpen) return 'preview'
   return activeTab
 }
 
@@ -163,6 +164,25 @@ export default function PresentationTool(props: {
       routerSearchParams,
       frameStateRef,
     })
+  // Narrow viewports collapse the panels into a tab bar showing one pane at a time.
+  const [activeTab, setActiveTab] = useState<PresentationLayoutTab>('preview')
+  const {
+    documentPanelOpen,
+    toggleDocumentPanel,
+    navigateToDocument: openPanelAndNavigate,
+  } = useDocumentPanel({
+    defaultOpen: tool.options?.defaultDocumentPanelOpen,
+    navigate,
+  })
+  // On a narrow viewport the document pane is a tab. Selecting it here is what makes an overlay
+  // click show the document, since opening the panel only reveals the tab.
+  const navigateToDocument = useCallback<PresentationNavigate>(
+    (options) => {
+      if (options.state?.id) setActiveTab('content')
+      openPanelAndNavigate(options)
+    },
+    [openPanelAndNavigate],
+  )
   const perspective = usePresentationPerspective({scheduledDraft: params.scheduledDraft})
   const variant = usePresentationVariant()
 
@@ -223,7 +243,7 @@ export default function PresentationTool(props: {
   }, [targetOrigin, isLoading])
 
   const handleNavigate = useEffectEvent<PresentationNavigate>((options) => {
-    navigate(options)
+    navigateToDocument(options)
   })
 
   const refreshRef = useRef<number>(undefined)
@@ -469,12 +489,10 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
-  // Narrow viewports collapse the panels into a tab bar showing one pane at a time.
   const mediaIndex = useMediaIndex()
   const isNarrow = mediaIndex <= NARROW_MEDIA_INDEX
-
-  const [activeTab, setActiveTab] = useState<PresentationLayoutTab>('preview')
-  const resolvedTab = resolveActiveTab(activeTab, navigatorEnabled)
+  const resolvedTab = resolveActiveTab(activeTab, {documentPanelOpen, navigatorEnabled})
+  const documentPanelHidden = isNarrow ? resolvedTab !== 'content' : !documentPanelOpen
 
   const handleRefresh = useCallback(
     (fallback: () => void) => {
@@ -542,7 +560,7 @@ export default function PresentationTool(props: {
         searchParams={searchParams}
         structureParams={structureParams}
       >
-        <PresentationNavigateProvider navigate={navigate}>
+        <PresentationNavigateProvider navigate={navigateToDocument}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
               <Flex
@@ -554,6 +572,7 @@ export default function PresentationTool(props: {
                 {isNarrow && (
                   <PresentationNarrowTabBar
                     activeTab={resolvedTab}
+                    documentPanelOpen={documentPanelOpen}
                     navigatorEnabled={navigatorEnabled}
                     onTabChange={setActiveTab}
                   />
@@ -589,6 +608,7 @@ export default function PresentationTool(props: {
                             canSharePreviewAccess={canSharePreviewAccess}
                             canToggleSharePreviewAccess={canToggleSharePreviewAccess}
                             canUseSharedPreviewAccess={canUseSharedPreviewAccess}
+                            documentPanelOpen={documentPanelOpen}
                             header={unstable_header}
                             initialUrl={initialPreviewUrl}
                             loadersConnection={loadersConnection}
@@ -604,6 +624,7 @@ export default function PresentationTool(props: {
                             ref={iframeRef}
                             setViewport={setViewport}
                             targetOrigin={targetOrigin}
+                            toggleDocumentPanel={toggleDocumentPanel}
                             toggleNavigator={toggleNavigator}
                             toggleOverlay={toggleOverlay}
                             viewport={viewport}
@@ -622,12 +643,12 @@ export default function PresentationTool(props: {
                       visualOrderPublishedIds={visualOrderPublishedIds}
                       documentType={params.type}
                       getCommentIntent={getCommentIntent}
-                      hidden={isNarrow && resolvedTab !== 'content'}
+                      hidden={documentPanelHidden}
                       mainDocumentState={mainDocumentState}
                       onEditReference={handleEditReference}
                       onFocusPath={handleFocusPath}
                       onStructureParams={handleStructureParams}
-                      resizerHidden={isNarrow}
+                      resizerHidden={isNarrow || !documentPanelOpen}
                       searchParams={searchParams}
                       setDisplayedDocument={setDisplayedDocument}
                       structureParams={structureParams}

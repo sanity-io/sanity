@@ -1398,6 +1398,22 @@ export type AuthStoreOptions = never
  */
 export declare const GetHookCollectionState: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const StudioDiagnosticsBridge: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StudioDiagnosticsBridgeApi = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const TextWithTone: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
+ */
+export type TextWithToneProps = never
+/**
  * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
 export type TimelineState = never
@@ -1421,6 +1437,10 @@ export type WithRouterProps = never
  * @deprecated Removed in v7. Pass the same options on the workspace `auth` config key directly instead of wrapping them in `createAuthStore()`.
  */
 export declare const _createAuthStore: never
+/**
+ * @deprecated Moved to `sanity`. Import `{renderStudio}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export declare const renderStudio: never
 /**
  * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */

@@ -95,6 +95,7 @@ function PreviewWithViewport(props: {previewUrlRef: PreviewUrlRef}) {
         canSharePreviewAccess={false}
         canToggleSharePreviewAccess={false}
         canUseSharedPreviewAccess={false}
+        documentPanelOpen
         handlesPerspectiveChange={false}
         handlesVariantChange={false}
         initialUrl={INITIAL_URL}
@@ -110,6 +111,7 @@ function PreviewWithViewport(props: {previewUrlRef: PreviewUrlRef}) {
         previewUrlRef={props.previewUrlRef}
         setViewport={setViewport}
         targetOrigin={INITIAL_URL.origin}
+        toggleDocumentPanel={() => {}}
         toggleOverlay={() => {}}
         variant={undefined}
         vercelProtectionBypass={null}
