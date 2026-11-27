@@ -2,6 +2,7 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {type Config} from '../config/types'
+import {preloadStudioModules} from './preloadModules'
 import {Studio} from './Studio'
 
 interface RenderStudioOptions {
@@ -41,6 +42,8 @@ export function renderStudio(
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
   const {reactStrictMode = true, basePath} = opts
+
+  preloadStudioModules()
 
   const root = createRoot(rootElement)
 

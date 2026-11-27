@@ -1,0 +1,40 @@
+name: CDN E2E Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  cdn-e2e:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - name: Install Playwright Browsers
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Build the auto-updating studio bundle
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm turbo run build:bundle --filter=sanity
+
+      - name: Run CDN E2E tests
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm --filter e2e test:cdn
+        env:
+          CI: "true"

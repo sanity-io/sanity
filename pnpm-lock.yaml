@@ -253,6 +253,9 @@ catalogs:
     dequal:
       specifier: ^2.0.3
       version: 2.0.3
+    esbuild:
+      specifier: ^0.28.2
+      version: 0.28.2
     fast-check:
       specifier: ^4.11.0
       version: 4.11.0
@@ -1174,6 +1177,9 @@ importers:
       chromatic:
         specifier: ^18.15.1
         version: 18.15.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.4)
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
