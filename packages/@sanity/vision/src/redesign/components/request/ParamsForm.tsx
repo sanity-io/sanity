@@ -25,6 +25,7 @@ import {Text, Box, Flex, Icon} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type Params} from '../../../util/parseParams'
+import {stringifyParams} from '../../../util/stringifyParams'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {cx} from '../../util/cx'
 import {GROQ_PARAMETERS_DOCS_URL} from '../../util/docsUrls'
@@ -908,11 +909,11 @@ export function ParamsForm({
       value === undefined
         ? Object.fromEntries(Object.entries(values).filter(([key]) => key !== name))
         : {...values, [name]: value}
-    onChange(JSON.stringify(next, null, 2))
+    onChange(stringifyParams(next))
   }
   const removeUnused = () => {
     const next = Object.fromEntries(Object.entries(values).filter(([key]) => known.has(key)))
-    onChange(JSON.stringify(next, null, 2))
+    onChange(stringifyParams(next))
   }
 
   const schemaUnavailable = inference.params.length > 0 && inference.schemaUnavailable

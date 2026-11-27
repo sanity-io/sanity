@@ -136,7 +136,7 @@ describe('savedQueryTab', () => {
     ).toEqual({
       title: 'Authors',
       query: '*[_type == "author"]',
-      rawParams: '{}',
+      rawParams: '{\n  \n}',
       options: {
         includeSourceMap: false,
         useCdn: false,
@@ -203,7 +203,7 @@ describe('savedQueryTab', () => {
     expect(parsed.hasUnsupportedPerspective).toBe(true)
     expect(parsedQueryToTabInit(parsed)).toEqual({
       query: '*',
-      rawParams: '{}',
+      rawParams: '{\n  \n}',
       options: {
         includeSourceMap: false,
         useCdn: false,

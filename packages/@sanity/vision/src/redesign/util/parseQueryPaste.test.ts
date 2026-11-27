@@ -156,7 +156,7 @@ describe('parseCurlQuery', () => {
     expect(plain).toStrictEqual({
       query: '*',
       params: {},
-      rawParams: '{}',
+      rawParams: '{\n  \n}',
       dataset: 'staging',
       isKnownDataset: true,
       apiVersion: 'v2021-10-21',
@@ -170,7 +170,7 @@ describe('parseCurlQuery', () => {
     })
     expect(parsedQueryToTabInit(plain)).toStrictEqual({
       query: '*',
-      rawParams: '{}',
+      rawParams: '{\n  \n}',
       options: {
         datasetMode: 'override',
         dataset: 'staging',

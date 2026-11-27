@@ -25,6 +25,15 @@ describe('parseQueryUrl', () => {
     })
   })
 
+  it('writes a URL without params as expanded empty params, not as {}', () => {
+    const parsed = parseQueryUrl(
+      'https://abc123.api.sanity.io/vX/data/query/production?query=*',
+      datasets,
+    )
+    expect(parsed?.params).toEqual({})
+    expect(parsed?.rawParams).toBe('{\n  \n}')
+  })
+
   it('tells a request to the API CDN by its host', () => {
     const useCdnFor = (host: string) =>
       parseQueryUrl(`https://${host}/v2025-02-19/data/query/production?query=*`, datasets)?.useCdn
