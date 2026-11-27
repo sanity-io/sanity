@@ -37,6 +37,11 @@ export interface ResizableSplitProps {
   onResizeEnd?: (size: number, startSize: number) => void
   /** Enter on the divider: back to the default size */
   onReset?: () => void
+  /**
+   * A double-click on the divider. When set, it replaces the snap-to-center double click, which
+   * is how Params sizes itself to its content
+   */
+  onDoubleClick?: () => void
   allowResize?: boolean
   /**
    * Hold the divider at equal halves when a drag or a keyboard step comes close to or past them,
@@ -71,7 +76,8 @@ function clamp(value: number, {min, max}: Bounds): number {
  * clamped for as long as the container is that small, the primary pane winning when it cannot
  * fit both. With `snapToCenter`, a drag within a few pixels of equal halves holds them, and an
  * arrow key step that would pass over them stops there, a double click moves the divider onto
- * them; with `snapped` the halves stay equal as the container resizes.
+ * them unless `onDoubleClick` handles it; with `snapped` the halves stay equal as the container
+ * resizes.
  */
 export function ResizableSplit(props: ResizableSplitProps) {
   const {
@@ -83,6 +89,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
     onChange,
     onResizeEnd,
     onReset,
+    onDoubleClick,
     allowResize = true,
     snapToCenter = false,
     snapped: snappedProp = false,
@@ -191,11 +198,16 @@ export function ResizableSplit(props: ResizableSplitProps) {
     [allowResize, bounds, change, onResizeEnd, onReset, primary, shownSize, snap, split],
   )
 
-  const onDoubleClick = useCallback(() => {
-    if (!allowResize || !snap) return
+  const handleDoubleClick = useCallback(() => {
+    if (!allowResize) return
+    if (onDoubleClick) {
+      onDoubleClick()
+      return
+    }
+    if (!snap) return
     change(snap.center)
     if (snap.center !== shownSize) onResizeEnd?.(snap.center, shownSize)
-  }, [allowResize, change, onResizeEnd, shownSize, snap])
+  }, [allowResize, change, onDoubleClick, onResizeEnd, shownSize, snap])
 
   const primaryStyle = {flex: `0 0 ${shownSize}px`}
   return (
@@ -225,7 +237,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
         data-dragging={dragging}
         data-snapped={snapped}
         data-testid={testId && `${testId}-handle`}
-        onDoubleClick={onDoubleClick}
+        onDoubleClick={handleDoubleClick}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         role="separator"
