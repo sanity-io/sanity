@@ -149,12 +149,6 @@ export interface VariantConditionsLoadedInfo {
   valueCount: number
   /** Whether the callback called the `getClient` it was given */
   usedSanityClient: boolean
-  /**
-   * Hostnames of the requests made while the callback ran, other than Sanity's, Sentry's and the
-   * studio's own. Taken from the browser's resource timing entries, so a request something else
-   * made at the same time is included too.
-   */
-  endpoints: string[]
 }
 
 /** When the conditions of a variant type are loaded from `beta.variants.types` */

@@ -2,16 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, defer, type Observable, of, Subject} from 'rxjs'
-import {
-  catchError,
-  finalize,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  timeout,
-} from 'rxjs/operators'
+import {catchError, map, shareReplay, startWith, switchMap, tap, timeout} from 'rxjs/operators'
 
 import {
   type VariantConditionMap,
@@ -246,7 +237,6 @@ function resolveConditions$(
         report(load.finish(undefined, resolveError))
         return of(toConditionsError(resolveError, retry, context.type))
       }),
-      finalize(load.stop),
     )
   }).pipe(startWith(LOADING_CONDITIONS))
 }

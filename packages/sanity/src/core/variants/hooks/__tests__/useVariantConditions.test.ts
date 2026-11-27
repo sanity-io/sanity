@@ -673,7 +673,6 @@ describe('useVariantConditions', () => {
           conditionCount: 2,
           valueCount: 3,
           usedSanityClient: false,
-          endpoints: [],
         },
       ])
     })
@@ -730,7 +729,6 @@ describe('useVariantConditions', () => {
           conditionCount: 1,
           valueCount: 2,
           usedSanityClient: true,
-          endpoints: [],
         },
       ])
     })
