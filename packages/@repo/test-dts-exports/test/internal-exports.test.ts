@@ -183,6 +183,9 @@ const PRIVATE_SUBPATHS = {
   'sanity/presentation': 'presentation',
 } as const
 
+/** Subpaths that have no internals left, and so no internals entry to check. */
+const SUBPATHS_WITHOUT_INTERNALS = new Set<string>(['presentation'])
+
 const PRIVATE_TAGS = new Set(['internal', 'hidden', 'deprecated'])
 
 function privateTagsOf(declaration: ExportedDeclarations): string[] {
@@ -210,10 +213,12 @@ describe('structure, router and presentation keep their internals on subpaths', 
   const privacyByFile = new Map<string, Map<string, boolean>>()
   const dtsFilesOf = (subpath: string) => ({
     entry: `${subpath}.d.ts`,
-    internals: path.join(
-      '_dangerously_use_private_internals_that_do_not_follow_semver',
-      `${subpath}.d.ts`,
-    ),
+    internals: SUBPATHS_WITHOUT_INTERNALS.has(subpath)
+      ? null
+      : path.join(
+          '_dangerously_use_private_internals_that_do_not_follow_semver',
+          `${subpath}.d.ts`,
+        ),
   })
   const exportsOf = (dtsFile: string, isPrivate: boolean) =>
     [...(privacyByFile.get(dtsFile) ?? [])]
@@ -224,6 +229,7 @@ describe('structure, router and presentation keep their internals on subpaths', 
     const project = new Project({skipAddingFilesFromTsConfig: true})
     for (const subpath of Object.values(PRIVATE_SUBPATHS)) {
       for (const dtsFile of Object.values(dtsFilesOf(subpath))) {
+        if (!dtsFile) continue
         const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
         privacyByFile.set(
           dtsFile,
@@ -251,10 +257,13 @@ describe('structure, router and presentation keep their internals on subpaths', 
       ).toEqual([])
     })
 
+    const internalsDtsFile = dtsFiles.internals
+    if (!internalsDtsFile) continue
+
     test(`${internalsSubpath} exports only declarations tagged @internal, @hidden or @deprecated`, () => {
-      expect(privacyByFile.get(dtsFiles.internals)?.size).toBeGreaterThan(0)
+      expect(privacyByFile.get(internalsDtsFile)?.size).toBeGreaterThan(0)
       expect(
-        exportsOf(dtsFiles.internals, false),
+        exportsOf(internalsDtsFile, false),
         `These exports are public API: export them from \`${entry}\` instead.`,
       ).toEqual([])
     })

@@ -39,9 +39,6 @@
       "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1": [
         "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/1.ts"
       ],
-      "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/presentation": [
-        "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.ts"
-      ],
       "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router": [
         "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/router.ts"
       ],
