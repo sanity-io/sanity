@@ -527,30 +527,10 @@ export function RequestPanel(props: RequestPanelProps) {
             flexGrow={1}
             gap={2}
             minWidth="0"
-            justifyContent="space-between"
+            justifyContent="flex-end"
           >
-            <TabList aria-label={t('vision.params.view.label')} gap={1}>
-              <Tab
-                aria-controls={paramsContentId}
-                fontSize={1}
-                id={paramsJsonTabId}
-                label={t('vision.params.view.json')}
-                onClick={() => setParamsView('json')}
-                onDoubleClick={fitParams}
-                padding={2}
-                selected={paramsView === 'json'}
-              />
-              <Tab
-                aria-controls={paramsContentId}
-                fontSize={1}
-                id={paramsFormTabId}
-                label={t('vision.params.view.form')}
-                onClick={() => setParamsView('form')}
-                onDoubleClick={fitParams}
-                padding={2}
-                selected={paramsView === 'form'}
-              />
-            </TabList>
+            {/* The view switch sits where the result panel has its view menu: after copy, before
+                the actions menu */}
             <Flex
               alignItems="center"
               data-testid="vision-params-toolbar-actions"
@@ -565,6 +545,28 @@ export function RequestPanel(props: RequestPanelProps) {
                 onFormat={onFormatParams}
                 testIdPrefix="vision-params"
               />
+              <TabList aria-label={t('vision.params.view.label')} gap={1}>
+                <Tab
+                  aria-controls={paramsContentId}
+                  fontSize={1}
+                  id={paramsJsonTabId}
+                  label={t('vision.params.view.json')}
+                  onClick={() => setParamsView('json')}
+                  onDoubleClick={fitParams}
+                  padding={2}
+                  selected={paramsView === 'json'}
+                />
+                <Tab
+                  aria-controls={paramsContentId}
+                  fontSize={1}
+                  id={paramsFormTabId}
+                  label={t('vision.params.view.form')}
+                  onClick={() => setParamsView('form')}
+                  onDoubleClick={fitParams}
+                  padding={2}
+                  selected={paramsView === 'form'}
+                />
+              </TabList>
               <ParamsActionsMenu params={paramValues} tab={tab} />
             </Flex>
           </Flex>

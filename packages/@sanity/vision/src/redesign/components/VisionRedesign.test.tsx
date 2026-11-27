@@ -6335,6 +6335,26 @@ describe('VisionRedesign', () => {
     },
   )
 
+  it('places the params view tabs between copy and the params menu, as the result view menu is', async () => {
+    renderRedesign()
+    await screen.findByTestId('vision-request-column-split')
+    fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
+
+    const actions = screen.getByTestId('vision-params-toolbar-actions')
+    const order = [
+      within(actions).getByTestId('vision-params-copy'),
+      document.getElementById('vision-params-view-json'),
+      document.getElementById('vision-params-view-form'),
+      within(actions).getByTestId('vision-params-menu-button'),
+    ]
+    for (const element of order) expect(actions.contains(element)).toBe(true)
+    for (let index = 1; index < order.length; index++) {
+      expect(
+        order[index - 1]!.compareDocumentPosition(order[index]!) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy()
+    }
+  })
+
   it('shows no fit tooltip on the panel tabs or the params view tabs', async () => {
     renderRedesign()
     await screen.findByTestId('vision-request-column-split')
