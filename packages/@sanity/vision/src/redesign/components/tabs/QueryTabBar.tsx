@@ -18,6 +18,7 @@ import {Box, Flex} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useIsTextTruncated} from '../../hooks/useIsTextTruncated'
 import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {useVisionTabShortcuts} from '../../hooks/useVisionTabShortcuts'
 import {type VisionTab} from '../../store/types'
@@ -146,6 +147,8 @@ function TabHandle(props: TabHandleProps) {
   const title = getTabTitle(tab, t('vision.tabs.untitled'))
   const dragControls = useDragControls()
   const [dragging, setDragging] = useState(false)
+  const [titleElement, setTitleElement] = useState<HTMLDivElement | null>(null)
+  const truncated = useIsTextTruncated(titleElement)
 
   const handleAuxClick = useCallback(
     (event: MouseEvent) => {
@@ -202,31 +205,40 @@ function TabHandle(props: TabHandleProps) {
             title={title}
           />
         ) : (
-          // A plain button, so the whole tab is its hit area and the tab paints hover and focus
-          <button
-            aria-controls={QUERY_TAB_PANEL_ID}
-            aria-selected={selected}
-            className={styles.tabTitleButton}
-            data-testid="vision-tab-button"
-            id={getQueryTabId(tab.id)}
-            onAuxClick={handleAuxClick}
-            onClick={onSelect}
-            onDoubleClick={onStartRename}
-            onKeyDown={onKeyDown}
-            onPointerDown={startDrag}
-            role="tab"
-            tabIndex={selected ? 0 : -1}
-            type="button"
-          >
-            {shared && (
-              <Text className={styles.tabSharedIcon} muted size={1}>
-                <UsersIcon aria-label={t('vision.tabs.shared')} role="img" />
+          // A plain button, so the whole tab is its hit area and the tab paints hover and focus.
+          // A title cut off with an ellipsis is shown in full in its tooltip
+          <VisionTooltip content={title} disabled={!truncated || dragging} placement="bottom">
+            <button
+              aria-controls={QUERY_TAB_PANEL_ID}
+              aria-selected={selected}
+              className={styles.tabTitleButton}
+              data-testid="vision-tab-button"
+              id={getQueryTabId(tab.id)}
+              onAuxClick={handleAuxClick}
+              onClick={onSelect}
+              onDoubleClick={onStartRename}
+              onKeyDown={onKeyDown}
+              onPointerDown={startDrag}
+              role="tab"
+              tabIndex={selected ? 0 : -1}
+              type="button"
+            >
+              {shared && (
+                <Text className={styles.tabSharedIcon} muted size={1}>
+                  <UsersIcon aria-label={t('vision.tabs.shared')} role="img" />
+                </Text>
+              )}
+              <Text
+                className={styles.tabTitle}
+                muted={!selected}
+                ref={setTitleElement}
+                size={1}
+                textOverflow="ellipsis"
+              >
+                {title}
               </Text>
-            )}
-            <Text className={styles.tabTitle} muted={!selected} size={1} textOverflow="ellipsis">
-              {title}
-            </Text>
-          </button>
+            </button>
+          </VisionTooltip>
         )}
         <Button
           aria-label={t('vision.tabs.close-tab')}
