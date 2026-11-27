@@ -38,7 +38,7 @@ catalog:
   '@sanity/sdk': ^3.17.0
   '@sanity/sdk-react': ^3.17.0
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.33.0
+  '@sanity/tsdown-config': ^0.33.1
   '@sanity/ui': ^4.4.14
   '@types/node': ^26.6.11
   '@types/react': ^19.3.3
