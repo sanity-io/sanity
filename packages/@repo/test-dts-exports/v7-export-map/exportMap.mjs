@@ -33,14 +33,49 @@ export const V7_EXPORT_MAP_REPO_PATH =
 const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
- * Entries plugins import from. Other `_`-prefixed entries are wiring between Sanity's own packages,
- * and stylesheets carry no exports.
+ * Entries plugins import from: the public entries, the internals entry and its subpaths
+ * (`…/structure`, `…/router`, `…/presentation`). Other `_`-prefixed entries are wiring between
+ * Sanity's own packages, and stylesheets carry no exports.
  *
  * @param {string} subpath - the key in the package.json `exports` map
  */
 function isPluginFacingEntry(subpath) {
   if (subpath === './package.json' || subpath.endsWith('.css')) return false
-  return subpath === INTERNALS_ENTRY || !subpath.startsWith('./_')
+  return (
+    subpath === INTERNALS_ENTRY ||
+    subpath.startsWith(`${INTERNALS_ENTRY}/`) ||
+    !subpath.startsWith('./_')
+  )
+}
+
+/**
+ * v7 keeps removed/moved names as `@deprecated` `never` tombstones in the `.d.ts` so TypeScript
+ * can name the replacement. They must not appear in this map: the map is the dual-support
+ * contract of real exports, and tombstones have no runtime value for `@repo/test-exports` to
+ * import.
+ *
+ * Entry barrels re-export tombstones through rolldown-plugin-dts mangled aliases (`Event` →
+ * `Event$1`, short names in the chunk), so walk aliases to the underlying declaration the same
+ * way `getExportKind` does.
+ *
+ * @param {import('ts-morph').Symbol} symbol
+ */
+function isTombstoneExport(symbol) {
+  let current = symbol
+  for (let depth = 0; depth < 100 && current.isAlias(); depth++) {
+    const next = current.getImmediatelyAliasedSymbol()
+    if (!next) break
+    current = next
+  }
+  return current.getDeclarations().some((declaration) => {
+    if (Node.isTypeAliasDeclaration(declaration)) {
+      return declaration.getTypeNode()?.getText() === 'never'
+    }
+    if (!Node.isVariableDeclaration(declaration)) return false
+    if (declaration.getTypeNode()?.getText() !== 'never') return false
+    const statement = declaration.getFirstAncestor(Node.isVariableStatement)
+    return Boolean(statement?.hasDeclareKeyword())
+  })
 }
 
 /** @param {import('ts-morph').Node} node */
@@ -86,6 +121,28 @@ function getExportKind(symbol) {
 }
 
 /**
+ * A name an `export * from` / `export type * from` declaration provides resolves straight to its
+ * declaration, with no alias that `getExportKind` could find `type` on. It is only a type when
+ * every star export that provides it is type-only (`export type * from '@sanity/types'`).
+ *
+ * @param {import('ts-morph').SourceFile} sourceFile
+ * @param {import('ts-morph').Symbol} symbol
+ */
+function isOnlyTypeStarExport(sourceFile, symbol) {
+  if (symbol.isAlias()) return false
+  const providers = sourceFile
+    .getExportDeclarations()
+    .filter((declaration) => !declaration.hasNamedExports() && !declaration.getNamespaceExport())
+    .filter((declaration) =>
+      declaration
+        .getModuleSpecifierSourceFile()
+        ?.getExportSymbols()
+        .some((exported) => exported.getName() === symbol.getName()),
+    )
+  return providers.length > 0 && providers.every((declaration) => declaration.isTypeOnly())
+}
+
+/**
  * Reads the export map of the built packages (their `lib/**\/*.d.ts`), so run a build first.
  *
  * @returns {ExportMap}
@@ -113,7 +170,10 @@ export function readExportMap() {
         .getExportSymbols()
         .toSorted((a, b) => (a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0))
       for (const symbol of exported) {
-        names[symbol.getName()] = getExportKind(symbol)
+        if (isTombstoneExport(symbol)) continue
+        names[symbol.getName()] = isOnlyTypeStarExport(sourceFile, symbol)
+          ? 'type'
+          : getExportKind(symbol)
       }
       map[path.posix.join(packageName, subpath)] = names
     }

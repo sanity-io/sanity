@@ -270,6 +270,7 @@ export {FeedbackDialog, type FeedbackDialogProps} from '../core/feedback/compone
 export {
   StudioFeedbackDialog,
   type StudioFeedbackDialogProps,
+  StudioFeedbackDialog,
 } from '../core/feedback/components/StudioFeedbackDialog'
 export {
   FeedbackContext,
@@ -438,6 +439,8 @@ export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
 export {
   type PortableTextMemberItem,
   UpdateReadOnlyPlugin,
+  PortableTextInput as BlockEditor,
+  PortableTextInput,
 } from '../core/form/inputs/PortableText/PortableTextInput'
 export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
@@ -683,6 +686,7 @@ export {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
+  getDocumentIsInPerspective,
 } from '../core/releases/util/util'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
@@ -763,6 +767,13 @@ export {
   // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   useRenderingContextStore,
+  useDocumentPreviewStore,
+  useDocumentStore,
+  useGrantsStore,
+  useHistoryStore,
+  usePresenceStore,
+  useProjectStore,
+  useUserStore,
 } from '../core/store/datastores'
 export {
   type BufferedDocumentWrapper,
@@ -821,13 +832,28 @@ export {
 } from '../core/store/document/useInitialValue'
 export {useResolveInitialValueForType} from '../core/store/document/useResolveInitialValueForType'
 export {EventsProvider, useEvents} from '../core/store/events/EventsProvider'
-export {type DocumentVersionEventType, type EventsStore} from '../core/store/events/types'
+export {
+  type DocumentVersionEventType,
+  type EventsStore,
+  isCreateDocumentVersionEvent,
+  isCreateLiveDocumentEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
+  isPublishDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  isUpdateLiveDocumentEvent,
+} from '../core/store/events/types'
 export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
   type DocumentPairPermissionsOptions,
   type DocumentPermission,
   useDocumentPairPermissions,
   useDocumentPairPermissionsFromHookFactory,
+  getDocumentPairPermissions,
 } from '../core/store/grants/documentPairPermissions'
 export {
   type DocumentValuePermissionsOptions,
@@ -922,6 +948,8 @@ export {
   useColorScheme,
   useColorSchemeInternalValue,
   useColorSchemeOptions,
+  useColorSchemeSetValue,
+  useColorSchemeValue,
 } from '../core/studio/colorScheme'
 export {
   DiagnosticsReport,
@@ -977,6 +1005,7 @@ export {
   isNetworkError,
   parseRetryAfter,
   type RequestErrorClassification,
+  isTimeoutError,
 } from '../core/studio/requestErrors/classify'
 export {
   createRequestErrorChannel,
@@ -1107,6 +1136,17 @@ export {
   isSystemBundleName,
   newDraftFrom,
   removeDupes,
+  DRAFTS_FOLDER,
+  VERSION_FOLDER,
+  documentIdEquals,
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isDraftId,
+  isPublishedId,
+  isVersionId,
+  systemBundles,
 } from '../core/util/draftUtils'
 export {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 export {formatRelativeLocale} from '../core/util/formatRelativeLocale'
@@ -1162,6 +1202,159 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
+export {ALL_FIELDS_GROUP} from '../core/form/store/constants'
+export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
+export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
+export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
+export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+export {ArrayOfObjectsItem} from '../core/form/members/array/items/ArrayOfObjectsItem'
+export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
+export {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'
+export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
+export {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
+export {ArrayOfPrimitivesItem} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
+export {
+  AvatarSkeleton,
+  UserAvatar,
+  type UserAvatarProps,
+} from '../core/components/userAvatar/UserAvatar'
+export {
+  BlockImagePreview,
+  type BlockImagePreviewProps,
+} from '../core/components/previews/portableText/BlockImagePreview'
+export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
+export {BooleanInput} from '../core/form/inputs/BooleanInput'
+export {CircularProgress} from '../core/components/progress/CircularProgress'
+export {
+  CompactPreview,
+  type CompactPreviewProps,
+} from '../core/components/previews/general/CompactPreview'
+export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
+export {StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
+  DEFAULT_DECORATORS,
+  DEFAULT_LIST_TYPES,
+} from '@sanity/schema'
+export {DateInput} from '../core/form/inputs/DateInputs/DateInput'
+export {DatePicker} from '../core/components/inputs/DateInputs/DatePicker'
+export {DateTimeInput} from '../core/form/inputs/DateInputs/DateTimeInput'
+export {
+  DefaultPreview,
+  type DefaultPreviewProps,
+} from '../core/components/previews/general/DefaultPreview'
+export {
+  DetailPreview,
+  type DetailPreviewProps,
+} from '../core/components/previews/general/DetailPreview'
+export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
+export {EditPortal} from '../core/form/components/EditPortal'
+export {EmailInput} from '../core/form/inputs/EmailInput'
+export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
+export {StudioFileInput as FileInput} from '../core/form/studio/inputs/StudioFileInput'
+export {FormBuilder} from '../core/form/studio/FormBuilder'
+export {FormProvider} from '../core/form/studio/FormProvider'
+export {Hotkeys, type HotkeysProps} from '../core/components/Hotkeys'
+export {StudioImageInput as ImageInput} from '../core/form/studio/inputs/StudioImageInput'
+export {
+  InlinePreview,
+  type InlinePreviewProps,
+} from '../core/components/previews/portableText/InlinePreview'
+export {IntentButton} from '../core/components/IntentButton'
+export {LinearProgress} from '../core/components/progress/LinearProgress'
+export {
+  MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
+  isCreateIfNotExistsMutation,
+  isCreateMutation,
+  isCreateOrReplaceMutation,
+  isCreateSquashedMutation,
+  isDeleteMutation,
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
+  isKeyedObject,
+  isPatchMutation,
+  isSearchStrategy,
+  isTitledListValue,
+  isValidationError,
+  isValidationErrorMarker,
+  isValidationInfo,
+  isValidationInfoMarker,
+  isValidationWarning,
+  isValidationWarningMarker,
+  searchStrategies,
+  typed,
+} from '@sanity/types'
+export {
+  MediaPreview,
+  type MediaPreviewProps,
+} from '../core/components/previews/general/MediaPreview'
+export {NO_UPSELL_DATA, type UpsellTelemetryLogs, useUpsellData} from '../core/hooks/useUpsellData'
+export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
+export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
+export {PatchEvent} from '../core/form/patch/PatchEvent'
+export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
+export {StudioReferenceInput as ReferenceInput} from '../core/form/studio/inputs/reference/StudioReferenceInput'
+export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
+export {
+  type RovingFocusNavigationType,
+  type RovingFocusProps,
+} from '../core/components/rovingFocus/types'
+export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
+export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
+export {SelectInput} from '../core/form/inputs/SelectInput'
+export {SlugInput} from '../core/form/inputs/Slug/SlugInput'
+export {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
+export {StringInput} from '../core/form/inputs/StringInput/StringInput'
+export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
+export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
+export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
+export {TagsArrayInput} from '../core/form/inputs/TagsArrayInput'
+export {TelephoneInput} from '../core/form/inputs/TelephoneInput'
+export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
+export {TextInput} from '../core/form/inputs/TextInput'
+export {ToolLink} from '../core/studio/components/navbar/tools/ToolLink'
+export {TransformPatches} from '../core/form/utils/TransformPatches'
+export {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
+export {type UpsellDataResult} from '../core/studio/upsell/types'
+export {UpsellDialog, type UpsellDialogProps} from '../core/studio/upsell/UpsellDialog'
+export {UrlInput} from '../core/form/inputs/UrlInput'
+export {buildLegacyTheme} from '../core/theme/_legacy/theme'
+export {getDocumentVariantType} from '../core/util/getDocumentVariantType'
+export {getProviderTitle} from '@sanity/access-ui'
+export {getReferencePaths} from '../core/util/getReferencePaths'
+export {
+  isDraftVersion,
+  isPublishedVersion,
+  isReleaseVersion,
+  isVariantVersion,
+  readVersionType,
+} from '../core/util/versionsUtils'
+export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
+export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {
+  useCommentsMode,
+  useCommentsMode as useCommentsModeLegacy,
+} from '../core/comments/hooks/useCommentsMode'
+export {useDialogStack} from '../core/hooks/useDialogStack'
+export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
+export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
+export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
+export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
+export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
+export {useFormBuilder} from '../core/form/useFormBuilder'
+export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
+export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
+export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
+export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
+export {useStudioErrorHandler} from '../core/studio/requestErrors/useStudioErrorHandler'
+export {useTemplates} from '../core/hooks/useTemplates'
+export {useTools} from '../core/hooks/useTools'
+export {useUserListWithPermissions} from '../core/hooks/useUserListWithPermissions'
+export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
+export {userHasRole} from '../core/util/userHasRole'
 export {
   filterVariantsForSearch,
   getVariantTitle,

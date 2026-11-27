@@ -41,7 +41,7 @@ const Image = styled.img`
   height: 200px;
 `
 
-interface UpsellDialogProps {
+export interface UpsellDialogProps {
   data?: UpsellData | null
   open?: boolean
   onClose: () => void
