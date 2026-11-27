@@ -110,7 +110,11 @@ function typesResolverKey(
   return `${resolverIdentity(resolver)}:${scope.workspaceName}:${scope.context.projectId}:${scope.context.dataset}`
 }
 
-function staticConditionsKey(conditions: readonly VariantConditionMap[], type: string): string {
+function staticConditionsKey(
+  conditions: readonly VariantConditionMap[],
+  type: string,
+  workspaceName: string,
+): string {
   let id = staticConditionIds.get(conditions)
 
   if (id === undefined) {
@@ -118,7 +122,7 @@ function staticConditionsKey(conditions: readonly VariantConditionMap[], type: s
     staticConditionIds.set(conditions, id)
   }
 
-  return `static:${id}:${type}`
+  return `static:${id}:${workspaceName}:${type}`
 }
 
 function toError(error: unknown): Error {
@@ -257,12 +261,14 @@ const getResolverResult$ = memoize(function getResolverResult$(
 }, resolverKey)
 
 /**
- * One normalized list per config array. Overview rows and menu items all read this, so a static
- * list is not normalized again for every variant.
+ * One normalized list per config array and workspace. Overview rows and menu items all read this,
+ * so a static list is not normalized again for every variant. Workspaces often share one array,
+ * and each of them reports its own load.
  */
 const getStaticResult$ = memoize(function getStaticResult$(
   conditions: readonly VariantConditionMap[],
   type: string,
+  workspaceName: string,
   report: ReportConditionsLoaded,
 ): Observable<UseVariantConditionsResult> {
   return defer(() => {
@@ -289,7 +295,7 @@ function getVariantConditions$(
   }
 
   if (Array.isArray(conditions)) {
-    return getStaticResult$(conditions, context.type, report)
+    return getStaticResult$(conditions, context.type, workspaceName, report)
   }
 
   if (typeof conditions === 'function') {

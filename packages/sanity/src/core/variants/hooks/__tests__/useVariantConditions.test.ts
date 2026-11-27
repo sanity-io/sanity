@@ -677,6 +677,26 @@ describe('useVariantConditions', () => {
       ])
     })
 
+    it('reports a fixed list once in each workspace that shares it', async () => {
+      const conditions = [{name: 'audience', values: ['loyal']}]
+      const variants = {enabled: true, types: {variant: {conditions}}}
+      const firstWrapper = await createTestProvider({
+        config: {name: 'first', basePath: '/first', beta: {variants}},
+      })
+      const secondWrapper = await createTestProvider({
+        config: {name: 'second', basePath: '/second', beta: {variants}},
+      })
+
+      renderHook(() => useVariantConditions(), {wrapper: firstWrapper})
+      renderHook(() => useVariantConditions(), {wrapper: firstWrapper})
+      renderHook(() => useVariantConditions(), {wrapper: secondWrapper})
+
+      expect(conditionsLoadedEvents()).toEqual([
+        expect.objectContaining({source: 'static', outcome: 'ready'}),
+        expect.objectContaining({source: 'static', outcome: 'ready'}),
+      ])
+    })
+
     it('reports a fixed list with no valid entries as an error', async () => {
       const wrapper = await createTestProvider({
         config: {
