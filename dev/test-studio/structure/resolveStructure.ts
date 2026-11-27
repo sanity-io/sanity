@@ -566,7 +566,10 @@ export const structure: StructureResolver = (
       S.divider(),
       S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
       S.documentTypeListItem('sanity.fileAsset').icon(BinaryDocumentIcon),
-      S.documentTypeListItem('system.release').title('Releases').icon(CalendarIcon),
+      // Only in workspaces with releases enabled
+      ...(schema.get('system.release')
+        ? [S.documentTypeListItem('system.release').title('Releases').icon(CalendarIcon)]
+        : []),
     ])
 }
 
