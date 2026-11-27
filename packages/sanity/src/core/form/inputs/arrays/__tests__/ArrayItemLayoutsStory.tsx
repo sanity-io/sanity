@@ -12,6 +12,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
 import {FieldPresenceInner} from '../../../../presence/FieldPresence'
 import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
+import {DragHandle} from '../common/DragHandle'
 import {Item, List} from '../common/list'
 import {CellLayout} from '../layouts/CellLayout'
 import {RowLayout} from '../layouts/RowLayout'
@@ -19,6 +20,7 @@ import {RowLayout} from '../layouts/RowLayout'
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 const GRID_ITEMS = ['cell-a', 'cell-b', 'cell-c']
 const ROW_ITEMS = ['row-a', 'row-b', 'row-c']
+const HANDLE_ITEMS = ['handle-a', 'handle-b', 'handle-c']
 
 const REQUIRED_ERROR: FormNodeValidation[] = [
   {level: 'error', message: 'Required', path: ['items', {_key: 'cell-c'}]},
@@ -178,6 +180,31 @@ export function ArrayItemLayoutsStory() {
                   >
                     <TextInput defaultValue="Read-only tag" readOnly />
                   </RowLayout>
+                </Item>
+              </List>
+            </Card>
+          </VStack>
+
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              drag handles (list bleed, grid ghost, read-only)
+            </Text>
+            <Card border padding={1} radius={1}>
+              <List axis="y" gap={1} items={HANDLE_ITEMS} sortable>
+                <Item id="handle-a" sortable>
+                  <Card border padding={1} radius={2}>
+                    <DragHandle readOnly={false} />
+                  </Card>
+                </Item>
+                <Item id="handle-b" sortable>
+                  <Card border padding={1} radius={2}>
+                    <DragHandle $grid mode="ghost" size="large" readOnly={false} />
+                  </Card>
+                </Item>
+                <Item id="handle-c" sortable>
+                  <Card border padding={1} radius={2}>
+                    <DragHandle readOnly />
+                  </Card>
                 </Item>
               </List>
             </Card>
