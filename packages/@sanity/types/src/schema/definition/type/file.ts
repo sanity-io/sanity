@@ -1,7 +1,12 @@
+import {type SanityClient, type StackablePerspective} from '@sanity/client'
+
 import {type AssetSource} from '../../../assets/types'
+import {type SanityDocument} from '../../../documents/types'
+import {type Path} from '../../../paths/types'
 import {type Reference} from '../../../reference/types'
+import {type CurrentUser} from '../../../user/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
-import {type InitialValueProperty} from '../../types'
+import {type FileSchemaType, type ImageSchemaType, type InitialValueProperty} from '../../types'
 import {type ObjectDefinition, type ObjectOptions} from './object'
 
 /** @public */
@@ -14,6 +19,40 @@ export interface MediaLibraryFilter {
 export interface MediaLibraryOptions {
   filters?: MediaLibraryFilter[]
 }
+
+/**
+ * Context passed to resolver functions on `options.mediaLibrary` (and the matching
+ * `mediaLibrary` Studio config). Mirrors `ReferenceFilterResolverContext` and adds the
+ * current user and Media Library details.
+ * @public
+ */
+export interface MediaLibraryResolverContext {
+  /** The document being edited (the form's root value). */
+  document: SanityDocument
+  /** The value containing the asset field (an object, or the array for array items). */
+  parent?: Record<string, unknown> | Record<string, unknown>[]
+  /** Path to `parent` within the document. */
+  parentPath: Path
+  /** The perspective stack the Studio is editing with. */
+  perspective: StackablePerspective[]
+  /** Project-scoped client factory, same as `ReferenceFilterResolverContext.getClient`. */
+  getClient: (options: {apiVersion: string}) => SanityClient
+  /** The signed-in user, or null before the user has loaded. */
+  currentUser: CurrentUser | null
+  /** The image or file schema type the asset source was opened for. */
+  schemaType: ImageSchemaType | FileSchemaType
+  /** The Media Library the Studio is connected to. */
+  libraryId: string
+  /** Client scoped to the Media Library resource (query `sanity.directory`, `sanity.asset.collection`, ...). */
+  getMediaLibraryClient: (options: {apiVersion: string}) => SanityClient
+}
+
+/**
+ * A static value or a function (sync or async) resolving it from {@link MediaLibraryResolverContext}.
+ * Returning `undefined` means "not configured here".
+ * @public
+ */
+export type MediaLibraryResolver<T> = (context: MediaLibraryResolverContext) => T | Promise<T>
 
 /**
  * Per-field selection of asset sources (`options.sources` on file and image

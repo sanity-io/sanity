@@ -325,6 +325,35 @@ describe.each(INPUT_CONFIGS)(
       )
     }, 15000)
 
+    it('passes the field path to the mounted asset source component', async () => {
+      const PathRecordingSource: AssetSource = {
+        name: 'media-library-mock',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        title: 'Path recording source',
+        component: (props) => (
+          <div data-testid="asset-source-path" data-path={JSON.stringify(props.path)} />
+        ),
+        Uploader: MediaLibraryUploader,
+      }
+
+      await renderFn({
+        assetSources: [PathRecordingSource],
+        fieldDefinition,
+        observeAsset: observeAsset as any,
+        render: (inputProps) => <BaseInput {...(inputProps as any)} />,
+      })
+
+      await userEvent.click(
+        screen.getByTestId(getBrowseTestId(fieldDefinition.type, PathRecordingSource.name)),
+      )
+
+      const assetSourceElement = await screen.findByTestId('asset-source-path')
+      expect(assetSourceElement).toHaveAttribute(
+        'data-path',
+        JSON.stringify([fieldDefinition.name]),
+      )
+    })
+
     it('uses default dataset source when assetSources is empty (file and image only)', async () => {
       if (_inputType === 'video') return
       await renderFn({
