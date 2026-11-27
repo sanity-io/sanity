@@ -1022,6 +1022,16 @@ describe('VisionRedesign', () => {
     expect(describedBy(wrapper)).toBe('vision.query.auto-refetch.unsupported')
   })
 
+  it('lists Mutate before Delta in the side rail, in focus order too', () => {
+    renderRedesign()
+
+    const mutate = screen.getByTestId('vision-sidebar-mutate')
+    const delta = screen.getByTestId('vision-sidebar-delta')
+    expect(mutate.compareDocumentPosition(delta) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(mutate.getAttribute('tabindex')).toBeNull()
+    expect(delta.getAttribute('tabindex')).toBeNull()
+  })
+
   it('shows the query editor over the request tabs, with Params open and the fetch actions under them', async () => {
     renderRedesign()
 
