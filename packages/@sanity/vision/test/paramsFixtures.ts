@@ -1,5 +1,6 @@
 import {type SchemaType} from 'groq-js'
-import {createSchema, defineArrayMember, defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
+import {createSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {getGroqSchema} from '../src/redesign/util/typegen/evaluateQueryType'
 

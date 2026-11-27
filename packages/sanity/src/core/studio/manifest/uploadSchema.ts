@@ -46,8 +46,7 @@ type ClaimResponse = {
 
 /**
  * Uploads the schema to Content Lake, returning a schema descriptor ID.
- * @hidden
- * @public
+ * @internal
  */
 export async function uploadSchema(
   schema: Schema,

@@ -52,8 +52,7 @@ async function generateWorkspaceManifest<W extends ManifestWorkspaceInput>(
 /**
  * Generates a StudioManifest from workspaces.
  * This is a shared utility used by both CLI deployment and live manifest registration.
- * @hidden
- * @public
+ * @internal
  */
 export async function generateStudioManifest<W extends ManifestWorkspaceInput>(
   options: GenerateStudioManifestOptions<W>,

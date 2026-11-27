@@ -11,9 +11,7 @@ export const builtinSchema: Schema = SchemaBuilder.compile({
 })
 inferValidation(builtinSchema)
 
-/**
- * @hidden
- * @beta */
+/** @internal */
 export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
   const validated = validateSchema(schemaDef.types).getTypes()
   const validation = groupProblems(validated)
