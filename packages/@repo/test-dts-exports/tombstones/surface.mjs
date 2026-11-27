@@ -447,7 +447,7 @@ function suggestTombstone(item) {
   if (!target) {
     return {name: item.name, kind: item.kind, message: 'Removed in v7. <say what to use instead>'}
   }
-  if (target === INTERNALS_ENTRY || target.startsWith(`${INTERNALS_ENTRY}/`)) {
+  if (target === INTERNALS_ENTRY || target.startsWith(`${INTERNALS_ENTRY}-`)) {
     return {
       name: item.name,
       kind: item.kind,

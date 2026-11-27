@@ -23,7 +23,7 @@ vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
 }))
 vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1',
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1',
   async (importOriginal) => ({
     ...(await importOriginal()),
     useSchema: () => schema,

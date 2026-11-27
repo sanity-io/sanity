@@ -215,10 +215,7 @@ describe('structure, router and presentation keep their internals on subpaths', 
     entry: `${subpath}.d.ts`,
     internals: SUBPATHS_WITHOUT_INTERNALS.has(subpath)
       ? null
-      : path.join(
-          '_dangerously_use_private_internals_that_do_not_follow_semver',
-          `${subpath}.d.ts`,
-        ),
+      : `_dangerously_use_private_internals_that_do_not_follow_semver-${subpath}.d.ts`,
   })
   const exportsOf = (dtsFile: string, isPrivate: boolean) =>
     [...(privacyByFile.get(dtsFile) ?? [])]
@@ -247,7 +244,7 @@ describe('structure, router and presentation keep their internals on subpaths', 
   }, DTS_PARSE_TIMEOUT)
 
   for (const [entry, subpath] of Object.entries(PRIVATE_SUBPATHS)) {
-    const internalsSubpath = `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/${subpath}`
+    const internalsSubpath = `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-${subpath}`
     const dtsFiles = dtsFilesOf(subpath)
 
     test(`${entry} exports nothing tagged @internal, @hidden or @deprecated`, () => {

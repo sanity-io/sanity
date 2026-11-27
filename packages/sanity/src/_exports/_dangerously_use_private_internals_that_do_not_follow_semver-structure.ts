@@ -9,27 +9,24 @@
  * `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` applies here too.
  */
 
-export {type ConfirmDeleteDialogProps} from '../../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
-export {PaneLayout} from '../../structure/components/pane/PaneLayout'
+export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
+export {PaneLayout} from '../structure/components/pane/PaneLayout'
 export {
   type BackLinkProps,
   type ChildLinkProps,
   type PaneRouterContextValue,
   type ParameterizedLinkProps,
   type ReferenceChildLinkProps,
-} from '../../structure/components/paneRouter/types'
-export {usePaneRouter} from '../../structure/components/paneRouter/usePaneRouter'
-export {DocumentInspectorHeader} from '../../structure/panes/document/documentInspector/DocumentInspectorHeader'
-export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../../structure/panes/document/DocumentPaneProviderWrapper'
-export {type DocumentPaneProviderProps} from '../../structure/panes/document/types'
-export {
-  useDocumentTitle,
-  type UseDocumentTitle,
-} from '../../structure/panes/document/useDocumentTitle'
-export {type DocumentListPaneProps} from '../../structure/panes/documentList'
-export {type StructureBuilderOptions} from '../../structure/structureBuilder/createStructureBuilder'
-export {type SortMenuItem} from '../../structure/structureBuilder/MenuItem'
-export {type Builder} from '../../structure/structureBuilder/StructureNodes'
+} from '../structure/components/paneRouter/types'
+export {usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
+export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
+export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
+export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
+export {useDocumentTitle, type UseDocumentTitle} from '../structure/panes/document/useDocumentTitle'
+export {type DocumentListPaneProps} from '../structure/panes/documentList'
+export {type StructureBuilderOptions} from '../structure/structureBuilder/createStructureBuilder'
+export {type SortMenuItem} from '../structure/structureBuilder/MenuItem'
+export {type Builder} from '../structure/structureBuilder/StructureNodes'
 export {
   type BaseResolvedPaneNode,
   type CustomComponentPaneNode,
@@ -53,4 +50,4 @@ export {
   type StructureToolFeatures,
   type StructureToolPaneActionHandler,
   type UnresolvedPaneNode,
-} from '../../structure/types'
+} from '../structure/types'

@@ -319,10 +319,10 @@ import type {
   VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
   visitDiff,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {describe, expectTypeOf, test} from 'vitest'
 
-describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2', () => {
+describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2', () => {
   test('ALL_FIELDS_GROUP', () => {
     expectTypeOf<typeof ALL_FIELDS_GROUP>().not.toBeNever()
   })

@@ -32,23 +32,23 @@ export {useStateLink, type UseStateLinkOptions} from '../router/useStateLink'
 // Type-only: every symbol is `export declare` / `export type … = never`. Nothing here may
 // emit runtime JavaScript. See AGENTS.md ("Export tombstones (v7)").
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export type InternalSearchParam = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export type MatchError = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export type MatchOk = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export type MatchResult = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
  */
 export type NextStateOrOptions = never
 /**

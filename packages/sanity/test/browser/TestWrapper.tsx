@@ -23,7 +23,7 @@ import {
   UserColorManagerProvider,
   WorkspaceProvider,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {ChangeConnectorRoot} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+import {ChangeConnectorRoot} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {type LocaleResourceBundle} from 'sanity/i18n'
 
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'

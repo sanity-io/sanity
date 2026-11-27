@@ -14,10 +14,10 @@ import type {
   TextWithTone,
   TextWithToneProps,
   useSchema,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {describe, expectTypeOf, test} from 'vitest'
 
-describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1', () => {
+describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1', () => {
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
   })

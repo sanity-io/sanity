@@ -5,7 +5,7 @@ import {
   FormBuilder,
   ChangeIndicatorsTracker,
   useDocumentForm,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {Heading, Text, VStack} from 'ui5'
 
 export const FORM_BUILDER_REPRO_TYPE = 'formBuilderReproDoc'

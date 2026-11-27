@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {type ItemProps, type ObjectInputProps} from 'sanity'
-import {ObjectInputMembers} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+import {ObjectInputMembers} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {Text, Flex, Box, VStack} from 'ui5'
 
 /**

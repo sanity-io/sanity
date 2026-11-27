@@ -1,5 +1,5 @@
 import {type FieldMember, type ObjectInputProps} from 'sanity'
-import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {VStack} from 'ui5'
 
 export function CodeInput(props: ObjectInputProps) {

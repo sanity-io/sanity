@@ -9,7 +9,7 @@ import {type ViewTransitionClass, type ViewTransitionClassPerType} from 'react'
  * @example
  * ```tsx
  * import {addTransitionType, startTransition} from 'react'
- * import {STUDIO_SKIP_TRANSITION_TYPE} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+ * import {STUDIO_SKIP_TRANSITION_TYPE} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
  *
  * startTransition(() => {
  *   addTransitionType(STUDIO_SKIP_TRANSITION_TYPE)
@@ -32,7 +32,7 @@ export const STUDIO_SKIP_TRANSITION_TYPE = 'sanity-studio-skip'
  * @example
  * ```tsx
  * import {addTransitionType, startTransition, ViewTransition} from 'react'
- * import {STUDIO_RESIZE_TRANSITION_TYPE} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+ * import {STUDIO_RESIZE_TRANSITION_TYPE} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
  *
  * function openPanel() {
  *   startTransition(() => {
@@ -62,7 +62,7 @@ export const STUDIO_RESIZE_TRANSITION_TYPE = 'sanity-studio-resize'
  * @example
  * ```tsx
  * import {addTransitionType, startTransition} from 'react'
- * import {STUDIO_SCHEME_TRANSITION_TYPE} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+ * import {STUDIO_SCHEME_TRANSITION_TYPE} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
  *
  * startTransition(() => {
  *   addTransitionType(STUDIO_SCHEME_TRANSITION_TYPE)

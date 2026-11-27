@@ -42,10 +42,10 @@ import type {
   useDocumentTitle,
   UseDocumentTitle,
   usePaneRouter,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure'
 import {describe, expectTypeOf, test} from 'vitest'
 
-describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure', () => {
+describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure', () => {
   test('BackLinkProps', () => {
     expectTypeOf<BackLinkProps>().toBeObject()
   })
