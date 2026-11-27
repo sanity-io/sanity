@@ -3,7 +3,9 @@
 // the bare entry and the other subpaths are large, and a studio that imports them up front
 // downloads all of it before the user has even signed in. The form components are the largest
 // part of the package and render only once a document is open, so neither they nor the facades
-// that load them on first render (`core/form/lazy.tsx`) belong in that graph either. This builds studio configs from this repo the way `sanity build` does
+// that load them on first render (`core/form/lazy.tsx`) belong in that graph either. The facades of
+// the public components the root entry exports (`core/form/publicLazy.tsx`) are the exception: a
+// studio loads them up front, so that module holds nothing else. This builds studio configs from this repo the way `sanity build` does
 // (resolving `sanity` to its built `lib`) and walks the static import graph from the studio's
 // entry, the same graph a browser loads before the login screen.
 import assert from 'node:assert/strict'
@@ -30,6 +32,7 @@ const STUDIO_CONFIGS = ['perf/bench/sanity.config.ts', 'perf/studio/sanity.confi
 const FORM_DIR = 'src/core/form'
 const FORM_FACADES = `${FORM_DIR}/lazy.tsx`
 const FORM_IMPLEMENTATIONS = `${FORM_DIR}/publicComponents.lazy.ts`
+const PUBLIC_FORM_FACADES = `${FORM_DIR}/publicLazy.tsx`
 const FIRST_LOAD_EXPORTS = `src/_exports/${INTERNALS}-${FIRST_LOAD_SUBPATH}.ts`
 const FACADES = `the form component facades (${FORM_FACADES})`
 
@@ -159,6 +162,25 @@ void test('reads the form components', () => {
   assert.ok(
     formComponentModules.size > 0,
     `the first-load test reads packages/sanity/${FORM_IMPLEMENTATIONS} with a regular expression; update it to the file's current shape`,
+  )
+})
+
+void test('only holds facades of public components in the module the root entry loads', () => {
+  // Each part after the first starts with a facade's name and ends with the next facade's TSDoc
+  const parts = readSanitySource(PUBLIC_FORM_FACADES).split(/^export const /m)
+  assert.ok(parts.length > 1, `found no facades in packages/sanity/${PUBLIC_FORM_FACADES}`)
+  const notPublic = parts
+    .slice(1)
+    .map((part, index) => ({
+      name: /^\w+/.exec(part)?.[0],
+      doc: parts[index].split('/**').at(-1) ?? '',
+    }))
+    .filter(({doc}) => !/@(public|beta)\b/.test(doc))
+    .map(({name}) => name)
+  assert.deepEqual(
+    notPublic,
+    [],
+    `Every studio loads packages/sanity/${PUBLIC_FORM_FACADES} before the login screen. Facades of components that are not public API belong in packages/sanity/${FORM_FACADES}.`,
   )
 })
 

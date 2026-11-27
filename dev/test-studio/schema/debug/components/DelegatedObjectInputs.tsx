@@ -16,12 +16,12 @@ import {
   type SlugInputProps,
   type StringInputProps,
   type UrlInputProps,
+  PortableTextInput,
 } from 'sanity'
 import {
   ArrayOfObjectsInput,
   NumberInput,
   ObjectInput,
-  PortableTextInput,
   ReferenceInput,
   SelectInput,
   SlugInput,

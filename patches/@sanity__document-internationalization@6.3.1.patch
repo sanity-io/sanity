@@ -7,7 +7,7 @@ index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..b46c3d5eeb75819bdc0f9681b2c30f17
  import { useToast } from "@sanity/ui/toast";
  import { createContext, use, useContext, useEffect, useRef, useState } from "react";
 -import { DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage, PatchEvent, Preview, TextWithTone, defineField, defineLocaleResourceBundle, definePlugin, defineType, getDraftId, getVersionFromId, getVersionId, isDocumentSchemaType, isSanityDocument, isVersionId, pathToString, unset, useClient, useCurrentUser, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, usePerspective, useSchema, useTranslation, useUnstableObserveDocument, useValidationStatus, useWorkspace } from "sanity";
-+import { defineField, definePlugin, defineType, isDocumentSchemaType, isSanityDocument, unset, useClient, useCurrentUser, usePerspective, useWorkspace } from "sanity";
++import { defineField, definePlugin, defineType, isDocumentSchemaType, isSanityDocument, unset, useClient, useCurrentUser, usePerspective, useSchema, useWorkspace } from "sanity";
 +import { defineLocaleResourceBundle, useTranslation } from "sanity/i18n";
  import { LANGUAGE_FIELD_NAME, internationalizedArray } from "sanity-plugin-internationalized-array";
  import { Badge, Box, Button, Card, Dialog, Flex, Grid, Inline, Spinner, Stack, Text, TextInput, useClickOutsideEvent } from "@sanity/ui";
@@ -19,7 +19,7 @@ index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..b46c3d5eeb75819bdc0f9681b2c30f17
 -import { structureLocaleNamespace, useDocumentPane, usePaneRouter } from "sanity/structure";
 +import { structureLocaleNamespace } from "sanity/structure";
 +import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure";
-+import { Preview, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { PatchEvent } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2"; import { TextWithTone, useDocumentPane, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1";
++import { Preview, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { PatchEvent } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2"; import { TextWithTone, useDocumentPane } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1";
  import { TranslateIcon } from "@sanity/icons/Translate";
  import { Popover } from "@sanity/ui/popover";
  import { CogIcon } from "@sanity/icons/Cog";

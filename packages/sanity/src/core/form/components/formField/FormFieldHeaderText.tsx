@@ -35,7 +35,7 @@ const EMPTY_ARRAY: never[] = []
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {

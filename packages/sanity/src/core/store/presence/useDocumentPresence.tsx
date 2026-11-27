@@ -8,7 +8,7 @@ const initial: DocumentPresence[] = []
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
   const presenceStore = usePresenceStore()
   const presence$ = useMemo(

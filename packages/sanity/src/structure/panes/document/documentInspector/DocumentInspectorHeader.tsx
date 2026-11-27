@@ -23,7 +23,7 @@ export interface DocumentInspectorHeaderProps {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {

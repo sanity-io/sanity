@@ -4,7 +4,7 @@ import {AddonDatasetContext} from 'sanity/_singletons'
 import {type AddonDatasetContextValue} from './types'
 
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export function useAddonDataset(): AddonDatasetContextValue {

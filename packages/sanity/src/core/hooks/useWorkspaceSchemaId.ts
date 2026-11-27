@@ -3,7 +3,7 @@ import {getWorkspaceSchemaId} from '@sanity/schema/_internal'
 import {useWorkspace} from '../studio/workspace'
 
 /**
- * @alpha
+ * @internal
  * Return the schema id for the current workspace
  */
 export const useWorkspaceSchemaId = (): string => {

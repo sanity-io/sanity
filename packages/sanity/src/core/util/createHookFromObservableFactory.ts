@@ -11,7 +11,7 @@ export type ReactHook<TArgs, TResult> = (args: TArgs) => TResult
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 // overloads to handle types where an initial value is passed
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
@@ -19,7 +19,7 @@ export function createHookFromObservableFactory<T, TArg = void>(
 ): ReactHook<TArg, LoadingTuple<T>>
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
   initialValue?: T,
@@ -37,7 +37,7 @@ export function createHookFromObservableFactory<T, TArg = void>(
  * value.
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,

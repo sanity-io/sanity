@@ -19,7 +19,7 @@ const isSameEditState = (prev: EditStateFor, next: EditStateFor): boolean =>
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useEditState(
   publishedDocId: string,
   docTypeName: string,

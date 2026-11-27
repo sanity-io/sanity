@@ -10,7 +10,7 @@ export {PaneRouterContext}
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function usePaneRouter(): PaneRouterContextValue {
   return use(PaneRouterContext)

@@ -50,7 +50,7 @@ export interface PatchChannel {
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export function createPatchChannel(): PatchChannel {
   const _subscribers: PatchMsgSubscriber[] = []

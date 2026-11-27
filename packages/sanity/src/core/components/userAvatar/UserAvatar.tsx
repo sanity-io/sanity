@@ -27,8 +27,7 @@ interface AvatarSkeletonProps {
 
 /**
  * A loading skeleton element representing a user avatar
- * @internal
- * @hidden
+ * @beta
  */
 export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
   const theme = getTheme_v2(props.theme)

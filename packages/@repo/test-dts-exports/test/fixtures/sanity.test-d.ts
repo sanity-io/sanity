@@ -6,6 +6,7 @@ import type {
   ActionComponent,
   ActiveToolLayoutProps,
   AddonDatasetContextValue,
+  ALL_FIELDS_GROUP,
   Annotation,
   AnnotationDetails,
   ApiConfig,
@@ -65,6 +66,7 @@ import type {
   AuthState,
   AuthStore,
   AutocompleteString,
+  AvatarSkeleton,
   BaseActionDescription,
   BaseEvent,
   BaseFeedbackTags,
@@ -82,6 +84,7 @@ import type {
   BlockDecoratorDefinition,
   BlockDecoratorProps,
   BlockDefinition,
+  BlockEditor,
   BlockListDefinition,
   BlockListItemProps,
   BlockListObjectField,
@@ -256,6 +259,7 @@ import type {
   DocumentFieldActionStatus,
   DocumentFieldActionTone,
   DocumentGroupEvent,
+  documentIdEquals,
   DocumentInspector,
   DocumentInspectorComponent,
   DocumentInspectorContext,
@@ -293,6 +297,7 @@ import type {
   DynamicFeedbackTags,
   EditDocumentVersionEvent,
   EditorChange,
+  EditPortal,
   EditStateFor,
   EmailComponents,
   EmailDefinition,
@@ -300,6 +305,7 @@ import type {
   EmailOptions,
   EmailRule,
   EmptyProps,
+  EnhancedObjectDialog,
   EnumListProps,
   EventsStoreRevision,
   FederatedAssetSourcesConfig,
@@ -363,6 +369,9 @@ import type {
   GeopointOptions,
   GeopointRule,
   GeopointValue,
+  getDocumentIsInPerspective,
+  getDocumentVariantType,
+  getReferencePaths,
   GlobalDocumentReferenceDefinition,
   GlobalDocumentReferenceFilterResolver,
   GlobalDocumentReferenceFilterSearchOptions,
@@ -373,6 +382,8 @@ import type {
   GroupableActionDescription,
   HistoryClearedEvent,
   HistoryStore,
+  Hotkeys,
+  HotkeysProps,
   HotspotOptions,
   HotspotPreview,
   I18nSearchOperatorDescriptionKey,
@@ -448,6 +459,7 @@ import type {
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
   isDocumentSchemaType,
+  isDraftVersion,
   isFileSchemaType,
   isGlobalDocumentReference,
   isImage,
@@ -461,8 +473,10 @@ import type {
   isPortableTextSpan,
   isPortableTextTextBlock,
   isPrimitiveSchemaType,
+  isPublishedVersion,
   isReference,
   isReferenceSchemaType,
+  isReleaseVersion,
   isSanityDefinedAction,
   isSanityDocument,
   isSlug,
@@ -470,6 +484,7 @@ import type {
   isStringInputProps,
   isStringSchemaType,
   isTypedObject,
+  isVariantVersion,
   ItemProps,
   KeyedObject,
   KeyedSegment,
@@ -575,6 +590,7 @@ import type {
   PluginOptions,
   PortableTextBlock,
   PortableTextChild,
+  PortableTextInput,
   PortableTextInputProps,
   PortableTextListBlock,
   PortableTextMarker,
@@ -610,6 +626,7 @@ import type {
   PublishDocumentVersionEvent,
   PublishedId,
   QueryParams,
+  readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
   Reference,
@@ -631,6 +648,7 @@ import type {
   ReferenceTypeFilterContext,
   ReferenceTypeOption,
   ReferenceValue,
+  RELEASE_DOCUMENT_TYPE,
   ReleaseActionComponent,
   ReleaseActionDescription,
   ReleaseActionProps,
@@ -675,6 +693,8 @@ import type {
   SanityDocument,
   SanityDocumentLike,
   SanityFormConfig,
+  ScheduleAction,
+  ScheduledBadge,
   ScheduleDocumentVersionEvent,
   ScheduledPublishingPluginOptions,
   Schema,
@@ -746,6 +766,7 @@ import type {
   StudioComponents,
   StudioComponentsPluginOptions,
   StudioErrorHandler,
+  StudioLayout,
   StudioLocaleResourceKeys,
   StudioNotificationPayload,
   StudioProps,
@@ -754,6 +775,7 @@ import type {
   StudioThemeColorSchemeKey,
   SwatchName,
   SystemBundle,
+  systemBundles,
   SystemVariant,
   TagsArrayInputProps,
   TagValue,
@@ -805,31 +827,41 @@ import type {
   UrlInputProps,
   UrlOptions,
   UrlRule,
+  useCanvasCompanionDoc,
   useClient,
   useCurrentUser,
   useDataset,
   useDateTimeFormat,
   UseDateTimeFormatOptions,
+  useDialogStack,
+  useDocumentVersionTypeSortedList,
   useFormattedDuration,
   UseFormattedDurationOptions,
   useFormValue,
+  useGetDefaultPerspective,
   useGetFormValue,
   useListFormat,
   UseListFormatOptions,
   useNumberFormat,
   UseNumberFormatOptions,
+  useOnlyHasVersions,
   usePerspective,
   useProjectId,
   User,
   UserAttributeType,
   UserAttributeValue,
   useReferringDocuments,
+  userHasRole,
   UserListWithPermissionsHookValue,
   UserListWithPermissionsOptions,
   UserStore,
   UserWithPermission,
+  useSchema,
+  useSetImmediateValidation,
+  useStudioErrorHandler,
   useUnitFormatter,
   UseUnitFormatterOptions,
+  useUserListWithPermissions,
   useWorkspace,
   validateDocument,
   ValidateDocumentOptions,
@@ -868,6 +900,9 @@ describe('sanity', () => {
   })
   test('AddonDatasetContextValue', () => {
     expectTypeOf<AddonDatasetContextValue>().toBeObject()
+  })
+  test('ALL_FIELDS_GROUP', () => {
+    expectTypeOf<typeof ALL_FIELDS_GROUP>().not.toBeNever()
   })
   test('Annotation', () => {
     expectTypeOf<Annotation>().not.toBeNever()
@@ -1047,6 +1082,9 @@ describe('sanity', () => {
   test('AutocompleteString', () => {
     expectTypeOf<AutocompleteString>().not.toBeNever()
   })
+  test('AvatarSkeleton', () => {
+    expectTypeOf<typeof AvatarSkeleton>().not.toBeNever()
+  })
   test('BaseActionDescription', () => {
     expectTypeOf<BaseActionDescription>().toBeObject()
   })
@@ -1100,6 +1138,9 @@ describe('sanity', () => {
   test('BlockDefinition', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockDefinition>().toBeObject()
+  })
+  test('BlockEditor', () => {
+    expectTypeOf<typeof BlockEditor>().not.toBeNever()
   })
   test('BlockListDefinition', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
@@ -1630,6 +1671,9 @@ describe('sanity', () => {
   test('DocumentGroupEvent', () => {
     expectTypeOf<DocumentGroupEvent>().not.toBeNever()
   })
+  test('documentIdEquals', () => {
+    expectTypeOf<typeof documentIdEquals>().toBeFunction()
+  })
   test('DocumentInspector', () => {
     expectTypeOf<DocumentInspector>().toBeObject()
   })
@@ -1741,6 +1785,9 @@ describe('sanity', () => {
   test('EditorChange', () => {
     expectTypeOf<EditorChange>().not.toBeNever()
   })
+  test('EditPortal', () => {
+    expectTypeOf<typeof EditPortal>().not.toBeNever()
+  })
   test('EditStateFor', () => {
     expectTypeOf<EditStateFor>().toBeObject()
   })
@@ -1762,6 +1809,9 @@ describe('sanity', () => {
   })
   test('EmptyProps', () => {
     expectTypeOf<EmptyProps>().toBeObject()
+  })
+  test('EnhancedObjectDialog', () => {
+    expectTypeOf<typeof EnhancedObjectDialog>().not.toBeNever()
   })
   test('EnumListProps', () => {
     expectTypeOf<EnumListProps<any>>().toBeObject()
@@ -1955,6 +2005,15 @@ describe('sanity', () => {
   test('GeopointValue', () => {
     expectTypeOf<GeopointValue>().toBeObject()
   })
+  test('getDocumentIsInPerspective', () => {
+    expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
+  })
+  test('getDocumentVariantType', () => {
+    expectTypeOf<typeof getDocumentVariantType>().toBeFunction()
+  })
+  test('getReferencePaths', () => {
+    expectTypeOf<typeof getReferencePaths>().toBeFunction()
+  })
   test('GlobalDocumentReferenceDefinition', () => {
     expectTypeOf<GlobalDocumentReferenceDefinition>().toBeObject()
   })
@@ -1984,6 +2043,12 @@ describe('sanity', () => {
   })
   test('HistoryStore', () => {
     expectTypeOf<HistoryStore>().toBeObject()
+  })
+  test('Hotkeys', () => {
+    expectTypeOf<typeof Hotkeys>().toBeFunction()
+  })
+  test('HotkeysProps', () => {
+    expectTypeOf<HotkeysProps>().not.toBeNever()
   })
   test('HotspotOptions', () => {
     expectTypeOf<HotspotOptions>().toBeObject()
@@ -2211,6 +2276,9 @@ describe('sanity', () => {
   test('isDocumentSchemaType', () => {
     expectTypeOf<typeof isDocumentSchemaType>().toBeFunction()
   })
+  test('isDraftVersion', () => {
+    expectTypeOf<typeof isDraftVersion>().toBeFunction()
+  })
   test('isFileSchemaType', () => {
     expectTypeOf<typeof isFileSchemaType>().toBeFunction()
   })
@@ -2250,11 +2318,17 @@ describe('sanity', () => {
   test('isPrimitiveSchemaType', () => {
     expectTypeOf<typeof isPrimitiveSchemaType>().toBeFunction()
   })
+  test('isPublishedVersion', () => {
+    expectTypeOf<typeof isPublishedVersion>().toBeFunction()
+  })
   test('isReference', () => {
     expectTypeOf<typeof isReference>().toBeFunction()
   })
   test('isReferenceSchemaType', () => {
     expectTypeOf<typeof isReferenceSchemaType>().toBeFunction()
+  })
+  test('isReleaseVersion', () => {
+    expectTypeOf<typeof isReleaseVersion>().toBeFunction()
   })
   test('isSanityDefinedAction', () => {
     expectTypeOf<typeof isSanityDefinedAction>().not.toBeNever()
@@ -2276,6 +2350,9 @@ describe('sanity', () => {
   })
   test('isTypedObject', () => {
     expectTypeOf<typeof isTypedObject>().toBeFunction()
+  })
+  test('isVariantVersion', () => {
+    expectTypeOf<typeof isVariantVersion>().toBeFunction()
   })
   test('ItemProps', () => {
     expectTypeOf<ItemProps>().not.toBeNever()
@@ -2595,6 +2672,9 @@ describe('sanity', () => {
   test('PortableTextChild', () => {
     expectTypeOf<PortableTextChild>().not.toBeNever()
   })
+  test('PortableTextInput', () => {
+    expectTypeOf<typeof PortableTextInput>().not.toBeNever()
+  })
   test('PortableTextInputProps', () => {
     expectTypeOf<PortableTextInputProps>().toBeObject()
   })
@@ -2700,6 +2780,9 @@ describe('sanity', () => {
   test('QueryParams', () => {
     expectTypeOf<QueryParams>().not.toBeNever()
   })
+  test('readVersionType', () => {
+    expectTypeOf<typeof readVersionType>().toBeFunction()
+  })
   test('RebasePatchMsg', () => {
     expectTypeOf<RebasePatchMsg>().toBeObject()
   })
@@ -2763,6 +2846,9 @@ describe('sanity', () => {
   })
   test('ReferenceValue', () => {
     expectTypeOf<ReferenceValue>().not.toBeNever()
+  })
+  test('RELEASE_DOCUMENT_TYPE', () => {
+    expectTypeOf<typeof RELEASE_DOCUMENT_TYPE>().not.toBeNever()
   })
   test('ReleaseActionComponent', () => {
     expectTypeOf<ReleaseActionComponent>().toBeObject()
@@ -2896,6 +2982,12 @@ describe('sanity', () => {
   })
   test('SanityFormConfig', () => {
     expectTypeOf<SanityFormConfig>().toBeObject()
+  })
+  test('ScheduleAction', () => {
+    expectTypeOf<typeof ScheduleAction>().not.toBeNever()
+  })
+  test('ScheduledBadge', () => {
+    expectTypeOf<typeof ScheduledBadge>().not.toBeNever()
   })
   test('ScheduleDocumentVersionEvent', () => {
     expectTypeOf<ScheduleDocumentVersionEvent>().toBeObject()
@@ -3112,6 +3204,9 @@ describe('sanity', () => {
   test('StudioErrorHandler', () => {
     expectTypeOf<StudioErrorHandler>().toBeObject()
   })
+  test('StudioLayout', () => {
+    expectTypeOf<typeof StudioLayout>().toBeFunction()
+  })
   test('StudioLocaleResourceKeys', () => {
     expectTypeOf<StudioLocaleResourceKeys>().not.toBeNever()
   })
@@ -3135,6 +3230,9 @@ describe('sanity', () => {
   })
   test('SystemBundle', () => {
     expectTypeOf<SystemBundle>().not.toBeNever()
+  })
+  test('systemBundles', () => {
+    expectTypeOf<typeof systemBundles>().not.toBeNever()
   })
   test('SystemVariant', () => {
     expectTypeOf<SystemVariant>().toBeObject()
@@ -3291,6 +3389,9 @@ describe('sanity', () => {
   test('UrlRule', () => {
     expectTypeOf<UrlRule>().toBeObject()
   })
+  test('useCanvasCompanionDoc', () => {
+    expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
+  })
   test('useClient', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useClient>().toBeFunction()
@@ -3307,6 +3408,12 @@ describe('sanity', () => {
   test('UseDateTimeFormatOptions', () => {
     expectTypeOf<UseDateTimeFormatOptions>().not.toBeNever()
   })
+  test('useDialogStack', () => {
+    expectTypeOf<typeof useDialogStack>().toBeFunction()
+  })
+  test('useDocumentVersionTypeSortedList', () => {
+    expectTypeOf<typeof useDocumentVersionTypeSortedList>().not.toBeNever()
+  })
   test('useFormattedDuration', () => {
     expectTypeOf<typeof useFormattedDuration>().toBeFunction()
   })
@@ -3315,6 +3422,9 @@ describe('sanity', () => {
   })
   test('useFormValue', () => {
     expectTypeOf<typeof useFormValue>().toBeFunction()
+  })
+  test('useGetDefaultPerspective', () => {
+    expectTypeOf<typeof useGetDefaultPerspective>().toBeFunction()
   })
   test('useGetFormValue', () => {
     expectTypeOf<typeof useGetFormValue>().toBeFunction()
@@ -3330,6 +3440,9 @@ describe('sanity', () => {
   })
   test('UseNumberFormatOptions', () => {
     expectTypeOf<UseNumberFormatOptions>().not.toBeNever()
+  })
+  test('useOnlyHasVersions', () => {
+    expectTypeOf<typeof useOnlyHasVersions>().not.toBeNever()
   })
   test('usePerspective', () => {
     expectTypeOf<typeof usePerspective>().toBeFunction()
@@ -3349,6 +3462,9 @@ describe('sanity', () => {
   test('useReferringDocuments', () => {
     expectTypeOf<typeof useReferringDocuments>().toBeFunction()
   })
+  test('userHasRole', () => {
+    expectTypeOf<typeof userHasRole>().toBeFunction()
+  })
   test('UserListWithPermissionsHookValue', () => {
     expectTypeOf<UserListWithPermissionsHookValue>().not.toBeNever()
   })
@@ -3361,11 +3477,23 @@ describe('sanity', () => {
   test('UserWithPermission', () => {
     expectTypeOf<UserWithPermission>().toBeObject()
   })
+  test('useSchema', () => {
+    expectTypeOf<typeof useSchema>().toBeFunction()
+  })
+  test('useSetImmediateValidation', () => {
+    expectTypeOf<typeof useSetImmediateValidation>().toBeFunction()
+  })
+  test('useStudioErrorHandler', () => {
+    expectTypeOf<typeof useStudioErrorHandler>().toBeFunction()
+  })
   test('useUnitFormatter', () => {
     expectTypeOf<typeof useUnitFormatter>().toBeFunction()
   })
   test('UseUnitFormatterOptions', () => {
     expectTypeOf<UseUnitFormatterOptions>().not.toBeNever()
+  })
+  test('useUserListWithPermissions', () => {
+    expectTypeOf<typeof useUserListWithPermissions>().toBeFunction()
   })
   test('useWorkspace', () => {
     expectTypeOf<typeof useWorkspace>().toBeFunction()

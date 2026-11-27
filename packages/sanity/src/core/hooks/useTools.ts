@@ -5,7 +5,7 @@ import {useSource} from '../studio/source'
  * React hook that returns the tools configured for the current workspace.
  * Use it from a custom component that needs to list tools or look up a {@link Tool} by name.
  *
- * @public
+ * @internal
  */
 export function useTools(): Tool[] {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

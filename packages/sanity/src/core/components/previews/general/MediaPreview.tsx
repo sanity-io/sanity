@@ -18,7 +18,7 @@ import {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type MediaPreviewProps = Omit<PreviewProps<'media'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -30,7 +30,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function MediaPreview(props: MediaPreviewProps) {
   const {
     media,

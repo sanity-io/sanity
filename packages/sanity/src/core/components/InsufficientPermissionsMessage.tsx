@@ -49,7 +49,7 @@ function Roles({parts}: {parts?: ListFormatParts}) {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function InsufficientPermissionsMessage({
   currentUser,
   context,

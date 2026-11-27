@@ -1,8 +1,12 @@
 import {type PortableTextBlock} from '@portabletext/editor'
 import {htmlToPortableText} from '@portabletext/html'
 import {useCallback, useMemo} from 'react'
-import {type OnPasteFn, type PortableTextInputProps, type PortableTextMarker} from 'sanity'
-import {PortableTextInput} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
+import {
+  type OnPasteFn,
+  type PortableTextInputProps,
+  type PortableTextMarker,
+  PortableTextInput,
+} from 'sanity'
 
 import {renderBlockActions} from './blockActions'
 import {renderCustomMarkers} from './customMarkers'

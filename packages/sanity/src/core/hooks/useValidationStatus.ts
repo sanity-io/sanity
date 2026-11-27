@@ -11,7 +11,7 @@ const INITIAL: ValidationStatus = {validation: [], isValidating: true}
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
@@ -32,7 +32,7 @@ export function useValidationStatus(
 
 /**
  * @hidden
- * @beta
+ * @internal
  * @deprecated `requirePublishedReferences` is ignored: whether references must be published is
  * decided by `validationTargetId`. Leave it out, or pass `{listener}` options instead.
  */

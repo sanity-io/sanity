@@ -160,7 +160,7 @@ export type DocumentGroupEvent =
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isCreateDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -168,7 +168,7 @@ export const isCreateDocumentVersionEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isDeleteDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -176,7 +176,7 @@ export const isDeleteDocumentVersionEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isPublishDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -184,7 +184,7 @@ export const isPublishDocumentVersionEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isUnpublishDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -192,7 +192,7 @@ export const isUnpublishDocumentEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isScheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -200,7 +200,7 @@ export const isScheduleDocumentVersionEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isUnscheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -208,7 +208,7 @@ export const isUnscheduleDocumentVersionEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isDeleteDocumentGroupEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -221,7 +221,7 @@ export const isDeleteDocumentGroupEvent = (
  * Changes; treat both as a terminal event for the live revision.
  *
  * @hidden
- * @beta
+ * @internal
  */
 export const isNonSelectableTerminalEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -230,7 +230,7 @@ export const isNonSelectableTerminalEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isCreateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -238,7 +238,7 @@ export const isCreateLiveDocumentEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isUpdateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -246,7 +246,7 @@ export const isUpdateLiveDocumentEvent = (
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const isEditDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,

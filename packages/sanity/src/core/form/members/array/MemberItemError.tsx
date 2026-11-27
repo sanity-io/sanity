@@ -4,7 +4,7 @@ import {IncompatibleItemType} from './IncompatibleItemType'
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function MemberItemError(props: {member: ArrayItemError}) {
   const {member} = props
   const {t} = useTranslation()
