@@ -130,7 +130,11 @@ describe('CommentsStudioLayout', () => {
     await renderLayout()
     await settleMode('upsell')
 
-    await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+    // The dialog loads lazily on open, and a render that suspends only resumes inside an awaited act
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog suspends on the click
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+    })
 
     expect(await screen.findByRole('dialog')).toHaveTextContent('Comments need a bigger plan')
   })

@@ -6,9 +6,16 @@ import {
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
 
-import {FederatedAssetSourceDialog} from './FederatedAssetSourceDialog'
+import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {type FederatedAssetSourceView} from './types'
 import {PickerModeUploader} from './uploader'
+
+// The workspace resolves its asset sources after sign-in, and the dialog (the federated view and
+// the module federation runtime that mounts it) only renders once a source is opened
+const FederatedAssetSourceDialog = createLazyComponent(
+  () => import('./FederatedAssetSourceDialog.lazy'),
+  {fallback: null},
+)
 
 /**
  * A Studio asset source for a third-party brokered `asset_source` view (an

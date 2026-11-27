@@ -1,5 +1,4 @@
 import {type Bridge} from '@sanity/message-protocol'
-import {urlFor} from '@sanity/sdk-react/dashboard'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
@@ -13,6 +12,10 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {canvasLocaleNamespace} from './i18n'
 
 const ALWAYS_AVAILABLE = of(true)
+
+// The SDK's dashboard export brings the module federation runtime along, and the document actions
+// that use this hook render with every document, so the URL builder loads when Canvas opens
+const loadUrlFor = () => import('./dashboardUrlFor.lazy')
 
 interface CanvasNavigate {
   /**
@@ -67,11 +70,13 @@ export function useCanvasNavigate(): CanvasNavigate {
       if (connection) {
         const showError = () =>
           toast.push({status: 'error', title: t('navigate-to-canvas-doc.error.failed')})
-        void connection
-          .emit('navigation.location.update', {
-            url: `${urlFor.canvas().url()}/${path}`,
-            history: 'push',
-          })
+        void loadUrlFor()
+          .then(({default: urlFor}) =>
+            connection.emit('navigation.location.update', {
+              url: `${urlFor.canvas().url()}/${path}`,
+              history: 'push',
+            }),
+          )
           .then((reply) => {
             if (!reply.ok) showError()
           }, showError)

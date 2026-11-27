@@ -8,7 +8,7 @@ index 4676e368597050d8fba6530aa51699b8cac15c79..81a95b28cc737565cc087489adc6701b
  import { c } from "react/compiler-runtime";
 -import { ChangeIndicator, DiffFromTo, definePlugin, set, setIfMissing, unset } from "sanity";
 +import { definePlugin, set, setIfMissing, unset } from "sanity";
-+import { ChangeIndicator, DiffFromTo } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { ChangeIndicator, DiffFromTo } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2";
  import { ImageIcon } from "@sanity/icons/Image";
  import { Box, Button, Card, Dialog, Flex, Grid, Label, Spinner, Stack, Text, TextInput } from "@sanity/ui";
  import { createContext, use, useEffect, useId, useRef, useState } from "react";

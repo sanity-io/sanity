@@ -20,7 +20,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId} from '../../util/draftUtils'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {getResolvableTypeName, resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
-import {transferValue, type TransferValueOptions} from './transferValue'
+import {type TransferValueOptions} from './transferValue'
 import {
   type CopyOptions,
   type DocumentMeta,
@@ -28,6 +28,10 @@ import {
   type SanityClipboardItem,
 } from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
+
+// The provider wraps every studio, and the transfer (schema matching, asset and reference
+// validation) only runs once something is pasted
+const loadTransferValue = () => import('./transferValue.lazy')
 /**
  * @beta
  * @hidden
@@ -268,6 +272,7 @@ export const CopyPasteProvider: React.FC<{
 
       // Workaround for try/catch not being fully supported by the React Compiler yet
       const run = async () => {
+        const {default: transferValue} = await loadTransferValue()
         const {targetValue, errors} = await transferValue(transferValueOptions)
         const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
         const _isEmptyValue = isEmptyValue(targetValue)

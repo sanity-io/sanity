@@ -30,39 +30,44 @@ describe('LiveManifestRegisterProvider', () => {
     vi.mocked(useLiveUserApplication).mockReturnValue({userApplication} as never)
   })
 
-  it('registers the manifest with the resolved user application, workspaces and theme', () => {
+  it('registers the manifest with the resolved user application, workspaces and theme', async () => {
     render(<LiveManifestRegisterProvider />)
-    expect(registerStudioManifest).toHaveBeenCalledWith(
-      userApplication,
-      workspaces,
-      theme,
-      expect.any(AbortSignal),
+    await vi.waitFor(() =>
+      expect(registerStudioManifest).toHaveBeenCalledWith(
+        userApplication,
+        workspaces,
+        theme,
+        expect.any(AbortSignal),
+      ),
     )
   })
 
-  it('aborts the superseded upload when remounted under StrictMode', () => {
+  it('starts only the upload of the remounted provider under StrictMode', async () => {
     render(
       <StrictMode>
         <LiveManifestRegisterProvider />
       </StrictMode>,
     )
 
-    // StrictMode mounts, unmounts, then remounts: the first upload's signal is aborted by
-    // cleanup, so only the second upload runs to completion.
-    const [firstCall, secondCall] = vi.mocked(registerStudioManifest).mock.calls
-    expect(firstCall[3]?.aborted).toBe(true)
-    expect(secondCall[3]?.aborted).toBe(false)
+    // StrictMode mounts, unmounts, then remounts: cleanup aborts the first mount's signal
+    // before the registration code has loaded, so only the remount uploads.
+    await vi.waitFor(() => expect(registerStudioManifest).toHaveBeenCalledTimes(1))
+    await vi.dynamicImportSettled()
+    expect(registerStudioManifest).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(registerStudioManifest).mock.calls[0][3]?.aborted).toBe(false)
   })
 
-  it('does not register when there is no user application', () => {
+  it('does not register when there is no user application', async () => {
     vi.mocked(useLiveUserApplication).mockReturnValue({userApplication: undefined} as never)
     render(<LiveManifestRegisterProvider />)
+    await vi.dynamicImportSettled()
     expect(registerStudioManifest).not.toHaveBeenCalled()
   })
 
-  it('does not register when there are no workspaces', () => {
+  it('does not register when there are no workspaces', async () => {
     vi.mocked(useWorkspaces).mockReturnValue([] as never)
     render(<LiveManifestRegisterProvider />)
+    await vi.dynamicImportSettled()
     expect(registerStudioManifest).not.toHaveBeenCalled()
   })
 })

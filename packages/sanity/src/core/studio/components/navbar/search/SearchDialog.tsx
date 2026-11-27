@@ -1,19 +1,12 @@
 import {type StackablePerspective} from '@sanity/client'
-import {Card, Portal} from '@sanity/ui'
-import {useState} from 'react'
-import FocusLock from 'react-focus-lock'
-import {Box} from 'ui5'
+import {lazy, Suspense} from 'react'
 
-import {supportsTouch} from '../../../../util/supportsTouch'
-import {useColorSchemeValue} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
-import {Filters} from './components/filters/Filters'
-import {RecentSearches} from './components/recentSearches/RecentSearches'
-import {SearchHeader} from './components/SearchHeader'
-import {SearchResults} from './components/searchResults/SearchResults'
 import {useSearchState} from './contexts/search/useSearchState'
-import {innerCard, searchDialogBox} from './SearchDialog.css'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
+
+// The search field, filters and results only render while the dialog is open
+const SearchDialogContent = lazy(() => import('./SearchDialogContent'))
 
 interface SearchDialogProps {
   onClose: () => void
@@ -36,11 +29,8 @@ export function SearchDialog({
   previewPerspective,
   previewVariant,
 }: SearchDialogProps) {
-  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
-  const scheme = useColorSchemeValue()
-
   const {
-    state: {filtersVisible, terms},
+    state: {terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms({terms})
@@ -48,35 +38,13 @@ export function SearchDialog({
   return (
     <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
       {open && (
-        <Portal>
-          <FocusLock autoFocus={!supportsTouch} returnFocus>
-            <Box className={searchDialogBox}>
-              <Card
-                className={innerCard}
-                display="flex"
-                height="fill"
-                scheme={scheme}
-                tone="default"
-              >
-                <SearchHeader onClose={onClose} ref={setInputElement} />
-                {filtersVisible && (
-                  <Card borderTop flex="none">
-                    <Filters />
-                  </Card>
-                )}
-                {hasValidTerms ? (
-                  <SearchResults
-                    inputElement={inputElement}
-                    previewPerspective={previewPerspective}
-                    previewVariant={previewVariant}
-                  />
-                ) : (
-                  <RecentSearches inputElement={inputElement} />
-                )}
-              </Card>
-            </Box>
-          </FocusLock>
-        </Portal>
+        <Suspense fallback={null}>
+          <SearchDialogContent
+            onClose={onClose}
+            previewPerspective={previewPerspective}
+            previewVariant={previewVariant}
+          />
+        </Suspense>
       )}
     </SearchWrapper>
   )

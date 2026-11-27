@@ -141,7 +141,7 @@ export type Builder = never
  */
 export type ChildLinkProps = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const ConfirmDeleteDialog: never
 /**
@@ -165,7 +165,7 @@ export type DocumentFieldMenuActionNode = never
  */
 export declare const DocumentInspectorHeader: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const DocumentListPane: never
 /**
@@ -177,7 +177,7 @@ export type DocumentListPaneNode = never
  */
 export type DocumentListPaneProps = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const DocumentPane: never
 /**
@@ -205,15 +205,15 @@ export declare const HELP_URL: never
  */
 export type ListPaneNode = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const ORDER_BY_IDS_PARAM_FIELD: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const Pane: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const PaneContent: never
 /**
@@ -313,7 +313,7 @@ export type StructureToolFeatures = never
  */
 export type StructureToolPaneActionHandler = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const StructureToolProvider: never
 /**
@@ -401,7 +401,7 @@ export declare const shallowIntentChecker: never
  */
 export declare const useDocumentTitle: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const usePaneOptions: never
 /**
@@ -409,7 +409,7 @@ export declare const usePaneOptions: never
  */
 export declare const usePaneRouter: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const useStructureTool: never
 // </tombstones>

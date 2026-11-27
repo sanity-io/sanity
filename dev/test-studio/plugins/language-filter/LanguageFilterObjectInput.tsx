@@ -8,7 +8,7 @@ import {
 import {
   ObjectInput,
   useFormBuilder,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 
 import {_isPathCollapsed} from './_helpers'
 import {type LanguageFilterPluginOptions} from './types'

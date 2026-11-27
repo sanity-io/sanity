@@ -1,6 +1,9 @@
-import exif from 'exif-component'
 import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
-import {catchError, map} from 'rxjs/operators'
+import {catchError, map, mergeMap} from 'rxjs/operators'
+
+// The default asset sources' uploaders are part of every workspace, and the parser only runs
+// once an image is uploaded
+const loadExif = () => import('exif-component').then((module) => module.default)
 
 function readFileAsArrayBuffer(
   file: File,
@@ -25,7 +28,7 @@ const EXIF_BUFFER_LENGTH = 128000
 
 export function readExif(file: File) {
   return observableFrom(readFileAsArrayBuffer(file, EXIF_BUFFER_LENGTH)).pipe(
-    map((buf) => exif(buf)),
+    mergeMap((buf) => observableFrom(loadExif()).pipe(map((exif) => exif(buf)))),
     catchError((error) => {
       if (!SKIP_EXIF_ERROR_RE.test(error.message)) {
         // Exif read failed, we do not want to fail hard
