@@ -177,6 +177,19 @@ describe('ReleasesNav', () => {
     expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
   })
 
+  it('reports following the label of the chosen release', async () => {
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
+
+    await renderTest()
+    await userEvent.click(screen.getByRole('link', {name: 'active Release'}))
+
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Release Detail Link Clicked'}),
+      {location: 'navbar_label'},
+    )
+  })
+
   describe('when variants are enabled', () => {
     it('shows a detail link for each release', async () => {
       useActiveReleasesMockReturn.data = [activeScheduledRelease]

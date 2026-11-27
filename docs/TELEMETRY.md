@@ -392,7 +392,7 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 
 `Variants Tool Filtered` reports the condition filters of the overview, and the bundle filter of a definition's documents table on the detail page, where `activeFilterCount` is `0` or `1`. Free-text search is not reported.
 
-`Variant Detail Link Clicked` reports the detail link beside a variant in the navbar's variants menu (`navbar_menu`), a definition's title in the overview (`variants_overview`) and the link to an existing definition with the same conditions in the create and edit dialogs (`variant_dialog`). `Variant Definition Opened` counts every arrival on the detail page, links or not.
+`Variant Detail Link Clicked` reports the detail link beside a variant in the navbar's variants menu (`navbar_menu`), a definition's title in the overview (`variants_overview`) and the link to an existing definition with the same title or conditions in the create and edit dialogs (`variant_dialog`). `Variant Definition Opened` counts every arrival on the detail page, links or not.
 
 `Variant Definition Opened` fires when the detail page has resolved its definition, whatever led there, including deep links and reloads; a page for a definition that does not exist logs nothing. When `beta.reactActivityMode` keeps the tool mounted, revealing it again fires the event again.
 

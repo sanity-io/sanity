@@ -479,6 +479,13 @@ describe('CreateVariantDialog', () => {
       `/intent/${VARIANTS_INTENT}/id=alpha-audience/`,
     )
 
+    await user.click(within(titleError).getByRole('link', {name: 'Alpha audience'}))
+
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Detail Link Clicked'}),
+      {location: 'variant_dialog'},
+    )
+
     await user.type(screen.getByTestId('variant-form-title'), ' expanded')
 
     await waitFor(() => {
@@ -524,6 +531,13 @@ describe('CreateVariantDialog', () => {
     expect(within(conditionsError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
       'href',
       `/intent/${VARIANTS_INTENT}/id=alpha-audience/`,
+    )
+
+    await user.click(within(conditionsError).getByRole('link', {name: 'Alpha audience'}))
+
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Detail Link Clicked'}),
+      {location: 'variant_dialog'},
     )
   })
 
