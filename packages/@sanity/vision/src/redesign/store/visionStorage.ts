@@ -4,6 +4,7 @@ import {DEFAULT_API_VERSION} from '../../apiVersions'
 import {isPlainObject} from '../../util/isPlainObject'
 import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../../util/localStorage'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
+import {DEFAULT_PARAMS} from '../../util/stringifyParams'
 import {validateApiVersion} from '../../util/validateApiVersion'
 import {keepRecentClosedTabs} from './closedTabs'
 import {
@@ -30,7 +31,7 @@ import {
 
 const STATE_VERSION = 1
 
-export const DEFAULT_PARAMS = '{\n  \n}'
+export {DEFAULT_PARAMS}
 
 /** Every panel starts out expanded */
 const DEFAULT_PANELS: VisionPanelsState = {

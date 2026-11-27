@@ -4,6 +4,7 @@ import {
   type SupportedPerspective,
 } from '../perspectives'
 import {parseApiQueryString} from './parseApiQueryString'
+import {stringifyParams} from './stringifyParams'
 import {validateApiVersion} from './validateApiVersion'
 
 /**
@@ -91,7 +92,7 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
   return {
     query: parts.query,
     params: parts.params,
-    rawParams: JSON.stringify(parts.params, null, 2),
+    rawParams: stringifyParams(parts.params),
     dataset: usedDataset,
     isKnownDataset: datasets.includes(usedDataset),
     apiVersion: validateApiVersion(usedApiVersion) ? usedApiVersion : undefined,

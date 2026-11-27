@@ -576,6 +576,15 @@ describe('ParamsForm', () => {
     expect(screen.queryByTestId('vision-params-form-unused')).toBeNull()
   })
 
+  it('leaves the params expanded, not as {}, when the last one is removed', () => {
+    renderForm('*[_type == $type]', '{"type": "post", "stale": 1}')
+    fireEvent.change(within(screen.getByTestId('vision-params-form-type')).getByRole('combobox'), {
+      target: {value: ''},
+    })
+    fireEvent.click(screen.getByTestId('vision-params-form-remove-all'))
+    expect(screen.getByTestId('raw').textContent).toBe('{\n  \n}')
+  })
+
   it('does not edit params that are not valid JSON', () => {
     renderForm('*[_type == $type]', '{"type": ')
     expect(screen.getByText('vision.params-form.invalid-json')).toBeTruthy()

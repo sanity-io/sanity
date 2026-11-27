@@ -5,6 +5,7 @@ import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_f
 import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {stringifyParams} from '../../util/stringifyParams'
 import {useResolvedRequest} from '../hooks/useResolvedRequest'
 import {type VisionTab} from '../store/types'
 import {useVisionActor, useVisionSelector} from '../store/VisionActorContext'
@@ -235,7 +236,7 @@ export function VisionWebMcp({tab}: {tab: VisionTab}) {
           typeof input.title === 'string' && input.title.trim() ? input.title : undefined
         actorRef.send({
           type: 'tab.add',
-          tab: {query, rawParams: JSON.stringify(params, null, 2), title, options: tab.options},
+          tab: {query, rawParams: stringifyParams(params), title, options: tab.options},
           fetch: input.run === false ? undefined : 'generated',
         })
         return text(`Opened the query in a new tab${input.run === false ? '' : ' and ran it'}.`)
