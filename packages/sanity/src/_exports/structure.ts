@@ -289,7 +289,7 @@ export declare const SerializeError: never
  */
 export type SortMenuItem = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. For an import that follows semver, use `{StrictVersionLayeringOptions}` from `@sanity/types`.
  */
 export type StrictVersionLayeringOptions = never
 /**

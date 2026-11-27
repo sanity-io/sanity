@@ -974,7 +974,7 @@ export declare const CommentsAuthoringPathProvider: never
  */
 export declare const CommentsEnabledProvider: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from the same entry.
  */
 export declare const CommentsEnabledProviderV2: never
 /**
@@ -990,7 +990,7 @@ export declare const CommentsList: never
  */
 export declare const CommentsProvider: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsProviderLegacy` from the same entry.
  */
 export declare const CommentsProviderV2: never
 /**
@@ -4158,7 +4158,7 @@ export declare const useComments: never
  */
 export declare const useCommentsEnabled: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from the same entry.
  */
 export declare const useCommentsEnabledV2: never
 /**
@@ -4166,7 +4166,7 @@ export declare const useCommentsEnabledV2: never
  */
 export declare const useCommentsMode: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from the same entry.
  */
 export declare const useCommentsModeV2: never
 /**
