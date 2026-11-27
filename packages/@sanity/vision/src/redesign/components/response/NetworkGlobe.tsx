@@ -3,6 +3,7 @@ import {type COBEOptions, type Marker} from 'cobe'
 import {useEffect, useRef} from 'react'
 
 import {type ApproximateLocation} from '../../util/timeZoneLocation'
+import * as styles from './NetworkGlobe.module.css'
 import * as motion from './responseTabs.module.css'
 
 const SIZE = 168
@@ -107,6 +108,11 @@ export interface NetworkGlobeProps {
   api: ApproximateLocation | undefined
   /** The query went all the way to the API, rather than being answered by the CDN near you */
   reachedApi: boolean
+  /**
+   * groq-store-wasm answered on this device: the query went nowhere, so there is no region or
+   * arc, and a crab stands in for your dot
+   */
+  local?: boolean
 }
 
 /**
@@ -120,7 +126,8 @@ export interface NetworkGlobeProps {
  * hiding the tab, so showing the tab again shows it as it was instead of turning the globe in once
  * more.
  */
-export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
+export function NetworkGlobe({you, api: apiProp, reachedApi, local = false}: NetworkGlobeProps) {
+  const api = local ? undefined : apiProp
   const containerRef = useRef<HTMLDivElement>(null)
   const dark = useThemeV2().color._dark
   const settledRef = useRef<{key: string; still: HTMLCanvasElement} | null>(null)
@@ -128,7 +135,7 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
   useEffect(() => {
     const container = containerRef.current
     if (!container) return undefined
-    const key = JSON.stringify([you, api, reachedApi, dark])
+    const key = JSON.stringify([you, api, reachedApi, dark, local])
     const settled = settledRef.current
     if (settled?.key === key && container.contains(settled.still)) return undefined
     settledRef.current = null
@@ -145,7 +152,10 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
     const devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2)
     const focus = you && api ? midpoint(you, api) : (you ?? api)
     const markers: Marker[] = []
-    if (you) markers.push({location: [you.latitude, you.longitude], size: 0.06, color: YOU_COLOR})
+    // The crab is drawn over the canvas in place of your dot
+    if (you && !local) {
+      markers.push({location: [you.latitude, you.longitude], size: 0.06, color: YOU_COLOR})
+    }
     if (api) markers.push({location: [api.latitude, api.longitude], size: 0.08})
     void loadCobe()
       .then(({default: createGlobe}) => {
@@ -219,14 +229,21 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
       destroy?.()
       if (!settledRef.current) container.replaceChildren()
     }
-  }, [api, dark, reachedApi, you])
+  }, [api, dark, local, reachedApi, you])
 
   return (
     <div
       aria-hidden
+      className={styles.globe}
       data-testid="vision-network-globe"
-      ref={containerRef}
       style={{width: SIZE, height: SIZE, flexShrink: 0}}
-    />
+    >
+      <div ref={containerRef} style={{width: SIZE, height: SIZE}} />
+      {local && you && (
+        <span className={styles.crab} data-testid="vision-network-crab">
+          🦀
+        </span>
+      )}
+    </div>
   )
 }

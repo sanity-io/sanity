@@ -10,7 +10,7 @@ import {Text, Box, Flex} from 'ui5'
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
-import {formatDuration} from '../../../util/formatDuration'
+import {formatMeasuredDuration} from '../../../util/formatDuration'
 import {
   type AiLintFinding,
   type AiQueryChange,
@@ -18,6 +18,7 @@ import {
   type FetchReason,
 } from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
+import {formatExecutionTime} from '../../util/queryNetwork'
 import {
   formatQueryForDiff,
   getRequestChanges,
@@ -419,7 +420,8 @@ function HistoryEntry(props: {
           />
         )}
         <Box flexBasis="0%" flexGrow={1} />
-        {entry.network?.viaCdn && (
+        {/* An answer given on this device never reached the CDN, whatever host it was asked of. */}
+        {entry.network?.viaCdn && !entry.network.local && (
           <Badge
             data-testid="vision-history-cdn"
             fontSize={0}
@@ -434,7 +436,7 @@ function HistoryEntry(props: {
           </Badge>
         ) : (
           <Text muted size={1} as="div" trim={true}>
-            {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : formatDuration(entry.ms)} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : formatDuration(entry.e2eMs)}`}
+            {`${t('result.execution-time-label')} ${formatExecutionTime(entry.ms, entry.network) ?? notApplicable} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : formatMeasuredDuration(entry.e2eMs)}`}
           </Text>
         )}
       </Flex>

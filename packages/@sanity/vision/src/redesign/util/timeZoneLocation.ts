@@ -92,3 +92,16 @@ export function browserLocation(): ApproximateLocation | undefined {
     return undefined
   }
 }
+
+/**
+ * Somewhere on the browser's meridian, from its UTC offset, for when the time zone names no
+ * place (`UTC`, `Etc/GMT+3`): good enough to stand something on the globe facing the viewer.
+ */
+export function offsetLocation(
+  offsetMinutes = new Date().getTimezoneOffset(),
+): ApproximateLocation {
+  // `getTimezoneOffset` is minutes behind UTC: -60 in Central Europe, so east is positive here
+  // `+ 0` turns the -0 of UTC into 0
+  const longitude = Math.max(-180, Math.min(180, (-offsetMinutes / 60) * 15)) + 0
+  return {latitude: 30, longitude}
+}

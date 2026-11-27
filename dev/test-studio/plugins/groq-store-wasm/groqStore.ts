@@ -1,0 +1,588 @@
+import {
+  bootGroqStore,
+  type BootResult,
+  isConstrainedDevice,
+  type Metric,
+  storeLabel,
+  type StoresMetric,
+} from '@sanity/groq-store-wasm/boot'
+
+/**
+ * Boots `@sanity/groq-store-wasm` (a service worker that routes Content Lake `/data/query`
+ * requests to a SharedWorker holding the dataset in a wasm GROQ engine) and keeps the counters
+ * the debug bar shows. Ported from the test studio in sanity-labs/groq-wasm.
+ */
+
+type StoreSummary = StoresMetric['stores'][number]
+
+/** One store in the debug bar: the host's view of it plus this tab's routing counts for its key. */
+export type StoreRow = StoreSummary & {
+  /** `projectId:dataset:identity`, token identities cut to `token:` + 6 hex digits. */
+  label: string
+  /** The host that holds it (`name#id`). */
+  host: string
+  /** Export progress while it builds. */
+  exportBytes?: number
+  /** This tab's queries routed to the store, by outcome. */
+  answered: number
+  passthrough: number
+}
+
+export type GroqStoreStatus = {
+  /** Whether the service worker and the SharedWorker were started at all. */
+  boot: BootResult | {started: false; reason: string}
+  /** Whether the store is switched on for this browser (`?groqStore=on|off`). */
+  enabled: boolean
+  /** Whether a service worker controls this tab (a hard reload bypasses it). */
+  controlled: boolean
+  /** `/data/query` requests in this tab answered by the wasm store. */
+  answered: number
+  /** Requests the store host declined, sent on to Content Lake. */
+  passthrough: number
+  /** Requests sent to Content Lake without asking a store: no host yet, or it was too slow. */
+  unaccelerated: number
+  answerMs: number
+  reasons: Record<string, number>
+  /** Every store the hosts hold, by host then key. Keys are shared by every tab. */
+  stores: Record<string, Record<string, StoreSummary>>
+  /** This tab's routing counts per store key. */
+  routed: Record<string, {answered: number; passthrough: number}>
+  /** Export progress per store key, while it builds. */
+  exportBytes: Record<string, number>
+  /** The store key the latest routed query in this tab went to. */
+  lastStore?: string
+  /** Linear memory of the host's wasm instance, shared by all of its stores. */
+  memoryBytes?: number
+  /** A problem no single store row shows: a trap restart, or drafts being passthrough-only. */
+  storeError?: string
+  guardOff: boolean
+  /** The `?groqGlobalSearch` override; `undefined` lets the host choose by device tier. */
+  globalSearch: 'on' | 'off' | undefined
+  /** Whether the host answers prefix-only global searches in the browser. */
+  globalSearchOn: boolean
+  /** Local snapshots for warm starts (on unless `?groqPersist=off`). */
+  persistence: boolean
+  /** Whether the browser granted persistent storage, once asked (only with snapshots on). */
+  persistedStorage?: boolean
+  /** Where the host keeps snapshots, once it has picked (only with snapshots on). */
+  persistenceBackend?: 'opfs' | 'idb'
+  lastStopped?: LastRun
+  mutations: {applied: number; stale: number}
+  fences: {count: number; lifted: number; ms: number; how: Record<string, number>}
+  /**
+   * Time the page waited for each `/data/query` response, from the browser's resource timing,
+   * whoever answered it. Comparable with the store on and off.
+   */
+  latency: {count: number; p50: number; p95: number}
+}
+
+type LastRun = {
+  key: string
+  phase: string
+  exportBytes?: number
+  memoryBytes?: number
+  documents?: number
+  at: number
+}
+
+const SERVICE_WORKER_PATH = '/groq-sw.js'
+const ENABLED_KEY = 'groq-store-wasm:enabled'
+const GUARD_KEY = 'groq-store-wasm:guard'
+const GLOBAL_SEARCH_KEY = 'groq-store-wasm:global-search'
+const PERSIST_KEY = 'groq-store-wasm:persist'
+const PERSIST_MAX_KEY = 'groq-store-wasm:persist-max-mb'
+const PERSIST_BACKEND_KEY = 'groq-store-wasm:persist-backend'
+const LAST_RUN_KEY = 'groq-store-wasm:last-run'
+const RELOADED_KEY = 'groq-store-wasm:reloaded'
+const LATENCY_SAMPLES = 500
+
+function readStorage(storage: 'localStorage' | 'sessionStorage', key: string): string | null {
+  try {
+    return typeof window === 'undefined' ? null : window[storage].getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function writeStorage(
+  storage: 'localStorage' | 'sessionStorage',
+  key: string,
+  value: string | null,
+): void {
+  try {
+    if (typeof window === 'undefined') return
+    if (value === null) window[storage].removeItem(key)
+    else window[storage].setItem(key, value)
+  } catch {
+    // Storage can be disabled; the store then just uses its defaults.
+  }
+}
+
+function searchParam(name: string): string | null {
+  return typeof location === 'undefined' ? null : new URL(location.href).searchParams.get(name)
+}
+
+/** Playwright, Puppeteer and WebDriver set `navigator.webdriver`. */
+function isAutomatedBrowser(): boolean {
+  return typeof navigator !== 'undefined' && navigator.webdriver
+}
+
+/** Whether the store runs in this browser, and why not if it doesn't. */
+function initialMode(): {enabled: true} | {enabled: false; reason: string} {
+  if (process.env.SANITY_STUDIO_GROQ_STORE === 'off') {
+    return {enabled: false, reason: 'off (SANITY_STUDIO_GROQ_STORE=off)'}
+  }
+  const override = searchParam('groqStore')
+  if (override === 'on' || override === 'off') writeStorage('localStorage', ENABLED_KEY, override)
+  const stored = readStorage('localStorage', ENABLED_KEY)
+  if (stored === 'off') return {enabled: false, reason: 'off for this browser'}
+  // Keeps e2e runs on Content Lake unless a test opts in with `?groqStore=on`.
+  if (stored !== 'on' && isAutomatedBrowser()) {
+    return {enabled: false, reason: 'off in automated browsers (?groqStore=on)'}
+  }
+  return {enabled: true}
+}
+
+const DEBUG_BAR_KEY = 'groq-store-wasm:debug-bar'
+
+/**
+ * Whether the debug bar shows in this browser (`?groqDebugBar=on|off`, remembered like
+ * `?groqStore`). Hiding it only hides the bar: the store, its service worker and the metrics run
+ * as before. Shown unless turned off, except in an automated browser where the store is off: there
+ * the fixed bar would only cover the page under test, so it needs `?groqDebugBar=on`.
+ */
+export function isGroqDebugBarVisible(): boolean {
+  const override = searchParam('groqDebugBar')
+  if (override === 'on' || override === 'off') writeStorage('localStorage', DEBUG_BAR_KEY, override)
+  const stored = readStorage('localStorage', DEBUG_BAR_KEY)
+  if (stored === 'on') return true
+  if (stored === 'off') return false
+  return mode.enabled || !isAutomatedBrowser()
+}
+
+function initialGuardOff(): boolean {
+  const override = searchParam('groqGuard')
+  if (override === 'off') writeStorage('localStorage', GUARD_KEY, 'off')
+  if (override === 'on') writeStorage('localStorage', GUARD_KEY, null)
+  return readStorage('localStorage', GUARD_KEY) === 'off'
+}
+
+/**
+ * Local global search: `?groqGlobalSearch=on|off|auto`, remembered per browser. Unset (auto)
+ * leaves it to the host: on for desktop tiers, declined on phones and devices with 4 GiB of RAM
+ * or less. When on, the store answers Studio's global search when every term is a prefix term
+ * (one typed word). Exact words and phrases still go to Content Lake, which ranks them with BM25.
+ */
+function initialGlobalSearch(): 'on' | 'off' | undefined {
+  const override = searchParam('groqGlobalSearch')
+  if (override === 'on' || override === 'off') {
+    writeStorage('localStorage', GLOBAL_SEARCH_KEY, override)
+  }
+  if (override === 'auto' || override === '') writeStorage('localStorage', GLOBAL_SEARCH_KEY, null)
+  const stored = readStorage('localStorage', GLOBAL_SEARCH_KEY)
+  return stored === 'on' || stored === 'off' ? stored : undefined
+}
+
+/** Whether the host will answer global searches, given the override and this device's tier. */
+function globalSearchOn(override: 'on' | 'off' | undefined): boolean {
+  if (override !== undefined) return override === 'on'
+  if (typeof navigator === 'undefined') return false
+  const deviceMemory = (navigator as Navigator & {deviceMemory?: number}).deviceMemory
+  return !isConstrainedDevice(deviceMemory, navigator.userAgent)
+}
+
+/**
+ * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, on by default.
+ * `?groqPersistMaxMB=<n>|off` caps snapshot size per store; by default the host has no size cap, only the storage quota (empty resets it).
+ * `?groqPersistBackend=opfs|idb` pins the snapshot storage; `auto` (the default) prefers OPFS
+ * and falls back to IndexedDB.
+ * Turning snapshots off makes the host delete the ones a previous opt-in left behind.
+ */
+function initialPersistence(): {enabled: boolean; maxMb: string; backend: string} {
+  const override = searchParam('groqPersist')
+  if (override === 'on') writeStorage('localStorage', PERSIST_KEY, null)
+  if (override === 'off') writeStorage('localStorage', PERSIST_KEY, 'off')
+  const maxOverride = searchParam('groqPersistMaxMB')
+  if (maxOverride !== null) {
+    writeStorage('localStorage', PERSIST_MAX_KEY, maxOverride === '' ? null : maxOverride)
+  }
+  const backendOverride = searchParam('groqPersistBackend')
+  if (backendOverride === 'opfs' || backendOverride === 'idb') {
+    writeStorage('localStorage', PERSIST_BACKEND_KEY, backendOverride)
+  }
+  if (backendOverride === 'auto' || backendOverride === '') {
+    writeStorage('localStorage', PERSIST_BACKEND_KEY, null)
+  }
+  return {
+    enabled: readStorage('localStorage', PERSIST_KEY) !== 'off',
+    maxMb: readStorage('localStorage', PERSIST_MAX_KEY) ?? '',
+    backend: readStorage('localStorage', PERSIST_BACKEND_KEY) ?? 'auto',
+  }
+}
+
+const persistence = initialPersistence()
+
+/** The store host's URL. Its parameters configure the host worker. */
+function hostUrl(guardOff: boolean, globalSearch: 'on' | 'off' | undefined): string {
+  const params = new URLSearchParams({wasm: '/groq_wasm_bg.wasm'})
+  if (guardOff) params.set('guard', 'off')
+  if (globalSearch) params.set('globalSearch', globalSearch === 'on' ? '1' : '0')
+  params.set('persist', persistence.enabled ? '1' : '0')
+  if (persistence.enabled && persistence.maxMb !== '') params.set('persistMaxMB', persistence.maxMb)
+  if (persistence.enabled && persistence.backend !== 'auto') {
+    params.set('persistBackend', persistence.backend)
+  }
+  return `/groq-host.js?${params}`
+}
+
+/**
+ * The store host's SharedWorker name, which must change whenever `hostUrl` does. The default host
+ * (guard on, no global search override, default persistence) keeps the package's default name.
+ */
+function hostName(guardOff: boolean, globalSearch: 'on' | 'off' | undefined): string | undefined {
+  const parts: string[] = []
+  if (guardOff) parts.push('guard-off')
+  if (globalSearch) parts.push(`global-search-${globalSearch}`)
+  if (!persistence.enabled) parts.push('persist-off')
+  if (persistence.enabled && persistence.maxMb !== '')
+    parts.push(`persist-max-${persistence.maxMb}`)
+  if (persistence.enabled && persistence.backend !== 'auto')
+    parts.push(`persist-${persistence.backend}`)
+  return parts.length === 0 ? undefined : `groq-store-wasm-${parts.join('-')}`
+}
+
+function isLastRun(value: unknown): value is LastRun {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'key' in value &&
+    typeof value.key === 'string' &&
+    'phase' in value &&
+    typeof value.phase === 'string'
+  )
+}
+
+function storedLastRun(): LastRun | undefined {
+  try {
+    const value: unknown = JSON.parse(readStorage('localStorage', LAST_RUN_KEY) ?? 'null')
+    return isLastRun(value) ? value : undefined
+  } catch {
+    return undefined
+  }
+}
+
+const mode = initialMode()
+const previousRun = storedLastRun()
+
+let status: GroqStoreStatus = {
+  boot: {started: false, reason: mode.enabled ? 'not started' : mode.reason},
+  enabled: mode.enabled,
+  controlled: false,
+  answered: 0,
+  passthrough: 0,
+  unaccelerated: 0,
+  answerMs: 0,
+  reasons: {},
+  stores: {},
+  routed: {},
+  exportBytes: {},
+  guardOff: initialGuardOff(),
+  globalSearch: initialGlobalSearch(),
+  globalSearchOn: false,
+  persistence: persistence.enabled,
+  lastStopped:
+    previousRun && previousRun.phase !== 'live' && previousRun.phase !== 'guarded'
+      ? previousRun
+      : undefined,
+  mutations: {applied: 0, stale: 0},
+  fences: {count: 0, lifted: 0, ms: 0, how: {}},
+  latency: {count: 0, p50: 0, p95: 0},
+}
+const listeners = new Set<() => void>()
+
+function update(next: Partial<GroqStoreStatus>): void {
+  status = {...status, ...next}
+  for (const listener of listeners) listener()
+}
+
+/** Snapshot for `useSyncExternalStore`. */
+export const getGroqStoreStatus = (): GroqStoreStatus => status
+
+/** Subscription for `useSyncExternalStore`. */
+export function subscribeGroqStoreStatus(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+/** Switches the store on or off for this browser and reloads. */
+export function setGroqStoreEnabled(enabled: boolean): void {
+  writeStorage('localStorage', ENABLED_KEY, enabled ? 'on' : 'off')
+  const url = new URL(location.href)
+  url.searchParams.delete('groqStore')
+  location.replace(url)
+}
+
+const bump = (reason: string): Record<string, number> => ({
+  ...status.reasons,
+  [reason]: (status.reasons[reason] ?? 0) + 1,
+})
+
+/** Every store across hosts, with this tab's counts for each. */
+export function storeRows(current: GroqStoreStatus): StoreRow[] {
+  return Object.entries(current.stores).flatMap(([host, stores]) =>
+    Object.values(stores).map((store) => {
+      const row: StoreRow = Object.assign({}, store, {
+        label: storeLabel(store.key),
+        host,
+        answered: current.routed[store.key]?.answered ?? 0,
+        passthrough: current.routed[store.key]?.passthrough ?? 0,
+      })
+      const exportBytes = current.exportBytes[store.key]
+      if (exportBytes !== undefined) row.exportBytes = exportBytes
+      return row
+    }),
+  )
+}
+
+function route(store: string | undefined, outcome: 'answered' | 'passthrough') {
+  if (store === undefined) return {}
+  const counts = status.routed[store] ?? {answered: 0, passthrough: 0}
+  return {
+    lastStore: store,
+    routed: {...status.routed, [store]: {...counts, [outcome]: counts[outcome] + 1}},
+  }
+}
+
+function onMetric(metric: Metric): void {
+  if (metric.type === 'stores') {
+    update({
+      stores: {
+        ...status.stores,
+        [metric.host]: Object.fromEntries(metric.stores.map((store) => [store.key, store])),
+      },
+    })
+    return
+  }
+  if (metric.type === 'route') {
+    // A late answer is still a wasm answer: it won the race against the network hedge.
+    if (metric.outcome === 'answer' || metric.outcome === 'late-answer') {
+      update({
+        answered: status.answered + 1,
+        answerMs: status.answerMs + metric.ms,
+        ...route(metric.store, 'answered'),
+      })
+    } else if (metric.outcome === 'passthrough') {
+      update({
+        passthrough: status.passthrough + 1,
+        reasons: bump(metric.reason ?? 'unknown'),
+        ...route(metric.store, 'passthrough'),
+      })
+    } else {
+      update({unaccelerated: status.unaccelerated + 1, reasons: bump(metric.outcome)})
+    }
+    return
+  }
+  if (metric.type !== 'store') return
+  switch (metric.event) {
+    // Phases come from the host's `stores` summaries; these events only add what they lack.
+    case 'building':
+      persist(metric, 'building')
+      break
+    case 'progress':
+      update({
+        exportBytes: {...status.exportBytes, [metric.key]: metric.exportBytes ?? 0},
+        memoryBytes: metric.memoryBytes ?? status.memoryBytes,
+      })
+      persist(metric, 'building')
+      break
+    case 'export':
+      persist(metric, 'building')
+      break
+    case 'live':
+      update({memoryBytes: metric.memoryBytes ?? status.memoryBytes})
+      persist(metric, 'live')
+      break
+    case 'drafts-parity':
+      if (!metric.answerable) {
+        update({storeError: metric.reason ?? 'drafts perspective is passthrough-only'})
+      }
+      break
+    case 'reconnect':
+    case 'dropped':
+      break
+    case 'guarded':
+      persist(metric, 'guarded')
+      break
+    case 'poisoned':
+      update({storeError: metric.reason ?? 'wasm instance poisoned'})
+      persist(metric, 'poisoned')
+      break
+    case 'failed':
+      persist(metric, 'failed')
+      break
+    case 'mutation':
+      update({
+        mutations: {
+          applied: status.mutations.applied + (metric.applied ?? 0),
+          stale: status.mutations.stale + (metric.stale ?? 0),
+        },
+      })
+      break
+    case 'fenced':
+      update({fences: {...status.fences, count: status.fences.count + 1}})
+      break
+    case 'unfenced': {
+      const how = metric.how ?? 'unknown'
+      update({
+        fences: {
+          ...status.fences,
+          lifted: status.fences.lifted + 1,
+          ms: status.fences.ms + (metric.ms ?? 0),
+          how: {...status.fences.how, [how]: (status.fences.how[how] ?? 0) + 1},
+        },
+      })
+      break
+    }
+    case 'storage-persist':
+      update({persistedStorage: metric.granted})
+      break
+    case 'storage-backend':
+      update({persistenceBackend: metric.backend})
+      break
+    default:
+      break
+  }
+}
+
+let lastPersistedAt = 0
+/** Keeps the last store phase across a crashed tab, so the bar can say how far it got. */
+function persist(metric: Extract<Metric, {type: 'store'}>, phase: string): void {
+  const now = Date.now()
+  if (metric.event === 'progress' && now - lastPersistedAt < 500) return
+  lastPersistedAt = now
+  const previous = storedLastRun()
+  const key = metric.key === '*' && previous ? previous.key : metric.key
+  const sameRun = previous?.key === key
+  const run: LastRun = {
+    key,
+    phase,
+    exportBytes: metric.exportBytes ?? (sameRun ? previous?.exportBytes : undefined),
+    memoryBytes: metric.memoryBytes ?? (sameRun ? previous?.memoryBytes : undefined),
+    documents: metric.documents ?? (sameRun ? previous?.documents : undefined),
+    at: now,
+  }
+  writeStorage('localStorage', LAST_RUN_KEY, JSON.stringify(run))
+}
+
+const QUERY_PATH = /^\/v[^/]+\/data\/query\//
+const latencies: number[] = []
+
+function isQueryUrl(value: string): boolean {
+  try {
+    const url = new URL(value)
+    return url.hostname.endsWith('.api.sanity.io') && QUERY_PATH.test(url.pathname)
+  } catch {
+    return false
+  }
+}
+
+function percentile(sorted: number[], fraction: number): number {
+  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))] ?? 0
+}
+
+/**
+ * Records how long every `/data/query` request to the API took, answered by the store or by Content
+ * Lake. API CDN requests (`*.apicdn.sanity.io`) are left out on purpose: the service worker never
+ * routes them to a store, so they take as long with the store on as off and would only blur the
+ * comparison this sample is for.
+ */
+function observeQueryLatency(): void {
+  if (typeof PerformanceObserver === 'undefined') return
+  const observer = new PerformanceObserver((list) => {
+    let added = 0
+    for (const entry of list.getEntries()) {
+      if (!isQueryUrl(entry.name)) continue
+      latencies.push(entry.duration)
+      if (latencies.length > LATENCY_SAMPLES) latencies.shift()
+      added += 1
+    }
+    if (added === 0) return
+    const sorted = latencies.toSorted((a, b) => a - b)
+    update({
+      latency: {
+        count: status.latency.count + added,
+        p50: percentile(sorted, 0.5),
+        p95: percentile(sorted, 0.95),
+      },
+    })
+  })
+  try {
+    observer.observe({type: 'resource', buffered: true})
+  } catch {
+    // Older browsers only take `entryTypes`.
+    observer.observe({entryTypes: ['resource']})
+  }
+}
+
+/** Removes the router when the store is switched off, so this tab talks to Content Lake directly. */
+async function removeRouter(): Promise<void> {
+  const registrations = await navigator.serviceWorker.getRegistrations()
+  const results = await Promise.all(
+    registrations
+      .filter((registration) => {
+        const worker = registration.active ?? registration.waiting ?? registration.installing
+        return worker !== null && new URL(worker.scriptURL).pathname === SERVICE_WORKER_PATH
+      })
+      .map((registration) => registration.unregister()),
+  )
+  const removed = results.includes(true)
+  // An unregistered worker keeps controlling the tabs it already controls, so reload once.
+  if (removed && navigator.serviceWorker.controller) {
+    if (readStorage('sessionStorage', RELOADED_KEY) === null) {
+      writeStorage('sessionStorage', RELOADED_KEY, '1')
+      location.reload()
+    }
+    return
+  }
+  writeStorage('sessionStorage', RELOADED_KEY, null)
+}
+
+let started = false
+
+/**
+ * Starts the store host (SharedWorker) and registers the router (service worker), unless the
+ * store is switched off. Safe to call outside a browser (CLI config loading) and more than once.
+ */
+export function startGroqStore(): void {
+  if (started || typeof window === 'undefined' || typeof navigator === 'undefined') return
+  started = true
+  try {
+    observeQueryLatency()
+    if (!mode.enabled) {
+      if ('serviceWorker' in navigator) {
+        removeRouter().catch((error: unknown) => console.warn('[groq-store-wasm]', error))
+      }
+      return
+    }
+    const boot = bootGroqStore({
+      serviceWorkerUrl: SERVICE_WORKER_PATH,
+      hostUrl: hostUrl(status.guardOff, status.globalSearch),
+      // A SharedWorker name is bound to one URL, so each host variant gets its own name.
+      hostName: hostName(status.guardOff, status.globalSearch),
+      // `navigator.storage.persist()` only exists on the page, so boot asks for it here.
+      requestPersistentStorage: persistence.enabled,
+      onMetric,
+    })
+    update({boot, globalSearchOn: globalSearchOn(status.globalSearch)})
+    if (!boot.started) {
+      console.warn(`[groq-store-wasm] not started: ${boot.reason}`)
+      return
+    }
+    const controlled = (): void => update({controlled: navigator.serviceWorker.controller !== null})
+    controlled()
+    navigator.serviceWorker.addEventListener('controllerchange', controlled)
+  } catch (error) {
+    console.warn('[groq-store-wasm] failed to start', error)
+    update({boot: {started: false, reason: `failed to start: ${String(error)}`}})
+  }
+}

@@ -2,12 +2,13 @@ import {type SyncTag} from '@sanity/client'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Badge, Button, Stack, TextInput} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useMemo} from 'react'
+import {useNumberFormat} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Badge as Ui5Badge, Text, Box, Flex, Grid} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
-import {formatDuration} from '../../../util/formatDuration'
+import {formatDuration, formatMeasuredDuration} from '../../../util/formatDuration'
 import {isApiCdnHost} from '../../../util/parseQueryUrl'
 import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
@@ -17,9 +18,10 @@ import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {API_CDN_DOCS_URL} from '../../util/docsUrls'
 import {formatBytes} from '../../util/payloadSize'
+import {type LocalAnswer, localRoundTrip} from '../../util/queryNetwork'
 import {formatSyncTagMeaning, MAX_SYNC_TAG_PROBES} from '../../util/syncTagLookup'
 import {isWildcardSyncTag, sortSyncTags} from '../../util/syncTags'
-import {browserLocation} from '../../util/timeZoneLocation'
+import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {HelpPopover} from '../HelpPopover'
 import {VisionTooltip} from '../VisionTooltip'
@@ -54,12 +56,37 @@ function MetaRow({label, children}: {label: ReactNode; children: ReactNode}) {
   )
 }
 
+/** Space scale steps for each level of a local answer's timing rows */
+const ROW_INDENT = [0, 3, 4] as const
+
+/** The rows of a local answer's round trip that Vision measured itself, around groq-store-wasm's */
+function measuredRowKey(name: string): string | undefined {
+  if (name === 'browser') return 'vision.network.timing.local-browser'
+  if (name === 'page') return 'vision.network.timing.local-page'
+  return undefined
+}
+
 function isCdnUrl(url: string): boolean {
   try {
     return isApiCdnHost(new URL(url).hostname)
   } catch {
     return false
   }
+}
+
+/** The local copy's size: how many documents, in how much WebAssembly memory, as far as known */
+function localCopyKey(
+  local: LocalAnswer,
+  numberFormat: Intl.NumberFormat,
+): {key: string; options: Record<string, unknown>} | undefined {
+  const documents = local.documents === undefined ? undefined : numberFormat.format(local.documents)
+  const memory = local.memoryBytes === undefined ? undefined : formatBytes(local.memoryBytes)
+  if (documents && memory) {
+    return {key: 'vision.network.region.local-copy', options: {documents, memory}}
+  }
+  if (documents) return {key: 'vision.network.region.local-copy-documents', options: {documents}}
+  if (memory) return {key: 'vision.network.region.local-copy-memory', options: {memory}}
+  return undefined
 }
 
 export interface ResponseMetaTabProps {
@@ -227,8 +254,14 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
   const telemetry = useVisionTelemetry()
+  const compactNumber = useNumberFormat({notation: 'compact'})
   const you = useMemo(() => browserLocation(), [])
   const network = meta?.network
+  const local = network?.local
+  // The crab needs somewhere to stand even when the time zone names no place (UTC).
+  const isLocal = Boolean(local)
+  const globeLocation = useMemo(() => (isLocal ? (you ?? offsetLocation()) : you), [isLocal, you])
+  const localCopy = local ? localCopyKey(local, compactNumber) : undefined
   const region = useMemo(() => regionOfShard(network?.shard), [network?.shard])
   const notApplicable = t('result.timing-not-applicable')
 
@@ -246,24 +279,30 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
   const cacheHit = Boolean(network?.cacheHit)
   let cache = t('vision.network.cache.none')
   if (viaCdn) cache = cacheHit ? t('vision.network.cache.hit') : t('vision.network.cache.miss')
-  const showCdnHint = !viaCdn && !resolved.useCdn && !resolved.isCdnBlockedByPerspective
+  if (local) cache = t('vision.network.cache.local')
+  let endpoint = viaCdn ? t('vision.network.endpoint.cdn') : t('vision.network.endpoint.api')
+  if (local) endpoint = t('vision.network.endpoint.service-worker')
+  const showCdnHint = !local && !viaCdn && !resolved.useCdn && !resolved.isCdnBlockedByPerspective
 
   return (
     <Box data-testid="vision-response-meta" padding={3}>
       <Flex alignItems="flex-start" flexWrap="wrap" gap={4}>
         {meta && (
           <Stack gap={2}>
-            <NetworkGlobe api={region} reachedApi={!cacheHit} you={you} />
-            <Flex alignItems="center" gap={2} justifyContent="center">
-              <Badge fontSize={0} tone="primary">
-                {t('vision.network.you')}
-              </Badge>
-              {region && (
-                <Badge fontSize={0} tone="caution">
-                  {region.id}
+            <NetworkGlobe api={region} local={isLocal} reachedApi={!cacheHit} you={globeLocation} />
+            {/* For local answers the crab on the globe is you; it needs no label */}
+            {!local && (
+              <Flex alignItems="center" gap={2} justifyContent="center">
+                <Badge fontSize={0} tone="primary">
+                  {t('vision.network.you')}
                 </Badge>
-              )}
-            </Flex>
+                {region && (
+                  <Badge fontSize={0} tone="caution">
+                    {region.id}
+                  </Badge>
+                )}
+              </Flex>
+            )}
           </Stack>
         )}
         <Box flexBasis="0%" flexGrow={1} style={DETAILS_MIN_WIDTH}>
@@ -276,19 +315,46 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
               rowGap={3}
             >
               <MetaRow label={t('vision.network.timing')}>
-                <Text size={1} as="div" trim={true}>
-                  <span style={MUTED}>{t('result.execution-time-label')}</span>{' '}
-                  <span data-testid="vision-meta-execution">
-                    {meta ? formatDuration(meta.ms) : notApplicable}
-                  </span>
-                  <span style={MUTED}>
-                    {' · '}
-                    {t('result.end-to-end-time-label')}
-                  </span>{' '}
-                  <span data-testid="vision-meta-e2e">
-                    {meta ? formatDuration(meta.e2eMs) : notApplicable}
-                  </span>
-                </Text>
+                {local && meta ? (
+                  <Stack gap={2}>
+                    <Text data-testid="vision-network-timing" size={1} as="div" trim={true}>
+                      {t('vision.network.timing.local', {e2e: formatMeasuredDuration(meta.e2eMs)})}
+                    </Text>
+                    {localRoundTrip(meta.e2eMs, local, network?.headersMs).map((row) => {
+                      const key = measuredRowKey(row.name)
+                      return (
+                        <Box key={row.name} paddingLeft={ROW_INDENT[row.depth]}>
+                          <Text
+                            data-testid={`vision-network-timing-${row.name}`}
+                            muted
+                            size={0}
+                            as="div"
+                            trim={true}
+                          >
+                            {t('vision.network.timing.entry', {
+                              label: key ? t(key) : row.desc || row.name,
+                              duration: formatMeasuredDuration(row.dur),
+                            })}
+                          </Text>
+                        </Box>
+                      )
+                    })}
+                  </Stack>
+                ) : (
+                  <Text size={1} as="div" trim={true}>
+                    <span style={MUTED}>{t('result.execution-time-label')}</span>{' '}
+                    <span data-testid="vision-meta-execution">
+                      {meta ? formatDuration(meta.ms) : notApplicable}
+                    </span>
+                    <span style={MUTED}>
+                      {' · '}
+                      {t('result.end-to-end-time-label')}
+                    </span>{' '}
+                    <span data-testid="vision-meta-e2e">
+                      {meta ? formatMeasuredDuration(meta.e2eMs) : notApplicable}
+                    </span>
+                  </Text>
+                )}
               </MetaRow>
               <MetaRow label={t('vision.response.payload-size')}>
                 <Text data-testid="vision-meta-payload" size={1} as="div" trim={true}>
@@ -306,9 +372,7 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                         as="div"
                         trim={true}
                       >
-                        {viaCdn
-                          ? t('vision.network.endpoint.cdn')
-                          : t('vision.network.endpoint.api')}
+                        {endpoint}
                       </Text>
                       {showCdnHint && (
                         <span style={INLINE_ICON}>
@@ -327,7 +391,7 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                       <Text data-testid="vision-network-cache" size={1} as="div" trim={true}>
                         {cache}
                       </Text>
-                      {network?.cacheControl && (
+                      {!local && network?.cacheControl && (
                         <Text muted size={0} as="div" trim={true}>
                           {`Cache-Control: ${network.cacheControl}`}
                         </Text>
@@ -360,11 +424,24 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                   <MetaRow label={t('vision.network.region')}>
                     <Stack gap={2}>
                       <Text data-testid="vision-network-region" size={1} as="div" trim={true}>
-                        {region
-                          ? `${region.id} (${region.location})`
-                          : (network?.shard ?? t('vision.network.region.unknown'))}
+                        {local
+                          ? t('vision.network.region.local')
+                          : region
+                            ? `${region.id} (${region.location})`
+                            : (network?.shard ?? t('vision.network.region.unknown'))}
                       </Text>
-                      {region && network?.shard && (
+                      {localCopy && (
+                        <Text
+                          data-testid="vision-network-local-copy"
+                          muted
+                          size={0}
+                          as="div"
+                          trim={true}
+                        >
+                          {t(localCopy.key, localCopy.options)}
+                        </Text>
+                      )}
+                      {!local && region && network?.shard && (
                         <Text muted size={0} as="div" trim={true}>
                           {network.shard}
                         </Text>
@@ -374,7 +451,7 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                 </>
               )}
               <SyncTagsRow lookup={syncTagLookup} meta={meta} notApplicable={notApplicable} />
-              {network?.traceId && (
+              {!local && network?.traceId && (
                 <MetaRow label={t('vision.network.trace')}>
                   <Text size={1} truncate={1} as="div" trim={true}>
                     <code>{network.traceId}</code>
@@ -419,12 +496,12 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                 {t('vision.response.url.sent-as-post')}
               </Text>
             )}
-            {cacheHit && (
+            {!local && cacheHit && (
               <Text muted size={1} as="div" trim={true}>
                 {t('vision.network.cache.hit-explained')}
               </Text>
             )}
-            {resolved.isCdnBlockedByPerspective && (
+            {!local && resolved.isCdnBlockedByPerspective && (
               <CdnBlockedNotice
                 perspectiveName={perspectiveName}
                 testId="vision-network-cdn-blocked"

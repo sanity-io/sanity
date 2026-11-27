@@ -27,12 +27,17 @@ const cobe = vi.hoisted(() => {
   return {update, destroy, createGlobe: vi.fn(() => ({update, destroy}))}
 })
 vi.mock('cobe', () => ({default: cobe.createGlobe}))
-// Wherever the tests run, the browser is in Oslo
+// Wherever the tests run, the browser is in Oslo, unless a test says its time zone names no place
+const zone = vi.hoisted(() => ({
+  browser: {latitude: 59.91, longitude: 10.75} as {latitude: number; longitude: number} | undefined,
+}))
 vi.mock('../../util/timeZoneLocation', () => ({
-  browserLocation: () => ({latitude: 59.91, longitude: 10.75}),
+  browserLocation: () => zone.browser,
+  offsetLocation: () => ({latitude: 30, longitude: 0}),
 }))
 
 vi.mock('sanity', () => ({
+  useNumberFormat: (options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('en', options),
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
 }))
 vi.mock('sanity/i18n', () => ({
@@ -338,11 +343,194 @@ describe('ResponseMetaTab', () => {
     expect(screen.getByTestId('vision-meta-payload').textContent).toBe('354 kB')
   })
 
+  it('writes the round trip of a remote answer as finely as the history does', async () => {
+    await renderTab({meta: {...meta(cdnMiss), ms: 9, e2eMs: 12.43}})
+    expect(screen.getByTestId('vision-meta-execution').textContent).toBe('9ms')
+    expect(screen.getByTestId('vision-meta-e2e').textContent).toBe('12.4ms')
+  })
+
   it('leaves the info button out once the CDN answers', async () => {
     await renderTab({
       meta: meta(cdnMiss),
       resolved: {useCdn: false, isCdnBlockedByPerspective: false},
     })
+    expect(screen.queryByTestId('vision-network-endpoint-info')).toBeNull()
+  })
+  const wasmHit: QueryNetwork = {
+    method: 'GET',
+    viaCdn: true,
+    cacheHit: false,
+    shard: undefined,
+    traceId: undefined,
+    cacheControl: 'private, max-age=60',
+    local: {
+      documents: 51226,
+      memoryBytes: 302841856,
+      timings: [
+        {name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'},
+        {name: 'route', dur: 0.4, desc: 'Service worker to store and back'},
+      ],
+    },
+    headersMs: 6.4,
+  }
+
+  it('shows an answer groq-store-wasm gave on this device, with a crab for you and no way anywhere', async () => {
+    await renderTab({
+      meta: meta(wasmHit),
+      resolved: {useCdn: false, isCdnBlockedByPerspective: true},
+    })
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.service-worker',
+    )
+    expect(screen.getByTestId('vision-network-region').textContent).toBe(
+      'vision.network.region.local',
+    )
+    expect(screen.getByTestId('vision-network-local-copy').textContent).toBe(
+      `vision.network.region.local-copy:${JSON.stringify({
+        documents: '51K',
+        memory: '303 MB',
+      })}`,
+    )
+    expect(screen.getByTestId('vision-network-cache').textContent).toBe(
+      'vision.network.cache.local',
+    )
+    expect(screen.queryByText('Cache-Control: private, max-age=60')).toBeNull()
+    expect(screen.getByTestId('vision-network-timing').textContent).toBe(
+      'vision.network.timing.local:{"e2e":"90.0ms"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Query in WebAssembly","duration":"1.84ms"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-route').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Service worker to store and back","duration":"400µs"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-browser').textContent).toBe(
+      'vision.network.timing.entry:{"label":"vision.network.timing.local-browser","duration":"6.00ms"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-page').textContent).toBe(
+      'vision.network.timing.entry:{"label":"vision.network.timing.local-page","duration":"83.6ms"}',
+    )
+    // The rows add up to the round trip: the query is inside the route that carried it
+    expect(
+      screen
+        .getAllByTestId(/^vision-network-timing-/)
+        .map((node) => node.dataset.testid?.replace('vision-network-timing-', '')),
+    ).toEqual(['browser', 'route', 'wasm', 'page'])
+    expect(screen.queryByTestId('vision-network-endpoint-info')).toBeNull()
+    expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()
+    expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+    expect(screen.queryByText('vision.network.you')).toBeNull()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {arcs: unknown[]; markers: unknown[]},
+    ]
+    expect(options.arcs).toHaveLength(0)
+    expect(options.markers).toHaveLength(0)
+  })
+
+  it('shows a local answer from before groq-store-wasm reported its size and timings', async () => {
+    await renderTab({meta: meta({...wasmHit, local: {timings: []}})})
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.service-worker',
+    )
+    expect(screen.queryByTestId('vision-network-local-copy')).toBeNull()
+    expect(screen.queryByTestId('vision-network-timing-wasm')).toBeNull()
+    expect(screen.getByTestId('vision-network-crab')).toBeTruthy()
+  })
+
+  it('still shows the crab when the time zone names no place, as on a machine set to UTC', async () => {
+    zone.browser = undefined
+    cobe.createGlobe.mockClear()
+    try {
+      await renderTab({meta: meta(wasmHit)})
+      expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+      expect(cobe.createGlobe).toHaveBeenCalled()
+    } finally {
+      zone.browser = {latitude: 59.91, longitude: 10.75}
+    }
+  })
+
+  it('keeps the blue dot for answers from the API', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    expect(screen.queryByTestId('vision-network-crab')).toBeNull()
+    expect(screen.getByText('vision.network.you')).toBeTruthy()
+    expect(screen.getByText('europe-west1')).toBeTruthy()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {markers: unknown[]},
+    ]
+    expect(options.markers).toHaveLength(2)
+  })
+
+  it('draws the globe again when the same place is answered on this device instead', async () => {
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockImplementation(((type: string) =>
+        type === '2d' ? {drawImage: vi.fn()} : null) as never)
+    // The globe has finished turning by its first frame, so its still picture is kept
+    const frame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => window.setTimeout(() => callback(1e9), 0))
+    onTestFinished(() => {
+      getContext.mockRestore()
+      frame.mockRestore()
+    })
+    cobe.createGlobe.mockClear()
+    // No shard, so no region: only the dot for you, until groq-store-wasm answers
+    const remote = meta({...wasmHit, local: undefined})
+    const ui = (network: VisionResponseMeta) => (
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <ResponseMetaTab
+              meta={network}
+              perspectiveName="published"
+              resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+              url={network.url}
+            />
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    )
+    let view: ReturnType<typeof render> | undefined
+    await act(async () => {
+      view = render(ui(remote))
+    })
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+
+    await act(async () => view?.rerender(ui(meta(wasmHit))))
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(2)
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {markers: unknown[]},
+    ]
+    expect(options.markers).toHaveLength(0)
+  })
+
+  it('shows the measured WebAssembly execution time and local round trip', async () => {
+    await renderTab({
+      meta: {
+        ...meta({
+          ...wasmHit,
+          local: {
+            documents: 51226,
+            timings: [{name: 'wasm', dur: 0.62, desc: 'Query in WebAssembly'}],
+          },
+        }),
+        ms: 1,
+        e2eMs: 12.43,
+      },
+      resolved: {useCdn: false, isCdnBlockedByPerspective: false},
+    })
+    expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Query in WebAssembly","duration":"620µs"}',
+    )
+    expect(screen.getByTestId('vision-network-timing').textContent).toBe(
+      'vision.network.timing.local:{"e2e":"12.4ms"}',
+    )
     expect(screen.queryByTestId('vision-network-endpoint-info')).toBeNull()
   })
 })
