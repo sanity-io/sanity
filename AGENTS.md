@@ -910,7 +910,7 @@ types, of every entry of it and of the workspace build with ts-morph
   Each line names the export and its entry, says where the workspace exports it now (if anywhere),
   and carries a suggested manifest entry to start from. A value the entry now exports only as a
   type (through `export type * from`) counts as removed: its tombstone shadows the type-only
-  re-export;
+  re-export. The exception is a name the manifest lists under `"typeOnly"` (see below);
 - whole entries the workspace dropped that `"removedEntries"` does not list (`./desk` is listed:
   `sanity/desk` does not resolve in v7 and gets no stub);
 - stale tombstones: names exported again, names `sanity@latest` never exported, or entries the
@@ -955,6 +955,26 @@ that owns the name. Keep a name at one entry, tombstone the others where `sanity
 it, and make the tombstone message say which one (a different declaration of the same name gets
 "Removed from … it was a different `X`", not "Moved to"). `.` wins ties because its wildcard
 re-exports cannot be pruned, and `sanity/_singletons` owns contexts.
+
+**A public type whose runtime value moved is listed under `"typeOnly"`.** The Structure Builder
+classes (`DocumentBuilder`, `ListItemBuilder`, …) are `@public` because they are the return types
+of `S.document()` and the other builder methods, but constructing, extending or
+`instanceof`-checking them is not supported API. `sanity/structure` exports them type-only
+(`export {type DocumentBuilder}`), and their runtime values are exported from
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. A value use of a
+type-only export fails at the use with TS1362 ("cannot be used as a value because it was exported
+using 'export type'"). A `never` tombstone does not work here, because it would shadow the type.
+The manifest lists each name under `"typeOnly"`, keyed by entry, with the entry that exports the
+value:
+`{"name": "DocumentBuilder", "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"}`.
+With that entry:
+
+- the tombstone diff accepts the demotion;
+- `unique-export-names.test.ts` leaves the type-only export out;
+- `internal-exports.test.ts` lets the subpath export these public values;
+- `tombstones.test.ts` fails when the entry stops exporting the name type-only, when `valueFrom`
+  does not export the value, or when `sanity@latest` never exported it as a value. The first two
+  checks run without the npm download.
 
 When the suite reports a missing export:
 

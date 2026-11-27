@@ -10,7 +10,8 @@ export const BEGIN = '// <tombstones>'
 export const END = '// </tombstones>'
 
 /** @typedef {{name: string, kind: 'value' | 'type', message: string}} Tombstone */
-/** @typedef {{removedEntries: string[], tombstones: Record<string, Tombstone[]>}} Manifest */
+/** @typedef {{name: string, valueFrom: string}} TypeOnlyExport */
+/** @typedef {{removedEntries: string[], tombstones: Record<string, Tombstone[]>, typeOnly?: Record<string, TypeOnlyExport[]>}} Manifest */
 
 /** @returns {Manifest} */
 export function readManifest() {

@@ -6487,7 +6487,7 @@
       {
         "name": "useDocumentPane",
         "kind": "value",
-        "message": "Moved to `sanity/structure`. Import `{useDocumentPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useDocumentPreviewValues",
@@ -7199,6 +7199,11 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
+        "name": "useDocumentPane",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
         "name": "useDocumentTitle",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
@@ -7722,6 +7727,66 @@
         "name": "ValidationContext",
         "kind": "value",
         "message": "Renamed to `ValidationMarkersContext`, because `sanity` exports the `ValidationContext` type for custom validators. Import `{ValidationMarkersContext}` from `sanity/_singletons` instead (`@internal`, can change or disappear in any release)."
+      }
+    ]
+  },
+  "typeOnly": {
+    "./structure": [
+      {
+        "name": "ComponentBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "ComponentViewBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "DocumentBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "DocumentListBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "DocumentListItemBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "DocumentTypeListBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "FormViewBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "GenericListBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "GenericViewBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "InitialValueTemplateItemBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "ListBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "ListItemBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "MenuItemBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
+      },
+      {
+        "name": "MenuItemGroupBuilder",
+        "valueFrom": "./_dangerously_use_private_internals_that_do_not_follow_semver-structure"
       }
     ]
   }

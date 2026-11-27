@@ -11,7 +11,8 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..171f8b4f986fc14a3cb2ae6bf36a2dc4
  import { Box, Button, Card, Flex, Grid, Label, Spinner, Stack, Text } from "@sanity/ui";
  import { useToast } from "@sanity/ui/toast";
  import { randomKey } from "@sanity/util/content";
- import { useDocumentPane } from "sanity/structure";
+-import { useDocumentPane } from "sanity/structure";
++import { useDocumentPane } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1";
  import { AddIcon } from "@sanity/icons/Add";
 -import { createContext, createElement, use, useCallback, useContext, useDeferredValue, useEffect, useId } from "react";
 +import { createContext, createElement, lazy, use, useCallback, useContext, useDeferredValue, useEffect, useId } from "react";
