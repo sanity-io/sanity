@@ -601,6 +601,9 @@ exports[`exports snapshot 1`] = `
     "validation": "function",
   },
   "./_dangerously_use_private_internals_that_do_not_follow_semver/1": {
+    "STUDIO_RESIZE_TRANSITION_TYPE": "string",
+    "STUDIO_SCHEME_TRANSITION_TYPE": "string",
+    "STUDIO_SKIP_TRANSITION_TYPE": "string",
     "Studio": "function",
     "StudioDiagnosticsBridge": "function",
     "StudioLayout": "function",

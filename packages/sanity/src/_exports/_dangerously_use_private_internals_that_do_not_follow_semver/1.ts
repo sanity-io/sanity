@@ -27,3 +27,8 @@ export {renderStudio} from '../../core/studio/renderStudio'
 export {Studio} from '../../core/studio/Studio'
 export {StudioLayout} from '../../core/studio/StudioLayout'
 export {StudioProvider} from '../../core/studio/StudioProvider'
+export {
+  STUDIO_RESIZE_TRANSITION_TYPE,
+  STUDIO_SCHEME_TRANSITION_TYPE,
+  STUDIO_SKIP_TRANSITION_TYPE,
+} from '../../core/viewTransitions/transitionTypes'

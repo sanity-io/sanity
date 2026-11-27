@@ -1045,6 +1045,28 @@ every effect cleanup in the subtree and showing runs the effects again, without 
 - Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
   boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
 
+### `<ViewTransition>`: key classes on transition types, and honor the skip type
+
+The studio's `<ViewTransition>` boundaries animate only transitions whose types they are keyed on
+(`{default: 'none', [type]: 'class'}`), so a transition elsewhere on the page never pictures them.
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1` exports the shared types
+(that subpath because plugins import them at module scope, which runs before sign-in):
+`STUDIO_SKIP_TRANSITION_TYPE` (`sanity-studio-skip`) takes every
+studio boundary out of a transition, so an app can own the whole animation;
+`STUDIO_RESIZE_TRANSITION_TYPE` (`sanity-studio-resize`) marks layout resizes (side panels, split
+panes, the preview viewport); `STUDIO_SCHEME_TRANSITION_TYPE` (`sanity-studio-scheme`) marks color
+scheme changes. The module is `core/viewTransitions/transitionTypes.ts`.
+
+- Build every class a boundary passes, `default`, `enter`, `exit`, `update` and `share` alike, with
+  `studioViewTransitionClass()` from that module (Vision, outside the package, spreads
+  `[STUDIO_SKIP_TRANSITION_TYPE]: 'none'` into its maps). React lets a `none` match win over every
+  other type of the transition, but an `enter`/`exit`/`update`/`share` class takes over from
+  `default`, so skipping only `default` leaves the others animating.
+- A layout resize the studio runs as a transition adds `STUDIO_RESIZE_TRANSITION_TYPE` next to its
+  own type, and a scheme change adds `STUDIO_SCHEME_TRANSITION_TYPE`, so plugin boundaries can opt in.
+- Test with `stubViewTransitions()` (`test/testUtils/stubViewTransitions.ts`), which records the
+  elements React names for each transition in jsdom.
+
 ### Listeners: pause in hidden tabs
 
 Browsers cap the connections a site can hold open, and every Studio tab shares the cap. With
