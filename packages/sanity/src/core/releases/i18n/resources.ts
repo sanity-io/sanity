@@ -197,6 +197,16 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip for the validation status when a document has no errors (the "ready" state) */
   'document-validation.valid': 'No validation errors',
 
+  /** Preview title for a scheduled draft whose document could not be loaded */
+  'document-preview.error': 'The document could not be loaded',
+  /** Tooltip for the info icon on a published or archived scheduled draft whose document history has been removed by the history retention policy */
+  'document-preview.history-unavailable':
+    'The history of this document is not available anymore due to retention policy, the published document is not affected',
+  /** Preview title for a scheduled draft that has no document */
+  'document-preview.no-document': 'No document in this release',
+  /** Preview title for a published or archived scheduled draft whose document history has been removed and that has no published document to show instead */
+  'document-preview.no-published-document': 'No published document',
+
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
 

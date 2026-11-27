@@ -79,6 +79,17 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'lastActivity',
   direction: 'desc',
 }
+const DEFAULT_ARCHIVED_SCHEDULED_DRAFTS_OVERVIEW_SORT: TableSort = {
+  column: 'publishAt',
+  direction: 'desc',
+}
+
+function getDefaultTableSort(cardinalityView: CardinalityView, releaseGroupMode: Mode): TableSort {
+  if (releaseGroupMode !== 'archived') return DEFAULT_RELEASES_OVERVIEW_SORT
+  return cardinalityView === 'drafts'
+    ? DEFAULT_ARCHIVED_SCHEDULED_DRAFTS_OVERVIEW_SORT
+    : DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
+}
 
 function toLocalDateComponents(utcDate: Date, utcToZoneDate: (date: Date) => Date): Date {
   const tz = utcToZoneDate(utcDate)
@@ -487,11 +498,6 @@ export function ReleasesOverview() {
   const hasBannerAboveTable =
     showReleaseNotFound || showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner
 
-  const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
-  const defaultTableSort = isArchivedReleasesView
-    ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
-    : DEFAULT_RELEASES_OVERVIEW_SORT
-
   const releasesEmptyStateComponent = useCallback(
     () => <ReleasesEmptyState createReleaseButton={createReleaseButton} />,
     [createReleaseButton],
@@ -602,9 +608,10 @@ export function ReleasesOverview() {
               overflow="auto"
             >
               <Table<TableRelease>
-                // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={defaultTableSort}
+                // Resets the table's search and sort, which it only takes from `defaultSort` when it
+                // mounts, when the date filter is set or cleared, or the view or group changes
+                key={`${releaseFilterDate ? 'by_date' : 'all'}-${cardinalityView}-${releaseGroupMode}`}
+                defaultSort={getDefaultTableSort(cardinalityView, releaseGroupMode)}
                 loading={loadingTableData}
                 data={filteredReleases}
                 columnDefs={tableColumns}
