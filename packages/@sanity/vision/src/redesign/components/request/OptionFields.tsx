@@ -12,7 +12,7 @@ import {
   useScheduledDraftsEnabled,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Icon, VisuallyHidden} from 'ui5'
+import {Text, Box, Flex, Icon, VisuallyHidden} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../../apiVersions'
@@ -24,7 +24,9 @@ import {validateApiVersion} from '../../../util/validateApiVersion'
 import {type VisionPerspective, type VisionVariantMode} from '../../store/types'
 import {type ApiVersionOption, getApiVersionOptions} from '../../util/apiVersionOptions'
 import {cx} from '../../util/cx'
+import {API_CDN_DOCS_URL, PERSPECTIVES_DOCS_URL} from '../../util/docsUrls'
 import {getEffectivePerspective} from '../../util/tabPerspective'
+import {HelpPopover} from '../HelpPopover'
 import * as styles from '../redesign.module.css'
 import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
@@ -495,7 +497,19 @@ export function PerspectiveSelect({id, value, apiVersion, onChange}: Perspective
 
   return (
     <Stack gap={2}>
-      <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
+      <Flex alignItems="center" gap={1}>
+        <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
+        {/* The help button fills its container, so unwrapped it would take half the row */}
+        <Flex flexShrink={0}>
+          <HelpPopover
+            content={t('settings.perspectives.description')}
+            docsUrl={PERSPECTIVES_DOCS_URL}
+            label={t('vision.options.perspective.help')}
+            testId={`${id}-help`}
+            title={t('settings.perspectives.title')}
+          />
+        </Flex>
+      </Flex>
       <OptionMenuButton
         id={elementId}
         onOpen={() => setQuery('')}
@@ -528,7 +542,7 @@ interface UseCdnFieldProps {
   onChange: (useCdn: boolean) => void
   /** How the CDN answers the query */
   notes?: string[]
-  /** The short line under the switch; the Options pane leaves it to the info tooltip */
+  /** The short line under the switch; the Options pane leaves it to the help popover */
   showSummary?: boolean
 }
 
@@ -546,6 +560,7 @@ export function UseCdnField({
       checked={checked}
       description={showSummary ? t('vision.options.use-cdn.summary') : undefined}
       info={[t('vision.options.use-cdn.description'), ...notes]}
+      infoDocsUrl={API_CDN_DOCS_URL}
       onChange={onChange}
       testId={testId}
       title={t('vision.options.use-cdn')}
