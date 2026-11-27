@@ -374,7 +374,6 @@ exports[`exports snapshot 1`] = `
     "asLoadable": "function",
     "buildCommentRangeDecorations": "function",
     "buildCommentRangeDecorationsLegacy": "function",
-    "buildLegacyTheme": "function",
     "buildRangeDecorationSelectionsFromComments": "function",
     "buildRangeDecorationSelectionsFromCommentsLegacy": "function",
     "buildTextSelectionFromFragment": "function",
