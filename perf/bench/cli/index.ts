@@ -13,6 +13,7 @@ import {message} from '@optique/core/message'
 import {run} from '@optique/run'
 
 import {resolveFromInvocation} from './benchRoot'
+import {bundleStepsCommand} from './commands/bundleSteps'
 import {certPathCommand, writeCertificateFile} from './commands/certPath'
 import {devCommand} from './commands/dev'
 import {exportCostsCommand} from './commands/exportCosts'
@@ -27,6 +28,7 @@ import {storeCommand} from './commands/store'
 const result = run(
   or(
     runCommand,
+    bundleStepsCommand,
     reportCommand,
     storeCommand,
     devCommand,
@@ -56,6 +58,9 @@ const result = run(
 switch (result.action) {
   case 'run':
     await (await import('./commands/runImpl')).runBench(result)
+    break
+  case 'bundle-steps':
+    await (await import('./commands/bundleStepsImpl')).runBundleSteps(result)
     break
   case 'report':
     ;(await import('../report/writeReport')).writeMergedReport(

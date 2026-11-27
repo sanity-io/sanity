@@ -43,6 +43,43 @@ export interface ReleaseDescriptionInfo {
 }
 
 /**
+ * Where a link to a release's detail page was followed from.
+ *
+ * @internal
+ */
+export type ReleaseDetailLinkLocation =
+  /** The detail link next to a release in the navbar releases menu */
+  | 'navbar_menu'
+  /** The title of the selected release in the navbar */
+  | 'navbar_label'
+  | 'releases_overview'
+  /** The release chip of a document on a variant definition's detail page */
+  | 'variant_detail'
+  /** "View release" in the context menu of a version in the document group inventory */
+  | 'document_inspector'
+  /** "View release" in the context menu of a version chip in the document header */
+  | 'document_header'
+  /** The release of a published event in the document history */
+  | 'document_history'
+  | 'duplicate_release_toast'
+  | 'revert_release_toast'
+
+interface ReleaseDetailLinkClickedInfo {
+  location: ReleaseDetailLinkLocation
+}
+
+/**
+ * When the user follows a link to the detail page of a release
+ *
+ * @internal
+ */
+export const ReleaseDetailLinkClicked = defineEvent<ReleaseDetailLinkClickedInfo>({
+  name: 'Release Detail Link Clicked',
+  version: 1,
+  description: 'User followed a link to the detail page of a release',
+})
+
+/**
  * When a document (version) is successfully added to a release
  */
 export const AddedVersion = defineEvent<VersionInfo>({

@@ -99,11 +99,28 @@ Analytics team so downstream dbt models and Looker dashboards stay in sync.
 
 The UI surface an interaction happened on.
 
-| Value                  | Description                                           |
-| ---------------------- | ----------------------------------------------------- |
-| `document_pane`        | The main document editor pane                         |
-| `array_list`           | An array-of-objects list field                        |
-| `nested_object_dialog` | A nested object edit dialog or popover (tree editing) |
+| Value                           | Description                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------- |
+| `document_pane`                 | The main document editor pane                                                          |
+| `array_list`                    | An array-of-objects list field                                                         |
+| `nested_object_dialog`          | A nested object edit dialog or popover (tree editing)                                  |
+| `variants_overview`             | The Variants tool's list of variant definitions                                        |
+| `variant_detail`                | A variant definition's detail page in the Variants tool                                |
+| `navbar_menu`                   | A perspective menu in the studio navbar                                                |
+| `document_group_inventory`      | The document group inventory beside the document pane                                  |
+| `version_context_menu`          | The context menu of a version, on a version chip or an inventory row                   |
+| `not_in_variant_banner`         | The document pane banner shown when a variant has no version yet                       |
+| `schedule_draft_action`         | The schedule draft document action                                                     |
+| `document_inspector`            | The document group inventory in the document inspector (Manage versions)               |
+| `compare_versions_menu`         | The version picker of the compare versions view                                        |
+| `navbar_label`                  | The current perspective's label in the studio navbar                                   |
+| `releases_overview`             | The Releases tool's list of releases                                                   |
+| `document_header`               | A version chip in the document header                                                  |
+| `document_history`              | The document's history timeline                                                        |
+| `duplicate_release_toast`       | The toast shown after a release is duplicated                                          |
+| `revert_release_toast`          | The toast shown after a release is reverted                                            |
+| `variant_dialog`                | The dialog that creates or edits a variant definition                                  |
+| `delete_scheduled_draft_dialog` | The dialog that deletes a scheduled draft, optionally keeping its content as the draft |
 
 ### `position`
 
@@ -301,11 +318,11 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Document Actions
 
-| Event                                                 | When                                                |
-| ----------------------------------------------------- | --------------------------------------------------- |
-| `Document Published`                                  | Publish action completes                            |
-| `Publish Button Clicked`                              | Publish operation stages (started/completed/failed) |
-| `Publish Button Becomes Disabled - Started/Completed` | Publish button state transitions                    |
+| Event                                                 | When                                                         |
+| ----------------------------------------------------- | ------------------------------------------------------------ |
+| `Document Published`                                  | Publish button clicked (`isVariant` marks variant documents) |
+| `Publish Button Clicked`                              | Publish operation stages (started/completed/failed)          |
+| `Publish Button Becomes Disabled - Started/Completed` | Publish button state transitions                             |
 
 ### Document History and Changes
 
@@ -338,6 +355,9 @@ These events cover the history / review changes side pane. `Document History Ins
 | `Release Link/ID/Title Copied`      | Clipboard actions                                                                                                          |
 | `Navigated to Releases Overview`    | Navigation                                                                                                                 |
 | `Navigated to Scheduled Drafts`     | Navigation                                                                                                                 |
+| `Release Detail Link Clicked`       | A link to a release's detail page is followed. Payload `{ location }`                                                      |
+
+`Release Detail Link Clicked` carries where the link was: `navbar_menu` (the detail link beside a release in the navbar's releases menu), `navbar_label` (the current perspective's label), `releases_overview` (a release's title in the overview), `variant_detail` (a release chip in a variant definition's documents table), `document_inspector` or `document_header` (View release in the context menu of a version, in the inventory or on a version chip), `document_history` (a release published event in the history timeline), `duplicate_release_toast` or `revert_release_toast`. Only link clicks count; arriving on the page through a deep link or a reload logs nothing.
 
 ### Scheduled Drafts
 
@@ -348,6 +368,36 @@ Scheduled drafts (cardinality-one releases) emit their own events so their usage
 | `Scheduled Draft Created`     | A draft is scheduled for publishing         | none              |
 | `Scheduled Draft Rescheduled` | A scheduled draft's publish time is changed | `{ fromPaused }`  |
 | `Scheduled Draft Cancelled`   | A scheduled draft is cancelled              | `{ keptAsDraft }` |
+
+### Content Variants
+
+Whether a workspace enables variants is the `variantsEnabled` field of `Workspace Features Observed`. The events below are logged after their action succeeds, so they count what was done in the Studio rather than what other API clients did. Definitions live in `core/variants/__telemetry__/variants.telemetry.ts` and `core/documentGroupInventory/__telemetry__/documentGroupInventory.telemetry.ts`; links to a release's detail page are `Release Detail Link Clicked` (see [Releases](#releases)). Publishing a variant document is `Document Published` with `isVariant: true`.
+
+| Event                                       | When                                                                                     | Payload                                                                                                                                         |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Variant Definition Created`                | A definition is created from the create dialog                                           | `{ location: 'variants_overview' \| 'navbar_menu', conditionCount }`                                                                            |
+| `Variant Definition Edited`                 | A definition is saved from the edit dialog                                               | `{ location: 'variants_overview' \| 'variant_detail', titleChanged, descriptionChanged, conditionsChanged, priorityChanged }`                   |
+| `Variant Definition Deleted`                | A definition is deleted                                                                  | `{ location: 'variants_overview' \| 'variant_detail' }`                                                                                         |
+| `Variants Tool Filtered`                    | A filter in the Variants tool changes                                                    | `{ location: 'variants_overview' \| 'variant_detail', activeFilterCount }`                                                                      |
+| `Variant Definition Opened`                 | A definition's detail page opens                                                         | none                                                                                                                                            |
+| `Variant Definition Document Opened`        | A document is opened from a definition's documents table                                 | `{ bundle: 'published' \| 'drafts' \| 'release' }`                                                                                              |
+| `Variant Version Created`                   | A version of a document is created in a variant                                          | `{ location, bundle: 'published' \| 'drafts' \| 'release', fromExistingVersion }`                                                               |
+| `Document Group Inventory Version Selected` | A version's row is picked in the document group inventory                                | `{ location: 'document_inspector' \| 'compare_versions_menu', bundle: 'published' \| 'drafts' \| 'release' \| 'agent', isVariant }`             |
+| `Document Group Inventory Version Created`  | A version is created from the inventory                                                  | `{ action: 'create_variant' \| 'add_to_release' \| 'copy_to_drafts', isVariant }`                                                               |
+| `Variant Detail Link Clicked`               | A link to a definition's detail page is followed                                         | `{ location: 'navbar_menu' \| 'variants_overview' \| 'variant_dialog' }`                                                                        |
+| `Variant Conditions Loaded`                 | The conditions of a variant type are loaded from `beta.variants.types.<type>.conditions` | `{ source: 'static' \| 'function', async, outcome: 'ready' \| 'error' \| 'timeout', durationMs, conditionCount, valueCount, usedSanityClient }` |
+
+`Variant Version Created` carries one of `document_group_inventory`, `version_context_menu`, `not_in_variant_banner`, `schedule_draft_action` and `delete_scheduled_draft_dialog` as its `location`, or `document_pane` for any other control in the document pane, such as a custom form component. It is logged by `useVariantDocumentOperations`, which the Studio's create paths go through, by `useCopyToDrafts` when a version context menu copies a variant version to drafts, and by `useScheduleDraftOperations` when deleting a scheduled variant draft keeps its content as the variant draft (`delete_scheduled_draft_dialog`, `bundle: 'drafts'`). A variant version created from the inventory logs both it and `Document Group Inventory Version Created`. Typing into the drafts version of a published variant also creates a variant version, through the document store rather than the create action, and logs neither. Copying a variant version to drafts logs it with `location: 'version_context_menu'` and `bundle: 'drafts'`, also when the copy replaces an existing variant draft; from the inventory it also logs `Document Group Inventory Version Created` with `copy_to_drafts`.
+
+`Variant Conditions Loaded` fires once per workspace and variant type when a variant surface first needs the conditions, and again on every retry of a callback that failed. A fixed list reports `source: 'static'`. A callback reports whether it returned a promise, how long it took and whether it called the `getClient` it is given. The hosts a callback requests are not reported, since they can identify a customer's own infrastructure.
+
+`Variants Tool Filtered` reports the condition filters of the overview, and the bundle filter of a definition's documents table on the detail page, where `activeFilterCount` is `0` or `1`. Free-text search is not reported.
+
+`Variant Detail Link Clicked` reports the detail link beside a variant in the navbar's variants menu (`navbar_menu`), a definition's title in the overview (`variants_overview`) and the link to an existing definition with the same title or conditions in the create and edit dialogs (`variant_dialog`). `Variant Definition Opened` counts every arrival on the detail page, links or not.
+
+`Variant Definition Opened` fires when the detail page has resolved its definition, whatever led there, including deep links and reloads; a page for a definition that does not exist logs nothing. When `beta.reactActivityMode` keeps the tool mounted, revealing it again fires the event again.
+
+`Document Published` fires when Publish is clicked, like for any document, so it counts publishes started rather than publishes that landed. For variants, `Publish Button Clicked` can stay at `started` even when the publish landed: publishing removes the variant draft, and the document pane can swap out the publish action while it resolves the new target. Variant versions in a content release are published with the release and never reach either event.
 
 ### Comments
 

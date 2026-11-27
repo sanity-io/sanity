@@ -107,6 +107,7 @@ describe('useScheduleDraftOperations', () => {
       documentGroupId: 'documentId',
       variant: {_id: '_.variants.loyal'},
       selectedPerspective: getReleaseIdFromReleaseDocumentId(mockReleaseId),
+      location: 'schedule_draft_action',
     })
     expect(useReleaseOperationsMockReturn.createVersion).not.toHaveBeenCalled()
     expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(
@@ -255,6 +256,10 @@ describe('useScheduleDraftOperations', () => {
       scheduledRelease._id,
       undefined,
     )
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Version Created'}),
+      {location: 'delete_scheduled_draft_dialog', bundle: 'drafts', fromExistingVersion: true},
+    )
   })
 
   it('creates the variant draft from a variant scheduled draft when the variant has no draft', async () => {
@@ -288,6 +293,49 @@ describe('useScheduleDraftOperations', () => {
         },
       ],
       {tag: 'scheduled-draft.copy-to-draft'},
+    )
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Version Created'}),
+      {location: 'delete_scheduled_draft_dialog', bundle: 'drafts', fromExistingVersion: true},
+    )
+  })
+
+  it('does not report a variant version when copying the variant scheduled draft fails', async () => {
+    const action = vi.fn().mockRejectedValue(new Error('Variant create failed'))
+    const client = Object.assign(createMockSanityClient(), {action})
+    const wrapper = await createTestProvider({client: client as unknown as SanityClient})
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+
+    await expect(
+      result.current.deleteScheduledDraft(scheduledRelease._id, true, 'article-1', undefined, {
+        variantId: '_.variants.loyal',
+        versionId: 'versions.scope-scheduled.article-1',
+        hasDraft: false,
+      }),
+    ).rejects.toThrow('Variant create failed')
+
+    expect(mockLog).not.toHaveBeenCalled()
+    expect(useReleaseOperationsMockReturn.deleteRelease).not.toHaveBeenCalled()
+  })
+
+  it('does not report a variant version when the scheduled draft is copied to the base draft', async () => {
+    const scheduledVersionId = `versions.${getReleaseIdFromReleaseDocumentId(scheduledRelease._id)}.article-1`
+    const getDocument = vi
+      .fn()
+      .mockResolvedValue({_id: scheduledVersionId, _type: 'article', _rev: 'r1'})
+    const createOrReplace = vi.fn().mockResolvedValue({})
+    const client = Object.assign(createMockSanityClient(), {getDocument, createOrReplace})
+    const wrapper = await createTestProvider({client: client as unknown as SanityClient})
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+
+    await act(async () => {
+      await result.current.deleteScheduledDraft(scheduledRelease._id, true, 'article-1')
+    })
+
+    expect(createOrReplace).toHaveBeenCalledWith({_id: 'drafts.article-1', _type: 'article'})
+    expect(mockLog).not.toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Version Created'}),
+      expect.anything(),
     )
   })
 

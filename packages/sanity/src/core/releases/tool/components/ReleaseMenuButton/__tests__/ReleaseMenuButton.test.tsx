@@ -1,6 +1,7 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {findByDataUi} from '../../../../../../../test/setup/customQueries'
@@ -30,12 +31,21 @@ import {
   useReleasesPermissionsMockReturnTrue,
 } from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
 import {
   mockUseBundleDocuments,
   useBundleDocumentsMockReturn,
   useBundleDocumentsMockReturnWithResults,
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
+
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
 
 vi.mock('../../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
@@ -547,6 +557,26 @@ describe('ReleaseMenuButton', () => {
         await userEvent.click(screen.getByTestId('confirm-button'))
 
         expect(duplicateReleaseMock).toHaveBeenCalled()
+      })
+
+      test('reports following the link to the duplicated release from the success toast', async () => {
+        await renderTest({release: activeASAPRelease, documentsCount: 1, documents: []})
+
+        await userEvent.click(await screen.findByTestId('release-menu-button'))
+        const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+        await waitFor(() => expect(duplicateMenuItem).not.toBeDisabled())
+        await userEvent.click(duplicateMenuItem)
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        await userEvent.click(await screen.findByTestId('duplicate-release-success-link'))
+
+        expect(telemetryMock.log).toHaveBeenCalledWith(
+          expect.objectContaining({name: 'Release Detail Link Clicked'}),
+          {location: 'duplicate_release_toast'},
+        )
+        expect(vi.mocked(useRouter)().navigate).toHaveBeenCalledWith({
+          releaseId: getReleaseIdFromReleaseDocumentId(duplicateReleaseMock.mock.calls[0]![0]),
+        })
       })
 
       test.each([

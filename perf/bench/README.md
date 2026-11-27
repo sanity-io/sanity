@@ -157,6 +157,11 @@ pnpm bench run --scenario singleString --reference-dist perf/bench/.reference/di
 # load vitals + bundle size
 pnpm bench run --mode pageload --scenario singleString
 
+# JS per step of a first visit: login screen, back from login, reload with valid auth
+pnpm bench bundle-steps --json-out /tmp/before.json
+# ...change and rebuild (`pnpm build:bench`), then a before/after table
+pnpm bench bundle-steps --compare /tmp/before.json
+
 # soak check (degradation + leak slope over a long session)
 pnpm bench run --mode soak --scenario singleString --minutes 5
 # long-session soak on the big document: PTE typing, menus, document switches, live presence
@@ -188,6 +193,8 @@ remain as aliases for the corresponding CLI commands. CI-only commands
 (`bench prepare-reference`, `bench cert-path`) are documented via `--help`.
 
 Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--seed 42` (reproducible bootstrap), `--sessions N`, `--budget <seconds>`, `--json-out <path>`, `--fail-on-verdict` (used by the self-test), `--no-network-emulation` (pageLoad).
+
+`bench bundle-steps` (`runner/bundleSteps.ts`) answers "how much JS does each step load" with exact numbers rather than samples. It loads the studio three times against the mock, unthrottled, and lists the same-origin `/static/*.js` chunks the page requested (resource timing) until no new chunk has started for 3 s: (1) a cold load while logged out, until the login provider link shows; (2a) a click on that link, which comes back with `#sid=` in the same browser, so the HTTP cache holds step 1's chunks, until the structure tool lists its items; (2b) a cold load with a stored token, until the same point. Sizes are read from the dist: raw bytes, gzip (level 6) and brotli (level 11), summed per step, plus the chunks step 2a adds on top of step 1 (`new downloads`). `until milestone` counts only the chunks requested by the time the selector showed, the critical path; the gap to `until quiet` is what loads lazily afterwards. The chunk sets depend on the build only, so two runs of the same dist print the same table. Measure a `sanity build` with the default `autoUpdates: false` (what `pnpm build:bench` produces); an auto-updating studio loads the CDN bundle instead, which is not tree-shaken.
 
 ### Export costs on the auto-updating boot path
 

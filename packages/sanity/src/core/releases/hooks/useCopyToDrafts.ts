@@ -1,4 +1,5 @@
 import {type Action} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 
@@ -8,6 +9,10 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {getTargetDocument} from '../../util/getTargetDocument'
+import {
+  VariantVersionCreated,
+  type VariantVersionCreatedLocation,
+} from '../../variants/__telemetry__/variants.telemetry'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
 import {getVariantId} from '../../variants/tool/util'
 import {type VersionInfoDocumentStub} from '../store/types'
@@ -20,6 +25,8 @@ export interface CopyToDraftsOptions {
 export interface UseCopyToDraftsOptions {
   documentGroupId: string
   documentVersionInfoStub: VersionInfoDocumentStub | undefined
+  /** The control the copy is made from, reported when it creates a variant version */
+  location: VariantVersionCreatedLocation
   onNavigate: () => void
   onConfirmationRequest: () => void
 }
@@ -29,10 +36,12 @@ export interface UseCopyToDraftsReturn {
 }
 
 export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraftsReturn {
-  const {onNavigate, onConfirmationRequest, documentVersionInfoStub, documentGroupId} = options
+  const {onNavigate, onConfirmationRequest, documentVersionInfoStub, documentGroupId, location} =
+    options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const variantsClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
+  const telemetry = useTelemetry()
   const {t} = useTranslation()
 
   const {versions} = useDocumentVersions({documentId: documentGroupId})
@@ -110,6 +119,13 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
         await actionClient.action(actions, {
           tag: 'document.copy-to-drafts',
         })
+        if (variantRef) {
+          telemetry.log(VariantVersionCreated, {
+            location,
+            bundle: 'drafts',
+            fromExistingVersion: true,
+          })
+        }
 
         onNavigate()
       }
@@ -130,6 +146,8 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
       documentVersionInfoStub,
       hasDraftVersion,
       documentGroupId,
+      location,
+      telemetry,
       toast,
       onNavigate,
       t,

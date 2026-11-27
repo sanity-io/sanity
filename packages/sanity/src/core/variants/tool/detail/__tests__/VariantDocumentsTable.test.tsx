@@ -8,6 +8,14 @@ import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentInVariantGroup} from '../types'
 import {VariantDocumentsTable} from '../VariantDocumentsTable'
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   SanityDefaultPreview: vi.fn(({isPlaceholder, title, subtitle}) => (
     <div data-testid={isPlaceholder ? 'preview-placeholder' : 'preview'}>
@@ -257,6 +265,32 @@ describe('VariantDocumentsTable', () => {
     await waitFor(() => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
+  })
+
+  it('reports release lane changes, but not a click on the lane that is already active', async () => {
+    telemetryMock.log.mockClear()
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+    await user.click(screen.getByTestId('variant-release-lane-segment-all'))
+    await user.click(screen.getByTestId('variant-release-lane-segment-all'))
+
+    expect(telemetryMock.log.mock.calls).toEqual([
+      [
+        expect.objectContaining({name: 'Variants Tool Filtered'}),
+        {location: 'variant_detail', activeFilterCount: 1},
+      ],
+      [
+        expect.objectContaining({name: 'Variants Tool Filtered'}),
+        {location: 'variant_detail', activeFilterCount: 0},
+      ],
+    ])
   })
 
   it('hides the release lane when all documents share a single bundle', async () => {

@@ -34,6 +34,7 @@ export function CreateDraft() {
           documentGroupId: documentId,
           selectedPerspective: 'drafts',
           variant: {_id: selectedVariant._id},
+          location: 'document_pane',
         })
       } else {
         await client.createIfNotExists({

@@ -170,5 +170,6 @@ export function filterReleasesForOverview<T extends ReleaseDocument>(
     return dateFiltered.filter((release) => isPausedCardinalityOneRelease(release))
   }
 
-  return dateFiltered
+  // A scheduled draft that was published or archived without a document has nothing to show
+  return dateFiltered.filter((release) => Boolean(release.finalDocumentStates?.length))
 }

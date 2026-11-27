@@ -49,7 +49,7 @@ const getReleaseDocumentsObservable = ({
     }),
     switchMap((release) => {
       // Published and archived releases are terminal and fetched from history;
-      // the observable caches itself by `<releaseId>-archived`.
+      // the observable caches itself by release id and revision.
       if (release.state === 'published' || release.state === 'archived') {
         return getPublishedArchivedReleaseDocumentsObservable({getClient, release})
       }

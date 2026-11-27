@@ -2,6 +2,7 @@ import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useClient} from '../../../../hooks/useClient'
+import {runWithHistoryRequestSlot} from '../../../../store/history/historyRequestLimiter'
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
 import {getVersionId, isVersionId} from '../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
@@ -14,23 +15,6 @@ export type DocumentHistory = {
   createdBy: string
   lastEditedBy: string
   editors: string[]
-}
-
-// Add as a concurrency limiter to avoid 429s when many rows mount at once
-// This happens in incredibly large releases with many documents
-// 10 was the highest number I was able to run before getting consistent 429s
-let activeHistoryStreams = 0
-const pendingHistoryResolvers: Array<() => void> = []
-async function acquireHistorySlot(maxConcurrent = 10): Promise<void> {
-  if (activeHistoryStreams >= maxConcurrent) {
-    await new Promise<void>((resolve) => pendingHistoryResolvers.push(resolve))
-  }
-  activeHistoryStreams += 1
-}
-function releaseHistorySlot(): void {
-  activeHistoryStreams = Math.max(0, activeHistoryStreams - 1)
-  const next = pendingHistoryResolvers.shift()
-  if (next) next()
 }
 
 // Fetch history for a single document version within a release
@@ -92,17 +76,18 @@ export function useReleaseHistory(
       return
     }
 
-    await acquireHistorySlot()
-    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    // The run().catch() syntax instead of try/catch is because of the React Compiler not fully supporting the syntax yet
     const run = async () => {
-      const transactions = await getTransactionsLogs(client, versionId, {
-        tag: 'sanity.studio.releases.documents.history',
-        effectFormat: 'mendoza',
-        excludeContent: true,
-        includeIdentifiedDocumentsOnly: true,
-        limit: 1,
-        reverse: true,
-      })
+      const transactions = await runWithHistoryRequestSlot(() =>
+        getTransactionsLogs(client, versionId, {
+          tag: 'sanity.studio.releases.documents.history',
+          effectFormat: 'mendoza',
+          excludeContent: true,
+          includeIdentifiedDocumentsOnly: true,
+          limit: 1,
+          reverse: true,
+        }),
+      )
 
       if (!cancelledRef.current) {
         setHistory(transactions)
@@ -112,14 +97,10 @@ export function useReleaseHistory(
         }
       }
     }
-    await run()
-      .catch((error) => {
-        console.error('Failed to fetch or parse document history:', error)
-        if (!cancelledRef.current) setHistory([])
-      })
-      .finally(() => {
-        releaseHistorySlot()
-      })
+    await run().catch((error) => {
+      console.error('Failed to fetch or parse document history:', error)
+      if (!cancelledRef.current) setHistory([])
+    })
   }, [versionId, releaseDocumentId, documentRevision, client])
 
   useEffect(() => {

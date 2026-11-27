@@ -3,8 +3,9 @@ import {type TFunction} from 'i18next'
 import {Flex} from 'ui5'
 
 import {type SystemVariant} from '../../../variants/types'
+import {getPublishDateFromRelease} from '../../util/util'
 import {Headers} from '../components/Table/TableHeader'
-import {type Column} from '../components/Table/types'
+import {type Column, type SortDirection} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
 import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCell'
 import {ScheduledDraftVariantCell} from './columnCells/ScheduledDraftVariantCell'
@@ -63,6 +64,15 @@ export const scheduledDraftsOverviewColumnDefs: (
     {
       id: 'publishAt',
       sorting: true,
+      // An archived scheduled draft shows when it was published, which is not always its scheduled
+      // `publishAt`, and one archived before it ran has no `publishAt` at all
+      ...(releaseGroupMode === 'archived'
+        ? {
+            sortTransform: (release: TableRelease, direction: SortDirection) =>
+              getPublishDateFromRelease(release)?.getTime() ??
+              (direction === 'asc' ? Infinity : -Infinity),
+          }
+        : {}),
       width: 300,
       header: (props) => (
         <Flex {...props.headerProps} paddingY={3} paddingX={2}>
