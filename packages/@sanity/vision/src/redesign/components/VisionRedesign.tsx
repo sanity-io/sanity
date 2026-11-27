@@ -193,7 +193,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                           overflow="hidden"
                           ref={setTabsElement}
                         >
-                          <QueryTabBar />
+                          <QueryTabBar rootElement={rootElement} />
                           <QueryTabLayoutProvider>
                             {/*
                               Every tab stays mounted, so switching tabs hides one and shows another

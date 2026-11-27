@@ -19,6 +19,7 @@ import {Box, Flex} from 'ui5'
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
+import {useVisionTabShortcuts} from '../../hooks/useVisionTabShortcuts'
 import {type VisionTab} from '../../store/types'
 import {
   usePendingEdits,
@@ -27,8 +28,10 @@ import {
   useVisionSelector,
 } from '../../store/VisionActorContext'
 import {findSharedQuery} from '../../util/savedQueryTab'
+import {VISION_TAB_SHORTCUTS} from '../../util/shortcuts'
 import {deriveTabTitle} from '../../util/tabTitle'
 import * as styles from '../redesign.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 
 /** The element id of the active tab's content, referenced by every tab's `aria-controls` */
 export const QUERY_TAB_PANEL_ID = 'vision-query-tabpanel'
@@ -241,7 +244,12 @@ function TabHandle(props: TabHandleProps) {
   )
 }
 
-export function QueryTabBar() {
+export interface QueryTabBarProps {
+  /** The tool's root: the tab shortcuts work wherever the focus is inside it */
+  rootElement: HTMLElement | null
+}
+
+export function QueryTabBar({rootElement}: QueryTabBarProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
   const pendingEdits = usePendingEdits()
@@ -255,8 +263,8 @@ export function QueryTabBar() {
   const newTabSlotRef = useRef<HTMLDivElement | null>(null)
   const scrollThumbRef = useRef<HTMLDivElement | null>(null)
   const reducedMotion = useReducedMotion()
-  // Whether the last change to the strip came from the keyboard. Shift+Arrow and Delete repeat
-  // fast, and a slide on every press makes the strip feel slower than the keys
+  // Whether the last change to the strip came from the keyboard. Shift+Arrow, Delete and the tab
+  // shortcuts repeat fast, and a slide on every press makes the strip feel slower than the keys
   const [keyboardDriven, setKeyboardDriven] = useState(false)
   const layoutTransition =
     keyboardDriven || reducedMotion ? INSTANT_LAYOUT_TRANSITION : LAYOUT_TRANSITION
@@ -279,6 +287,81 @@ export function QueryTabBar() {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
   }, [])
 
+  // The buttons, the keys of a focused tab and the shortcuts all open, close and switch tabs
+  // through these, so closing from the keyboard does what the close button does
+  const addTab = useCallback(() => actorRef.send({type: 'tab.add'}), [actorRef])
+  // Restore tabs keeps a closed tab as its editors showed it: a params edit still in the debounce
+  // is committed first, since the tab is gone by the time its editor unmounts and commits it
+  const closeTab = useCallback(
+    (id: string) => {
+      pendingEdits.commit()
+      actorRef.send({type: 'tab.close', id})
+    },
+    [actorRef, pendingEdits],
+  )
+  const selectTab = useCallback(
+    (id: string) => {
+      if (id !== actorRef.getSnapshot().context.activeTabId) telemetry.tabUsed('select')
+      actorRef.send({type: 'tab.select', id})
+    },
+    [actorRef, telemetry],
+  )
+
+  // A shortcut hides or closes the tab that has the focus, and the next one must still land in
+  // the tool. The focus moves to the tab shown now: onto the tab itself when the shortcut was
+  // pressed in the strip, as the arrow keys do, and otherwise into its query editor. The tab gets
+  // it when the editor cannot take it, as in the phone layout while the result is shown.
+  const focusShownTab = useCallback(
+    (onTab: boolean) => {
+      // The tab shown next may be brand new, and a tab shown again recreates its editor: neither
+      // is there until React has rendered the change, which it does before the next frame
+      const id = actorRef.getSnapshot().context.activeTabId
+      requestAnimationFrame(() => {
+        const editor = onTab
+          ? null
+          : rootElement?.querySelector<HTMLElement>(
+              `[aria-labelledby="${getQueryTabId(id)}"] [data-testid="vision-query-editor"] .cm-content`,
+            )
+        editor?.focus({preventScroll: true})
+        if (!editor?.contains(document.activeElement)) focusTab(id)
+      })
+    },
+    [actorRef, focusTab, rootElement],
+  )
+
+  useVisionTabShortcuts({
+    rootElement,
+    onShortcut: (shortcut, event) => {
+      const inStrip =
+        event.target instanceof Node && Boolean(listRef.current?.contains(event.target))
+      telemetry.shortcutUsed(shortcut)
+      setKeyboardDriven(true)
+      switch (shortcut) {
+        case 'new-tab':
+          addTab()
+          break
+        case 'close-tab':
+          closeTab(activeTabId)
+          break
+        case 'next-tab':
+        case 'previous-tab': {
+          const index = tabs.findIndex((tab) => tab.id === activeTabId)
+          const step = shortcut === 'next-tab' ? 1 : -1
+          const next = tabs[(index + step + tabs.length) % tabs.length]
+          // A single tab has no other to switch to, so the focus stays where it is
+          if (next.id === activeTabId) return
+          selectTab(next.id)
+          break
+        }
+        default: {
+          const unhandled: never = shortcut
+          throw new Error(`Unhandled tab shortcut: ${unhandled}`)
+        }
+      }
+      focusShownTab(inStrip && shortcut !== 'new-tab')
+    },
+  })
+
   // Renaming swaps the tab button for an input. When Enter or Escape ends it, focus is still
   // in the strip and returns to the button once React has rendered it again, so Tab does not
   // leave the strip; a click elsewhere (blur) keeps the focus where the user put it.
@@ -289,16 +372,6 @@ export function QueryTabBar() {
       if (focusInStrip) requestAnimationFrame(() => focusTab(id))
     },
     [focusTab],
-  )
-
-  // Restore tabs keeps a closed tab as its editors showed it: a params edit still in the debounce
-  // is committed first, since the tab is gone by the time its editor unmounts and commits it
-  const closeTab = useCallback(
-    (id: string) => {
-      pendingEdits.commit()
-      actorRef.send({type: 'tab.close', id})
-    },
-    [actorRef, pendingEdits],
   )
 
   // Keep the active tab whole in the strip when it changes, a new tab included, clear of the new
@@ -352,10 +425,7 @@ export function QueryTabBar() {
         event.preventDefault()
         setKeyboardDriven(true)
         closeTab(activeTabId)
-        // The tab that takes over may be brand new (closing the last tab), so it only exists
-        // after React has rendered the new snapshot
-        const nextId = actorRef.getSnapshot().context.activeTabId
-        requestAnimationFrame(() => focusTab(nextId))
+        focusShownTab(true)
         return
       }
       const index = tabs.findIndex((tab) => tab.id === activeTabId)
@@ -378,11 +448,10 @@ export function QueryTabBar() {
       if (nextIndex === undefined) return
       event.preventDefault()
       const next = tabs[nextIndex]
-      actorRef.send({type: 'tab.select', id: next.id})
-      if (next.id !== activeTabId) telemetry.tabUsed('select')
+      selectTab(next.id)
       focusTab(next.id)
     },
-    [activeTabId, actorRef, closeTab, focusTab, reorder, tabs, telemetry],
+    [activeTabId, closeTab, focusShownTab, focusTab, reorder, selectTab, tabs, telemetry],
   )
 
   useOverlayScrollThumb({
@@ -428,10 +497,7 @@ export function QueryTabBar() {
                 actorRef.send({type: 'tab.rename', id: tab.id, title})
                 if (changed) telemetry.tabUsed('rename')
               }}
-              onSelect={() => {
-                if (tab.id !== activeTabId) telemetry.tabUsed('select')
-                actorRef.send({type: 'tab.select', id: tab.id})
-              }}
+              onSelect={() => selectTab(tab.id)}
               onStartRename={() => setEditingId(tab.id)}
               selected={tab.id === activeTabId}
               shared={findSharedQuery(tab, queries) !== undefined}
@@ -440,17 +506,23 @@ export function QueryTabBar() {
           ))}
         </Reorder.Group>
         <div className={styles.newTabSlot} ref={newTabSlotRef}>
-          <Button
-            aria-label={t('vision.tabs.new-tab')}
-            className={styles.newTabButton}
-            data-testid="vision-new-tab"
-            fontSize={1}
-            icon={AddIcon}
-            mode="bleed"
-            onClick={() => actorRef.send({type: 'tab.add'})}
-            padding={2}
-            radius={0}
-          />
+          <VisionTooltip
+            content={t('vision.tabs.new-tab')}
+            hotkeys={VISION_TAB_SHORTCUTS['new-tab'].keys}
+            placement="bottom"
+          >
+            <Button
+              aria-label={t('vision.tabs.new-tab')}
+              className={styles.newTabButton}
+              data-testid="vision-new-tab"
+              fontSize={1}
+              icon={AddIcon}
+              mode="bleed"
+              onClick={addTab}
+              padding={2}
+              radius={0}
+            />
+          </VisionTooltip>
         </div>
       </Flex>
       <div
