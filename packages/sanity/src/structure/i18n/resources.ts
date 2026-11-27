@@ -233,6 +233,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The kind of an anonymous bundle, before its chip in the not-in-release banner */
+  'banners.release.lead.bundle': 'bundle',
+  /**
+   * The word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it on one line
+   * with the name, so the sentences leave it out.
+   */
+  'banners.release.lead.release': 'release',
   /** The text for the banner that appears when a document is not part of any release
    * @deprecated – no longer in use
    * */
@@ -243,6 +250,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document is part of the <VersionBadge/> release',
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
+  /** The not-in-release banner with Variants on: the chip carries the kind ("release") before the name */
+  'banners.release.not-in-release-yet':
+    "This document isn't in the <VersionBadge>{{title}}</VersionBadge> yet.",
+  /** The not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's name */
+  'banners.release.not-in-release-asap':
+    "This document isn't in the ASAP <VersionBadge>{{title}}</VersionBadge> yet.",
+  /** The not-in-release banner for an undecided release */
+  'banners.release.not-in-release-undecided':
+    "This document isn't in the undecided <VersionBadge>{{title}}</VersionBadge> yet.",
   /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.description':
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',

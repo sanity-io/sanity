@@ -12,6 +12,7 @@ import {
   useOnlyHasVersions,
   useSetPerspective,
   useTranslation,
+  useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
 import {Text, Flex, type TextProps} from 'ui5'
@@ -78,6 +79,8 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
     [activeReleases, documentVersions],
   )
   const tone = currentVersion && getReleaseTone(currentVersion)
+  // With Variants off the action keeps the release's tone; with Variants on it is the neutral primary
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleGoToEdit = useCallback(async () => {
@@ -125,7 +128,7 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
         documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
-              tone: tone,
+              tone: variantsEnabled ? undefined : tone,
               onClick: handleGoToEdit,
               mode: 'default',
             }
