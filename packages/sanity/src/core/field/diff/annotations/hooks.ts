@@ -6,14 +6,14 @@ import {type UserColor} from '../../../user-color/types'
 import {type Annotation, type Diff} from '../../types'
 import {getAnnotationAtPath, getAnnotationColor} from './helpers'
 
-/** @public */
+/** @internal */
 export function useAnnotationColor(annotation?: Annotation | null): UserColor {
   const userColorManager = useUserColorManager()
 
   return getAnnotationColor(userColorManager, annotation)
 }
 
-/** @public */
+/** @internal */
 export function useDiffAnnotationColor(diff: Diff, path: string | Path = []): UserColor {
   const userColorManager = useUserColorManager()
   const annotation = useMemo(() => getAnnotationAtPath(diff, path), [diff, path])

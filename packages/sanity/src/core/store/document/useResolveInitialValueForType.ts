@@ -6,7 +6,7 @@ import {useInitialValueResolverContext} from './useInitialValue'
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useResolveInitialValueForType<Params extends Record<string, unknown>>(): (
   /**
    * This is the name of the document.

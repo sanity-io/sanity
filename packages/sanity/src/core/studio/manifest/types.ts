@@ -4,7 +4,7 @@ import {type Workspace} from '../../config/types'
  * Minimal workspace properties needed for studio manifest generation.
  * Both Workspace and WorkspaceSummary satisfy this type.
  * @hidden
- * @public
+ * @internal
  */
 export type ManifestWorkspaceInput = Pick<
   Workspace,
@@ -15,7 +15,7 @@ export type ManifestWorkspaceInput = Pick<
  * Workspace configuration for the Studio manifest.
  * Used when registering a Studio with the Content Operating System.
  * @hidden
- * @public
+ * @internal
  */
 export interface StudioWorkspaceManifest {
   name: string
@@ -33,7 +33,7 @@ export interface StudioWorkspaceManifest {
 /**
  * Studio configuration manifest that gets registered with the Content Operating System.
  * @hidden
- * @beta
+ * @internal
  */
 export interface StudioManifest {
   version?: string

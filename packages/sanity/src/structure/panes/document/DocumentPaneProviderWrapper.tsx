@@ -9,7 +9,7 @@ import {type DocumentPaneProviderProps} from './types'
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
   const {setParams, params} = usePaneRouter()

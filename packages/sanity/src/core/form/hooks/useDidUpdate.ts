@@ -14,7 +14,7 @@ import {shallowEquals} from '../../util/shallowEquals'
  * })
  * ```
  *
- * @beta
+ * @internal
  * @hidden
  */
 export function useDidUpdate<T>(

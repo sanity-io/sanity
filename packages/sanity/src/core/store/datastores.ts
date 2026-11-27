@@ -78,7 +78,7 @@ const slowCommitCooldown = {lastToastAt: 0}
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useUserStore(): UserStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, currentUser} = useSource()
@@ -105,7 +105,7 @@ export function useUserStore(): UserStore {
 /**
  * Returns the {@link GrantsStore} for checking the current user's document permissions.
  *
- * @public
+ * @internal
  */
 export function useGrantsStore(): GrantsStore {
   // `currentUser` is read from the source directly (instead of via `useCurrentUser` from
@@ -135,7 +135,7 @@ export function useGrantsStore(): GrantsStore {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useHistoryStore(): HistoryStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -186,7 +186,7 @@ export function useGlobalListenerStore(): GlobalListenerStore {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const globalListenerStore = useGlobalListenerStore()
@@ -211,7 +211,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useDocumentStore(): DocumentStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
@@ -435,7 +435,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
@@ -464,7 +464,7 @@ export function usePresenceStore(): PresenceStore {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useProjectStore(): ProjectStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()

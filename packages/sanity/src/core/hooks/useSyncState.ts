@@ -14,7 +14,7 @@ const NOT_SYNCING = {isSyncing: false}
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useSyncState(
   publishedDocId: string,
   documentType: string,

@@ -94,7 +94,7 @@ export type NullDiff = AgnosticNullDiff<Annotation>
 /** @internal */
 export type NumberDiff = AgnosticNumberDiff<Annotation>
 
-/** @public */
+/** @internal */
 export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectDiff<Annotation, T>
 
 /** @internal */
@@ -141,7 +141,7 @@ export interface ArrayItemMetadata {
 /**
  * Diff components
  *
- * @public
+ * @internal
  */
 export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
 
@@ -153,7 +153,7 @@ export type DiffComponentOptions<T extends Diff = Diff> = {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
   schemaType: T extends ObjectDiff

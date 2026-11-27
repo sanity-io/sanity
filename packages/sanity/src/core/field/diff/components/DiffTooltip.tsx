@@ -29,7 +29,7 @@ export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   description?: ReactNode
 }
 
-/** @public */
+/** @internal */
 export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotationsProps) {
   if (!('diff' in props)) {
     return <DiffTooltipWithAnnotation {...props} />

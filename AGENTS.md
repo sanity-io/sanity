@@ -674,8 +674,10 @@ Everything a studio or plugin can reach through `sanity`, `sanity/structure`, `s
 an entry whose name spells out its contract: anything on it can change or disappear in any
 release. `packages/@repo/test-dts-exports/test/internal-exports.test.ts` (part of
 `pnpm test:exports`) runs against the built `.d.ts` files and enforces both directions: a public
-entry that exports an `@internal` declaration fails, and so does an entry export that is not
-tagged `@internal`.
+entry that exports an `@internal` declaration fails, and so does any internals entry (the base
+entry, `…-1`, `…-2`, `…-router`, `…-structure`) that exports a declaration tagged `@public`,
+`@beta` or `@alpha`. The only exception is the runtime value of a type listed under `"typeOnly"`
+in the tombstone manifest.
 
 The public i18n runtime API (`defineLocale`, `defineLocaleResourceBundle`,
 `removeUndefinedLocaleResources`, `useTranslation`, `useCurrentLocale`, `Translate`, `InlineCode`)
@@ -707,7 +709,9 @@ Rules that follow from this:
   import, a test that stubs the name with `vi.mock('sanity', …)` has to mock the declaring
   module instead.
 - A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
-  declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
+  declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that,
+  on a public entry. A name that only an internals entry exports is `@internal`, whatever else it
+  carries (`@hidden`, `@deprecated`).
 - Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
   it off. Both are API changes: removing a named ESM export breaks consumers at module
   evaluation time, and auto-updating studios pick minors up without a rebuild, so check
@@ -792,9 +796,12 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
   `components` must reference lazy components for anything heavier than the hook itself.
 - A heavy component that stays exported from `sanity` is exported as a facade from
   `createLazyComponent` (`packages/sanity/src/core/components/lazy/createLazyComponent.tsx`): the
-  same name and props, and the implementation loaded on first render. `src/core/form/lazy.tsx` is
-  the existing group. Internal code keeps importing the implementation directly — including
-  `src/structure`, whose document form renders `FormBuilder` from its implementation module, so
+  same name and props, and the implementation loaded on first render. `src/core/form/publicLazy.tsx`
+  holds the form facades the root entry exports and nothing else, because every studio loads it
+  before the login screen; the facades only the internals entries export are in
+  `src/core/form/lazy.tsx`, which `first-load.test.mjs` keeps out of that graph. Internal code
+  keeps importing the implementation directly — including `src/structure`, whose document form
+  renders `FormBuilder` from its implementation module, so
   opening a document does not wait for a chunk that used to arrive with the entry. A facade group
   only pays off when every export reaching the same modules is covered; check with the closure,
   not with a single export, and measure the marginal bytes per facade — below a few kB a

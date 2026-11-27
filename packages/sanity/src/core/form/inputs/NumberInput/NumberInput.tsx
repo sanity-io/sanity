@@ -54,7 +54,7 @@ function preventWheel(event: WheelEvent) {
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function NumberInput(props: NumberInputProps) {
   const {schemaType, validationError, elementProps: _elementProps} = props

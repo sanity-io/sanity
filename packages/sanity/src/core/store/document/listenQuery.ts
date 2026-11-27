@@ -13,7 +13,7 @@ import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './type
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
 /**

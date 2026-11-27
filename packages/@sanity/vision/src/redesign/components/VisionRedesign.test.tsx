@@ -257,6 +257,7 @@ vi.mock('sanity', async () => {
     useNumberFormat: () => new Intl.NumberFormat('en'),
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
+    useSchema: () => undefined,
   }
 })
 vi.mock('sanity/i18n', () => ({
@@ -343,7 +344,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', a
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1', () => ({
   STUDIO_RESIZE_TRANSITION_TYPE: 'sanity-studio-resize',
   STUDIO_SKIP_TRANSITION_TYPE: 'sanity-studio-skip',
-  useSchema: () => undefined,
 }))
 
 vi.mock(

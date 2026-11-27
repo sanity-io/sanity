@@ -55,9 +55,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     </span>
   ),
 }))
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1', () => ({
-  useSchema: () => schema,
-}))
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2', () => ({
   DatePicker: () => null,
   getCalendarLabels: () => ({}),
@@ -84,6 +81,7 @@ const schema = Schema.compile({
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useClient: () => searchClient,
+  useSchema: () => schema,
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,

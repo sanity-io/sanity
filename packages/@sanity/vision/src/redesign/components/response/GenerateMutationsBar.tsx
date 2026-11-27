@@ -1,7 +1,6 @@
 import {Button, Card, Stack} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {type Schema} from 'sanity'
-import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
+import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 

@@ -20,7 +20,7 @@ export interface PaneLayoutProps {
 /**
  *
  * @hidden
- * @beta This API will change. DO NOT USE IN PRODUCTION.
+ * @internal This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneLayout(
   props: PaneLayoutProps &

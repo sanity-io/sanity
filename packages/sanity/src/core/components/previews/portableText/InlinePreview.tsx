@@ -7,7 +7,7 @@ import {MediaSpan, RootSpan, TextSpan} from './InlinePreview.styled'
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type InlinePreviewProps = Omit<PreviewProps<'inline'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -19,7 +19,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function InlinePreview(props: InlinePreviewProps) {
   const {
     title,

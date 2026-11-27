@@ -9,7 +9,7 @@ type PatchTransformer = (patches: FormPatch[]) => FormPatch[]
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export const TransformPatches = memo(function OnChangeProvider(
   props: {transform: PatchTransformer} & {children: ReactNode},
 ) {

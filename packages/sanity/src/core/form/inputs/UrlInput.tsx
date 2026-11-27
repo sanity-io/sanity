@@ -13,7 +13,7 @@ export type UrlInputProps = StringInputProps
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function UrlInput(props: UrlInputProps) {
   const {schemaType, validationError, elementProps} = props

@@ -16,7 +16,7 @@ import {type PerspectiveContextValue, type ReleaseId} from './types'
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export function PerspectiveProvider({
   children,

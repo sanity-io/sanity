@@ -36,7 +36,7 @@ export function usePreviewCard(): PreviewCardContextValue {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function PreviewCard(
   props: CardProps<ElementType> &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &

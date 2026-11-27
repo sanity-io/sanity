@@ -17,7 +17,7 @@ import {useInsertMenuPopover} from './InsertMenuPopover'
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function ArrayOfObjectsFunctions<
   Item extends ObjectItem,
   TSchemaType extends ArraySchemaType,

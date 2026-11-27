@@ -9,12 +9,10 @@ import type {
   STUDIO_SKIP_TRANSITION_TYPE,
   StudioDiagnosticsBridge,
   StudioDiagnosticsBridgeApi,
-  StudioLayout,
   StudioProvider,
   TextWithTone,
   TextWithToneProps,
   useDocumentPane,
-  useSchema,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -37,9 +35,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
   test('StudioDiagnosticsBridgeApi', () => {
     expectTypeOf<StudioDiagnosticsBridgeApi>().toBeObject()
   })
-  test('StudioLayout', () => {
-    expectTypeOf<typeof StudioLayout>().toBeFunction()
-  })
   test('StudioProvider', () => {
     expectTypeOf<typeof StudioProvider>().toBeFunction()
   })
@@ -51,8 +46,5 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
   })
   test('useDocumentPane', () => {
     expectTypeOf<typeof useDocumentPane>().toBeFunction()
-  })
-  test('useSchema', () => {
-    expectTypeOf<typeof useSchema>().toBeFunction()
   })
 })

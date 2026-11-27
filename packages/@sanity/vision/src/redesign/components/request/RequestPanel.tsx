@@ -12,8 +12,7 @@ import {
   useState,
 } from 'react'
 import {createPortal} from 'react-dom'
-import {type Schema} from 'sanity'
-import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
+import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 

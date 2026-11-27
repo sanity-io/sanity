@@ -77,7 +77,7 @@ const StyledCard = styled(Card)<StyledCardProps>`
 
 const EMPTY_PATH: Path = []
 
-/** @public */
+/** @internal */
 export function DiffCard(props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as' | 'height'>) {
   const {
     ref,

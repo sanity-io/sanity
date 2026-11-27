@@ -109,7 +109,7 @@ export interface ChangeIndicatorProps {
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {

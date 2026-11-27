@@ -12,6 +12,7 @@ export {ArrayOfPrimitivesInput} from './inputs/arrays/ArrayOfPrimitivesInput/Arr
 export {ArrayOfPrimitivesItem} from './members/array/items/ArrayOfPrimitivesItem'
 export {DateInput} from './inputs/DateInputs/DateInput'
 export {DateTimeInput} from './inputs/DateInputs/DateTimeInput'
+export {EditPortal} from './components/EditPortal'
 export {EnhancedObjectDialog} from './components/EnhancedObjectDialog'
 export {FormBuilder} from './studio/FormBuilder'
 export {FormField} from './components/formField/FormField'

@@ -5,7 +5,7 @@ import {type ActiveWorkspaceMatcherContextValue} from './ActiveWorkspaceMatcherC
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export function useActiveWorkspace(): ActiveWorkspaceMatcherContextValue {
   const value = use(ActiveWorkspaceMatcherContext)
   if (!value) throw new Error('Could not find `ActiveWorkspaceMatcher` context')

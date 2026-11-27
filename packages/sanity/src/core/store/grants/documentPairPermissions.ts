@@ -175,7 +175,7 @@ function getPairPermissions({
  * The document actions a permission check can cover: delete, discard a draft, discard a version,
  * publish, unpublish, update and duplicate.
  *
- * @public
+ * @internal
  */
 export type DocumentPermission =
   | 'delete'
@@ -397,7 +397,7 @@ export const useDocumentPairPermissionsFromHookFactory = createHookFromObservabl
  * Returns whether the current user holds a permission on a document, checked across its draft,
  * published and optional version documents.
  *
- * @public
+ * @internal
  */
 export function useDocumentPairPermissions({
   id,

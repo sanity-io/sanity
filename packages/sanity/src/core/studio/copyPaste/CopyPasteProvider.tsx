@@ -33,7 +33,7 @@ import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
 // validation) only runs once something is pasted
 const loadTransferValue = () => import('./transferValue.lazy')
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export const CopyPasteProvider: React.FC<{
@@ -371,7 +371,7 @@ export const CopyPasteProvider: React.FC<{
 }
 
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export const useCopyPaste = () => {

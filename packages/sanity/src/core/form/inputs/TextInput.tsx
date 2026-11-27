@@ -20,7 +20,7 @@ const StyledTextArea = styled(TextArea)`
 /**
  *
  * @hidden
- * @beta
+ * @internal
  */
 export function TextInput(props: TextInputProps) {
   const {schemaType, validationError, value, elementProps} = props

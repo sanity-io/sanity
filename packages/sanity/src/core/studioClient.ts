@@ -11,7 +11,7 @@ import {SANITY_VERSION} from './version'
  * means the user can easily upgrade to newer versions of GROQ when it arrives.
  *
  * @hidden
- * @beta
+ * @internal
  */
 export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
   apiVersion: '2025-02-19',
