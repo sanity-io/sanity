@@ -363,7 +363,6 @@ exports[`exports snapshot 1`] = `
     "VersionInlineBadge": "function",
     "VirtualizerScrollInstanceProvider": "function",
     "VisibleWorkspacesProvider": "function",
-    "WithRouter": "function",
     "WorkspaceLoader": "function",
     "WorkspaceProvider": "function",
     "WorkspacesProvider": "function",
@@ -834,7 +833,6 @@ exports[`exports snapshot 1`] = `
     "validateWorkspaces": "function",
     "validation": "function",
     "visitDiff": "function",
-    "withRouter": "function",
   },
   "./_dangerously_use_private_internals_that_do_not_follow_semver/1": {
     "Studio": "function",

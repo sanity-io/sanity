@@ -1093,9 +1093,6 @@ import type {
   VisibleWorkspacesContextValue,
   VisibleWorkspacesProvider,
   visitDiff,
-  withRouter,
-  WithRouter,
-  WithRouterProps,
   WorkspaceLike,
   WorkspaceLoader,
   WorkspaceProvider,
@@ -4386,15 +4383,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('visitDiff', () => {
     expectTypeOf<typeof visitDiff>().toBeFunction()
-  })
-  test('withRouter', () => {
-    expectTypeOf<typeof withRouter>().toBeFunction()
-  })
-  test('WithRouter', () => {
-    expectTypeOf<typeof WithRouter>().not.toBeNever()
-  })
-  test('WithRouterProps', () => {
-    expectTypeOf<WithRouterProps>().toBeObject()
   })
   test('WorkspaceLike', () => {
     expectTypeOf<WorkspaceLike>().toBeObject()
