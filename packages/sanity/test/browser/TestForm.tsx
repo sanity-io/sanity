@@ -16,15 +16,17 @@ import {
   type Workspace,
 } from 'sanity'
 import {
-  FormBuilder,
   EMPTY_ARRAY,
-  getExpandOperations,
   ScrollContainer,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  FormBuilder,
+  getExpandOperations,
   setAtPath,
   useFormState,
   useGlobalCopyPasteElementHandler,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 

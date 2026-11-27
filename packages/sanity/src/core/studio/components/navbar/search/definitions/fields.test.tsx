@@ -1,8 +1,14 @@
 import {Schema} from '@sanity/schema'
 import {describe, expect, it, vi} from 'vitest'
 
+import {loadComponentTitleRenderer} from '../utils/sanitizeField'
 import {filterDefinitions} from './defaultFilters'
-import {createFieldDefinitions, generateFieldId, MAX_OBJECT_TRAVERSAL_DEPTH} from './fields'
+import {
+  createFieldDefinitions,
+  generateFieldId,
+  MAX_OBJECT_TRAVERSAL_DEPTH,
+  schemaHasComponentTitles,
+} from './fields'
 
 describe('createFieldDefinitions', () => {
   it('should create a flattened list of all available fields', () => {
@@ -240,12 +246,47 @@ describe('createFieldDefinitions', () => {
       ],
     })
 
+    expect(schemaHasComponentTitles(mockSchema)).toBe(false)
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
     expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
   })
 
-  it('should return empty string when title contains a custom React component that cannot render', () => {
+  it('should render titles that contain a component once the renderer has loaded', async () => {
+    function Emphasis(props: {children: React.ReactNode}) {
+      return <em>{props.children}</em>
+    }
+
+    const mockSchema = Schema.compile({
+      name: 'default',
+      types: [
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              title: (
+                <span>
+                  A title with <Emphasis>emphasis</Emphasis>
+                </span>
+              ),
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(schemaHasComponentTitles(mockSchema)).toBe(true)
+    await loadComponentTitleRenderer()
+    const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
+    expect(fieldDefs[0].title).toEqual('A title with emphasis')
+  })
+
+  it('should return empty string when title contains a custom React component that cannot render', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await loadComponentTitleRenderer()
 
     function ThrowsOnRender(props: {children: React.ReactNode}) {
       throw new Error('should not render')

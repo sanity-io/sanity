@@ -6,8 +6,13 @@ import {type NavbarProps} from '../../config/studio/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../i18n'
+import {lazyTasksStudioSidebar} from './lazyTasksStudioSidebar'
 
 const EMPTY_ARRAY: [] = []
+
+function preloadTasksSidebar() {
+  void lazyTasksStudioSidebar()
+}
 
 function TasksStudioNavbarToolbar() {
   const {
@@ -26,6 +31,8 @@ function TasksStudioNavbarToolbar() {
       icon={CheckmarkCircleIcon}
       mode="bleed"
       onClick={isOpen ? handleCloseTasks : handleOpenTasks}
+      onFocus={preloadTasksSidebar}
+      onMouseEnter={preloadTasksSidebar}
       selected={isOpen}
       data-testid="tasks-toolbar"
     />

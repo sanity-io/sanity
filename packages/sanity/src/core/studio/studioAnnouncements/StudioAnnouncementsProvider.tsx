@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, type Observable} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
@@ -14,7 +14,6 @@ import {
   ProductAnnouncementModalDismissed,
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsCard} from './StudioAnnouncementsCard'
-import {StudioAnnouncementsDialog} from './StudioAnnouncementsDialog'
 import {
   type DialogMode,
   type StudioAnnouncementDocument,
@@ -22,6 +21,9 @@ import {
 } from './types'
 import {useSeenAnnouncements} from './useSeenAnnouncements'
 import {isValidAnnouncementAudience, isValidAnnouncementRole} from './utils'
+
+// The dialog (and the Portable Text and icons its content renders) loads when it is opened
+const StudioAnnouncementsDialog = lazy(() => import('./StudioAnnouncementsDialog.lazy'))
 
 interface StudioAnnouncementsProviderProps {
   children: React.ReactNode
@@ -139,11 +141,13 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
         />
       )}
       {dialogMode && (
-        <StudioAnnouncementsDialog
-          mode={dialogMode}
-          announcements={dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements}
-          onClose={handleDialogClose}
-        />
+        <Suspense fallback={null}>
+          <StudioAnnouncementsDialog
+            mode={dialogMode}
+            announcements={dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements}
+            onClose={handleDialogClose}
+          />
+        </Suspense>
       )}
     </StudioAnnouncementContext.Provider>
   )

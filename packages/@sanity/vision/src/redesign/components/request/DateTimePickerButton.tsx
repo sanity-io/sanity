@@ -7,7 +7,7 @@ import FocusLock from 'react-focus-lock'
 import {
   DatePicker,
   getCalendarLabels,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 import {useTranslation} from 'sanity/i18n'
 import {Flex, Text} from 'ui5'
 

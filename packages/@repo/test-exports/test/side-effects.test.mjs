@@ -2,7 +2,8 @@
 // bundlers drop the chunks a studio never uses. The build injects `import 'sanity/bundle.css'` into
 // some entry barrels, and a barrel that is missing from the list is bypassed by bundlers together
 // with that import, which ships a studio without its styles (see the comment in the package's
-// `tsdown.config.ts`). The list is maintained by hand, so this checks it against the built files.
+// `tsdown.config.ts`). The list is maintained by hand, and the build rewrites it from the files that
+// import a stylesheet, so this checks whichever is in place against the built files.
 import assert from 'node:assert/strict'
 import {existsSync, readdirSync, readFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
@@ -15,6 +16,8 @@ const manifest = JSON.parse(readFileSync(path.join(packageDir, 'package.json'), 
 const libDir = path.join(packageDir, 'lib')
 
 const CSS_IMPORT = /^import\s+["']sanity\/bundle\.css["'];?$/m
+// A chunk can import a dependency's own stylesheet (the Portable Text table plugin's, for one)
+const STYLESHEET_IMPORT = /^import\s+["'][^"']+\.css["'];?$/m
 
 // The subpaths of the internals entry (`…/structure`, …) are built into this directory of `lib`
 const BARREL_DIRS = ['', '_dangerously_use_private_internals_that_do_not_follow_semver']
@@ -43,11 +46,13 @@ void test('sanity lists every built barrel that imports sanity/bundle.css', () =
 })
 
 void test('sanity lists only side-effectful files that exist', () => {
-  const barrels = barrelsImportingStylesheet()
   for (const entry of manifest.sideEffects) {
     assert.ok(existsSync(path.join(packageDir, entry)), `${entry} does not exist`)
     if (entry.endsWith('.js')) {
-      assert.ok(barrels.includes(entry), `${entry} does not import sanity/bundle.css`)
+      assert.ok(
+        STYLESHEET_IMPORT.test(readFileSync(path.join(packageDir, entry), 'utf8')),
+        `${entry} imports no stylesheet`,
+      )
     }
   }
   assert.ok(manifest.sideEffects.includes('./lib/bundle.css'))

@@ -2,7 +2,7 @@
 
 import {useCallback} from 'react'
 import {defineField, defineType, type FormPatch, set} from 'sanity'
-import {TransformPatches} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {TransformPatches} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 
 export const myObject = defineType({
   type: 'object',

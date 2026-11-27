@@ -40,8 +40,6 @@ const {createSearch, useValuePreview, searchClient} = vi.hoisted(() => {
 
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   DEFAULT_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
-  DatePicker: () => null,
-  getCalendarLabels: () => ({}),
   createSearch: (types: {name: string}[], client: unknown, options: unknown) =>
     createSearch(types, client, options),
   useValuePreview: (props: {value: {_id: string}}) => useValuePreview(props),
@@ -59,6 +57,10 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
 }))
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1', () => ({
   useSchema: () => schema,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2', () => ({
+  DatePicker: () => null,
+  getCalendarLabels: () => ({}),
 }))
 
 const schema = Schema.compile({

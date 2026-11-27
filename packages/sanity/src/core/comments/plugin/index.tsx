@@ -11,10 +11,16 @@ import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {commentsInspector} from './inspector'
 import {CommentsStudioLayout} from './studio-layout/CommentsStudioLayout'
 
-const lazyCommentsDocumentLayout = () => import('./document-layout/CommentsDocumentLayout')
 const lazyCommentsField = () => import('./field/CommentsField')
 const lazyCommentsInput = () => import('./input/CommentsInput')
-const CommentsDocumentLayout = lazy(lazyCommentsDocumentLayout)
+// The field and input components render only inside a document form. The document layout renders
+// around every document pane, ahead of its fields, so loading it starts their chunks too: nothing
+// of the three is downloaded before a document is opened, and nothing waits for another.
+const CommentsDocumentLayout = lazy(() => {
+  void lazyCommentsField()
+  void lazyCommentsInput()
+  return import('./document-layout/CommentsDocumentLayout')
+})
 const CommentsField = lazy(lazyCommentsField)
 const CommentsInput = lazy(lazyCommentsInput)
 
@@ -63,12 +69,6 @@ function CommentsStudioProvider(props: ProviderProps) {
   useEffect(() => {
     void preloadObservablePromise(mode$)
   }, [mode$])
-  useEffect(() => {
-    // Preload lazy components (fire-and-forget: the lazy() render reports a failed import)
-    void lazyCommentsDocumentLayout()
-    void lazyCommentsField()
-    void lazyCommentsInput()
-  }, [])
 
   return (
     <CommentsModePromiseContext value={modePromise}>

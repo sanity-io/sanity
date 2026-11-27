@@ -1,12 +1,16 @@
 import {Card, Layer, Spinner, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'motion/react'
-import {Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {type ActiveToolLayoutProps} from '../../config/studio/types'
-import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
+import {lazyTasksStudioSidebar} from './lazyTasksStudioSidebar'
+
+// The layout renders around every tool, the sidebar (task forms, comment inputs) only once it is
+// opened, so its chunk loads then, behind the sidebar's own loading treatment
+const TasksStudioSidebar = lazy(lazyTasksStudioSidebar)
 
 const FULLSCREEN_MEDIA_INDEX = 1
 const POSITION_ABSOLUTE_MEDIA_INDEX = 3

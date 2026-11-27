@@ -127,7 +127,11 @@ describe('useUpsellContext', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.queryByTestId('dialog-pending')).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', {name: 'open'}))
+    // The dialog loads lazily on open, and a render that suspends only resumes inside an awaited act
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog suspends on the click
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', {name: 'open'}))
+    })
 
     const dialog = await screen.findByRole('dialog')
     expect(dialog).toHaveTextContent('Upgrade to unlock this feature')

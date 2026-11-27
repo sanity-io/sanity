@@ -1,4 +1,4 @@
-import {render, renderHook, screen, waitFor, within} from '@testing-library/react'
+import {act, render, renderHook, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
@@ -188,7 +188,11 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.getByText("What's new")).toBeInTheDocument()
       expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = screen.getByLabelText('Open announcements')
-      await userEvent.click(cardButton)
+      // The dialog loads lazily on open, and a render that suspends only resumes inside an awaited act
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog suspends on the click
+      await act(async () => {
+        await userEvent.click(cardButton)
+      })
 
       await waitFor(
         () => {
@@ -197,6 +201,7 @@ describe('StudioAnnouncementsProvider', () => {
         },
         {timeout: 3000},
       )
+      await screen.findByRole('dialog')
       // The first announcement is seen, so it's not rendered
       expect(screen.queryByText(mockAnnouncements[0].title)).toBeNull()
       // The second announcement is unseen, so it's rendered (may appear multiple times - in dialog and elsewhere)

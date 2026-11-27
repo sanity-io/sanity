@@ -50,6 +50,7 @@ vi.mock('sanity/_singletons', () => ({
 vi.mock('../../../definitions/fields', () => ({
   createFieldDefinitions: () => [],
   createFieldDefinitionDictionary: () => ({}),
+  schemaHasComponentTitles: () => false,
 }))
 
 vi.mock('../../../definitions/filters', () => ({

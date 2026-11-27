@@ -697,7 +697,7 @@ Rules that follow from this:
   them relatively without them being exported from the public `sanity/router` entry.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
-  404 on the module host. A nested entry (`…/1`, `…/structure`) is uploaded to
+  404 on the module host. A nested entry (`…/1`, `…/2`, `…/structure`) is uploaded to
   `bare/<entry>.mjs` with its directory kept (`@repo/bundle-manager`), and it also needs the
   module server (`sanity-io/module-server`) to route subpaths with more than one segment.
   `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
@@ -809,6 +809,45 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
   `function` in `test/__snapshots__/exports.test.ts.snap`, and the declaration it emits from a
   `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
   `not.toBeNever()` to `toBeFunction()`; regenerate both.
+
+### Lazy-only internals: `…/2` is never part of the `/404` shell
+
+After sign-in a studio renders its shell: the navbar, the tool menu and, on a path that matches no
+tool (`/404`), the "Tool not found" screen. Nothing a tool loads belongs there.
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`
+(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/2.ts`)
+holds the internals that only code behind a lazy boundary uses: the document stack (forms and
+inputs, field diffs and change indicators, presence overlays, comments and tasks UI, document
+panes and the other structure panes). Next to it, `…/1` is what a studio config may import before
+sign-in, and the bare entry is what the shell may import.
+
+- `packages/@repo/test-exports/test/shell-load.test.mjs` (part of `pnpm test:exports`, build
+  first) enforces it. It builds the `perf/bench` and `perf/studio` configs with Vite against the
+  built `lib`, walks from the studio entry through every static import and through the `sanity`
+  package's own dynamic imports (its lazy layout, navbar, plugin providers and preloads load with
+  the shell), stops at dynamic imports in studio or plugin code, and fails with every chain that
+  reaches `lib/…/2.js`. `test/fixtures/shell-load` checks the walk itself: a navbar that imports
+  `/2` is reported, a lazy tool that does is not. In a studio config, the
+  `@repo/studio/no-internals-before-sign-in` lint rule reports a static `/2` import too.
+- A name goes on `/2` when every consumer outside `packages/sanity` uses it from code that is
+  already lazy (an input, a document component, a tool). Moving a name between the bare entry and
+  `/2` takes a tombstone on the entry it left (see Export tombstones), the `v7-export-map` entry,
+  and the regenerated exports snapshot and d.ts fixtures. A plugin that needs a `/2` name at
+  module scope of a statically imported module imports it dynamically and destructures it, as the
+  patched plugins under `patches/` do:
+  `lazy(() => import('sanity/…/2').then(({ArrayOfObjectsItem}) => ({default: ArrayOfObjectsItem})))`.
+- `/2` is listed in `package.bundle.ts`. Like `/1`, it is a nested path, so auto-updating studios
+  can only load it once the module server routes subpaths with more than one segment.
+- Keeping the shell small is about more than `/2`: rolldown puts the lib modules that the same
+  lazy boundaries reach into one chunk, so a module the shell imports statically drags every
+  module in its chunk along. The usual fixes are a `lazy()` component (through a `.lazy.ts` shim)
+  under a `Suspense` at its render site, for dialogs, popover contents and anything else that only
+  renders after a click, and a dynamic `import()` inside the handler or effect that needs a
+  module (the paste handler, the image upload pipeline, the live manifest registration). A
+  `lazy()` component in a `@sanity/ui` `Popover`'s `content` is fetched as soon as its owner
+  renders, because a closed popover keeps its content mounted in a hidden `<Activity>`; render it
+  only while open (`NewDocumentButton`). A test that opens such a dialog wraps the click in an
+  awaited `act` (see Testing components that suspend via `use()`).
 
 ### Export tombstones (v7)
 

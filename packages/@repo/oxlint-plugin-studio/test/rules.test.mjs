@@ -12,6 +12,7 @@ const INTERNALS = 'sanity/_dangerously_use_private_internals_that_do_not_follow_
 const ts = (code) => ({code, filename: 'sanity.config.ts'})
 
 const beforeSignIn = (source) => ({messageId: 'beforeSignIn', data: {source}})
+const lazyOnly = (source) => ({messageId: 'lazyOnly', data: {source}})
 
 const tester = new RuleTester()
 
@@ -24,6 +25,7 @@ tester.run('no-internals-before-sign-in', plugin.rules['no-internals-before-sign
     ts(`import {type ArrayOfObjectsInputProps} from '${INTERNALS}/form'`),
     ts(`export type {PaneRouterContextValue} from '${INTERNALS}/structure'`),
     `const Tool = lazy(() => import('${INTERNALS}/structure'))`,
+    `const Input = lazy(() => import('${INTERNALS}/2').then(({FormInput}) => ({default: FormInput})))`,
   ],
   invalid: [
     {
@@ -36,7 +38,7 @@ tester.run('no-internals-before-sign-in', plugin.rules['no-internals-before-sign
     },
     {
       code: `import '${INTERNALS}/2'`,
-      errors: [beforeSignIn(`${INTERNALS}/2`)],
+      errors: [lazyOnly(`${INTERNALS}/2`)],
     },
     {
       ...ts(`import {type Foo, useBar} from '${INTERNALS}'`),

@@ -2,6 +2,8 @@
   "extends": "@repo/tsconfig/build.json",
   "include": ["./test"],
   "exclude": [
+    // Studio sources the shell-load test builds with Vite, type-checked by their own tsconfig
+    "./test/fixtures",
     "./src/**/__fixtures__",
     "./src/**/__mocks__",
     "./src/**/*.test.ts",
