@@ -202,6 +202,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip for the info icon on a published or archived scheduled draft whose document history has been removed by the history retention policy */
   'document-preview.history-unavailable':
     'The history of this document is not available anymore due to retention policy, the published document is not affected',
+  /** Tooltip for the info icon on a published or archived scheduled draft whose document history has been removed by the history retention policy, when there is no published document */
+  'document-preview.history-unavailable.no-published-document':
+    'The history of this document is not available anymore due to retention policy',
   /** Preview title for a scheduled draft that has no document */
   'document-preview.no-document': 'No document in this release',
   /** Preview title for a published or archived scheduled draft whose document history has been removed and that has no published document to show instead */
