@@ -1623,9 +1623,14 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
+        "name": "LegacyThemeProps",
+        "kind": "type",
+        "message": "Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key."
+      },
+      {
         "name": "LegacyThemeTints",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key."
       },
       {
         "name": "LinearProgress",
@@ -3020,7 +3025,7 @@
       {
         "name": "buildLegacyTheme",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key."
       },
       {
         "name": "buildRangeDecorationSelectionsFromComments",
@@ -5173,6 +5178,11 @@
         "name": "GetHookCollectionState",
         "kind": "value",
         "message": "Removed in v7. This was internal document-action plumbing with no public replacement."
+      },
+      {
+        "name": "LegacyThemeTints",
+        "kind": "type",
+        "message": "Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key."
       },
       {
         "name": "StudioDiagnosticsBridge",

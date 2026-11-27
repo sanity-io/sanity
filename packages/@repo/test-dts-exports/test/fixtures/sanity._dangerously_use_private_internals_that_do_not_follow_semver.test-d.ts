@@ -48,7 +48,6 @@ import type {
   buildCommentRangeDecorations,
   buildCommentRangeDecorationsLegacy,
   Builder,
-  buildLegacyTheme,
   buildRangeDecorationSelectionsFromComments,
   buildRangeDecorationSelectionsFromCommentsLegacy,
   buildTextSelectionFromFragment,
@@ -575,7 +574,6 @@ import type {
   LATEST,
   LegacyCallbackResult,
   LegacyLayerProvider,
-  LegacyThemeTints,
   LinearProgress,
   LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
@@ -1242,9 +1240,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('Builder', () => {
     expectTypeOf<Builder>().not.toBeNever()
-  })
-  test('buildLegacyTheme', () => {
-    expectTypeOf<typeof buildLegacyTheme>().toBeFunction()
   })
   test('buildRangeDecorationSelectionsFromComments', () => {
     expectTypeOf<typeof buildRangeDecorationSelectionsFromComments>().toBeFunction()
@@ -2825,9 +2820,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
-  })
-  test('LegacyThemeTints', () => {
-    expectTypeOf<LegacyThemeTints>().not.toBeNever()
   })
   test('LinearProgress', () => {
     expectTypeOf<typeof LinearProgress>().toBeFunction()

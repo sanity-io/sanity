@@ -939,10 +939,6 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   defaultTheme,
 } from '../core/theme'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type LegacyThemeTints,
-} from '../core/theme/_legacy/types'
 export {useUserColor} from '../core/user-color/hooks'
 export {createUserColorManager, type UserColorManagerOptions} from '../core/user-color/manager'
 export {
@@ -1337,8 +1333,6 @@ export {ToolLink} from '../core/studio/components/navbar/tools/ToolLink'
 export {useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {isTimeoutError} from '../core/studio/requestErrors/classify'
 export {useStudioErrorHandler} from '../core/studio/requestErrors/useStudioErrorHandler'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {buildLegacyTheme} from '../core/theme/_legacy/theme'
 export {
   VERSION_FOLDER,
   documentIdEquals,
@@ -1397,6 +1391,10 @@ export type AuthStoreOptions = never
  * @deprecated Removed in v7. This was internal document-action plumbing with no public replacement.
  */
 export declare const GetHookCollectionState: never
+/**
+ * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
+ */
+export type LegacyThemeTints = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */

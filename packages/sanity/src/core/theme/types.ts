@@ -19,10 +19,6 @@ export interface StudioTheme extends Omit<
   | 'color'
   | 'fonts'
 > {
-  /** @internal */
-  __dark?: boolean
-  /** @internal */
-  __legacy?: boolean
   color?: RootTheme['color']
   fonts?: RootTheme['fonts']
 }
