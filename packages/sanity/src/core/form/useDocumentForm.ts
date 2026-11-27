@@ -357,6 +357,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState.draft?._id,
   ])
 
+  // Published documents carry no `_system.bundleId`, and neither do variants of published, whose
+  // ids (`versions.<scopeId>.<groupId>`) say nothing about the lane they belong to.
+  const targetVersionStub = documentVersionStubs.find((version) => version._id === targetDocumentId)
+  const isPublishedTarget = Boolean(targetVersionStub) && !targetVersionStub?._system.bundleId
+
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
@@ -453,6 +458,13 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       }
     }
 
+    // A published document is only editable when the schema is live edit. The published
+    // perspective check above never sees a variant of published: variant targets skip it, and a
+    // form pinned to the variant's own scope (the diff view panes) selects that scope id instead.
+    if (!liveEdit && isPublishedTarget) {
+      return true
+    }
+
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && getTargetSiblings(targetDocumentState)?.draft) {
       return true
@@ -485,6 +497,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
     selectedPerspectiveName,
     liveEdit,
+    isPublishedTarget,
     releaseId,
     selectedVariantName,
     targetDocumentState,
