@@ -1073,7 +1073,7 @@ export declare const ConfirmDeleteDialog: never
  */
 export type ConfirmDeleteDialogProps = never
 /**
- * @deprecated Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `ConnectionStatus` than the one `sanity/presentation` exports, and every export name now comes from exactly one entry. Use the `ConnectionStatus` from `sanity/presentation`.
+ * @deprecated Removed in v7: `sanity/presentation` now owns the name `ConnectionStatus` for an unrelated type. The Studio's connection status was the union of `ConnectingStatus`, `ErrorStatus`, `ConnectedStatus` and `RetryingStatus` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
 export type ConnectionStatus = never
 /**
@@ -1585,7 +1585,7 @@ export declare const ObjectMembers: never
  */
 export type ObjectMembersProps = never
 /**
- * @deprecated Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `Operation` than the one `sanity/migrate` exports, and every export name now comes from exactly one entry. Use the `Operation` from `sanity/migrate`.
+ * @deprecated Removed in v7. The Studio's document `Operation` type is no longer exported; `sanity/migrate` exports an unrelated `Operation` for migrations.
  */
 export type Operation = never
 /**

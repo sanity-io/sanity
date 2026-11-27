@@ -560,7 +560,7 @@
       {
         "name": "ConnectionStatus",
         "kind": "type",
-        "message": "Moved to `sanity/presentation`. Import `{ConnectionStatus}` from `sanity/presentation` instead of `sanity`."
+        "message": "Removed in v7: `sanity/presentation` now owns the name `ConnectionStatus` for an unrelated type. The Studio's connection status was the union of `ConnectingStatus`, `ErrorStatus`, `ConnectedStatus` and `RetryingStatus` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release)."
       },
       {
         "name": "ConnectionStatusStore",
@@ -2695,7 +2695,7 @@
       {
         "name": "Transaction",
         "kind": "type",
-        "message": "Moved to `sanity/migrate`. Import `{Transaction}` from `sanity/migrate` instead of `sanity`."
+        "message": "Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). `sanity/migrate` exports an unrelated `Transaction` for migrations."
       },
       {
         "name": "TransformPatches",
@@ -6632,7 +6632,7 @@
       {
         "name": "ConnectionStatus",
         "kind": "type",
-        "message": "Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `ConnectionStatus` than the one `sanity/presentation` exports, and every export name now comes from exactly one entry. Use the `ConnectionStatus` from `sanity/presentation`."
+        "message": "Removed in v7: `sanity/presentation` now owns the name `ConnectionStatus` for an unrelated type. The Studio's connection status was the union of `ConnectingStatus`, `ErrorStatus`, `ConnectedStatus` and `RetryingStatus` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release)."
       },
       {
         "name": "CustomComponentPaneNode",
@@ -6692,7 +6692,7 @@
       {
         "name": "Operation",
         "kind": "type",
-        "message": "Removed from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`: it was a different `Operation` than the one `sanity/migrate` exports, and every export name now comes from exactly one entry. Use the `Operation` from `sanity/migrate`."
+        "message": "Removed in v7. The Studio's document `Operation` type is no longer exported; `sanity/migrate` exports an unrelated `Operation` for migrations."
       },
       {
         "name": "PaneListItem",
@@ -7223,12 +7223,12 @@
       {
         "name": "PreviewProps",
         "kind": "type",
-        "message": "Removed from `sanity/presentation`: it was a different `PreviewProps` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `PreviewProps` from `sanity`."
+        "message": "Removed in v7. The props of the Presentation tool's preview pane are no longer exported; `sanity` exports an unrelated `PreviewProps` for document previews."
       },
       {
         "name": "Serializable",
         "kind": "type",
-        "message": "Removed from `sanity/presentation`: it was a different `Serializable` than the one `sanity/structure` exports, and every export name now comes from exactly one entry. Use the `Serializable` from `sanity/structure`."
+        "message": "Removed from `sanity/presentation`: `sanity/structure` now owns the name `Serializable` for an unrelated type. This one was `Serializable` from `@sanity/presentation-comlink`, the union of `SerializablePrimitive`, `SerializableObject` and `SerializableArray`; import it from `@sanity/presentation-comlink`, or use that union with the three types from `sanity/presentation`."
       }
     ],
     "./_unstable-embedded": [

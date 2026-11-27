@@ -1045,7 +1045,7 @@ export type ConnectingStatus = never
  */
 export type ConnectionState = never
 /**
- * @deprecated Moved to `sanity/presentation`. Import `{ConnectionStatus}` from `sanity/presentation` instead of `sanity`.
+ * @deprecated Removed in v7: `sanity/presentation` now owns the name `ConnectionStatus` for an unrelated type. The Studio's connection status was the union of `ConnectingStatus`, `ErrorStatus`, `ConnectedStatus` and `RetryingStatus` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
 export type ConnectionStatus = never
 /**
@@ -2813,7 +2813,7 @@ export type TrackerContextGetSnapshot = never
  */
 export type TrackerContextStore = never
 /**
- * @deprecated Moved to `sanity/migrate`. Import `{Transaction}` from `sanity/migrate` instead of `sanity`.
+ * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). `sanity/migrate` exports an unrelated `Transaction` for migrations.
  */
 export type Transaction = never
 /**

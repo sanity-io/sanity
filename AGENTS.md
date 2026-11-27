@@ -920,6 +920,12 @@ types, of every entry of it and of the workspace build with ts-morph
 - tombstones whose message names a replacement import (`` `X` from `sanity/entry` ``, a list of
   names, or `` `X` from the same entry ``) where that entry does not export `X`. This check reads
   only the workspace build and the manifest, so it runs without the npm download.
+- tombstones whose message starts with ``Moved to `<entry>` `` while that entry exports a
+  different type under that name. Two declarations count as one type when they share at least half
+  of the names that characterize the smaller one (an interface's members, or the identifiers and
+  literals of a type alias), so a type that gained properties still counts as moved and an
+  unrelated type that happens to share the name (`Transaction`, `ConnectionStatus`) does not. Such
+  a name is "Removed", with the real replacement named if there is one. Values are not compared.
 
 The same suite checks that every tombstone in the built `.d.ts` is `never` with exactly its
 manifest message, and that no tombstone is a runtime export of its entry's JS. The download is
