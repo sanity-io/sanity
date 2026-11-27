@@ -2162,6 +2162,9 @@
     "validation": "value"
   },
   "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1": {
+    "STUDIO_RESIZE_TRANSITION_TYPE": "value",
+    "STUDIO_SCHEME_TRANSITION_TYPE": "value",
+    "STUDIO_SKIP_TRANSITION_TYPE": "value",
     "Studio": "value",
     "StudioDiagnosticsBridge": "value",
     "StudioDiagnosticsBridgeApi": "type",

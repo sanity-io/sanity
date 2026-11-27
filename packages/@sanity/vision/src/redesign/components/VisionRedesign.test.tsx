@@ -312,6 +312,8 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', a
   }
 })
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1', () => ({
+  STUDIO_RESIZE_TRANSITION_TYPE: 'sanity-studio-resize',
+  STUDIO_SKIP_TRANSITION_TYPE: 'sanity-studio-skip',
   useSchema: () => undefined,
 }))
 
@@ -6054,14 +6056,20 @@ describe('VisionRedesign', () => {
 
     const toggle = within(shownTab()).getByTestId('vision-request-panel-toggle')
     fireEvent.click(toggle)
-    await waitFor(() => expect(transitionTypes()).toEqual([['vision-panel']]))
+    await waitFor(() =>
+      expect(transitionTypes()).toEqual([['vision-panel', 'sanity-studio-resize']]),
+    )
     await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('false'))
 
     fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
     await screen.findByTestId('vision-drawer-closed-tabs')
     fireEvent.click(screen.getByTestId('vision-sidebar-toggle'))
     await waitFor(() =>
-      expect(transitionTypes()).toEqual([['vision-panel'], ['vision-sidebar'], ['vision-sidebar']]),
+      expect(transitionTypes()).toEqual([
+        ['vision-panel', 'sanity-studio-resize'],
+        ['vision-sidebar', 'sanity-studio-resize'],
+        ['vision-sidebar', 'sanity-studio-resize'],
+      ]),
     )
   })
 

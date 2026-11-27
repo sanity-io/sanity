@@ -5,6 +5,9 @@
 import type {
   renderStudio,
   Studio,
+  STUDIO_RESIZE_TRANSITION_TYPE,
+  STUDIO_SCHEME_TRANSITION_TYPE,
+  STUDIO_SKIP_TRANSITION_TYPE,
   StudioDiagnosticsBridge,
   StudioDiagnosticsBridgeApi,
   StudioLayout,
@@ -22,6 +25,15 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
   })
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
+  })
+  test('STUDIO_RESIZE_TRANSITION_TYPE', () => {
+    expectTypeOf<typeof STUDIO_RESIZE_TRANSITION_TYPE>().not.toBeNever()
+  })
+  test('STUDIO_SCHEME_TRANSITION_TYPE', () => {
+    expectTypeOf<typeof STUDIO_SCHEME_TRANSITION_TYPE>().not.toBeNever()
+  })
+  test('STUDIO_SKIP_TRANSITION_TYPE', () => {
+    expectTypeOf<typeof STUDIO_SKIP_TRANSITION_TYPE>().not.toBeNever()
   })
   test('StudioDiagnosticsBridge', () => {
     expectTypeOf<typeof StudioDiagnosticsBridge>().toBeFunction()

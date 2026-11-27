@@ -32,6 +32,7 @@ import {useCurrentUser} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Code, Text, Flex, VStack} from 'ui5'
 
+import {STUDIO_RESIZE_TRANSITION_TYPE} from '../../core/viewTransitions/transitionTypes'
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
@@ -285,6 +286,7 @@ export const Preview = memo(function PreviewComponent(
     } else {
       startTransition(() => {
         addTransitionType(IFRAME_VIEWPORT_TRANSITION)
+        addTransitionType(STUDIO_RESIZE_TRANSITION_TYPE)
         setCurrentViewport(viewport)
       })
     }
