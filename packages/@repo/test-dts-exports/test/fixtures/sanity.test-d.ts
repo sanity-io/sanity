@@ -376,6 +376,7 @@ import type {
   GlobalDocumentReferenceValue,
   GrantsStore,
   GroupableActionDescription,
+  HandleCallbackResult,
   HistoryClearedEvent,
   HistoryStore,
   HotspotOptions,
@@ -480,6 +481,7 @@ import type {
   KeyedSegment,
   LayoutProps,
   LegacyAuthConfig,
+  LegacyCallbackResult,
   ListenQueryOptions,
   Loadable,
   LoadableLegacy,
@@ -533,6 +535,7 @@ import type {
   NumberRule,
   NumberSchemaType,
   OAuthAuthConfig,
+  OAuthCallbackResult,
   OAuthConfig,
   ObjectArrayFormNode,
   ObjectComponents,
@@ -2002,6 +2005,9 @@ describe('sanity', () => {
   test('GroupableActionDescription', () => {
     expectTypeOf<GroupableActionDescription<any>>().toBeObject()
   })
+  test('HandleCallbackResult', () => {
+    expectTypeOf<HandleCallbackResult>().not.toBeNever()
+  })
   test('HistoryClearedEvent', () => {
     expectTypeOf<HistoryClearedEvent>().toBeObject()
   })
@@ -2315,6 +2321,9 @@ describe('sanity', () => {
   test('LegacyAuthConfig', () => {
     expectTypeOf<LegacyAuthConfig>().toBeObject()
   })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('ListenQueryOptions', () => {
     expectTypeOf<ListenQueryOptions>().toBeObject()
   })
@@ -2475,6 +2484,9 @@ describe('sanity', () => {
   })
   test('OAuthAuthConfig', () => {
     expectTypeOf<OAuthAuthConfig>().toBeObject()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
   })
   test('OAuthConfig', () => {
     expectTypeOf<OAuthConfig>().toBeObject()

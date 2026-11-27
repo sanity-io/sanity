@@ -456,7 +456,10 @@ export {
   type AuthProbeResult,
   type AuthState,
   type AuthStore,
+  type HandleCallbackResult,
+  type LegacyCallbackResult,
   type LoginComponentProps,
+  type OAuthCallbackResult,
 } from '../core/store/auth/types'
 export {type BufferedDocumentEvent} from '../core/store/document/buffered-doc/createBufferedDocument'
 export {
@@ -1771,10 +1774,6 @@ export type GroupChangeNode = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
-export type HandleCallbackResult = never
-/**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
- */
 export type HexColor = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
@@ -1892,10 +1891,6 @@ export declare const LISTENER_PAUSE_GRACE_PERIOD: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export type LatencyReportEvent = never
-/**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
- */
-export type LegacyCallbackResult = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
@@ -2100,10 +2095,6 @@ export type NumberDiff = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const NumberInput: never
-/**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
- */
-export type OAuthCallbackResult = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */

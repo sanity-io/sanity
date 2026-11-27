@@ -252,7 +252,6 @@ import type {
   grantsPermissionOn,
   GrantsStoreOptions,
   GroupChangeNode,
-  HandleCallbackResult,
   HELP_URL,
   HexColor,
   HistoryStoreOptions,
@@ -354,7 +353,6 @@ import type {
   KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
-  LegacyCallbackResult,
   LegacyLayerProvider,
   LinearProgress,
   LISTENER_PAUSE_GRACE_PERIOD,
@@ -399,7 +397,6 @@ import type {
   normalizePathSegment,
   NullDiff,
   NumberDiff,
-  OAuthCallbackResult,
   ObjectDiff,
   ObserveDocumentTypeFromIdFn,
   onRetry,
@@ -1494,9 +1491,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('GroupChangeNode', () => {
     expectTypeOf<GroupChangeNode>().toBeObject()
   })
-  test('HandleCallbackResult', () => {
-    expectTypeOf<HandleCallbackResult>().not.toBeNever()
-  })
   test('HELP_URL', () => {
     expectTypeOf<typeof HELP_URL>().not.toBeNever()
   })
@@ -1800,9 +1794,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LATEST', () => {
     expectTypeOf<typeof LATEST>().not.toBeNever()
   })
-  test('LegacyCallbackResult', () => {
-    expectTypeOf<LegacyCallbackResult>().toBeObject()
-  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
@@ -1934,9 +1925,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('NumberDiff', () => {
     expectTypeOf<NumberDiff>().not.toBeNever()
-  })
-  test('OAuthCallbackResult', () => {
-    expectTypeOf<OAuthCallbackResult>().toBeObject()
   })
   test('ObjectDiff', () => {
     expectTypeOf<ObjectDiff<any>>().not.toBeNever()

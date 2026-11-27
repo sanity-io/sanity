@@ -337,11 +337,6 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/auth/mock/createMockAuthStore'
-export {
-  type LegacyCallbackResult,
-  type HandleCallbackResult,
-  type OAuthCallbackResult,
-} from '../core/store/auth/types'
 export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
 export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
@@ -1481,6 +1476,10 @@ export type GlobalCopyPasteElementHandler = never
  */
 export declare const GroupChange: never
 /**
+ * @deprecated Moved to `sanity`. Import `{HandleCallbackResult}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export type HandleCallbackResult = never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export type HiddenField = never
@@ -1500,6 +1499,10 @@ export type IsEqualFunction = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const IsLastPaneProvider: never
+/**
+ * @deprecated Moved to `sanity`. Import `{LegacyCallbackResult}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export type LegacyCallbackResult = never
 /**
  * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
  */
@@ -1560,6 +1563,10 @@ export type NextStateOrOptions = never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const NoChanges: never
+/**
+ * @deprecated Moved to `sanity`. Import `{OAuthCallbackResult}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ */
+export type OAuthCallbackResult = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
