@@ -845,7 +845,6 @@ export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {UserAvatar, type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {useTemplates} from '../core/hooks/useTemplates'
-export {useTools} from '../core/hooks/useTools'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
 export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
@@ -854,7 +853,6 @@ export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionI
 export {
   useDocumentPreviewStore,
   useDocumentStore,
-  useGrantsStore,
   useHistoryStore,
   usePresenceStore,
   useProjectStore,

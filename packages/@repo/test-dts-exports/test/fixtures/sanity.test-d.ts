@@ -840,6 +840,7 @@ import type {
   useFormValue,
   useGetDefaultPerspective,
   useGetFormValue,
+  useGrantsStore,
   useListFormat,
   UseListFormatOptions,
   useNumberFormat,
@@ -859,6 +860,7 @@ import type {
   useSchema,
   useSetImmediateValidation,
   useStudioErrorHandler,
+  useTools,
   useUnitFormatter,
   UseUnitFormatterOptions,
   useUserListWithPermissions,
@@ -3429,6 +3431,9 @@ describe('sanity', () => {
   test('useGetFormValue', () => {
     expectTypeOf<typeof useGetFormValue>().toBeFunction()
   })
+  test('useGrantsStore', () => {
+    expectTypeOf<typeof useGrantsStore>().toBeFunction()
+  })
   test('useListFormat', () => {
     expectTypeOf<typeof useListFormat>().toBeFunction()
   })
@@ -3485,6 +3490,9 @@ describe('sanity', () => {
   })
   test('useStudioErrorHandler', () => {
     expectTypeOf<typeof useStudioErrorHandler>().toBeFunction()
+  })
+  test('useTools', () => {
+    expectTypeOf<typeof useTools>().toBeFunction()
   })
   test('useUnitFormatter', () => {
     expectTypeOf<typeof useUnitFormatter>().toBeFunction()
