@@ -18,6 +18,13 @@ export interface ResultViewOption<View extends string> {
 export interface ResultViewMenuProps<View extends string> {
   /** Id of the menu button, unique per query tab */
   id: string
+  /**
+   * Accessible name of the button, naming the shown view. Defaults to the result view's.
+   * Another panel that reuses the menu, such as the params view, passes its own.
+   */
+  buttonLabel?: string
+  /** Accessible name of the menu. Defaults to the result view's */
+  menuLabel?: string
   /** The views to choose from, in menu order */
   views: readonly ResultViewOption<View>[]
   value: View
@@ -36,6 +43,8 @@ export interface ResultViewMenuProps<View extends string> {
  */
 export function ResultViewMenu<View extends string>({
   id,
+  buttonLabel,
+  menuLabel,
   views,
   value,
   onChange,
@@ -52,7 +61,7 @@ export function ResultViewMenu<View extends string>({
         <Button
           {...OPTION_TRIGGER_PROPS}
           aria-controls={controls}
-          aria-label={t('vision.result.view.button', {view: active.label})}
+          aria-label={buttonLabel ?? t('vision.result.view.button', {view: active.label})}
           data-testid={`${testId}-button`}
           text={active.label}
         />
@@ -60,7 +69,7 @@ export function ResultViewMenu<View extends string>({
       id={id}
       menu={
         <Menu
-          aria-label={t('vision.result.view.label')}
+          aria-label={menuLabel ?? t('vision.result.view.label')}
           className={cx(styles.popoverScroll, themeStyles.themeTokens)}
           data-testid={`${testId}-menu`}
         >
