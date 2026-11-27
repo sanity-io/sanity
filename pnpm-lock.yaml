@@ -221,8 +221,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.33.0
-      version: 0.33.0
+      specifier: ^0.33.1
+      version: 0.33.1
     '@sanity/ui':
       specifier: ^4.4.14
       version: 4.4.14
@@ -1803,7 +1803,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.33.0(@babel/core@8.1.3)(@rolldown/plugin-babel@0.3.1)(@sanity/pandacss-tsdown-plugin@0.3.4)(@tsdown/css@0.23.7)(@types/node@26.6.11)(oxc-transform-react@0.155.0)(tsdown@0.23.7)(typescript@7.0.2)(vite@8.3.8)
+        version: 0.33.1(@babel/core@8.1.3)(@rolldown/plugin-babel@0.3.1)(@sanity/pandacss-tsdown-plugin@0.3.4)(@tsdown/css@0.23.7)(@types/node@26.6.11)(oxc-transform-react@0.155.0)(tsdown@0.23.7)(typescript@7.0.2)(vite@8.3.8)
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.11
@@ -9143,8 +9143,8 @@ packages:
       sanity:
         optional: true
 
-  '@sanity/tsdown-config@0.33.0':
-    resolution: {integrity: sha512-W1UNjMdQwx4YlG1VjOvH31VRfdcNy5qk9q+46i30D4dZ4do9eA0BFEKLQ6NjajLkr+wczNcHM+f8UDuh9kOlvg==}
+  '@sanity/tsdown-config@0.33.1':
+    resolution: {integrity: sha512-n/SM3DZPnhAuJ7ZJJRKRm0cHGkBIUZEpmdfyB+Ku0AWli1hRK4uhIdNdMio+/SumUadB8fIP+tamG2YtjPldQg==}
     engines: {node: ^22.18.0 || ^24.11.0 || >=26.0.0}
     peerDependencies:
       '@babel/core': '*'
@@ -23262,7 +23262,7 @@ snapshots:
       - styled-components
       - typescript
 
-  '@sanity/tsdown-config@0.33.0(@babel/core@8.1.3)(@rolldown/plugin-babel@0.3.1)(@sanity/pandacss-tsdown-plugin@0.3.4)(@tsdown/css@0.23.7)(@types/node@26.6.11)(oxc-transform-react@0.155.0)(tsdown@0.23.7)(typescript@7.0.2)(vite@8.3.8)':
+  '@sanity/tsdown-config@0.33.1(@babel/core@8.1.3)(@rolldown/plugin-babel@0.3.1)(@sanity/pandacss-tsdown-plugin@0.3.4)(@tsdown/css@0.23.7)(@types/node@26.6.11)(oxc-transform-react@0.155.0)(tsdown@0.23.7)(typescript@7.0.2)(vite@8.3.8)':
     dependencies:
       '@microsoft/api-extractor': 7.60.1(@types/node@26.6.11)
       '@microsoft/tsdoc-config': 0.18.3
