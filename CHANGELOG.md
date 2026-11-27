@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.26.0](https://github.com/sanity-io/sanity/compare/v6.25.0...v6.26.0) (2026-11-27)
+
+### Features
+
+* **core:** add content variants telemetry events ([#16526](https://github.com/sanity-io/sanity/issues/16526)) ([4464c6e](https://github.com/sanity-io/sanity/commit/4464c6e81a59fb45aeaa52b0aff8afdd8e4929f7))
+* **core:** detect and log Studio listener stalls behind the connection limit ([#16171](https://github.com/sanity-io/sanity/issues/16171)) ([0ade578](https://github.com/sanity-io/sanity/commit/0ade57820a26fcac3abaa33e2bb624444383d149))
+* **core:** one menu system for studio menus ([#16110](https://github.com/sanity-io/sanity/issues/16110)) ([078a93a](https://github.com/sanity-io/sanity/commit/078a93a0c2654c7f11477af4b821bba127f56523))
+* **presentation:** toggle for the document panel ([#16559](https://github.com/sanity-io/sanity/issues/16559)) ([ec47c83](https://github.com/sanity-io/sanity/commit/ec47c83e2cd3b65996268783ae46ea77d23f3639))
+* **telemetry:** add shard context to listener events and fix zero-mutation resume reporting ([#16484](https://github.com/sanity-io/sanity/issues/16484)) ([7143794](https://github.com/sanity-io/sanity/commit/71437946d9156c31969007935965a2dcea212b41))
+* **vision:** drop the beta.redesign warning and make the option a type error ([#16568](https://github.com/sanity-io/sanity/issues/16568)) ([7c3761b](https://github.com/sanity-io/sanity/commit/7c3761b9dd420dd32f178acc531196ac0fe1625d))
+* **vision:** record usage of every classic vision action ([#16555](https://github.com/sanity-io/sanity/issues/16555)) ([5e2baa9](https://github.com/sanity-io/sanity/commit/5e2baa93b3fb98b1d55a530be7d56f450c2f1deb))
+* **vision:** remove the redesigned vision beta ([#16560](https://github.com/sanity-io/sanity/issues/16560)) ([997f2aa](https://github.com/sanity-io/sanity/commit/997f2aa135cf87e9d781dcfc40c81b834dad4bcc))
+* **vision:** stamp telemetry events with the package version ([#16586](https://github.com/sanity-io/sanity/issues/16586)) ([5c22983](https://github.com/sanity-io/sanity/commit/5c22983c5609af552af81b05b613f376a7d181b0))
+
+### Bug Fixes
+
+* **core:** disable polling for seen announcements preference ([#16510](https://github.com/sanity-io/sanity/issues/16510)) ([5ab34b2](https://github.com/sanity-io/sanity/commit/5ab34b2988bccfa23a021b6ec57a86d9daa99e0a))
+* **core:** fall back for unknown route and stored values used as lookup keys ([#16273](https://github.com/sanity-io/sanity/issues/16273)) ([ed1b6b2](https://github.com/sanity-io/sanity/commit/ed1b6b2ea2526102132d4638c4fc5af60b266260))
+* **core:** keep a commit's transaction id across retries ([#16250](https://github.com/sanity-io/sanity/issues/16250)) ([1eb6dce](https://github.com/sanity-io/sanity/commit/1eb6dce1bdfe08e43feb446855ff2a2cd143eefd))
+* **core:** match proposed changes row highlight to release rows ([#16504](https://github.com/sanity-io/sanity/issues/16504)) ([c838662](https://github.com/sanity-io/sanity/commit/c838662fcb93eff05b69a41f87a90dcafba78c68))
+* **deps:** update dependency @portabletext/toolkit to ^6.1.0 ([#16530](https://github.com/sanity-io/sanity/issues/16530)) ([c04492d](https://github.com/sanity-io/sanity/commit/c04492dedab1e896e7dd0fb2cadb3337b9a166c9))
+* **deps:** update dependency @sanity/cli to ^8.35.0 ([#16531](https://github.com/sanity-io/sanity/issues/16531)) ([96cedec](https://github.com/sanity-io/sanity/commit/96cedec33da6db15c67f06e6e05c72ddae585d97))
+* **deps:** update dev-non-major ([#16536](https://github.com/sanity-io/sanity/issues/16536)) ([6c852ac](https://github.com/sanity-io/sanity/commit/6c852acf6ad0bf47d0a60b08e71d90271b132261))
+* **deps:** update dev-non-major ([#16664](https://github.com/sanity-io/sanity/issues/16664)) ([5578bbd](https://github.com/sanity-io/sanity/commit/5578bbdb002568ce9573a24797bc326b168638ac))
+* **deps:** update portabletext (main) ([#16552](https://github.com/sanity-io/sanity/issues/16552)) ([46c7af6](https://github.com/sanity-io/sanity/commit/46c7af62bad5aec0b6c728f6214b8b918824da8d))
+* **deps:** update sanity-sdk to ^3.17.0 ([#16565](https://github.com/sanity-io/sanity/issues/16565)) ([bef3fcf](https://github.com/sanity-io/sanity/commit/bef3fcf93fccf8ea3338a63c72f01bfd2e169274))
+* **form:** classify undefined array item keys as missing ([#15126](https://github.com/sanity-io/sanity/issues/15126)) ([1d13f16](https://github.com/sanity-io/sanity/commit/1d13f16e3f1dc8d90d60badc473cf5f39926d2e2))
+* **form:** keep empty array items when a read-only form closes them ([#16537](https://github.com/sanity-io/sanity/issues/16537)) ([2c5e1a4](https://github.com/sanity-io/sanity/commit/2c5e1a40ff422fa5d213d32b8761378cf2a4ac90))
+* **releases:** batch history reads of archived releases and preview expired documents ([#16474](https://github.com/sanity-io/sanity/issues/16474)) ([c6cfce1](https://github.com/sanity-io/sanity/commit/c6cfce16f823ca8a95549b248c5433a701051b53))
+* **releases:** cap the archived release cache and fit the retention tooltip ([#16624](https://github.com/sanity-io/sanity/issues/16624)) ([fbfee4f](https://github.com/sanity-io/sanity/commit/fbfee4f9f1ef1accb16c388c6a191ddf6cd4947c))
+* **releases:** remove error dot from classic perspective nav ([#16677](https://github.com/sanity-io/sanity/issues/16677)) ([2c45e64](https://github.com/sanity-io/sanity/commit/2c45e64668802420eb05defac4a0ad763fcb9ab6))
+* **structure:** recover the structure tool from pane resolution errors on navigation ([#16175](https://github.com/sanity-io/sanity/issues/16175)) ([b6eb31b](https://github.com/sanity-io/sanity/commit/b6eb31b0478261ab1c93b936c044998241ac71a7))
+* **structure:** show only the people on the open version in the document header ([#16534](https://github.com/sanity-io/sanity/issues/16534)) ([419463c](https://github.com/sanity-io/sanity/commit/419463c711185ff1fc06b8066af061980981664a))
+
+### Performance Improvements
+
+* **bench:** add a listener stall bench ([#16173](https://github.com/sanity-io/sanity/issues/16173)) ([3549ce7](https://github.com/sanity-io/sanity/commit/3549ce7488544caf04472f29ae638d68fe239e8e))
+* **bench:** measure the js each step of a first studio visit loads ([#16490](https://github.com/sanity-io/sanity/issues/16490)) ([97c5f0e](https://github.com/sanity-io/sanity/commit/97c5f0e8e664858e712b765636bbd56e49c9c242))
 ## [6.25.0](https://github.com/sanity-io/sanity/compare/v6.24.0...v6.25.0) (2026-11-24)
 
 ### Features

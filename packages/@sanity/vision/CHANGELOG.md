@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.26.0](https://github.com/sanity-io/sanity/compare/v6.25.0...v6.26.0) (2026-11-27)
+
+### Features
+
+* **vision:** drop the beta.redesign warning and make the option a type error ([#16568](https://github.com/sanity-io/sanity/issues/16568)) ([7c3761b](https://github.com/sanity-io/sanity/commit/7c3761b9dd420dd32f178acc531196ac0fe1625d))
+* **vision:** record usage of every classic vision action ([#16555](https://github.com/sanity-io/sanity/issues/16555)) ([5e2baa9](https://github.com/sanity-io/sanity/commit/5e2baa93b3fb98b1d55a530be7d56f450c2f1deb))
+* **vision:** remove the redesigned vision beta ([#16560](https://github.com/sanity-io/sanity/issues/16560)) ([997f2aa](https://github.com/sanity-io/sanity/commit/997f2aa135cf87e9d781dcfc40c81b834dad4bcc))
+* **vision:** stamp telemetry events with the package version ([#16586](https://github.com/sanity-io/sanity/issues/16586)) ([5c22983](https://github.com/sanity-io/sanity/commit/5c22983c5609af552af81b05b613f376a7d181b0))
+
+### Bug Fixes
+
+* **core:** fall back for unknown route and stored values used as lookup keys ([#16273](https://github.com/sanity-io/sanity/issues/16273)) ([ed1b6b2](https://github.com/sanity-io/sanity/commit/ed1b6b2ea2526102132d4638c4fc5af60b266260))
 ## [6.25.0](https://github.com/sanity-io/sanity/compare/v6.24.0...v6.25.0) (2026-11-24)
 
 ### Bug Fixes
