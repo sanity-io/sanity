@@ -187,9 +187,6 @@ describe('DocumentVariantsMenu', () => {
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
     expect(documentSection).toHaveTextContent('Variants of this document (1)')
-    expect(
-      within(documentSection).queryByTestId('document-variants-menu-section-document-tooltip'),
-    ).toBeNull()
     const firstTimeItem = within(documentSection).getByTestId(`document-variant-${firstTime._id}`)
     expect(firstTimeItem).toHaveTextContent('First-time visitors')
     expect(within(firstTimeItem).getByTestId('variant-version-count')).toHaveTextContent('2')

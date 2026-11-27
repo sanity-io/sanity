@@ -568,12 +568,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
   /**
-   * Section header when the document has no variants; "Has 0 variants" reads like the letter O
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
-  'document-panel-navigation.variants.section.has-variants_zero': 'Has no variants',
-  /**
    * Tooltip on the "Has no variants" section header of the variants menu in the document header
    * @deprecated no longer in use
    */

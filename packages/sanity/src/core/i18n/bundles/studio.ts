@@ -1775,8 +1775,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.archived': 'This release is archived and cannot be edited.',
   /** Label for tooltip in chip with the created date */
   'release.chip.tooltip.created-date': 'Created {{date}}',
-  /** @deprecated no longer in use. Label for tooltip in draft chip when it's a live edit document */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** Label for tooltip in draft chip when it's a live edit document */
   'release.chip.tooltip.draft-disabled.live-edit':
     'This document is in live edit mode, drafts are disabled',
   /** Label for tooltip in chip with the lasted edited date */
