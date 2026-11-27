@@ -21,8 +21,6 @@ import {
   type DocumentFieldAction,
   type EditStateFor,
   EMPTY_ARRAY,
-  getCreatableVariantTarget,
-  getDefaultVariant,
   getDocumentVersionType,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
@@ -237,17 +235,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  // When a variant is requested, the form is editable only once the variant target has resolved:
-  // `variant-missing` shows the not-in-variant banner offering to create it,
-  // `variant-definition-document-not-found` is an invalid selection, and `resolving` covers
-  // target transitions while the pane is mounted (initial mounts are gated in DocumentPane).
-  // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
-  // creates the document seeded from the published sibling.
-  const isVariantTargetReadOnly =
-    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
-    targetDocumentState.status !== 'ready' &&
-    !getCreatableVariantTarget(targetDocumentState)
-
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
@@ -260,7 +247,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
-        isVariantTargetReadOnly ||
         (!isPaused &&
           !isPerspectiveWriteable({
             selectedPerspective: perspective.selectedPerspective,
@@ -275,7 +261,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDraftModelEnabled,
       params.rev,
       perspective.selectedPerspective,
-      isVariantTargetReadOnly,
       schemaType,
       selectedRelease,
     ],
