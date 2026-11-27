@@ -30,6 +30,7 @@
     "esbuild": "0.28.2",
     "groq-js": "^2.0.3",
     "mendoza": "^6.0.0",
+    "oxc-parser": "catalog:",
     "playwright": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
