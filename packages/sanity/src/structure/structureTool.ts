@@ -1,7 +1,7 @@
 import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
-import {lazy} from 'react'
 import {definePlugin, type DocumentActionComponent} from 'sanity'
 
+import {structureToolChunk} from './chunks'
 import {useDeleteAction} from './documentActions/DeleteAction'
 import {useDiscardChangesAction} from './documentActions/DiscardChangesAction'
 import {useDuplicateAction} from './documentActions/DuplicateAction'
@@ -17,6 +17,7 @@ import {documentGroupInspector} from './panes/document/inspectors/documentGroup'
 import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
+import {StructureToolPreloader} from './StructureToolPreloader'
 import {type RouterPanes, type StructureToolOptions} from './types'
 
 const documentActions = [
@@ -34,7 +35,7 @@ const documentBadges = [useLiveEditBadge]
 
 const inspectors = [validationInspector, changesInspector, incomingReferencesInspector]
 
-const StructureTool = lazy(() => import('./components/structureTool'))
+const StructureTool = structureToolChunk.Component
 
 /**
  * The structureTool is a studio plugin which adds the “structure tool” – a tool within
@@ -159,6 +160,12 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         __internalApplicationType: 'sanity/structure',
       },
     ],
+
+    studio: {
+      components: {
+        provider: StructureToolPreloader,
+      },
+    },
 
     i18n: {
       bundles: [structureUsEnglishLocaleBundle],
