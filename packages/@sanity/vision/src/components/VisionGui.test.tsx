@@ -18,6 +18,7 @@ import {
   VisionQueryCancelled,
   VisionQueryRun,
 } from '../telemetry/vision.telemetry'
+import {VISION_VERSION} from '../version'
 import {VisionGui} from './VisionGui'
 
 const theme = buildTheme()
@@ -408,6 +409,10 @@ function events(name: string) {
   return telemetry.log.mock.calls.filter((call) => call[0]?.name === name)
 }
 
+function withVisionVersion<Data extends object>(data: Data) {
+  return {...data, visionVersion: VISION_VERSION}
+}
+
 describe('VisionGui adoption telemetry', () => {
   afterEach(() => {
     cleanup()
@@ -434,9 +439,11 @@ describe('VisionGui adoption telemetry', () => {
     fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
 
     expect(events('Vision Query Run')).toEqual([
-      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: true}],
+      [VisionQueryRun, withVisionVersion({mode: 'fetch', trigger: 'button', hasParams: true})],
     ])
-    expect(events('Vision Params Used')).toEqual([[VisionParamsUsed, {mode: 'fetch'}]])
+    expect(events('Vision Params Used')).toEqual([
+      [VisionParamsUsed, withVisionVersion({mode: 'fetch'})],
+    ])
   })
 
   it('records a fetch without parameters once, and not a params event', () => {
@@ -447,7 +454,7 @@ describe('VisionGui adoption telemetry', () => {
     fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
 
     expect(events('Vision Query Run')).toEqual([
-      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: false}],
+      [VisionQueryRun, withVisionVersion({mode: 'fetch', trigger: 'button', hasParams: false})],
     ])
     expect(events('Vision Params Used')).toEqual([])
   })
@@ -460,7 +467,9 @@ describe('VisionGui adoption telemetry', () => {
     fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
     fireEvent.click(screen.getByRole('button', {name: 'action.query-cancel'}))
 
-    expect(events('Vision Query Cancelled')).toEqual([[VisionQueryCancelled, {mode: 'fetch'}]])
+    expect(events('Vision Query Cancelled')).toEqual([
+      [VisionQueryCancelled, withVisionVersion({mode: 'fetch'})],
+    ])
   })
 
   it('records the keyboard shortcut as its own trigger, still once', () => {
@@ -476,7 +485,7 @@ describe('VisionGui adoption telemetry', () => {
     })
 
     expect(events('Vision Query Run')).toEqual([
-      [VisionQueryRun, {mode: 'fetch', trigger: 'shortcut', hasParams: false}],
+      [VisionQueryRun, withVisionVersion({mode: 'fetch', trigger: 'shortcut', hasParams: false})],
     ])
   })
 
@@ -484,7 +493,7 @@ describe('VisionGui adoption telemetry', () => {
     seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
     renderVision(NO_STACK)
 
-    expect(events('Vision Opened')).toEqual([[VisionOpened, {ui: 'classic'}]])
+    expect(events('Vision Opened')).toEqual([[VisionOpened, withVisionVersion({ui: 'classic'})]])
   })
 
   it('records one listen, and records cancelling it separately', () => {
@@ -497,9 +506,11 @@ describe('VisionGui adoption telemetry', () => {
     fireEvent.click(screen.getByRole('button', {name: 'action.listen-cancel'}))
 
     expect(events('Vision Query Run')).toEqual([
-      [VisionQueryRun, {mode: 'listen', trigger: 'button', hasParams: false}],
+      [VisionQueryRun, withVisionVersion({mode: 'listen', trigger: 'button', hasParams: false})],
     ])
-    expect(events('Vision Query Cancelled')).toEqual([[VisionQueryCancelled, {mode: 'listen'}]])
+    expect(events('Vision Query Cancelled')).toEqual([
+      [VisionQueryCancelled, withVisionVersion({mode: 'listen'})],
+    ])
   })
 
   it('does not record a fetch that never starts', () => {
@@ -524,14 +535,18 @@ describe('VisionGui adoption telemetry', () => {
     telemetry.log.mockClear()
 
     fireEvent.change(screen.getAllByRole('combobox')[0], {target: {value: 'staging'}})
-    expect(events('Vision Dataset Changed')).toEqual([[VisionDatasetChanged]])
+    expect(events('Vision Dataset Changed')).toEqual([
+      [VisionDatasetChanged, withVisionVersion({})],
+    ])
 
     fireEvent.change(getPerspectiveSelector(), {target: {value: 'published'}})
-    expect(events('Vision Perspective Changed')).toEqual([[VisionPerspectiveChanged]])
+    expect(events('Vision Perspective Changed')).toEqual([
+      [VisionPerspectiveChanged, withVisionVersion({})],
+    ])
 
     fireEvent.change(getApiVersionSelector(), {target: {value: 'v1'}})
     expect(events('Vision API Version Changed')).toEqual([
-      [VisionApiVersionChanged, {custom: false}],
+      [VisionApiVersionChanged, withVisionVersion({custom: false})],
     ])
 
     fireEvent.change(getApiVersionSelector(), {target: {value: 'other'}})
@@ -541,8 +556,8 @@ describe('VisionGui adoption telemetry', () => {
     fireEvent.change(customVersion, {target: {value: 'v2021-03-25'}})
     fireEvent.change(customVersion, {target: {value: 'v2021-03-25'}})
     expect(events('Vision API Version Changed')).toEqual([
-      [VisionApiVersionChanged, {custom: false}],
-      [VisionApiVersionChanged, {custom: true}],
+      [VisionApiVersionChanged, withVisionVersion({custom: false})],
+      [VisionApiVersionChanged, withVisionVersion({custom: true})],
     ])
 
     expect(events('Vision Query Run')).toEqual([])
@@ -557,6 +572,6 @@ describe('VisionGui adoption telemetry', () => {
 
     fireEvent.click(await screen.findByRole('button', {name: 'action.copy-url-to-clipboard'}))
 
-    expect(events('Vision Copied')).toEqual([[VisionCopied, {target: 'url'}]])
+    expect(events('Vision Copied')).toEqual([[VisionCopied, withVisionVersion({target: 'url'})]])
   })
 })

@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 
+import {VISION_VERSION} from '../version'
 import {
   VisionApiVersionChanged,
   VisionCopied,
@@ -43,89 +44,93 @@ export interface VisionTelemetry {
   panelToggled: (panel: VisionPanel, open: boolean) => void
 }
 
+function withVisionVersion<Data extends object>(data: Data): Data & {visionVersion: string} {
+  return {...data, visionVersion: VISION_VERSION}
+}
+
 /** Usage events for the Vision tool. See `vision.telemetry.ts`. */
 export function useVisionTelemetry(): VisionTelemetry {
   const telemetry = useTelemetry()
 
   const opened = useCallback(
     (ui: VisionUi) => {
-      telemetry.log(VisionOpened, {ui})
+      telemetry.log(VisionOpened, withVisionVersion({ui}))
     },
     [telemetry],
   )
 
   const queryRun = useCallback(
     (data: VisionQueryRunData) => {
-      telemetry.log(VisionQueryRun, data)
-      if (data.hasParams) telemetry.log(VisionParamsUsed, {mode: data.mode})
+      telemetry.log(VisionQueryRun, withVisionVersion(data))
+      if (data.hasParams) telemetry.log(VisionParamsUsed, withVisionVersion({mode: data.mode}))
     },
     [telemetry],
   )
 
   const queryCancelled = useCallback(
     (mode: VisionQueryMode) => {
-      telemetry.log(VisionQueryCancelled, {mode})
+      telemetry.log(VisionQueryCancelled, withVisionVersion({mode}))
     },
     [telemetry],
   )
 
   const datasetChanged = useCallback(() => {
-    telemetry.log(VisionDatasetChanged)
+    telemetry.log(VisionDatasetChanged, withVisionVersion({}))
   }, [telemetry])
 
   const perspectiveChanged = useCallback(() => {
-    telemetry.log(VisionPerspectiveChanged)
+    telemetry.log(VisionPerspectiveChanged, withVisionVersion({}))
   }, [telemetry])
 
   const apiVersionChanged = useCallback(
     (custom: boolean) => {
-      telemetry.log(VisionApiVersionChanged, {custom})
+      telemetry.log(VisionApiVersionChanged, withVisionVersion({custom}))
     },
     [telemetry],
   )
 
   const copied = useCallback(
     (target: VisionCopyTarget) => {
-      telemetry.log(VisionCopied, {target})
+      telemetry.log(VisionCopied, withVisionVersion({target}))
     },
     [telemetry],
   )
 
   const queryUrlPasted = useCallback(() => {
-    telemetry.log(VisionQueryUrlPasted)
+    telemetry.log(VisionQueryUrlPasted, withVisionVersion({}))
   }, [telemetry])
 
   const savedQueryUsed = useCallback(
     (action: VisionSavedQueryAction, shared: boolean) => {
-      telemetry.log(VisionSavedQueryUsed, {action, shared})
+      telemetry.log(VisionSavedQueryUsed, withVisionVersion({action, shared}))
     },
     [telemetry],
   )
 
   const savedQueriesFiltered = useCallback(
     (filter: VisionSavedQueriesFilter) => {
-      telemetry.log(VisionSavedQueriesFiltered, {filter})
+      telemetry.log(VisionSavedQueriesFiltered, withVisionVersion({filter}))
     },
     [telemetry],
   )
 
   const resultExported = useCallback(
     (format: VisionResultExportFormat) => {
-      telemetry.log(VisionResultExported, {format})
+      telemetry.log(VisionResultExported, withVisionVersion({format}))
     },
     [telemetry],
   )
 
   const documentOpened = useCallback(
     (source: VisionDocumentOpenSource) => {
-      telemetry.log(VisionDocumentOpened, {source})
+      telemetry.log(VisionDocumentOpened, withVisionVersion({source}))
     },
     [telemetry],
   )
 
   const panelToggled = useCallback(
     (panel: VisionPanel, open: boolean) => {
-      telemetry.log(VisionPanelToggled, {panel, open})
+      telemetry.log(VisionPanelToggled, withVisionVersion({panel, open}))
     },
     [telemetry],
   )
