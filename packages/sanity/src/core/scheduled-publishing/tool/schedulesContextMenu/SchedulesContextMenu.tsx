@@ -1,14 +1,16 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {SortIcon} from '@sanity/icons/Sort'
-import {Menu} from '@sanity/ui/menu'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useSchedules} from '../contexts/schedules'
 
 const SchedulesContextMenu = () => {
   const {setSortBy, sortBy} = useSchedules()
+  const {t} = useTranslation()
 
   // Callbacks
   const handleSortByCreateAt = () => setSortBy('createdAt')
@@ -24,13 +26,13 @@ const SchedulesContextMenu = () => {
             icon={SortIcon}
             iconRight={sortBy === 'createdAt' ? CheckmarkIcon : undefined}
             onClick={handleSortByCreateAt}
-            text="Sort by time added"
+            text={t('scheduled-publishing.sort-menu.sort-by-time-added')}
           />
           <MenuItem
             icon={SortIcon}
             iconRight={sortBy === 'executeAt' ? CheckmarkIcon : undefined}
             onClick={handleSortByExecuteAt}
-            text="Sort by time scheduled"
+            text={t('scheduled-publishing.sort-menu.sort-by-time-scheduled')}
           />
         </Menu>
       }

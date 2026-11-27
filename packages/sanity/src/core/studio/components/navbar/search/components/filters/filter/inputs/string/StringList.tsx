@@ -1,11 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isTitledListValue, type StringOptions, type TitledListValue} from '@sanity/types'
-import {Menu} from '@sanity/ui/menu'
 import capitalize from 'lodash-es/capitalize.js'
 import uniq from 'lodash-es/uniq.js'
 import {useCallback, useId, useMemo} from 'react'
 
 import {Button} from '../../../../../../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../../../../../ui-components/menuItem/MenuItem'
 import {useSchema} from '../../../../../../../../../hooks/useSchema'

@@ -1,9 +1,9 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Menu} from '@sanity/ui/menu'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

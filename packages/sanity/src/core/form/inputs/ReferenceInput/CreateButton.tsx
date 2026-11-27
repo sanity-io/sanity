@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Menu} from '@sanity/ui/menu'
 import {type HTMLProps, type RefObject} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'

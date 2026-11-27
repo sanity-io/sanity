@@ -1,9 +1,10 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import semver from 'semver'
 import {styled} from 'styled-components'
 
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {StatusButton} from '../../../../components/StatusButton'
 import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'

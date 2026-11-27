@@ -7,7 +7,6 @@ import {
   TabPanel,
 } from '@sanity/ui'
 import {
-  Menu,
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   MenuItem,
 } from '@sanity/ui/menu'
@@ -24,6 +23,7 @@ import {
 } from 'react'
 import {Text, Flex, VStack, Icon} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

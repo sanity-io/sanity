@@ -5,12 +5,12 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
 import {useGlobalKeyDown} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {type MouseEvent, type PropsWithChildren, useCallback, useEffect, useId, useRef} from 'react'
 import {IntentLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -87,7 +87,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
               mode="bleed"
               paddingY={3}
               tabIndex={focused ? 0 : 1}
-              tooltipProps={{content: 'Open menu'}}
+              tooltipProps={{content: t('inputs.portable-text.block.open-menu-aria-label')}}
             />
           }
           ref={menuButton}

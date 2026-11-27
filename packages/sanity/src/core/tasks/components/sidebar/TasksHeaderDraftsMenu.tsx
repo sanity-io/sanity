@@ -1,10 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {Text, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -31,13 +32,14 @@ interface TasksDraftsMenuItemProps {
 
 function TasksDraftsMenuItem(props: TasksDraftsMenuItemProps) {
   const {isSelected, item, onSelect} = props
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   const handleClick = useCallback(() => {
     onSelect(item._id)
   }, [item._id, onSelect])
 
   const iconRight = isSelected ? CheckmarkIcon : undefined
-  const text = item.title || 'Untitled'
+  const text = item.title || t('panel.drafts.untitled')
 
   return (
     <MenuItem

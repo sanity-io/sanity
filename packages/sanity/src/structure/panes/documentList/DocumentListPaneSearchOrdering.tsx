@@ -1,10 +1,11 @@
 import {SortIcon} from '@sanity/icons/Sort'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {memo, useId} from 'react'
 import {useGetI18nText, useTranslation} from 'sanity'
 import {Text, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
+import {Menu} from '../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {structureLocaleNamespace} from '../../i18n'

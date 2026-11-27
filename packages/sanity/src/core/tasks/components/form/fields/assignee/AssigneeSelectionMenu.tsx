@@ -1,7 +1,6 @@
 import {UserIcon} from '@sanity/icons/User'
 import {Badge, TextInput, VirtualList} from '@sanity/ui'
 import {
-  Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
 } from '@sanity/ui/menu'
@@ -9,6 +8,7 @@ import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {Text, Container, Flex, Box} from 'ui5'
 
+import {Menu} from '../../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {type UserWithPermission} from '../../../../../hooks/useUserListWithPermissions'
@@ -65,16 +65,17 @@ const IGNORED_KEYS = [
   'CapsLock',
 ]
 
-const NO_ASSIGNEE_OPTION: UserWithPermission = {
-  id: '',
-  displayName: 'No assignee',
-  granted: true,
-}
 function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; value?: string}) {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const {mentionOptions} = useMentionUser()
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const options = [NO_ASSIGNEE_OPTION].concat(mentionOptions.data || [])
+  const {t} = useTranslation(tasksLocaleNamespace)
+  const noAssigneeOption: UserWithPermission = {
+    id: '',
+    displayName: t('form.input.assignee.no-assignee.text'),
+    granted: true,
+  }
+  const options = [noAssigneeOption].concat(mentionOptions.data || [])
   const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.currentTarget.value)
   }, [])
@@ -132,8 +133,6 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
       inputRef.current?.focus()
     }
   }, [])
-
-  const {t} = useTranslation(tasksLocaleNamespace)
 
   if (mentionOptions.loading) {
     return (

@@ -1,11 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui/menu'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {memo, useCallback, useMemo, type RefAttributes} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuGroup, type MenuGroupProps} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
