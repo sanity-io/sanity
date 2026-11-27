@@ -286,18 +286,32 @@
 }
 
 /*
- * Option chips in the query column's bottom bar. They scroll sideways when the bar is narrow,
- * the same way the tab strip does, and start at the left so the first chip stays whole. The
- * Live fetch, Fetch and menu buttons sit outside this strip and do not move with it.
+ * Option chips in the query column's bottom bar. They sit at the right end of the bar, and scroll
+ * sideways when the bar is narrow, the same way the tab strip does. The Live fetch, Fetch and
+ * menu buttons sit outside this strip and do not move with it.
  */
 .actionRailChips {
   overflow-x: auto;
   scrollbar-width: none;
 }
 
+/* The buttons keep their width; the space before the chips gives way, then the chips scroll */
+.actionRail > :not(.actionRailChips) {
+  flex-shrink: 0;
+}
+
 /* A chip keeps its width; the strip scrolls instead of cutting it down */
 .actionRailChips > * {
   flex-shrink: 0;
+}
+
+/*
+ * The auto margin pushes the chips to the right while they fit. Once they overflow it is zero, so
+ * the strip starts at the first chip and scrolls from there, which `justify-content: flex-end`
+ * would not allow: it pushes the overflow out past the start, where it cannot be scrolled to.
+ */
+.actionRailChips > :first-child {
+  margin-inline-start: auto;
 }
 
 /* The query editor fills the main area of the request column, and never less than this */

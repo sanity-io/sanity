@@ -5,8 +5,8 @@ import {cx} from '../util/cx'
 import * as styles from './redesign.module.css'
 
 /**
- * The bottom action bar of the request panel. Fetch comes first, then Live fetch and the request
- * chips, as the classic tool's Fetch and Listen buttons led its footer.
+ * The bottom action bar of the request panel. Fetch comes first, then Live fetch, as the classic
+ * tool's Fetch and Listen buttons led its footer; the request chips sit at the right end.
  */
 export function ActionRail({children, testId}: {children: ReactNode; testId: string}) {
   return (
