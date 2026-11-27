@@ -214,7 +214,7 @@ These are the rules that keep the system correct. Violating any of them reintrod
 ## 11. What is not done yet
 
 - **Permissions**: `documentPairPermissions` does not yet accept a target kind; variant grants are still checked against base-derived ids. The grants-engine match on `versions.<hash>.*` paths needs early manual verification.
-- **Peripheral subsystems**: comments scoping, presence scoping (group-level vs variant), UI truthfulness gates keyed on `!draft && !published`, Presentation/scheduled-publishing guards.
+- **Peripheral subsystems**: comments scoping, presence scoping (group-level vs variant), UI truthfulness gates keyed on `!draft && !published`, scheduled-publishing guards.
 - **Optimistic locks**: `ifPublishedVariantRevisionId` is wired from `publishedSibling._rev` via `PublishOptions.publishedRevisionId` on `publish.execute`. `ifSourceRevisionId` remains blocked on the deployed action accepting that field.
 
 ## 12. Map of key files

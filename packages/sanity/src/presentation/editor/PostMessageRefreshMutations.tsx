@@ -1,5 +1,13 @@
 import {memo, startTransition, useEffect, useMemo, useState} from 'react'
-import {getPublishedId, type SanityDocument, useEditState, usePerspective} from 'sanity'
+import {
+  getDefaultVariant,
+  getPublishedId,
+  getTargetScopeId,
+  type SanityDocument,
+  useEditState,
+  usePerspective,
+  useTargetDocumentState,
+} from 'sanity'
 
 import {type ConnectionStatus, type VisualEditingConnection} from '../types'
 
@@ -14,12 +22,19 @@ export interface PostMessageRefreshMutationsProps {
 function PostMessageRefreshMutations(props: PostMessageRefreshMutationsProps): React.ReactNode {
   const {comlink, type, previewKitConnection, loadersConnection} = props
   const id = useMemo(() => getPublishedId(props.id), [props.id])
-  const {selectedReleaseId} = usePerspective()
-  const {draft, published, ready, version} = useEditState(id, type, 'low', selectedReleaseId)
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
+  const isVariantSelected = getDefaultVariant(selectedVariantNames) !== undefined
+  const targetDocumentState = useTargetDocumentState(id)
+  const scopeId = isVariantSelected ? getTargetScopeId(targetDocumentState) : selectedReleaseId
+  const {draft, published, ready, version} = useEditState(id, type, 'low', scopeId)
   const livePreviewEnabled =
     previewKitConnection === 'connected' || loadersConnection === 'connected'
 
-  if ((ready && draft) || published) {
+  if (isVariantSelected && targetDocumentState.status === 'resolving') {
+    return null
+  }
+
+  if ((ready && (draft || version)) || published) {
     return (
       <PostMessageRefreshMutationsInner
         key={id}
