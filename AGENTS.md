@@ -886,6 +886,8 @@ and another when the file has entries `origin/main`'s copy lacks. When either fa
 export to `main` first (a re-export, never a copy of the module), then copy the file over.
 On `main`, the internals entry's completeness test accepts the non-`@internal` names v7 puts there.
 Type-only export tombstones are excluded from the map (see [Export tombstones (v7)](#export-tombstones-v7)).
+Exports of features that only exist on v7, which `main` has nothing to re-export for, are listed
+in `V7_ONLY_EXPORTS` in `exportMap.mjs` and excluded too; a moved export never belongs there.
 
 ### Effect events: native `useEffectEvent`, never in dependency arrays
 
