@@ -1,5 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
+import {createMockConditions} from '../../__fixtures__/createMockVariant'
 import {getVariantConditionMismatches} from '../getVariantConditionMismatches'
 import {type NormalizedVariantConditionMap} from '../normalizeVariantConditions'
 
@@ -22,33 +23,41 @@ const definitions: NormalizedVariantConditionMap[] = [
 describe('getVariantConditionMismatches', () => {
   it('returns no mismatches when every stored pair is in the list', () => {
     expect(
-      getVariantConditionMismatches({audience: 'loyal', locale: 'en-US'}, definitions),
+      getVariantConditionMismatches(
+        createMockConditions({audience: 'loyal', locale: 'en-US'}),
+        definitions,
+      ),
     ).toEqual([])
   })
 
   it('returns no mismatches for empty conditions', () => {
-    expect(getVariantConditionMismatches({}, definitions)).toEqual([])
+    expect(getVariantConditionMismatches(createMockConditions({}), definitions)).toEqual([])
   })
 
   it('allows unused configured keys', () => {
-    expect(getVariantConditionMismatches({audience: 'loyal'}, definitions)).toEqual([])
+    expect(
+      getVariantConditionMismatches(createMockConditions({audience: 'loyal'}), definitions),
+    ).toEqual([])
   })
 
   it('flags an unknown key', () => {
-    expect(getVariantConditionMismatches({legacy: 'old-value'}, definitions)).toEqual([
-      {key: 'legacy', value: 'old-value', type: 'unknown-key'},
-    ])
+    expect(
+      getVariantConditionMismatches(createMockConditions({legacy: 'old-value'}), definitions),
+    ).toEqual([{key: 'legacy', value: 'old-value', type: 'unknown-key'}])
   })
 
   it('flags an unknown value for a known key', () => {
-    expect(getVariantConditionMismatches({audience: 'vip'}, definitions)).toEqual([
-      {key: 'audience', value: 'vip', type: 'unknown-value'},
-    ])
+    expect(
+      getVariantConditionMismatches(createMockConditions({audience: 'vip'}), definitions),
+    ).toEqual([{key: 'audience', value: 'vip', type: 'unknown-value'}])
   })
 
   it('flags both unknown keys and unknown values', () => {
     expect(
-      getVariantConditionMismatches({audience: 'vip', legacy: 'old-value'}, definitions),
+      getVariantConditionMismatches(
+        createMockConditions({audience: 'vip', legacy: 'old-value'}),
+        definitions,
+      ),
     ).toEqual([
       {key: 'audience', value: 'vip', type: 'unknown-value'},
       {key: 'legacy', value: 'old-value', type: 'unknown-key'},

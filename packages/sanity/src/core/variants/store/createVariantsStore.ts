@@ -16,7 +16,7 @@ import {map, startWith} from 'rxjs/operators'
 
 import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
 import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
-import {isVariantId, type SystemVariant} from '../types'
+import {isVariantId, type StoredSystemVariant} from '../types'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 
@@ -106,7 +106,7 @@ export function createVariantsStore(context: {
     },
   }).pipe(
     concatWith(
-      listenQueryOnGlobalListener<SystemVariant[]>(client, QUERY, {
+      listenQueryOnGlobalListener<StoredSystemVariant[]>(client, QUERY, {
         invalidationChannel: globalListenerStore.invalidationChannel,
         shouldRefetch: ({documentId}) => isVariantId(documentId),
         fetchTag: 'variants.store.fetch',

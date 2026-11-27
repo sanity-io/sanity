@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {createMockVariant} from '../../../__fixtures__/createMockVariant'
+import {createMockConditions, createMockVariant} from '../../../__fixtures__/createMockVariant'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {type SystemVariant} from '../../../types'
 import {
@@ -11,7 +11,7 @@ import {
 } from '../conditionSuggestions'
 
 function variantWithConditions(id: string, conditions: Record<string, string>): SystemVariant {
-  return {...createMockVariant(id), conditions}
+  return {...createMockVariant(id), conditions: createMockConditions(conditions)}
 }
 
 describe('conditionSuggestions', () => {

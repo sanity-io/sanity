@@ -19,8 +19,8 @@ function getNormalizedConditions(
 ): Map<string, string> {
   const normalized = new Map<string, string>()
 
-  for (const [key, value] of Object.entries(conditions)) {
-    const trimmedKey = key.trim()
+  for (const {condition, value} of conditions) {
+    const trimmedKey = condition.trim()
     // Conditions come from stored documents, so guard against non-string values.
     const trimmedValue = typeof value === 'string' ? value.trim() : ''
 
@@ -49,7 +49,7 @@ function conditionsAreEqual(a: Map<string, string>, b: Map<string, string>): boo
 /**
  * Finds existing variants that the candidate would duplicate: one with the same title (trimmed,
  * case-insensitive) and one with exactly the same condition set (same number of conditions, same
- * keys, same trimmed values — key order is irrelevant). A variant whose conditions are a subset or
+ * condition names, same trimmed values — order and `_key` are irrelevant). A variant whose conditions are a subset or
  * superset of the candidate's is not a duplicate.
  *
  * The candidate itself is excluded by `_id`, so an unchanged variant never matches itself when

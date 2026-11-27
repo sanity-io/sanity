@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
+import {legacyVariantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantStoreReducer, type VariantStoreState} from '../reducer'
 
 describe('variantStoreReducer', () => {
@@ -118,5 +119,41 @@ describe('variantStoreReducer', () => {
         payload: {loading: false, error},
       }),
     ).toMatchObject({state: 'error', error})
+  })
+
+  it('normalizes legacy object conditions and flags them as needing migration', () => {
+    const result = variantStoreReducer(initialState, {
+      type: 'FETCH_SUCCEEDED',
+      payload: [legacyVariantAlphaAudience, createMockVariant('a')],
+    })
+
+    expect(result.variants.get(legacyVariantAlphaAudience._id)).toMatchObject({
+      conditions: [
+        {_key: 'audience', condition: 'audience', value: 'alpha'},
+        {_key: 'locale', condition: 'locale', value: 'en-US'},
+      ],
+      needsMigration: true,
+    })
+    expect(result.variants.get(createMockVariant('a')._id)).toMatchObject({needsMigration: false})
+  })
+
+  it('marks migrated variants as no longer needing migration', () => {
+    const fetched = variantStoreReducer(initialState, {
+      type: 'FETCH_SUCCEEDED',
+      payload: [legacyVariantAlphaAudience],
+    })
+    const legacy = fetched.variants.get(legacyVariantAlphaAudience._id)
+
+    const result = variantStoreReducer(fetched, {
+      type: 'VARIANTS_MIGRATED',
+      payload: {ids: [legacyVariantAlphaAudience._id, '_.variants.missing']},
+    })
+
+    expect(result.variants.get(legacyVariantAlphaAudience._id)).toEqual({
+      ...legacy,
+      needsMigration: false,
+    })
+    expect(result.variants.size).toBe(1)
+    expect(legacy?.needsMigration).toBe(true)
   })
 })

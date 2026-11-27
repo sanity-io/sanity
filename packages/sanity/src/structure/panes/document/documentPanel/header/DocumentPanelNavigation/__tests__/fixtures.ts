@@ -61,7 +61,8 @@ export function createVariant(name: string, title: string, type?: string): Syste
     _createdAt: '2026-01-01T00:00:00Z',
     _updatedAt: '2026-01-01T00:00:00Z',
     _rev: `rev-${name}`,
-    conditions: {audience: name},
+    conditions: [{_key: 'audience', condition: 'audience', value: name}],
+    needsMigration: false,
     priority: 0,
     metadata: {title, ...(type ? {type} : {})},
   }

@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {describe, expect, it, vi} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {type EditableSystemVariant} from '../../types'
 import {VARIANT_DOCUMENTS_PATH} from '../constants'
 import {createVariantOperationsStore} from '../createVariantOperationsStore'
@@ -22,7 +23,7 @@ function createEditableVariant(): EditableSystemVariant {
   return {
     _id: DOCUMENT_ID as `_.variants.${string}`,
     _type: 'system.variant',
-    conditions: {audience: 'loyal-customers'},
+    conditions: [{_key: 'audience', condition: 'audience', value: 'loyal-customers'}],
     priority: 0,
     metadata: {
       title: 'Loyal customers',
@@ -32,6 +33,10 @@ function createEditableVariant(): EditableSystemVariant {
 }
 
 describe('createVariantOperationsStore', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('creates a variant definition with the create action', async () => {
     const variant = createEditableVariant()
     const client = mockClient()
@@ -43,7 +48,7 @@ describe('createVariantOperationsStore', () => {
       {
         actionType: 'sanity.action.variant.definition.create',
         variantId: VARIANT_ID,
-        conditions: variant.conditions,
+        conditions: [{_key: 'audience', condition: 'audience', value: 'loyal-customers'}],
         priority: variant.priority,
         metadata: variant.metadata,
       },
@@ -136,5 +141,29 @@ describe('createVariantOperationsStore', () => {
       },
       {tag: 'variants.delete', dryRun: true},
     )
+  })
+
+  it('migrates variant conditions without sending any action while the migration is mocked', async () => {
+    vi.useFakeTimers()
+    const client = mockClient()
+
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
+    const migration = store.migrateVariantConditions([
+      {...createMockVariant('legacy'), needsMigration: true},
+    ])
+
+    await vi.runAllTimersAsync()
+
+    await expect(migration).resolves.toBeUndefined()
+    expect(client.action).not.toHaveBeenCalled()
+  })
+
+  it('resolves a dry-run migration right away so the permission check does not wait', async () => {
+    const client = mockClient()
+
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
+
+    await expect(store.migrateVariantConditions([], {dryRun: true})).resolves.toBeUndefined()
+    expect(client.action).not.toHaveBeenCalled()
   })
 })

@@ -144,7 +144,11 @@ const alphaVariant = {
   _createdAt: CREATED_AT,
   _updatedAt: CREATED_AT,
   _rev: 'rev-alpha-audience',
-  conditions: {audience: 'alpha', locale: 'en-US'},
+  conditions: [
+    {_key: 'audience', condition: 'audience', value: 'alpha'},
+    {_key: 'locale', condition: 'locale', value: 'en-US'},
+  ],
+  needsMigration: false,
   priority: 2,
   metadata: {title: 'Alpha audience', description: []},
 } as SystemVariant

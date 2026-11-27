@@ -11,11 +11,13 @@ interface VariantDefinitionDocument {
   _id: `_.variants.${string}`
   _type: 'system.variant'
   name: string
-  conditions: Record<string, string>
+  conditions: Array<{_key: string; condition: string; value: string}>
   priority: number
   metadata?: Record<string, unknown>
 }
 ```
+
+`conditions` used to be an object (`{audience: 'loyal'}`), and definitions that have not been migrated still have that shape. The Studio reads both and always writes the array; see [Legacy object-shaped conditions](./README.md#legacy-object-shaped-conditions). Content Lake does not accept the array shape yet, so Studio writes are rejected until it does.
 
 `variantId` is the generated short ID suffix, not the full document ID. For example, a `variantId` such as `Ab12cd34` maps to the stored document ID `_.variants.Ab12cd34`.
 
@@ -30,7 +32,7 @@ Required fields:
 
 Optional fields:
 
-- `conditions`: exact-match condition map. Empty conditions are accepted, but such a definition is inert for matching.
+- `conditions`: exact-match conditions, one `{_key, condition, value}` entry per condition. Empty conditions are accepted, but such a definition is inert for matching.
 - `priority`: numeric priority. Defaults to `0` when omitted.
 - `metadata`: free-form metadata for Studio UI concerns such as `title` and `description`.
 
@@ -40,7 +42,7 @@ Example:
 await client.action({
   actionType: 'sanity.action.variant.definition.create',
   variantId: 'Ab12cd34',
-  conditions: {audience: 'loyal'},
+  conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
   priority: 0,
   metadata: {title: 'Loyal customers'},
 })
@@ -82,7 +84,10 @@ await client.action({
   variantId: 'Ab12cd34',
   patch: {
     set: {
-      'conditions': {audience: 'loyal', locale: 'en-US'},
+      'conditions': [
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+        {_key: 'locale', condition: 'locale', value: 'en-US'},
+      ],
       'priority': 10,
       'metadata.title': 'Loyal customers in the US',
     },
@@ -108,7 +113,7 @@ await client.action({
   actionType: 'sanity.action.variant.definition.edit',
   variantId: 'Ab12cd34',
   patch: {
-    set: {conditions: {audience: 'loyal'}},
+    set: {conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}]},
   },
 })
 

@@ -58,7 +58,8 @@ const SUMMER_SALE: SystemVariant = {
   _rev: 'rev',
   _createdAt: '2026-01-01T00:00:00.000Z',
   _updatedAt: '2026-01-01T00:00:00.000Z',
-  conditions: {},
+  conditions: [],
+  needsMigration: false,
   priority: 0,
   metadata: {title: 'Summer sale'},
 }
@@ -70,7 +71,8 @@ const VIP_USERS: SystemVariant = {
   _rev: 'rev',
   _createdAt: '2026-01-01T00:00:00.000Z',
   _updatedAt: '2026-01-01T00:00:00.000Z',
-  conditions: {},
+  conditions: [],
+  needsMigration: false,
   priority: 0,
 }
 

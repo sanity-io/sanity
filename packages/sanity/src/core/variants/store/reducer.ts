@@ -1,4 +1,5 @@
-import {type SystemVariant} from '../types'
+import {type StoredSystemVariant, type SystemVariant} from '../types'
+import {normalizeStoredVariant} from './normalizeStoredVariant'
 
 interface VariantDeletedAction {
   type: 'VARIANT_DELETED'
@@ -9,11 +10,18 @@ interface VariantDeletedAction {
 
 interface FetchSucceededAction {
   type: 'FETCH_SUCCEEDED'
-  payload: SystemVariant[] | null
+  payload: StoredSystemVariant[] | null
 }
 interface VariantsSetAction {
   type: 'VARIANTS_SET'
-  payload: SystemVariant[] | null
+  payload: StoredSystemVariant[] | null
+}
+
+interface VariantsMigratedAction {
+  type: 'VARIANTS_MIGRATED'
+  payload: {
+    ids: string[]
+  }
 }
 
 interface LoadingStateChangedAction {
@@ -28,6 +36,7 @@ export type VariantStoreAction =
   | VariantsSetAction
   | LoadingStateChangedAction
   | VariantDeletedAction
+  | VariantsMigratedAction
   | FetchSucceededAction
 
 export interface VariantStoreState {
@@ -36,9 +45,9 @@ export interface VariantStoreState {
   error?: Error
 }
 
-function createVariantsSet(variants: SystemVariant[] | null) {
+function createVariantsSet(variants: StoredSystemVariant[] | null) {
   return (variants ?? []).reduce((acc, variant) => {
-    acc.set(variant._id, variant)
+    acc.set(variant._id, normalizeStoredVariant(variant))
     return acc
   }, new Map<string, SystemVariant>())
 }
@@ -85,7 +94,24 @@ export function variantStoreReducer(
       }
     }
 
-    default:
-      return state
+    case 'VARIANTS_MIGRATED': {
+      const migratedVariants = new Map(state.variants)
+      for (const id of action.payload.ids) {
+        const variant = migratedVariants.get(id)
+        if (variant?.needsMigration) {
+          migratedVariants.set(id, {...variant, needsMigration: false})
+        }
+      }
+
+      return {
+        ...state,
+        variants: migratedVariants,
+      }
+    }
+
+    default: {
+      const exhaustive: never = action
+      return exhaustive
+    }
   }
 }

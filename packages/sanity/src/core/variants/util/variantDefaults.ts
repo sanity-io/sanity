@@ -14,7 +14,7 @@ export function getVariantDefaults(type?: string): EditableSystemVariant {
   return {
     _id: createVariantId(),
     _type: 'system.variant',
-    conditions: {},
+    conditions: [],
     priority: 0,
     metadata: {
       title: '',

@@ -33,7 +33,7 @@ export function buildConditionSuggestionIndex(variants: SystemVariant[]): Condit
   const valuesByKey = new Map<string, Set<string>>()
 
   variants.forEach((variant) => {
-    Object.entries(variant.conditions).forEach(([rawKey, rawValue]) => {
+    variant.conditions.forEach(({condition: rawKey, value: rawValue}) => {
       const key = rawKey.trim()
 
       if (!key) {

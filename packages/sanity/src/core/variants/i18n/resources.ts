@@ -73,6 +73,27 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
+  /** Overview banner when one variant definition still uses the legacy conditions format. */
+  'overview.migration.description_one':
+    '{{count}} variant definition uses an outdated conditions format and needs to be migrated.',
+  /** Overview banner when several variant definitions still use the legacy conditions format. */
+  'overview.migration.description_other':
+    '{{count}} variant definitions use an outdated conditions format and need to be migrated.',
+  /** Overview banner action that migrates every variant definition in the legacy format. */
+  'overview.migration.action': 'Migrate all',
+  /** Detail page banner when the variant definition still uses the legacy conditions format. */
+  'detail.migration.description':
+    'This variant definition uses an outdated conditions format and needs to be migrated.',
+  /** Detail page banner action that migrates this variant definition. */
+  'detail.migration.action': 'Migrate',
+  /** Tooltip on the migrate actions when the user lacks permission to edit variant definitions. */
+  'migration.permission-error': 'You do not have permission to migrate variant definitions',
+  /** Success toast after migrating one variant definition. */
+  'migration.success_one': 'Migrated {{count}} variant definition',
+  /** Success toast after migrating several variant definitions. */
+  'migration.success_other': 'Migrated {{count}} variant definitions',
+  /** Error toast title when migrating variant definitions fails. */
+  'migration.error.title': 'Unable to migrate variant definitions',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */
