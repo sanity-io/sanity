@@ -319,13 +319,13 @@ overrides:
   vitest: ^5.1.1
 
 patchedDependencies:
-  '@sanity/assist@6.3.0': 9b9aa14f64581874393c7bb074f64e0e657e8c5021e0ec6305e2e64e1e468638
-  '@sanity/code-input@7.3.16': f0098e063f947b9edea16691266fb8fd3b473403397fd3d62c699d0a8104cfcd
-  '@sanity/document-internationalization@6.3.1': 2bd00f5da73301c9f5ff38b644a2378d4dbd821fd37ba59298f46dea782f5fa7
-  '@sanity/google-maps-input@6.1.18': 551c80d12f1a3728b458bf3a75f3e22307028dc8c581f3aac6ebc95dbde4a743
+  '@sanity/assist@6.3.0': e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946
+  '@sanity/code-input@7.3.16': 59127743b521f62613d306c1d7757c509cd34b3606f57f95dcbc9a1c4a826e62
+  '@sanity/document-internationalization@6.3.1': f49a7250f751442ee500d90ba197b2df2c88ab69082e4a9ac1c8caa445549182
+  '@sanity/google-maps-input@6.1.18': 73a1028d307de8817457cd60a998f571326802a2704607571d6ded45f0358121
   '@sanity/language-filter@5.0.24': c30d95ace5081f90b1441527acd7b86a94034ec6bdd6d83de1a6ef0149bb2e10
   '@sanity/themer@0.11.0': 1f3c04d4e79b73046119fd0e0291d6a66d9d63bc68814e8d5a367b4e72cd6613
-  sanity-plugin-internationalized-array@5.3.10: 28200275c396215dd55381accace6090ecb28e2896301f49945ddbf14e2e585e
+  sanity-plugin-internationalized-array@5.3.10: e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758
   sanity-plugin-media@6.6.5: 435082ed0d6df33dbf5e937292ca3104e52bc553f7fb299bce22640686ae0965
   sanity-plugin-utils@2.0.24: d1d214620c2584cc9c542f571953e02b3455dfc31b51d7ece9fbbe351f7e48bc
 
@@ -912,7 +912,7 @@ importers:
         version: link:../../packages/@repo/utils
       '@sanity/google-maps-input':
         specifier: ^6.1.18
-        version: 6.1.18(patch_hash=551c80d12f1a3728b458bf3a75f3e22307028dc8c581f3aac6ebc95dbde4a743)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 6.1.18(patch_hash=73a1028d307de8817457cd60a998f571326802a2704607571d6ded45f0358121)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       '@sanity/icons':
         specifier: ^5.4.0
         version: 5.4.0(react@19.3.1)
@@ -933,7 +933,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
         specifier: ^5.3.10
-        version: 5.3.10(patch_hash=28200275c396215dd55381accace6090ecb28e2896301f49945ddbf14e2e585e)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 5.3.10(patch_hash=e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       sanity-plugin-media:
         specifier: ^6.6.5
         version: 6.6.5(patch_hash=435082ed0d6df33dbf5e937292ca3104e52bc553f7fb299bce22640686ae0965)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(redux@5.0.1)(sanity@packages+sanity)(styled-components@6.7.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
@@ -955,7 +955,7 @@ importers:
     dependencies:
       '@sanity/code-input':
         specifier: ^7.3.16
-        version: 7.3.16(patch_hash=f0098e063f947b9edea16691266fb8fd3b473403397fd3d62c699d0a8104cfcd)(@babel/runtime@7.29.10)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 7.3.16(patch_hash=59127743b521f62613d306c1d7757c509cd34b3606f57f95dcbc9a1c4a826e62)(@babel/runtime@7.29.10)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       react:
         specifier: 'catalog:'
         version: 19.3.1
@@ -992,7 +992,7 @@ importers:
         version: link:../../packages/@repo/utils
       '@sanity/assist':
         specifier: ^6.3.0
-        version: 6.3.0(patch_hash=9b9aa14f64581874393c7bb074f64e0e657e8c5021e0ec6305e2e64e1e468638)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
+        version: 6.3.0(patch_hash=e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.17.0(vitest@5.1.1)
@@ -1004,10 +1004,10 @@ importers:
         version: 2.0.23(@sanity/client@8.17.0)(react@19.3.1)(sanity@packages+sanity)
       '@sanity/document-internationalization':
         specifier: ^6.3.1
-        version: 6.3.1(patch_hash=2bd00f5da73301c9f5ff38b644a2378d4dbd821fd37ba59298f46dea782f5fa7)(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 6.3.1(patch_hash=f49a7250f751442ee500d90ba197b2df2c88ab69082e4a9ac1c8caa445549182)(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.7.0)
       '@sanity/google-maps-input':
         specifier: ^6.1.18
-        version: 6.1.18(patch_hash=551c80d12f1a3728b458bf3a75f3e22307028dc8c581f3aac6ebc95dbde4a743)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 6.1.18(patch_hash=73a1028d307de8817457cd60a998f571326802a2704607571d6ded45f0358121)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       '@sanity/groq-store-wasm':
         specifier: ^0.11.6
         version: 0.11.6(vitest@5.1.1)
@@ -1082,7 +1082,7 @@ importers:
         version: 7.0.31(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       sanity-plugin-internationalized-array:
         specifier: ^5.3.10
-        version: 5.3.10(patch_hash=28200275c396215dd55381accace6090ecb28e2896301f49945ddbf14e2e585e)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 5.3.10(patch_hash=e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       sanity-plugin-media:
         specifier: ^6.6.5
         version: 6.6.5(patch_hash=435082ed0d6df33dbf5e937292ca3104e52bc553f7fb299bce22640686ae0965)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(redux@5.0.1)(sanity@packages+sanity)(styled-components@6.7.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
@@ -1304,7 +1304,7 @@ importers:
     dependencies:
       '@sanity/google-maps-input':
         specifier: ^6.1.17
-        version: 6.1.18(patch_hash=551c80d12f1a3728b458bf3a75f3e22307028dc8c581f3aac6ebc95dbde4a743)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 6.1.18(patch_hash=73a1028d307de8817457cd60a998f571326802a2704607571d6ded45f0358121)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       react:
         specifier: 'catalog:'
         version: 19.3.1
@@ -1771,6 +1771,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.11
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
       vite:
         specifier: 'catalog:'
         version: 8.3.8(@types/node@26.6.11)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -2885,7 +2891,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
         specifier: ^5.3.10
-        version: 5.3.10(patch_hash=28200275c396215dd55381accace6090ecb28e2896301f49945ddbf14e2e585e)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+        version: 5.3.10(patch_hash=e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       styled-components:
         specifier: 'catalog:'
         version: 6.7.0(react-dom@19.3.1)(react@19.3.1)
@@ -22786,7 +22792,7 @@ snapshots:
 
   '@sanity/asset-utils@2.3.0': {}
 
-  '@sanity/assist@6.3.0(patch_hash=9b9aa14f64581874393c7bb074f64e0e657e8c5021e0ec6305e2e64e1e468638)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)':
+  '@sanity/assist@6.3.0(patch_hash=e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)':
     dependencies:
       '@portabletext/types': 4.0.3
       '@sanity/client': 8.17.0(vitest@5.1.1)
@@ -23064,7 +23070,7 @@ snapshots:
     transitivePeerDependencies:
       - vitest
 
-  '@sanity/code-input@7.3.16(patch_hash=f0098e063f947b9edea16691266fb8fd3b473403397fd3d62c699d0a8104cfcd)(@babel/runtime@7.29.10)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)':
+  '@sanity/code-input@7.3.16(patch_hash=59127743b521f62613d306c1d7757c509cd34b3606f57f95dcbc9a1c4a826e62)(@babel/runtime@7.29.10)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)':
     dependencies:
       '@codemirror/lang-html': 6.4.12
       '@codemirror/lang-java': 6.0.2
@@ -23165,7 +23171,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.1
 
-  '@sanity/document-internationalization@6.3.1(patch_hash=2bd00f5da73301c9f5ff38b644a2378d4dbd821fd37ba59298f46dea782f5fa7)(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.7.0)':
+  '@sanity/document-internationalization@6.3.1(patch_hash=f49a7250f751442ee500d90ba197b2df2c88ab69082e4a9ac1c8caa445549182)(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.7.0)':
     dependencies:
       '@sanity/icons': 5.4.0(react@19.3.1)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -23176,7 +23182,7 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       rxjs: 7.8.2
       sanity: link:packages/sanity
-      sanity-plugin-internationalized-array: 5.3.10(patch_hash=28200275c396215dd55381accace6090ecb28e2896301f49945ddbf14e2e585e)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
+      sanity-plugin-internationalized-array: 5.3.10(patch_hash=e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
       sanity-plugin-utils: 2.0.24(patch_hash=d1d214620c2584cc9c542f571953e02b3455dfc31b51d7ece9fbbe351f7e48bc)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
     transitivePeerDependencies:
       - remix
@@ -23202,7 +23208,7 @@ snapshots:
 
   '@sanity/generate-help-url@4.0.0': {}
 
-  '@sanity/google-maps-input@6.1.18(patch_hash=551c80d12f1a3728b458bf3a75f3e22307028dc8c581f3aac6ebc95dbde4a743)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)':
+  '@sanity/google-maps-input@6.1.18(patch_hash=73a1028d307de8817457cd60a998f571326802a2704607571d6ded45f0358121)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)':
     dependencies:
       '@sanity/icons': 5.4.0(react@19.3.1)
       '@sanity/ui': 4.4.13(react-dom@19.3.1)(react@19.3.1)(styled-components@6.7.0)
@@ -30934,7 +30940,7 @@ snapshots:
       - react-dom
       - remix
 
-  sanity-plugin-internationalized-array@5.3.10(patch_hash=28200275c396215dd55381accace6090ecb28e2896301f49945ddbf14e2e585e)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0):
+  sanity-plugin-internationalized-array@5.3.10(patch_hash=e12c53581f6b869bd75e0bf560cd865a457edff8ecbd24dd41e92d0abf9eb758)(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0):
     dependencies:
       '@sanity/icons': 5.4.0(react@19.3.1)
       '@sanity/language-filter': 5.0.24(patch_hash=c30d95ace5081f90b1441527acd7b86a94034ec6bdd6d83de1a6ef0149bb2e10)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)
@@ -30945,7 +30951,7 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       sanity: link:packages/sanity
     optionalDependencies:
-      '@sanity/assist': 6.3.0(patch_hash=9b9aa14f64581874393c7bb074f64e0e657e8c5021e0ec6305e2e64e1e468638)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
+      '@sanity/assist': 6.3.0(patch_hash=e79c6f712095c4054295cbb4cc5401ddc22300451ea6e44c9314f55eb0472946)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.7.0)(vitest@5.1.1)
     transitivePeerDependencies:
       - remix
       - styled-components

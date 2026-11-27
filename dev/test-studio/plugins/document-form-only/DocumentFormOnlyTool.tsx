@@ -1,11 +1,11 @@
 import './documentFormOnly.css'
 
 import {useMemo, useState} from 'react'
+import {type DocumentPaneNode} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {
   DocumentPane,
-  type DocumentPaneNode,
   StructureToolProvider,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 import {
   PaneLayout,
   PaneRouterContext,

@@ -1,6 +1,15 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {dequal} from 'dequal/lite'
-import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {
+  type ReactNode,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components/commandList/types'
@@ -13,7 +22,11 @@ import {useSource} from '../../../../../source'
 import {GlobalSearchLatencyMeasured} from '../../__telemetry__/search.telemetry'
 import {SEARCH_LIMIT} from '../../constants'
 import {type RecentSearch} from '../../datastores/recentSearches'
-import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
+import {
+  createFieldDefinitionDictionary,
+  createFieldDefinitions,
+  schemaHasComponentTitles,
+} from '../../definitions/fields'
 import {createFilterDefinitionDictionary} from '../../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../../definitions/operators'
 import {useSearch} from '../../hooks/useSearch'
@@ -21,6 +34,7 @@ import {type SearchOrdering} from '../../types'
 import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
+import {loadComponentTitleRenderer} from '../../utils/sanitizeField'
 import {initialSearchState, searchReducer} from './reducer'
 
 interface SearchProviderProps {
@@ -70,6 +84,9 @@ export function SearchProvider({
   // Snapshot of terms at `onStart` time, used to build the log payload in
   // `onComplete`/`onError` without racing the state update.
   const searchStartTermsRef = useRef<SearchTerms | RecentSearch | null>(null)
+
+  // Titles that contain a component need `react-dom/server` before the field definitions exist
+  if (schemaHasComponentTitles(schema)) use(loadComponentTitleRenderer())
 
   // Create field, filter and operator dictionaries
   const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {

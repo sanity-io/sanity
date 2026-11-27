@@ -40,7 +40,7 @@ import {
   EmailInput,
   FileInput,
   ImageInput,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 
 /* These ensure that all the native inputs are exported and assignable to defineField.components.input*/
 function DelegateBorder({children}: {children?: ReactNode | undefined}) {

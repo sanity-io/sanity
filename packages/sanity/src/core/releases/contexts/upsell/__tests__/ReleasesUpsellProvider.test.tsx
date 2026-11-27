@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -79,7 +79,11 @@ describe('ReleasesUpsellProvider', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', {name: 'reached'}))
+    // The dialog loads lazily on open, and a render that suspends only resumes inside an awaited act
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog suspends on the click
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', {name: 'reached'}))
+    })
 
     expect(await screen.findByRole('dialog')).toHaveTextContent('You can have 4 active releases')
     expect(telemetryLogs.dialogViewed).toHaveBeenCalledWith('navbar')

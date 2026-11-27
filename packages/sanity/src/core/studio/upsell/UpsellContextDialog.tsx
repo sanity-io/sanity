@@ -1,10 +1,13 @@
 import {useToast} from '@sanity/ui/toast'
-import {use, useEffect} from 'react'
+import {lazy, use, useEffect} from 'react'
 
 import {type UpsellContextValue} from '../../hooks/useUpsellContext'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type InterpolationProp} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
-import {UpsellDialog} from './UpsellDialog'
+
+// Every upsell provider renders this, and the dialog (its Portable Text serializer and the icon set
+// the content can name) only once it opens, so it loads then, under the provider's boundary
+const UpsellDialog = lazy(() => import('./UpsellDialog.lazy'))
 
 interface UpsellContextDialogProps {
   contextValue: UpsellContextValue

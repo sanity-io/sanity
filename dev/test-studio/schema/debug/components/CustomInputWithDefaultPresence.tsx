@@ -4,7 +4,7 @@ import {type ObjectInputProps, set, setIfMissing} from 'sanity'
 import {
   FieldPresence,
   PresenceScope,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 
 export function CustomInputWithDefaultPresence(
   props: ObjectInputProps & RefAttributes<HTMLDivElement>,

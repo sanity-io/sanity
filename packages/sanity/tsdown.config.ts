@@ -5,7 +5,7 @@ import pkg from './package.json' with {type: 'json'}
 export default defineConfig({
   // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …), and the files
   // in its `_dangerously_use_private_internals_that_do_not_follow_semver/` directory to the
-  // subpaths of that entry (`…/1`, `…/structure`, `…/router`, `…/presentation`)
+  // subpaths of that entry (`…/1`, `…/2`, `…/structure`, `…/router`)
   entry: [
     './src/_exports/*.ts',
     './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/*.ts',

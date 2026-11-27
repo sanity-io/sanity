@@ -1,11 +1,13 @@
 import {motion} from 'motion/react'
-import {Suspense, use, useCallback} from 'react'
+import {lazy, Suspense, use, useCallback} from 'react'
 import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {FallbackErrorScreen} from '../../../studio/screens/FallbackErrorScreen'
-import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
+
+// The studio layout renders this panel only once a tool fails on the document limit
+const UpsellPanel = lazy(() => import('../../../studio/upsell/UpsellPanel.lazy'))
 
 interface DocumentLimitsUpsellPanelProps {
   /** The document limit error the tool failed on */

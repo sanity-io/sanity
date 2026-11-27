@@ -3,10 +3,8 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {Button, Card, Checkbox, Inline} from '@sanity/ui'
 import {useState} from 'react'
 import {type ObjectInputProps, type Path, type RenderInputCallback} from 'sanity'
-import {
-  FormInput,
-  pathToString,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {pathToString} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {FormInput} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 import {Text, Flex, Box, VStack} from 'ui5'
 
 export function FormInputExample(props: ObjectInputProps) {

@@ -17,79 +17,17 @@
  * that have since become public API stay exported here too for the consumers that already
  * migrated. The `internal-exports` test in the `@repo/test-dts-exports` workspace enforces the
  * superset direction and keeps the compatibility list on the public entries explicit.
+ *
+ * Two subpaths split off what a studio does not need while it boots: `/1` holds what code that
+ * runs before sign-in may import, and `/2` the internals only lazily loaded code uses (the
+ * document stack). What stays here is what the studio shell and code all over a studio use, so
+ * that importing this entry does not load forms, diffs or document panes.
  */
 
 // From `sanity`
 export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
-export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
-export {type ChangeIndicatorProps} from '../core/changeIndicators/ChangeIndicator'
-export {type ConnectorContextValue} from '../core/changeIndicators/ConnectorContext'
-export {
-  ChangeConnectorRoot,
-  type ChangeConnectorRootProps,
-} from '../core/changeIndicators/overlay/ChangeConnectorRoot'
-export {
-  ChangeIndicatorsTracker,
-  useChangeIndicatorsReportedValues,
-  useChangeIndicatorsReporter,
-} from '../core/changeIndicators/tracker'
-export {
-  type ChangeIndicatorTrackerContextValue,
-  type TrackedArea,
-  type TrackedChange,
-} from '../core/changeIndicators/types'
-export {CommentDisabledIcon} from '../core/comments-v2/components/icons/CommentDisabledIcon'
-export {CommentDisabledIcon as CommentDisabledIconLegacy} from '../core/comments/components/icons/CommentDisabledIcon'
-export {CommentDeleteDialog} from '../core/comments-v2/components/CommentDeleteDialog'
-export {CommentDeleteDialog as CommentDeleteDialogLegacy} from '../core/comments/components/CommentDeleteDialog'
-export {CommentsList} from '../core/comments-v2/components/list/CommentsList'
-export {CommentsList as CommentsListLegacy} from '../core/comments/components/list/CommentsList'
-export {
-  CommentInput,
-  type CommentInputHandle,
-  type CommentInputProps,
-} from '../core/comments-v2/components/pte/comment-input/CommentInput'
-export {
-  CommentInput as CommentInputLegacy,
-  type CommentInputHandle as CommentInputHandleLegacy,
-  type CommentInputProps as CommentInputPropsLegacy,
-} from '../core/comments/components/pte/comment-input/CommentInput'
-export {CommentInlineHighlightSpan} from '../core/comments-v2/components/pte/CommentInlineHighlightSpan'
-export {CommentInlineHighlightSpan as CommentInlineHighlightSpanLegacy} from '../core/comments/components/pte/CommentInlineHighlightSpan'
-export {COMMENTS_INSPECTOR_NAME} from '../core/comments-v2/constants'
-export {COMMENTS_INSPECTOR_NAME as COMMENTS_INSPECTOR_NAME_LEGACY} from '../core/comments/constants'
-export {CommentsAuthoringPathProvider} from '../core/comments-v2/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsAuthoringPathProvider as CommentsAuthoringPathProviderLegacy} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsProvider} from '../core/comments-v2/context/comments/CommentsProvider'
-export {CommentsProvider as CommentsProviderLegacy} from '../core/comments/context/comments/CommentsProvider'
-export {CommentsEnabledProvider} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
-export {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../core/comments/context/enabled/CommentsEnabledProvider'
-export {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
-export {CommentsSelectedPathProvider} from '../core/comments-v2/context/selected-path/CommentsSelectedPathProvider'
-export {CommentsSelectedPathProvider as CommentsSelectedPathProviderLegacy} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
-export {type CommentsSelectedPath} from '../core/comments-v2/context/selected-path/types'
-export {type CommentsSelectedPath as CommentsSelectedPathLegacy} from '../core/comments/context/selected-path/types'
-export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments-v2/helpers'
-export {
-  hasCommentMessageValue as hasCommentMessageValueLegacy,
-  isTextSelectionComment as isTextSelectionCommentLegacy,
-} from '../core/comments/helpers'
-export {useComments} from '../core/comments-v2/hooks/useComments'
-export {useComments as useCommentsLegacy} from '../core/comments/hooks/useComments'
-export {useCommentsEnabled} from '../core/comments-v2/hooks/useCommentsEnabled'
-export {useCommentsEnabled as useCommentsEnabledLegacy} from '../core/comments/hooks/useCommentsEnabled'
-export {useCommentsSelectedPath} from '../core/comments-v2/hooks/useCommentsSelectedPath'
-export {useCommentsSelectedPath as useCommentsSelectedPathLegacy} from '../core/comments/hooks/useCommentsSelectedPath'
-export {useCommentsTelemetry} from '../core/comments-v2/hooks/useCommentsTelemetry'
-export {useCommentsTelemetry as useCommentsTelemetryLegacy} from '../core/comments/hooks/useCommentsTelemetry'
-export {buildCommentRangeDecorations} from '../core/comments-v2/utils/inline-comments/buildCommentRangeDecorations'
-export {buildCommentRangeDecorations as buildCommentRangeDecorationsLegacy} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
-export {buildRangeDecorationSelectionsFromComments} from '../core/comments-v2/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
-export {buildRangeDecorationSelectionsFromComments as buildRangeDecorationSelectionsFromCommentsLegacy} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
-export {buildTextSelectionFromFragment} from '../core/comments-v2/utils/inline-comments/buildTextSelectionFromFragment'
-export {buildTextSelectionFromFragment as buildTextSelectionFromFragmentLegacy} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {DashboardLink} from '../core/components/DashboardLink'
@@ -116,16 +54,12 @@ export {
 } from '../core/components/commandList/types'
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
-export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
-export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
-export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
 export {type ErrorWithId} from '../core/components/errorActions/types'
 export {
   serializeError,
   useCopyErrorDetails,
 } from '../core/components/errorActions/useCopyErrorDetails'
-export {DatePicker} from '../core/components/inputs/DateInputs/DatePicker'
 export {type InsufficientPermissionsMessageProps} from '../core/components/InsufficientPermissionsMessage'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 export {PopoverDialog} from '../core/components/popoverDialog/PopoverDialog'
@@ -136,17 +70,6 @@ export {
   ReferenceInputPreviewCard,
   usePreviewCard,
 } from '../core/components/previewCard/PreviewCard'
-export {
-  type TrackerContextGetSnapshot,
-  type TrackerContextStore,
-  useTrackerStore,
-  useTrackerStoreReporter,
-} from '../core/components/react-track-elements/hooks'
-export {
-  type IsEqualFunction,
-  type Reported,
-  type ReporterHook,
-} from '../core/components/react-track-elements/types'
 export {RelativeTime, type RelativeTimeProps} from '../core/components/RelativeTime'
 export {Resizable} from '../core/components/resizer/Resizable'
 export {useOnScroll} from '../core/components/scroll/hooks'
@@ -208,21 +131,6 @@ export {
   getConfigContextFromSource,
   useConfigContextFromSource,
 } from '../core/config/useConfigContextFromSource'
-export {useDivergenceNavigator} from '../core/divergence/divergenceNavigator'
-export {
-  DocumentGroupInventory,
-  type DocumentGroupInventoryHandle,
-  type DocumentGroupInventoryProps,
-} from '../core/documentGroupInventory/components/DocumentGroupInventory'
-export {
-  DocumentGroupInventoryFeedbackAction,
-  type DocumentGroupInventoryFeedbackActionProps,
-} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
-export {
-  type DocumentGroupInventoryComponents,
-  type DocumentGroupInventoryPerspectiveList,
-  type DocumentGroupInventoryReferencePreviewLinkProps,
-} from '../core/documentGroupInventory/types'
 export {isProd} from '../core/environment'
 export {isImportError} from '../core/error/isImportError'
 export {FeedbackDialog, type FeedbackDialogProps} from '../core/feedback/components/FeedbackDialog'
@@ -241,60 +149,6 @@ export {
 } from '../core/feedback/hooks/useInStudioFeedback'
 export {useStudioFeedbackTags} from '../core/feedback/hooks/useStudioFeedbackTags'
 export {type FeedbackContextValue, type Sentiment} from '../core/feedback/types'
-export {
-  type DiffVisitor,
-  getAnnotationAtPath,
-  getAnnotationColor,
-  visitDiff,
-} from '../core/field/diff/annotations/helpers'
-export {ChangeBreadcrumb} from '../core/field/diff/components/ChangeBreadcrumb'
-export {type ChangeListProps} from '../core/field/diff/components/ChangeList'
-export {
-  ChangeResolver,
-  type ChangeResolverProps,
-  GroupChange,
-} from '../core/field/diff/components/ChangeResolver'
-export {ChangesError} from '../core/field/diff/components/ChangesError'
-export {ChangeTitleSegment} from '../core/field/diff/components/ChangeTitleSegment'
-export {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../core/field/diff/components/constants'
-export {type DiffCardProps} from '../core/field/diff/components/DiffCard'
-export {
-  DiffErrorBoundary,
-  type DiffErrorBoundaryProps,
-  type DiffErrorBoundaryState,
-} from '../core/field/diff/components/DiffErrorBoundary'
-export {type DiffFromToProps} from '../core/field/diff/components/DiffFromTo'
-export {
-  DiffInspectWrapper,
-  type DiffInspectWrapperProps,
-} from '../core/field/diff/components/DiffInspectWrapper'
-export {DiffString, DiffStringSegment} from '../core/field/diff/components/DiffString'
-export {
-  type DiffTooltipProps,
-  type DiffTooltipWithAnnotationsProps,
-} from '../core/field/diff/components/DiffTooltip'
-export {Event} from '../core/field/diff/components/Event'
-export {FallbackDiff} from '../core/field/diff/components/FallbackDiff'
-export {FieldChange} from '../core/field/diff/components/FieldChange'
-export {FromTo, type FromToProps} from '../core/field/diff/components/FromTo'
-export {FromToArrow, type FromToArrowDirection} from '../core/field/diff/components/FromToArrow'
-export {MetaInfo, type MetaInfoProps} from '../core/field/diff/components/MetaInfo'
-export {NoChanges} from '../core/field/diff/components/NoChanges'
-export {RevertChangesButton} from '../core/field/diff/components/RevertChangesButton'
-export {RevertChangesConfirmDialog} from '../core/field/diff/components/RevertChangesConfirmDialog'
-export {ValueError} from '../core/field/diff/components/ValueError'
-export {type DocumentChangeContextInstance} from '../core/field/diff/contexts/DocumentChangeContext'
-export {
-  emptyValuesByType,
-  isAddedItemDiff,
-  isFieldChange,
-  isGroupChange,
-  isRemovedItemDiff,
-  isUnchangedDiff,
-  noop,
-} from '../core/field/diff/helpers'
-export {useDocumentChange} from '../core/field/diff/hooks/useDocumentChange'
-export {resolveDiffComponent} from '../core/field/diff/resolve/resolveDiffComponent'
 export {
   findIndex,
   getItemKey,
@@ -330,132 +184,7 @@ export {
   type StringSegmentUnchanged,
   type TypeChangeDiff,
 } from '../core/field/types'
-export {type FieldValueError, getValueError} from '../core/field/validation'
 export {type FIXME} from '../core/FIXME'
-export {type FormFieldProps} from '../core/form/components/formField/FormField'
-export {type FormFieldHeaderTextProps} from '../core/form/components/formField/FormFieldHeaderText'
-export {FormFieldSet, type FormFieldSetProps} from '../core/form/components/formField/FormFieldSet'
-export {
-  type FieldStatusProps,
-  FormFieldStatus,
-} from '../core/form/components/formField/FormFieldStatus'
-export {type FormFieldValidationStatusProps} from '../core/form/components/formField/FormFieldValidationStatus'
-export {
-  type FormFieldValidation,
-  type FormFieldValidationError,
-  type FormFieldValidationInfo,
-  type FormFieldValidationWarning,
-} from '../core/form/components/formField/types'
-export {
-  type FormInputAbsolutePathArg,
-  type FormInputRelativePathArg,
-} from '../core/form/components/FormInput'
-export {FormCell} from '../core/form/components/layout/FormCell'
-export {FormContainer} from '../core/form/components/layout/FormContainer'
-export {FormRow} from '../core/form/components/layout/FormRow'
-export {
-  DivergencesProvider,
-  useDocumentDivergences,
-} from '../core/form/contexts/DivergencesProvider'
-export {type FormValueContextValue, FormValueProvider} from '../core/form/contexts/FormValue'
-export {GetFormValueProvider} from '../core/form/contexts/GetFormValue'
-export {
-  FieldActionMenu,
-  type FieldActionMenuProps,
-} from '../core/form/field/actions/FieldActionMenu'
-export {FieldActionsProvider} from '../core/form/field/actions/FieldActionsProvider'
-export {
-  type FieldActionsProps,
-  FieldActionsResolver,
-} from '../core/form/field/actions/FieldActionsResolver'
-export {useFieldActions} from '../core/form/field/actions/useFieldActions'
-export {HoveredFieldProvider} from '../core/form/field/HoveredFieldProvider'
-export {useHoveredField} from '../core/form/field/useHoveredField'
-export {
-  useVirtualizerScrollInstance,
-  type VirtualizerScrollInstance,
-} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
-export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
-export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
-export {
-  type PortableTextMemberItem,
-  UpdateReadOnlyPlugin,
-} from '../core/form/inputs/PortableText/PortableTextInput'
-export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
-export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
-export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
-export {
-  MemberFieldSet,
-  ObjectInputMembers,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ObjectMembers,
-} from '../core/form/lazy'
-export {
-  ArrayOfObjectsInputMember,
-  type ArrayOfObjectsMemberProps,
-} from '../core/form/members/array/ArrayOfObjectsInputMember'
-export {
-  ArrayOfObjectsInputMembers,
-  type ArrayOfObjectsInputMembersProps,
-} from '../core/form/members/array/ArrayOfObjectsInputMembers'
-export {type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
-export {type ObjectMembersProps} from '../core/form/members/object/ObjectInputMembers'
-export {prefixPath, SANITY_PATCH_TYPE} from '../core/form/patch/patch'
-export {resolveConditionalProperty} from '../core/form/store/conditional-property/resolveConditionalProperty'
-export {setAtPath} from '../core/form/store/stateTreeHelper'
-export {type DocumentFormNode, type HiddenField} from '../core/form/store/types/nodes'
-export {
-  type FormState,
-  useFormState,
-  type UseFormStateOptions,
-} from '../core/form/store/useFormState'
-export {
-  type ExpandFieldSetOperation,
-  type ExpandOperation,
-  type ExpandPathOperation,
-  getExpandOperations,
-  type SetActiveGroupOperation,
-} from '../core/form/store/utils/getExpandOperations'
-export {mergeParseErrors, type ParseError} from '../core/form/store/utils/mergeParseErrors'
-export {type FormCallbacksValue} from '../core/form/studio/contexts/FormCallbacks'
-export {
-  ParseErrorsProvider,
-  useParseErrorForPath,
-  useParseErrors,
-  useReportParseError,
-} from '../core/form/studio/contexts/ParseErrors'
-export {
-  type EditReferenceLinkComponentProps,
-  type EditReferenceOptions,
-  type ReferenceInputOptions,
-  ReferenceInputOptionsProvider,
-  type TemplateOption,
-  useReferenceInputOptions,
-} from '../core/form/studio/contexts/ReferenceInputOptions'
-export {
-  defaultRenderAnnotation,
-  defaultRenderBlock,
-  defaultRenderField,
-  defaultRenderInlineBlock,
-  defaultRenderInput,
-  defaultRenderItem,
-  defaultRenderPreview,
-} from '../core/form/studio/defaults'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  useEnhancedObjectDialog,
-} from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
-export {type UploaderDef} from '../core/form/studio/uploads/types'
-export {type FormBuilderFilterFieldFn} from '../core/form/types/_transitional'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type FieldCommentsProps,
-  type PrimitiveFieldProps,
-} from '../core/form/types/fieldProps'
-export {useDocumentForm} from '../core/form/useDocumentForm'
-export {type MutationPatch, toMutationPatches} from '../core/form/utils/mutationPatch'
-export {decodePath, encodePath} from '../core/form/utils/path'
 export {useConditionalToast} from '../core/hooks/useConditionalToast'
 export {
   connectionState,
@@ -471,14 +200,8 @@ export {
 } from '../core/hooks/useDocumentSyncState'
 export {useFeatureEnabled} from '../core/hooks/useFeatureEnabled'
 export {useFilteredReleases} from '../core/hooks/useFilteredReleases'
-export {
-  type GlobalCopyPasteElementHandler,
-  useGlobalCopyPasteElementHandler,
-} from '../core/hooks/useGlobalCopyPasteElementHandler'
-export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
 export {useReconnectingToast} from '../core/hooks/useReconnectingToast'
 export {type RelativeTimeOptions} from '../core/hooks/useRelativeTime'
-export {useReviewChanges} from '../core/hooks/useReviewChanges'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
 export {type SyncState} from '../core/hooks/useSyncState'
 export {
@@ -516,17 +239,6 @@ export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
 export {useSetVariant} from '../core/perspective/useSetVariant'
-export {type DocumentPreviewPresenceProps} from '../core/presence/DocumentPreviewPresence'
-export {
-  FieldPresence,
-  FieldPresenceInner,
-  type FieldPresenceInnerProps,
-  type FieldPresenceProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  FieldPresenceWithOverlay,
-} from '../core/presence/FieldPresence'
-export {type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
-export {PresenceScope, type PresenceScopeProps} from '../core/presence/PresenceScope'
 export {
   type FieldPresenceData,
   type Location,
@@ -559,13 +271,7 @@ export {
 } from '../core/preview/useValuePreview'
 export {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
 export {prepareForPreview} from '../core/preview/utils/prepareForPreview'
-export {Chip} from '../core/releases/components/Chip'
-export {VersionChip} from '../core/releases/components/documentHeader/VersionChip'
 export {ReleaseTitle} from '../core/releases/components/ReleaseTitle'
-export {
-  getVersionInlineBadge,
-  VersionInlineBadge,
-} from '../core/releases/components/VersionInlineBadge'
 export {useFormatRelativeLocalePublishDate} from '../core/releases/hooks/useFormatRelativeLocalePublishDate'
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
 export {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
@@ -590,10 +296,6 @@ export {
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../core/releases/util/util'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
-export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
-export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
 export {useReleasesToolAvailable} from '../core/schedules/hooks/useReleasesToolAvailable'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
@@ -626,7 +328,6 @@ export {
   SingleDocReleaseProvider,
   useSingleDocRelease,
 } from '../core/singleDocRelease/context/SingleDocReleaseProvider'
-export {usePausedScheduledDraft} from '../core/singleDocRelease/hooks/usePausedScheduledDraft'
 export {usePauseToEditScheduledDraft} from '../core/singleDocRelease/hooks/usePauseToEditScheduledDraft'
 export {useScheduledDraftDocument} from '../core/singleDocRelease/hooks/useScheduledDraftDocument'
 export {useScheduledDraftsEnabled} from '../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
@@ -919,8 +620,6 @@ export {
   WorkspacesProvider,
   type WorkspacesProviderProps,
 } from '../core/studio/workspaces/WorkspacesProvider'
-export {IsLastPaneProvider} from '../core/tasks/context/isLastPane/IsLastPaneProvider'
-export {useDocumentPreviewValues} from '../core/tasks/hooks/useDocumentPreviewValues'
 export {
   defaultTemplateForType,
   defaultTemplatesForSchema,
@@ -1032,16 +731,6 @@ export {isVariantId} from '../core/variants/types'
 export {Rule as ConcreteRuleClass, type ValidationContext} from '@sanity/validation/_internal'
 
 // From `sanity/structure`
-export {ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
-export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
-export {Pane} from '../structure/components/pane/Pane'
-export {PaneContent} from '../structure/components/pane/PaneContent'
-export {DocumentPane} from '../structure/panes/document/DocumentPane'
-export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
-export {usePaneOptions} from '../structure/panes/document/usePaneOptions'
-export {type DocumentListPaneProps} from '../structure/panes/documentList'
-export {ORDER_BY_IDS_PARAM_FIELD} from '../structure/panes/documentList/orderByIdsParam'
-export {PaneContainer as DocumentListPane} from '../structure/panes/documentList/PaneContainer'
 export {
   createStructureBuilder,
   type StructureBuilderOptions,
@@ -1071,10 +760,6 @@ export {type Builder} from '../structure/structureBuilder/StructureNodes'
 export {component, form} from '../structure/structureBuilder/views'
 export {maybeSerializeView} from '../structure/structureBuilder/views/View'
 export {
-  StructureToolProvider,
-  type StructureToolProviderProps,
-} from '../structure/StructureToolProvider'
-export {
   type BaseResolvedPaneNode,
   type CustomComponentPaneNode,
   type DocumentListPaneNode,
@@ -1094,7 +779,6 @@ export {
   type StructureToolPaneActionHandler,
   type UnresolvedPaneNode,
 } from '../structure/types'
-export {useStructureTool} from '../structure/useStructureTool'
 
 // From `sanity/router`
 export {_createNode} from '../router/route'
@@ -1113,27 +797,14 @@ export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEnco
 // exactly the people who followed that advice. A re-export costs nothing at runtime, so this
 // entry is a superset: every `@internal` export of a public entry, plus the names that have since
 // become public API. The guard test asserts the superset direction only.
-export {ChangeIndicator} from '../core/changeIndicators/ChangeIndicator'
-export {ChangeList} from '../core/field/diff/components/ChangeList'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../core/studioClient'
-export {DiffCard} from '../core/field/diff/components/DiffCard'
 export {type DiffComponent} from '../core/field/types'
-export {DiffFromTo} from '../core/field/diff/components/DiffFromTo'
 export {type DiffProps} from '../core/field/types'
-export {DiffTooltip} from '../core/field/diff/components/DiffTooltip'
-export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
-export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
-export {DocumentPreviewPresence} from '../core/presence/DocumentPreviewPresence'
-export {FormCallbacksProvider} from '../core/form/studio/contexts/FormCallbacks'
-export {FormFieldHeaderText} from '../core/form/components/formField/FormFieldHeaderText'
-export {FormFieldValidationStatus} from '../core/form/components/formField/FormFieldValidationStatus'
 export {type GenerateStudioManifestOptions} from '../core/studio/manifest/generateStudioManifest'
 export {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
 export {type ListenQueryParams} from '../core/store/document/listenQuery'
 export {type ManifestWorkspaceInput} from '../core/studio/manifest/types'
-export {MemberItemError} from '../core/form/members/array/MemberItemError'
 export {type ObjectDiff} from '../core/field/types'
-export {PresenceOverlay} from '../core/presence/overlay/PresenceOverlay'
 export {Preview} from '../core/preview/components/Preview'
 export {PreviewCard} from '../core/components/previewCard/PreviewCard'
 export {RouterContext} from '../router/useRouter'
@@ -1141,15 +812,11 @@ export {SanityDefaultPreview} from '../core/preview/components/SanityDefaultPrev
 export {SchemaError} from '../core/config/SchemaError'
 export {type StudioManifest} from '../core/studio/manifest/types'
 export {type StudioWorkspaceManifest} from '../core/studio/manifest/types'
-export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {collate} from '../core/util/draftUtils'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'
-export {createPatchChannel} from '../core/form/patch/PatchChannel'
 export {defineDocumentFieldAction} from '../core/config/document/fieldActions/define'
-export {fromMutationPatches} from '../core/form/utils/mutationPatch'
 export {generateStudioManifest} from '../core/studio/manifest/generateStudioManifest'
-export {getDiffAtPath} from '../core/field/diff/annotations/helpers'
 export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
 export {getPreviewValueWithFallback} from '../core/preview/utils/getPreviewValueWithFallback'
 export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
@@ -1162,15 +829,11 @@ export {stringToPath} from '../core/field/paths/helpers'
 export {truncateString} from '../core/util/unicodeString'
 export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 export {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
-export {useAnnotationColor} from '../core/field/diff/annotations/hooks'
-export {useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
 export {useDocumentOperation} from '../core/hooks/useDocumentOperation'
 export {useDocumentPairPermissions} from '../core/store/grants/documentPairPermissions'
-export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
 export {useDocumentPresence} from '../core/store/presence/useDocumentPresence'
 export {useDocumentValues} from '../core/store/document/hooks/useDocumentValues'
 export {useEditState} from '../core/hooks/useEditState'
-export {useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
 export {useRelativeTime} from '../core/hooks/useRelativeTime'
 export {useResolveInitialValueForType} from '../core/store/document/useResolveInitialValueForType'
 export {useSyncState} from '../core/hooks/useSyncState'
@@ -1198,14 +861,10 @@ export {type MediaPreviewProps} from '../core/components/previews/general/MediaP
 export {type InlinePreviewProps} from '../core/components/previews/portableText/InlinePreview'
 
 // SAPP-5036: moved off the public `sanity` root entry
-export {ALL_FIELDS_GROUP} from '../core/form/store/constants'
 export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
-export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
-export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
 export {AvatarSkeleton} from '../core/components/userAvatar/UserAvatar'
 export {BlockImagePreview} from '../core/components/previews/portableText/BlockImagePreview'
 export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
-export {BooleanInput} from '../core/form/inputs/BooleanInput'
 export {CircularProgress} from '../core/components/progress/CircularProgress'
 export {CompactPreview} from '../core/components/previews/general/CompactPreview'
 export {CopyPasteProvider} from '../core/studio/copyPaste/CopyPasteProvider'
@@ -1218,70 +877,21 @@ export {
 export {DRAFTS_FOLDER} from '../core/util/draftUtils'
 export {DefaultPreview} from '../core/components/previews/general/DefaultPreview'
 export {DetailPreview} from '../core/components/previews/general/DetailPreview'
-// oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
-export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
-// oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
-export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
-export {EditPortal} from '../core/form/components/EditPortal'
-export {EmailInput} from '../core/form/inputs/EmailInput'
-export {FormBuilder, FormProvider} from '../core/form/lazy'
 export {Hotkeys} from '../core/components/Hotkeys'
 export {InlinePreview} from '../core/components/previews/portableText/InlinePreview'
 export {IntentButton} from '../core/components/IntentButton'
 export {LinearProgress} from '../core/components/progress/LinearProgress'
 export {MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME} from '@sanity/types'
 export {MediaPreview} from '../core/components/previews/general/MediaPreview'
-export {
-  ArrayOfObjectOptionsInput,
-  ArrayOfObjectsItem,
-  ArrayOfOptionsInput,
-  ArrayOfPrimitiveOptionsInput,
-  ArrayOfPrimitivesInput,
-  ArrayOfPrimitivesItem,
-  CrossDatasetReferenceInput,
-  DateInput,
-  DateTimeInput,
-  EnhancedObjectDialog,
-  FileInput,
-  FormField,
-  FormInput,
-  ImageInput,
-  PortableTextInput as BlockEditor,
-} from '../core/form/lazy'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
-export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
-export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
 export {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
-export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
 export {
   type RovingFocusNavigationType,
   type RovingFocusProps,
 } from '../core/components/rovingFocus/types'
 export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {UserAvatar, type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
-export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
-export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
-export {SelectInput} from '../core/form/inputs/SelectInput'
-export {TelephoneInput} from '../core/form/inputs/TelephoneInput'
-export {TextInput} from '../core/form/inputs/TextInput'
-export {UrlInput} from '../core/form/inputs/UrlInput'
-export {
-  ArrayOfObjectsInput,
-  ObjectInput,
-  PortableTextInput,
-  ReferenceInput,
-  SlugInput,
-  StringInput,
-  TagsArrayInput,
-  UniversalArrayInput,
-  MemberField,
-  MemberFieldError,
-  ObjectInputMember,
-} from '../core/form/lazy'
-export {PatchEvent} from '../core/form/patch/PatchEvent'
-export {useFormBuilder} from '../core/form/useFormBuilder'
-export {TransformPatches} from '../core/form/utils/TransformPatches'
 export {useDialogStack} from '../core/hooks/useDialogStack'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
@@ -1298,10 +908,6 @@ export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
 export {getDocumentIsInPerspective} from '../core/releases/util/util'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API kept until it is removed
-export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API kept until it is removed
-export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 export {
   useDocumentPreviewStore,
   useDocumentStore,
@@ -1384,17 +990,677 @@ export {
 // Type-only: every symbol is `export declare` / `export type … = never`. Nothing here may
 // emit runtime JavaScript. See AGENTS.md ("Export tombstones (v7)").
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfObjectsInputMember: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfObjectsInputMembers: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ArrayOfObjectsInputMembersProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ArrayOfObjectsMemberProps = never
+/**
  * @deprecated Removed in v7 with `createAuthStore`. Pass the same options on the workspace `auth` config key.
  */
 export type AuthStoreOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const COMMENTS_INSPECTOR_NAME: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeBreadcrumb: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeConnectorRoot: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeConnectorRootProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeFieldWrapper: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeIndicator: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeIndicatorProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeIndicatorTrackerContextValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeIndicatorsTracker: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeList: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeListProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeResolver: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeResolverProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeTitleSegment: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangesError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const Chip: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CommentDisabledIcon: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CommentInlineHighlightSpan: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CommentInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type CommentInputHandle = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type CommentInputProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type CommentsSelectedPath = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CommentsSelectedPathProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ConfirmDeleteDialog: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type ConfirmDeleteDialogProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ConnectorContextValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CreateReferenceButton: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type CreateReferenceOption = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CrossDatasetReferencePreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffCard: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffCardProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffErrorBoundary: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffErrorBoundaryProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffErrorBoundaryState = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffFromTo: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffFromToProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffInspectWrapper: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffInspectWrapperProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffString: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffStringSegment: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffTooltip: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffTooltipProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffTooltipWithAnnotationsProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffVisitor = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DivergencesProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentChangeContextInstance = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentFormNode = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentGroupInventory: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentGroupInventoryComponents = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentGroupInventoryFeedbackAction: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentGroupInventoryFeedbackActionProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentGroupInventoryHandle = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentGroupInventoryPerspectiveList = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentGroupInventoryProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentGroupInventoryReferencePreviewLinkProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentInspectorHeader: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentListPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentListPaneProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentPaneProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentPaneProviderProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentPreviewPresence: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentPreviewPresenceProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentVersionIcons: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentVersionsStatus: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentVersionsStatusIndicator: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type EditReferenceLinkComponentProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type EditReferenceOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const EditScheduleForm: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const Event: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ExpandFieldSetOperation = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ExpandOperation = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ExpandPathOperation = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FallbackDiff: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldActionMenu: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldActionMenuProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldActionsProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldActionsProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldActionsResolver: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldChange: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldCommentsProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldPresence: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldPresenceInner: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldPresenceInnerProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldPresenceProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FieldPresenceWithOverlay: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldStatusProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FieldValueError = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormBuilderFilterFieldFn = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormCallbacksProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormCallbacksValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormCell: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormContainer: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormField: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormFieldHeaderText: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldHeaderTextProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormFieldSet: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldSetProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormFieldStatus: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldValidation = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldValidationError = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldValidationInfo = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormFieldValidationStatus: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldValidationStatusProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldValidationWarning = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormInputAbsolutePathArg = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormInputRelativePathArg = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormRow: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormState = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FormValueContextValue = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormValueProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FromTo: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FromToArrow: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FromToArrowDirection = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type FromToProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const GetFormValueProvider: never
 /**
  * @deprecated Removed in v7. This was internal document-action plumbing with no public replacement.
  */
 export declare const GetHookCollectionState: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type GlobalCopyPasteElementHandler = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const GroupChange: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type HiddenField = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const HoveredFieldProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type IsEqualFunction = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const IsLastPaneProvider: never
+/**
  * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
  */
 export type LegacyThemeTints = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MemberField: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MemberFieldError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type MemberFieldProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MemberFieldSet: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MemberItemError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MetaInfo: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type MetaInfoProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type MutationPatch = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const NoChanges: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ORDER_BY_IDS_PARAM_FIELD: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ObjectInputMember: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ObjectInputMemberProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ObjectInputMembers: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ObjectMembers: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ObjectMembersProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const Pane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const PaneContent: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ParseError = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ParseErrorsProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type PortableTextMemberItem = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const PresenceOverlay: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type PresenceOverlayProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const PresenceScope: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type PresenceScopeProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type PrimitiveFieldProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ReferenceAutocomplete: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ReferenceInputOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ReferenceInputOptionsProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type Reported = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type ReporterHook = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const RevertChangesButton: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const RevertChangesConfirmDialog: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const SANITY_PATCH_TYPE: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const SchedulesContext: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type SetActiveGroupOperation = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const StructureToolProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type StructureToolProviderProps = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
@@ -1403,6 +1669,14 @@ export declare const StudioDiagnosticsBridge: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export type StudioDiagnosticsBridgeApi = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const TIMELINE_ITEM_I18N_KEY_MAPPING: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type TemplateOption = never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
@@ -1420,6 +1694,58 @@ export type TimelineState = never
  */
 export type TimelineStore = never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type TrackedArea = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type TrackedChange = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type TrackerContextGetSnapshot = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type TrackerContextStore = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const UpdateReadOnlyPlugin: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type UploaderDef = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type UseFormStateOptions = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type UseManageFavoriteProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ValueError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const VersionChip: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const VersionInlineBadge: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type VirtualizerScrollInstance = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const VirtualizerScrollInstanceProvider: never
+/**
  * @deprecated Removed in v7. Use `useReferringDocuments` from `sanity` instead (pass `[]` as the second argument to keep the old full-document shape).
  */
 export declare const WithReferringDocuments: never
@@ -1436,9 +1762,261 @@ export type WithRouterProps = never
  */
 export declare const _createAuthStore: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const buildCommentRangeDecorations: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const buildRangeDecorationSelectionsFromComments: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const buildTextSelectionFromFragment: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const createPatchChannel: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const decodePath: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderAnnotation: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderBlock: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderField: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderInlineBlock: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const defaultRenderPreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const emptyValuesByType: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const encodePath: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const fromMutationPatches: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getAnnotationAtPath: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getAnnotationColor: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getCalendarLabels: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export type getDiffAtPath = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getExpandOperations: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getValueError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const getVersionInlineBadge: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const hasCommentMessageValue: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isAddedItemDiff: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isFieldChange: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isGroupChange: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isRemovedItemDiff: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isTextSelectionComment: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const isUnchangedDiff: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const mergeParseErrors: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const noop: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const prefixPath: never
+/**
  * @deprecated Moved to `sanity`. Import `{renderStudio}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
  */
 export declare const renderStudio: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const resolveConditionalProperty: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const resolveDiffComponent: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const setAtPath: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const toMutationPatches: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useAnnotationColor: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useChangeIndicatorsReportedValues: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useChangeIndicatorsReporter: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useCommentsSelectedPath: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useCommentsTelemetry: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDiffAnnotationColor: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDivergenceNavigator: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentChange: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentDivergences: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentForm: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentPane: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useDocumentPreviewValues: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useEnhancedObjectDialog: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useFieldActions: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useFormCallbacks: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useFormState: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useGlobalCopyPasteElementHandler: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useHoveredField: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useManageFavorite: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const usePaneOptions: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useParseErrorForPath: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useParseErrors: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const usePausedScheduledDraft: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useReferenceInputOptions: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useReportParseError: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useReviewChanges: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useStructureTool: never
 /**
  * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
@@ -1447,6 +2025,22 @@ export declare const useTimelineSelector: never
  * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
 export declare const useTimelineStore: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useTrackerStore: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useTrackerStoreReporter: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const useVirtualizerScrollInstance: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
+ */
+export declare const visitDiff: never
 /**
  * @deprecated Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`.
  */

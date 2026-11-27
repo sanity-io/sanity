@@ -71,7 +71,7 @@ describe('DocumentLimitsUpsellPanel', () => {
   it('renders the upsell content in place of the tool that failed on the document limit', async () => {
     await renderPanel({upsellData, hasError: false})
 
-    expect(screen.getByText('You have reached the document limit')).toBeInTheDocument()
+    expect(await screen.findByText('You have reached the document limit')).toBeInTheDocument()
     expect(screen.getByRole('link', {name: 'Upgrade plan'})).toHaveAttribute(
       'href',
       'https://www.sanity.io/manage',

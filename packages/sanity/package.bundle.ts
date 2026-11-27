@@ -14,6 +14,8 @@ export default defineConfig(() => {
             './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver/1':
             './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/1.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver/2':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/2.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver/router':
             './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/router.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver/structure':

@@ -22,7 +22,7 @@ vi.mock('sanity/i18n', () => ({
 }))
 // The Studio's calendar reads the time zone from the studio preferences; it is covered by its own
 // tests, and stands in here for what it sends and receives
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2', () => ({
   getCalendarLabels: (t: (key: string) => string) => ({
     ariaLabel: t('calendar.button.aria-label'),
     tooltipText: t('calendar.button.tooltip-text'),

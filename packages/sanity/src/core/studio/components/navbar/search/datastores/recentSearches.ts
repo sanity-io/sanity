@@ -1,7 +1,7 @@
 import {type ObjectSchemaType, type Schema} from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
 import omit from 'lodash-es/omit.js'
-import {useMemo} from 'react'
+import {use, useMemo} from 'react'
 
 import {useSchema} from '../../../../../hooks/useSchema'
 import {type SearchTerms} from '../../../../../search/common/types'
@@ -9,6 +9,7 @@ import {useSource} from '../../../../source'
 import {
   createFieldDefinitionDictionary,
   createFieldDefinitions,
+  schemaHasComponentTitles,
   type SearchFieldDefinitionDictionary,
 } from '../definitions/fields'
 import {
@@ -21,6 +22,7 @@ import {
 } from '../definitions/operators'
 import {type SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
+import {loadComponentTitleRenderer} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 import {RECENT_SEARCH_VERSION, useStoredSearch} from './useStoredSearch'
 
@@ -58,6 +60,10 @@ export function useRecentSearchesStore(): RecentSearchesStore {
     search: {operators, filters},
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
+
+  // Titles that contain a component need `react-dom/server` before the field definitions exist,
+  // or validating the stored searches against them would drop the ones that filter on such a field
+  if (schemaHasComponentTitles(schema)) use(loadComponentTitleRenderer())
 
   // Create field, filter and operator dictionaries
   const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {

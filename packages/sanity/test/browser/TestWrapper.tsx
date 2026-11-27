@@ -17,7 +17,6 @@ import {
 } from 'sanity'
 import {
   CopyPasteProvider,
-  ChangeConnectorRoot,
   ColorSchemeProvider,
   EMPTY_ARRAY,
   ResourceCacheProvider,
@@ -25,6 +24,7 @@ import {
   UserColorManagerProvider,
   WorkspaceProvider,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {ChangeConnectorRoot} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
 
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'

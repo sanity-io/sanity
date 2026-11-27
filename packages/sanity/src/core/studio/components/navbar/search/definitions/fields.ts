@@ -7,11 +7,36 @@ import {
 } from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 
-import {sanitizeFieldValue} from '../utils/sanitizeField'
+import {isComponentTitle, sanitizeFieldValue} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 import {getSupportedFieldTypes, type SearchFilterDefinition} from './filters'
 
 export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
+
+const componentTitlesBySchema = new WeakMap<Schema, boolean>()
+
+function hasComponentTitle(definition: unknown, seen: Set<unknown>): boolean {
+  if (typeof definition !== 'object' || definition === null || seen.has(definition)) return false
+  seen.add(definition)
+  const {title, fields} = definition as {title?: unknown; fields?: unknown}
+  if (isComponentTitle(title)) return true
+  return Array.isArray(fields) && fields.some((field) => hasComponentTitle(field, seen))
+}
+
+/**
+ * Whether a field title of the schema contains a React component, which only
+ * `loadComponentTitleRenderer` can turn into the text `createFieldDefinitions` uses. The answer
+ * depends on the schema alone, so a `use()` guarded by it is called on every render once it is.
+ */
+export function schemaHasComponentTitles(schema: Schema): boolean {
+  let result = componentTitlesBySchema.get(schema)
+  if (result === undefined) {
+    const seen = new Set<unknown>()
+    result = (schema._original?.types ?? []).some((type) => hasComponentTitle(type, seen))
+    componentTitlesBySchema.set(schema, result)
+  }
+  return result
+}
 
 /**
  * @internal

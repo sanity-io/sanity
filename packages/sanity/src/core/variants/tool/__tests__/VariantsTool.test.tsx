@@ -210,7 +210,12 @@ describe('VariantsTool', () => {
 
       await renderTool('upsell')
 
-      await user.click(await screen.findByRole('button', {name: 'New variant definition'}))
+      const createButton = await screen.findByRole('button', {name: 'New variant definition'})
+      // The dialog loads lazily on open, and a render that suspends only resumes inside an awaited act
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog suspends on the click
+      await act(async () => {
+        await user.click(createButton)
+      })
 
       expect(
         await screen.findByRole('heading', {
