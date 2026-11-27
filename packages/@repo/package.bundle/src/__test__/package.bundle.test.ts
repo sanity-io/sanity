@@ -1,4 +1,4 @@
-import {mkdtemp, rm, writeFile} from 'node:fs/promises'
+import {mkdir, mkdtemp, rm, writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -13,6 +13,8 @@ import {
   cleanupCssOutputPlugin,
   createDefaultConfig,
   libraryEntryIds,
+  type PreloadModulesOptions,
+  preloadModulesPlugin,
   withPandaCssImport,
 } from '../package.bundle'
 
@@ -97,6 +99,125 @@ describe('createDefaultConfig()', () => {
     expect(names).not.toContain('pandacss')
     expect(names).not.toContain('sanity:remove-cascade-layers')
     expect(names).not.toContain('sanity/panda-css-import')
+  })
+})
+
+describe('createDefaultConfig() preload', () => {
+  it('has no preload plugin unless the package asks for a list', () => {
+    expect(pluginNames(createDefaultConfig({...OPTIONS, styles: 'panda'}).plugins)).not.toContain(
+      'sanity/preload-modules',
+    )
+    expect(
+      pluginNames(
+        createDefaultConfig({
+          ...OPTIONS,
+          styles: 'panda',
+          preload: {entry: 'index', lazyBoundaries: ['./boundary.js']},
+        }).plugins,
+      ),
+    ).toContain('sanity/preload-modules')
+  })
+})
+
+describe('preloadModulesPlugin()', () => {
+  const READS_LIST =
+    "export const list = typeof __SANITY_PRELOAD_MODULES__ === 'undefined' ? undefined : __SANITY_PRELOAD_MODULES__\n"
+  const FILES = {
+    'index.js':
+      "import {list} from './list.js'\nexport {list}\nexport const boundary = () => import('./boundary.js')\nexport const tool = () => import('./tool.js')\nexport {shared} from './shared.js'\n",
+    'list.js': READS_LIST,
+    'shared.js': "export const shared = 'shared'\n",
+    'boundary.js':
+      "import {shared} from './shared.js'\nimport {dep} from './dep.js'\nexport const boundary = shared + dep()\nexport const tool = () => import('./tool.js')\n",
+    'dep.js': "export function dep() { return 'dep' }\n",
+    'tool.js': "import {dep} from './dep.js'\nexport const tool = dep() + 'tool'\n",
+    'other.js': "export function other() { return 'other' }\n",
+  }
+  const OPTIONS_FOR_FILES: PreloadModulesOptions = {
+    entry: 'index',
+    lazyBoundaries: ['./boundary.js'],
+  }
+
+  async function buildFixture(
+    files: Record<string, string>,
+    preload: PreloadModulesOptions = OPTIONS_FOR_FILES,
+  ) {
+    const root = await mkdtemp(path.join(tmpdir(), 'package-bundle-preload-'))
+    try {
+      for (const [file, code] of Object.entries(files)) {
+        await mkdir(path.dirname(path.join(root, file)), {recursive: true})
+        await writeFile(path.join(root, file), code)
+      }
+      const output = await build({
+        root,
+        configFile: false,
+        logLevel: 'silent',
+        plugins: [preloadModulesPlugin(preload)],
+        build: {
+          write: false,
+          minify: false,
+          lib: {
+            entry: {index: './index.js', other: './other.js'},
+            formats: ['es'],
+          },
+        },
+      })
+      return [output].flat().flatMap((result) => ('output' in result ? result.output : []))
+    } finally {
+      await rm(root, {recursive: true, force: true})
+    }
+  }
+
+  function preloadList(output: Awaited<ReturnType<typeof buildFixture>>): string[] {
+    const index = output.find((chunk) => chunk.type === 'chunk' && chunk.fileName === 'index.mjs')
+    const match = index?.type === 'chunk' ? index.code.match(/\[\s*"\.\/[^\]]*\]/) : null
+    return match ? JSON.parse(match[0]) : []
+  }
+
+  it('lists the chunks of the lazy boundary and its static imports, relative to the entry', async () => {
+    const output = await buildFixture(FILES)
+    const list = preloadList(output)
+
+    expect(list).toHaveLength(2)
+    expect(list.every((specifier) => /^\.\/[^/]+\.mjs$/.test(specifier))).toBe(true)
+    const names = list.map((specifier) => specifier.slice(2))
+    // the boundary and the dependency it shares with a tool, but neither the tool nor `shared`,
+    // which the entry already loads
+    const chunks = output.filter((chunk) => chunk.type === 'chunk')
+    expect(chunks.map((chunk) => chunk.fileName)).toEqual(expect.arrayContaining(names))
+    const modules = names.map((name) => chunks.find((chunk) => chunk.fileName === name)!.code)
+    expect(modules.some((code) => code.includes("'dep'") || code.includes('"dep"'))).toBe(true)
+    expect(modules.some((code) => code.includes('"tool"') || code.includes("'tool'"))).toBe(false)
+    expect(modules.some((code) => code.includes('"shared"') || code.includes("'shared'"))).toBe(
+      false,
+    )
+    expect(output.map((asset) => asset.fileName).filter((file) => file.endsWith('.json'))).toEqual(
+      [],
+    )
+  })
+
+  it('fails when an allowlisted module is no longer a chunk of its own', async () => {
+    await expect(
+      buildFixture({
+        ...FILES,
+        'index.js': `${FILES['index.js']}export {boundary as staticBoundary} from './boundary.js'\n`,
+      }),
+    ).rejects.toThrow(/boundary\.js is no longer a chunk of its own/)
+  })
+
+  it('fails when the list would reach into the chunk of another entry', async () => {
+    await expect(
+      buildFixture({
+        ...FILES,
+        'boundary.js': `import {other} from './other.js'\nexport const usesOther = other()\n${FILES['boundary.js']}`,
+      }),
+    ).rejects.toThrow(/would reach into the entry chunk/)
+  })
+
+  it('fails when the entry does not read the list', async () => {
+    await expect(
+      buildFixture({...FILES, 'list.js': "export const list = 'none'\n"}),
+    ).rejects.toThrow(/exactly one chunk/)
   })
 })
 

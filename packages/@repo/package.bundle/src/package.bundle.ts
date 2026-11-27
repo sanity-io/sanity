@@ -14,6 +14,7 @@ import {
   type LibraryOptions,
   normalizePath,
   type Plugin,
+  type Rolldown,
   type UserConfig,
 } from 'vite'
 
@@ -47,12 +48,19 @@ export interface DefaultConfigOptions {
    * CSS scoping and class names of its package build, see @repo/css-modules-kit).
    */
   styles: 'panda' | 'css-modules'
+  /**
+   * The modules the studio preloads at boot so lazy chunks every studio needs do not load one
+   * after another. Only the auto-updating `sanity` bundle sets it: a package without it (and every
+   * other build of `sanity`) has no list and preloads nothing.
+   */
+  preload?: PreloadModulesOptions
 }
 
 export function createDefaultConfig({
   version,
   browserslist,
   styles,
+  preload,
 }: DefaultConfigOptions): UserConfig {
   const cssModules = styles === 'css-modules' ? viteCssModules : undefined
 
@@ -103,6 +111,7 @@ export function createDefaultConfig({
           ]
         : []),
       cleanupCssOutputPlugin(),
+      ...(preload ? [preloadModulesPlugin(preload)] : []),
       esmExternalRequirePlugin({
         // self-externals are required here in order to ensure that the presentation
         // tool and future transitive dependencies that require sanity do not
@@ -198,6 +207,142 @@ export function pandaCssImportPlugin(): Plugin {
     },
     transform(code, id) {
       return entries.has(id) ? {code: withPandaCssImport(code), map: null} : null
+    },
+  }
+}
+
+/**
+ * The build-time global `core/studio/preloadModules.ts` reads. Only the bundle build (this
+ * package) defines it, as a one-element array holding {@link PRELOAD_SENTINEL} that
+ * `preloadModulesPlugin()` swaps for the real list once the chunk file names are known; every
+ * other build of `sanity` leaves it undefined, and the studio preloads nothing.
+ */
+const PRELOAD_MODULES_GLOBAL = '__SANITY_PRELOAD_MODULES__'
+const PRELOAD_SENTINEL = '__sanity_preload_modules_placeholder__'
+// The minifier may print the array and its string with either quote style
+const PRELOAD_PLACEHOLDER_RE = new RegExp(`\\[\\s*(["'\`])${PRELOAD_SENTINEL}\\1\\s*\\]`, 'g')
+
+export interface PreloadModulesOptions {
+  /**
+   * The key of the library entry (in `build.lib.entry`) whose static imports are already loaded
+   * when the studio boots, so they are left out of the list.
+   */
+  entry: string
+  /**
+   * Source files, relative to the Vite root, that are `import()`ed lazily but that every studio
+   * needs right after boot. Each must stay a chunk boundary of its own: the list holds the static
+   * closure of each one's chunk, and no other lazy chunk.
+   */
+  lazyBoundaries: string[]
+}
+
+/** Resolves `to` against the directory of the chunk file `from`, as a relative module specifier. */
+function relativeChunkSpecifier(from: string, to: string): string {
+  const relative = path.posix.relative(path.posix.dirname(from), to)
+  return relative.startsWith('.') ? relative : `./${relative}`
+}
+
+/**
+ * Computes the modules the studio preloads at boot (see `core/studio/preloadModules.ts`) and bakes
+ * them into the chunk that reads {@link PRELOAD_MODULES_GLOBAL}, as module specifiers relative to
+ * that chunk so they resolve under whichever version the module server redirects to.
+ *
+ * The list is the static import closure of every {@link PreloadModulesOptions.lazyBoundaries}
+ * chunk minus what the entry already loads statically: an `import()` is only discovered once the
+ * code that calls it runs, so a lazy chunk and its imports are fetched in sequence unless something
+ * fetches them ahead of time. Dynamic imports are never followed, so lazy tool code stays out. The
+ * build fails when a boundary stops being a chunk boundary, when the list would reach into the
+ * chunk of another entry, or when the global is not found in exactly one chunk of the entry's
+ * static closure.
+ */
+export function preloadModulesPlugin(options: PreloadModulesOptions): Plugin {
+  let root = ''
+  let libraryEntries: Record<string, string> = {}
+
+  return {
+    name: 'sanity/preload-modules',
+    apply: 'build',
+    config() {
+      return {define: {[PRELOAD_MODULES_GLOBAL]: JSON.stringify([PRELOAD_SENTINEL])}}
+    },
+    configResolved(config) {
+      root = config.root
+      const entry = config.build.lib ? config.build.lib.entry : undefined
+      if (!entry || typeof entry === 'string' || Array.isArray(entry)) {
+        throw new Error('sanity/preload-modules needs `build.lib.entry` to be an object')
+      }
+      libraryEntries = entry
+    },
+    generateBundle(_options, bundle) {
+      const chunks = new Map<string, Rolldown.OutputChunk>()
+      for (const output of Object.values(bundle)) {
+        if (output.type === 'chunk') chunks.set(output.fileName, output)
+      }
+      const facadeOf = (id: string) => normalizePath(path.resolve(root, id))
+      const findChunk = (id: string, dynamicEntry: boolean) =>
+        [...chunks.values()].find(
+          (chunk) =>
+            chunk.facadeModuleId !== null &&
+            normalizePath(chunk.facadeModuleId) === id &&
+            (dynamicEntry ? chunk.isDynamicEntry : chunk.isEntry),
+        )
+      // Imports of modules outside of the bundle (react, `sanity/router`) are not chunks
+      const closure = (start: Rolldown.OutputChunk, into = new Set<string>()) => {
+        const queue = [start.fileName]
+        for (const fileName of queue) {
+          if (into.has(fileName)) continue
+          const chunk = chunks.get(fileName)
+          if (!chunk) continue
+          into.add(fileName)
+          queue.push(...chunk.imports)
+        }
+        return into
+      }
+
+      if (!libraryEntries[options.entry]) {
+        this.error(`preload entry "${options.entry}" is not in \`build.lib.entry\``)
+      }
+      const entryChunk = findChunk(facadeOf(libraryEntries[options.entry]), false)
+      if (!entryChunk) {
+        this.error(`preload entry "${options.entry}" did not produce an entry chunk`)
+      }
+      const loadedAtBoot = closure(entryChunk)
+
+      const preload = new Set<string>()
+      for (const source of options.lazyBoundaries) {
+        const boundary = findChunk(facadeOf(source), true)
+        if (!boundary) {
+          this.error(
+            `${source} is no longer a chunk of its own that is loaded with \`import()\`: a static ` +
+              'import elsewhere pulled it into a shared chunk, or nothing imports it lazily anymore. ' +
+              'Fix the import graph, or remove it from `lazyBoundaries`.',
+          )
+        }
+        for (const fileName of closure(boundary)) {
+          if (loadedAtBoot.has(fileName)) continue
+          const chunk = chunks.get(fileName)!
+          if (chunk.isEntry) {
+            this.error(
+              `Preloading ${source} would reach into the entry chunk ${fileName}, which is not ` +
+                `the "${options.entry}" entry. Entries other than "${options.entry}" load on demand.`,
+            )
+          }
+          preload.add(fileName)
+        }
+      }
+
+      const holders = [...chunks.values()].filter((chunk) => chunk.code.includes(PRELOAD_SENTINEL))
+      if (holders.length !== 1 || !loadedAtBoot.has(holders[0].fileName)) {
+        this.error(
+          `Expected \`${PRELOAD_MODULES_GLOBAL}\` in exactly one chunk that "${options.entry}" ` +
+            `imports statically, found it in: ${holders.map((chunk) => chunk.fileName).join(', ') || 'no chunk'}`,
+        )
+      }
+      const [holder] = holders
+      const specifiers = [...preload].map((fileName) =>
+        relativeChunkSpecifier(holder.fileName, fileName),
+      )
+      holder.code = holder.code.replace(PRELOAD_PLACEHOLDER_RE, () => JSON.stringify(specifiers))
     },
   }
 }

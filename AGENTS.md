@@ -350,6 +350,35 @@ How the CSS reaches a page:
   the parent renders (`'[data-change-bar-wrapper][data-focused] &'` in
   `ElementWithChangeBar.css.ts`), never on a class that exists only to be targeted.
 
+### Preloading the lazy studio shell (auto-updating studios)
+
+An auto-updating studio loads `sanity` from the module CDN through an import map, so each `import()`
+is only discovered once the code that calls it runs. `preload` in `packages/sanity/package.bundle.ts`
+names the lazy modules every studio needs right after boot (`AuthenticatedStudio`, the workspace
+source resolver, the layout and the navbar) and `preloadModulesPlugin()` in `@repo/package.bundle`
+bakes their chunks, plus the static imports of those chunks that the `index` entry does not already
+load, into the `__SANITY_PRELOAD_MODULES__` global as specifiers relative to the chunk it sits in.
+`renderStudio` (not `<Studio>`, which embedders render and which re-renders and runs twice in
+StrictMode) calls `preloadModule` from `react-dom` once for each. Only that build defines the global;
+the npm package, dev and test builds have no list and preload nothing. The build fails when a listed
+module stops being a lazy chunk of its own or when the list would reach into another entry's chunks
+(`_dangerously…/2`, `structure`, tools). Keep the allowlist to what the navbar on `/404` needs: a
+lazy boundary added there preloads on every studio load.
+
+The CDN redirects cross-origin (`sanity-cdn.com` to `modules.sanity-cdn.com`), and WebKit forces a
+modulepreload that follows a cross-origin redirect into credentialed CORS mode, which the bucket's
+`Access-Control-Allow-Origin: *` rejects: the preload fails and the studio renders blank (the
+reason the CLI's own preload of the `sanity` module was reverted, then gated to Chromium and Gecko).
+The list never goes through the redirect: a module's URL base is the response URL after redirects,
+so `preloadStudioModules()` resolves the relative specifiers against the module host, and skips
+anything that is not a `./` path on that origin. `crossOrigin: 'anonymous'` is the mode `import()`
+uses, so a preload is reused rather than fetched twice. `pnpm --filter e2e test:cdn` proves it in
+Chromium and WebKit (`e2e/tests/cdn`, workflow `e2e-cdn.yml`): it serves the built bundle behind a
+redirecting origin and a bucket with `Access-Control-Allow-Origin: *` only, loads the studio from
+an import map, and asserts the navbar renders, each preload is requested once from the bucket,
+none goes through the redirector, and no request fails. Build the bundle first with
+`pnpm --filter sanity build:bundle`.
+
 ### CSS modules
 
 Outside `packages/sanity`, components are styled with `*.module.css` files, and no workspace uses
@@ -891,6 +920,12 @@ types, of every entry of it and of the workspace build with ts-morph
 - tombstones whose message names a replacement import (`` `X` from `sanity/entry` ``, a list of
   names, or `` `X` from the same entry ``) where that entry does not export `X`. This check reads
   only the workspace build and the manifest, so it runs without the npm download.
+- tombstones whose message starts with ``Moved to `<entry>` `` while that entry exports a
+  different type under that name. Two declarations count as one type when they share at least half
+  of the names that characterize the smaller one (an interface's members, or the identifiers and
+  literals of a type alias), so a type that gained properties still counts as moved and an
+  unrelated type that happens to share the name (`Transaction`, `ConnectionStatus`) does not. Such
+  a name is "Removed", with the real replacement named if there is one. Values are not compared.
 
 The same suite checks that every tombstone in the built `.d.ts` is `never` with exactly its
 manifest message, and that no tombstone is a runtime export of its entry's JS. The download is

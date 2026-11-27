@@ -15,6 +15,7 @@ import type {
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
   ColorSchemeSetValueContext,
+  ColorSchemeSystemValueContext,
   ColorSchemeValueContext,
   CommentInputContext,
   CommentInputContextV2,
@@ -203,6 +204,9 @@ describe('sanity/_singletons', () => {
   })
   test('ColorSchemeSetValueContext', () => {
     expectTypeOf<typeof ColorSchemeSetValueContext>().not.toBeNever()
+  })
+  test('ColorSchemeSystemValueContext', () => {
+    expectTypeOf<typeof ColorSchemeSystemValueContext>().not.toBeNever()
   })
   test('ColorSchemeValueContext', () => {
     expectTypeOf<typeof ColorSchemeValueContext>().not.toBeNever()

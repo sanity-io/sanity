@@ -7,6 +7,7 @@ export default defineCliConfig({
     projectId: apiConfig.projectId,
     dataset: apiConfig.dataset,
   },
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  autoUpdates: false,
+  // `bench export-costs` builds an auto-updating variant that loads `sanity` from a local module
+  // host (SANITY_MODULES_HOST), the way auto-updating studios load it from the CDN
+  deployment: {autoUpdates: process.env.SANITY_BENCH_AUTO_UPDATES === 'true'},
 })

@@ -11,7 +11,14 @@ import path from 'node:path'
 import {Node, Project} from 'ts-morph'
 
 /** @typedef {'value' | 'type'} ExportKind */
-/** @typedef {{kind: ExportKind, tombstone: boolean, deprecated: string | undefined}} ExportInfo */
+/**
+ * @typedef {object} ExportInfo
+ * @property {ExportKind} kind
+ * @property {boolean} tombstone
+ * @property {string | undefined} deprecated
+ * @property {string[] | undefined} [shape] the names that characterize the type (see
+ *   `declarationShape`); unset for tombstones, values and declarations the compiler cannot resolve
+ */
 /** @typedef {Record<string, Record<string, ExportInfo>>} Surface */
 /** @typedef {{name: string, kind: ExportKind, message: string}} Tombstone */
 /** @typedef {{removedEntries: string[], tombstones: Record<string, Tombstone[]>}} Manifest */
@@ -131,6 +138,38 @@ function getDeprecatedMessage(declaration) {
   return undefined
 }
 
+/**
+ * The names that characterize a type declaration: the members of an interface or object type, or
+ * the identifiers and literals a type alias is written with. Two declarations of one type share
+ * most of these across majors (a property is added, a bundler renames `Foo` to `Foo$1`); two
+ * unrelated types that happen to share a name share few. `undefined` for values, which a move
+ * can turn from a function into a constant, and for names that do not resolve to a declaration
+ * (a type imported from a package the compiler cannot find).
+ *
+ * @param {import('ts-morph').Symbol} symbol
+ * @returns {string[] | undefined}
+ */
+function declarationShape(symbol) {
+  const declaration = resolveAlias(symbol)
+    .getDeclarations()
+    .find((node) => !isTombstoneDeclaration(node))
+  if (Node.isInterfaceDeclaration(declaration)) return memberNames(declaration)
+  if (!Node.isTypeAliasDeclaration(declaration)) return undefined
+  const typeNode = declaration.getTypeNode()
+  if (!typeNode) return undefined
+  if (Node.isTypeLiteral(typeNode)) return memberNames(typeNode)
+  const tokens = typeNode.getText().match(/[\w$]+|'[^']*'|"[^"]*"/g) ?? []
+  return [...new Set(tokens.map((token) => token.replace(/\$\d+$/, '')))].toSorted()
+}
+
+/** @param {import('ts-morph').InterfaceDeclaration | import('ts-morph').TypeLiteralNode} node */
+function memberNames(node) {
+  return node
+    .getMembers()
+    .map((member) => (Node.hasName(member) ? member.getName() : member.getKindName()))
+    .toSorted()
+}
+
 /** @param {import('ts-morph').Node} node */
 function isTypeOnlyAlias(node) {
   if ((Node.isExportSpecifier(node) || Node.isImportSpecifier(node)) && node.isTypeOnly()) {
@@ -235,6 +274,7 @@ export function readSurface(packageDir) {
         kind: getModuleExportKind(sourceFile, symbol),
         tombstone: Boolean(tombstoneDeclaration),
         deprecated: tombstoneDeclaration ? getDeprecatedMessage(tombstoneDeclaration) : undefined,
+        ...(tombstoneDeclaration ? {} : {shape: declarationShape(symbol)}),
       }
     }
     surface[subpath] = names
@@ -252,7 +292,10 @@ export function entryImportPath(subpath) {
  * @property {string} entry
  * @property {string} name
  * @property {ExportKind} kind what the published package exports the name as
- * @property {string[]} exportedFrom other workspace entries that export it as that kind
+ * @property {string[]} exportedFrom other workspace entries that export it as that kind, as the
+ *   same type the published package exported
+ * @property {string[]} unrelated other workspace entries that export a different type under
+ *   that name
  * @property {boolean} [typeOnly] the entry still exports the name, but only as a type
  */
 
@@ -266,11 +309,29 @@ export function entryImportPath(subpath) {
  *   have nothing left to cover
  * @property {{entry: string, name: string, kind: ExportKind, target: string, exportedFrom: string[]}[]} misdirected
  *   tombstones whose message says the name moved to an entry that does not export it
+ * @property {{entry: string, name: string, target: string}[]} unrelated tombstones whose message
+ *   says the name moved to an entry that exports a different type under that name
  * @property {string[]} staleRemovedEntries `removedEntries` that the workspace still exports or
  *   that the published package never had
  */
 
 const MOVED_TO = /^Moved to `([^`]+)`/
+
+/**
+ * Whether two declarations of one name can be the same type. Types change between majors, so
+ * this only tells apart types that share few of the names that characterize them, like a type
+ * from `@sanity/migrate` and a Studio type that happen to be called `Transaction`. Declarations
+ * without a shape (values, types the compiler cannot resolve) are never told apart.
+ *
+ * @param {string[] | undefined} a
+ * @param {string[] | undefined} b
+ */
+export function isSameType(a, b) {
+  if (!a?.length || !b?.length) return true
+  const names = new Set(b)
+  const shared = a.filter((name) => names.has(name)).length
+  return shared / Math.min(a.length, b.length) >= 0.5
+}
 
 /** @param {string} importPath */
 function importPathToEntry(importPath) {
@@ -291,25 +352,38 @@ export function diffSurfaces({published, workspace, manifest}) {
     missingEntries: [],
     stale: [],
     misdirected: [],
+    unrelated: [],
     staleRemovedEntries: [],
   }
   const removedEntries = new Set(manifest.removedEntries)
 
-  /** @type {Map<string, {entry: string, kind: ExportKind}[]>} name → its real workspace exports */
+  /** @type {Map<string, {entry: string, kind: ExportKind, shape?: string[]}[]>} name → its real workspace exports */
   const realExports = new Map()
   for (const [entry, names] of Object.entries(workspace)) {
     for (const [name, info] of Object.entries(names)) {
       if (info.tombstone) continue
-      realExports.set(name, [...(realExports.get(name) ?? []), {entry, kind: info.kind}])
+      realExports.set(name, [
+        ...(realExports.get(name) ?? []),
+        {entry, kind: info.kind, shape: info.shape},
+      ])
     }
   }
   /**
+   * The workspace entries that export `name` as `kind`. With `shape`, only the ones that export
+   * the same type as the published package did (`related`), or only the ones that export a
+   * different type under that name (`unrelated`).
+   *
    * @param {string} name
    * @param {ExportKind} kind
+   * @param {{shape: string[] | undefined, match: 'related' | 'unrelated'}} [filter]
    */
-  const entriesExporting = (name, kind) =>
+  const entriesExporting = (name, kind, filter) =>
     (realExports.get(name) ?? [])
       .filter((other) => kind === 'type' || other.kind === 'value')
+      .filter(
+        (other) =>
+          !filter || isSameType(filter.shape, other.shape) === (filter.match === 'related'),
+      )
       .map((other) => other.entry)
 
   for (const [entry, names] of Object.entries(published)) {
@@ -330,7 +404,14 @@ export function diffSurfaces({published, workspace, manifest}) {
         entry,
         name,
         kind: info.kind,
-        exportedFrom: entriesExporting(name, info.kind).filter((other) => other !== entry),
+        exportedFrom: entriesExporting(name, info.kind, {
+          shape: info.shape,
+          match: 'related',
+        }).filter((other) => other !== entry),
+        unrelated: entriesExporting(name, info.kind, {
+          shape: info.shape,
+          match: 'unrelated',
+        }).filter((other) => other !== entry),
         ...(typeOnly ? {typeOnly} : {}),
       })
     }
@@ -359,14 +440,20 @@ export function diffSurfaces({published, workspace, manifest}) {
       }
       const importPath = MOVED_TO.exec(message)?.[1]
       const target = importPath && importPathToEntry(importPath)
-      if (target && !entriesExporting(name, kind).includes(target)) {
+      if (!target) continue
+      const shape = published[entry][name].shape
+      if (!entriesExporting(name, kind).includes(target)) {
         diff.misdirected.push({
           entry,
           name,
           kind,
           target,
-          exportedFrom: entriesExporting(name, kind).filter((other) => other !== entry),
+          exportedFrom: entriesExporting(name, kind, {shape, match: 'related'}).filter(
+            (other) => other !== entry,
+          ),
         })
+      } else if (!entriesExporting(name, kind, {shape, match: 'related'}).includes(target)) {
+        diff.unrelated.push({entry, name, target})
       }
     }
   }
@@ -439,13 +526,20 @@ const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow
 /**
  * The tombstone a missing export most likely needs, as a starting point for its manifest entry.
  *
- * @param {Pick<MissingExport, 'entry' | 'name' | 'kind' | 'exportedFrom'>} item
+ * @param {Pick<MissingExport, 'entry' | 'name' | 'kind' | 'exportedFrom'> & {unrelated?: string[]}} item
  * @returns {Tombstone}
  */
 function suggestTombstone(item) {
   const target = item.exportedFrom[0]
   if (!target) {
-    return {name: item.name, kind: item.kind, message: 'Removed in v7. <say what to use instead>'}
+    const unrelated = item.unrelated?.length
+      ? ` ${item.unrelated.map((entry) => `\`${entryImportPath(entry)}\``).join(', ')} exports an unrelated \`${item.name}\`.`
+      : ''
+    return {
+      name: item.name,
+      kind: item.kind,
+      message: `Removed in v7.${unrelated} <say what to use instead>`,
+    }
   }
   if (target === INTERNALS_ENTRY || target.startsWith(`${INTERNALS_ENTRY}/`)) {
     return {
@@ -478,9 +572,12 @@ export function formatSurfaceDiff(diff, version) {
   }
   if (diff.missing.length > 0) {
     const lines = diff.missing.map((item) => {
+      const unrelated = item.unrelated.length
+        ? `, though ${item.unrelated.map(entryImportPath).join(', ')} export${item.unrelated.length === 1 ? 's' : ''} an unrelated type of that name`
+        : ''
       const where = item.exportedFrom.length
         ? `now exported from ${item.exportedFrom.map(entryImportPath).join(', ')}`
-        : `not exported${item.kind === 'value' ? ' as a value' : ''} from any other entry`
+        : `not exported${item.kind === 'value' ? ' as a value' : ''} from any other entry${unrelated}`
       const typeOnly = item.typeOnly ? ' (the entry still exports its type)' : ''
       return `  - ${item.name} (${item.kind}) from ${entryImportPath(item.entry)}${typeOnly}: ${where}. Add to "tombstones"["${item.entry}"]: ${JSON.stringify(suggestTombstone(item))}`
     })
@@ -516,6 +613,20 @@ export function formatSurfaceDiff(diff, version) {
               : ''
             return `  - ${item.name} in ${entryImportPath(item.entry)} points at ${entryImportPath(item.target)}, but it is ${where}.${suggestion}`
           })
+          .join('\n'),
+    )
+  }
+  if (diff.unrelated.length > 0) {
+    sections.push(
+      `These tombstones in ${MANIFEST_REPO_PATH} say the name moved to an entry that exports a ` +
+        'different type under that name, so a consumer who follows the message gets the wrong ' +
+        'type. Say the name was removed, or name the real replacement, and run ' +
+        '`node packages/sanity/src/_exports/tombstones/generate.mjs`:\n' +
+        diff.unrelated
+          .map(
+            (item) =>
+              `  - ${item.name} in ${entryImportPath(item.entry)} points at ${entryImportPath(item.target)}, whose ${item.name} is not the type sanity@${version} exported`,
+          )
           .join('\n'),
     )
   }

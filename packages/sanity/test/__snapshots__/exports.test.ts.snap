@@ -853,6 +853,7 @@ exports[`exports snapshot 1`] = `
     "ChangeIndicatorTrackerContextGetSnapshot": "object",
     "ChangeIndicatorTrackerContextStore": "object",
     "ColorSchemeSetValueContext": "object",
+    "ColorSchemeSystemValueContext": "object",
     "ColorSchemeValueContext": "object",
     "CommentInputContext": "object",
     "CommentInputContextV2": "object",
