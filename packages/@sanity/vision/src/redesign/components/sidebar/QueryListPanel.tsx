@@ -18,7 +18,7 @@ import {Code, Text, Box, Flex} from 'ui5'
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
-import {type ParsedQueryUrl, parseQueryUrl} from '../../../util/parseQueryUrl'
+import {type ParsedQueryUrl} from '../../../util/parseQueryUrl'
 import {
   type RequestEnvironment,
   resolveRequestOptions,
@@ -31,6 +31,7 @@ import {cx} from '../../util/cx'
 import {
   findLinkedSharedQuery,
   findSharedQuery,
+  parseSavedQuery,
   savedQueryToTabInit,
   tabMatchesParsedQuery,
 } from '../../util/savedQueryTab'
@@ -88,7 +89,7 @@ export function QueryListPanel() {
     return queries
       .filter((query) => query.shared)
       .map((query) => {
-        const parsed = parseQueryUrl(query.url, datasets)
+        const parsed = parseSavedQuery(query, datasets)
         const preview = (parsed?.query || '').split('\n')[0].split('{')[0].trim()
         return {query, parsed, preview}
       })

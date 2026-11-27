@@ -3,9 +3,8 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
 import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
-import {type QueryConfig} from '../../hooks/useSavedQueries'
+import {type QueryConfig, type SharedQueryFields} from '../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../i18n'
-import {parseQueryUrl} from '../../util/parseQueryUrl'
 import {type VisionTab} from '../store/types'
 import {
   usePendingEdits,
@@ -14,7 +13,8 @@ import {
   useVisionSelector,
 } from '../store/VisionActorContext'
 import {selectDatasets} from '../store/visionMachine'
-import {findSharedQuery, tabMatchesParsedQuery} from '../util/savedQueryTab'
+import {findSharedQuery, parseSavedQuery, tabMatchesParsedQuery} from '../util/savedQueryTab'
+import {toStoredOptions} from '../util/sharedTabDocument'
 import {deriveTabTitle} from '../util/tabTitle'
 import {type QueryRequestBuilder} from './useQueryRequestBuilder'
 import {type ResolvedRequest} from './useResolvedRequest'
@@ -72,10 +72,9 @@ export function useShareTab(
   const [confirming, setConfirming] = useState(false)
 
   const sharedQuery = findSharedQuery(tab, queries)
-  const sharedUrl = sharedQuery?.url
   const parsedShared = useMemo(
-    () => (sharedUrl === undefined ? null : parseQueryUrl(sharedUrl, datasets)),
-    [datasets, sharedUrl],
+    () => (sharedQuery === undefined ? null : parseSavedQuery(sharedQuery, datasets)),
+    [datasets, sharedQuery],
   )
   const untitled = t('label.untitled-query')
   // Titles are compared as the tab and the drawer show them: a query shared without a title of
@@ -96,6 +95,11 @@ export function useShareTab(
           tab: latest,
           url: current.url,
           title: latest.title || deriveTabTitle(latest.query) || untitled,
+          fields: {
+            query: latest.query,
+            rawParams: latest.rawParams,
+            options: toStoredOptions(latest.options),
+          },
         }
       : null
   }, [actorRef, buildRequest, pendingEdits, tab, untitled])
@@ -113,9 +117,12 @@ export function useShareTab(
   )
 
   const shareAgain = useCallback(
-    async (shared: QueryConfig, {url, title}: {url: string; title: string}) => {
+    async (
+      shared: QueryConfig,
+      {url, title, fields}: {url: string; title: string; fields: SharedQueryFields},
+    ) => {
       try {
-        await updateSharedQuery({...shared, url, title, savedAt: new Date().toISOString()})
+        await updateSharedQuery({...shared, url, title, savedAt: new Date().toISOString()}, fields)
         telemetry.sharedTab('update')
         toast.push({
           closable: true,
@@ -139,7 +146,7 @@ export function useShareTab(
     // The same request is the same query, whoever shared it and whatever its title
     const duplicate = queries.find((query) => {
       if (!query.shared) return false
-      const parsed = parseQueryUrl(query.url, datasets)
+      const parsed = parseSavedQuery(query, datasets)
       return parsed !== null && tabMatchesParsedQuery(current.tab, parsed, resolved)
     })
     if (duplicate) {
@@ -175,6 +182,7 @@ export function useShareTab(
         url: current.url,
         title: current.title,
         savedAt: new Date().toISOString(),
+        ...current.fields,
       })
       actorRef.send({type: 'tab.setSharedId', id: tab.id, sharedId})
       telemetry.sharedTab('share')

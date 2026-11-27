@@ -281,12 +281,23 @@ vi.mock('sanity/i18n', () => ({
 // structure modules it re-exports do not load against the partial `sanity` mock above. The upsell
 // content request and dialog are stood in for here too: a test can answer and read them back.
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', async () => {
-  const {of} = await import('rxjs')
+  const {NEVER, of} = await import('rxjs')
   // The project store's organization ID, stable like the real store's
   const organizationId$ = of('org-1')
+  const published = {
+    events: NEVER,
+    consistency$: of(true),
+    patch: (patches: unknown[]) => patches,
+    mutate: vi.fn(),
+    commit: vi.fn(),
+  }
+  const documentStore = {checkoutPair: () => ({published, commitError$: NEVER})}
   return {
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     usePresenceStore: () => ({setLocation: presenceMocks.setLocation}),
+    // A shared tab checks its document out to edit it with its collaborators; nothing loads here
+    useDocumentStore: () => documentStore,
+    getIdPair: (id: string) => ({publishedId: id, draftId: `drafts.${id}`}),
     useDocumentPresence: (documentId: string) => presenceMocks.presence[documentId] ?? [],
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
     UserAvatar: () => null,
@@ -427,6 +438,11 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
       reformat: (formatted: string) => {
         if (textareaRef.current) textareaRef.current.value = formatted
         onChange?.(formatted)
+      },
+      getContent: () => textareaRef.current?.value ?? '',
+      applyRemoteContent: (content: string) => {
+        if (textareaRef.current) textareaRef.current.value = content
+        onChange?.(content)
       },
       isEditing: () => false,
     }))
