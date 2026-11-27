@@ -107,54 +107,64 @@ export async function measureSteps(options: {
 }): Promise<StepsResult> {
   const tls = await getBenchTls()
   const host = await serveModuleHost({dir: options.cdnDir, tls})
-  const running = await startSide(EXPERIMENT, options.studioDir)
-  const browser = options.browser ?? (await launchBrowser(true, tls.spki))
   try {
-    const studioOrigin = new URL(running.studioUrl).origin
-    const url = scenarioUrl(running.studioUrl, loginReady)
-    running.mock.hub.closeAll()
-    running.mock.store.reset()
-    running.mock.ledger.reset()
-    running.mock.store.seed(scenarioFixture(loginReady))
-
-    const result: StepsResult = {steps: {}, errors: []}
-    const loggedOut = await createSessionContext(browser, running.side, running.studioUrl, {
-      auth: 'logged-out',
-    })
-    running.mock.setRequireToken(true)
+    const running = await startSide(EXPERIMENT, options.studioDir)
     try {
-      await loggedOut.context.addInitScript(RESOURCE_BUFFER_SCRIPT)
-      await loggedOut.page.goto(url, {waitUntil: 'domcontentloaded'})
-      const login = await collectStep(loggedOut.page, studioOrigin, LOGIN_BUTTON_CSS)
-      assertClean(loggedOut)
-      result.steps.login = login
-      await loggedOut.page.locator(LOGIN_BUTTON_CSS).first().click()
-      const afterLogin = await collectStep(loggedOut.page, studioOrigin, TOOL_VISIBLE_CSS)
-      assertClean(loggedOut)
-      result.steps.afterLogin = afterLogin
-    } catch (error) {
-      result.errors.push(`logged out: ${error instanceof Error ? error.message : String(error)}`)
-    } finally {
-      running.mock.setRequireToken(false)
-      await loggedOut.context.close()
-    }
+      const browser = options.browser ?? (await launchBrowser(true, tls.spki))
+      try {
+        const studioOrigin = new URL(running.studioUrl).origin
+        const url = scenarioUrl(running.studioUrl, loginReady)
+        running.mock.hub.closeAll()
+        running.mock.store.reset()
+        running.mock.ledger.reset()
+        running.mock.store.seed(scenarioFixture(loginReady))
 
-    const signedIn = await createSessionContext(browser, running.side, running.studioUrl)
-    try {
-      await signedIn.context.addInitScript(RESOURCE_BUFFER_SCRIPT)
-      await signedIn.page.goto(url, {waitUntil: 'domcontentloaded'})
-      const authenticated = await collectStep(signedIn.page, studioOrigin, TOOL_VISIBLE_CSS)
-      assertClean(signedIn)
-      result.steps.authenticated = authenticated
-    } catch (error) {
-      result.errors.push(`authenticated: ${error instanceof Error ? error.message : String(error)}`)
+        const result: StepsResult = {steps: {}, errors: []}
+        const loggedOut = await createSessionContext(browser, running.side, running.studioUrl, {
+          auth: 'logged-out',
+        })
+        running.mock.setRequireToken(true)
+        try {
+          await loggedOut.context.addInitScript(RESOURCE_BUFFER_SCRIPT)
+          await loggedOut.page.goto(url, {waitUntil: 'domcontentloaded'})
+          const login = await collectStep(loggedOut.page, studioOrigin, LOGIN_BUTTON_CSS)
+          assertClean(loggedOut)
+          result.steps.login = login
+          await loggedOut.page.locator(LOGIN_BUTTON_CSS).first().click()
+          const afterLogin = await collectStep(loggedOut.page, studioOrigin, TOOL_VISIBLE_CSS)
+          assertClean(loggedOut)
+          result.steps.afterLogin = afterLogin
+        } catch (error) {
+          result.errors.push(
+            `logged out: ${error instanceof Error ? error.message : String(error)}`,
+          )
+        } finally {
+          running.mock.setRequireToken(false)
+          await loggedOut.context.close()
+        }
+
+        const signedIn = await createSessionContext(browser, running.side, running.studioUrl)
+        try {
+          await signedIn.context.addInitScript(RESOURCE_BUFFER_SCRIPT)
+          await signedIn.page.goto(url, {waitUntil: 'domcontentloaded'})
+          const authenticated = await collectStep(signedIn.page, studioOrigin, TOOL_VISIBLE_CSS)
+          assertClean(signedIn)
+          result.steps.authenticated = authenticated
+        } catch (error) {
+          result.errors.push(
+            `authenticated: ${error instanceof Error ? error.message : String(error)}`,
+          )
+        } finally {
+          await signedIn.context.close()
+        }
+        return result
+      } finally {
+        if (!options.browser) await browser.close()
+      }
     } finally {
-      await signedIn.context.close()
+      await running.close()
     }
-    return result
   } finally {
-    if (!options.browser) await browser.close()
-    await running.close()
     await host.close()
   }
 }
