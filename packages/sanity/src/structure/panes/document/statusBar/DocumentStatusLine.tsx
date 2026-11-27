@@ -165,7 +165,7 @@ const EventsStatus = () => {
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
-export function DocumentStatusLine() {
+export default function DocumentStatusLine() {
   const {value, targetDocumentState} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)

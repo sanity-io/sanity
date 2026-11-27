@@ -15,7 +15,10 @@ import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASE_NOT_FOUND_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {useReleaseEvents} from './events/useReleaseEvents'
-import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
+import {
+  ActivityPanelPushedContent,
+  ReleaseDashboardActivityPanel,
+} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
 import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
 import {ReleaseDashboardHeader} from './ReleaseDashboardHeader'
@@ -131,27 +134,29 @@ export function ReleaseDetail() {
         </Card>
 
         <Flex flexBasis="0%" flexGrow={1}>
-          <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
-            <Card flex={1} overflow="auto">
-              <ReleaseDashboardDetails
-                release={releaseInDetail}
-                documents={results}
-                events={releaseEvents.events}
-                loading={documentsLoading}
-              />
-              {detailContent}
-            </Card>
+          <ActivityPanelPushedContent>
+            <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
+              <Card flex={1} overflow="auto">
+                <ReleaseDashboardDetails
+                  release={releaseInDetail}
+                  documents={results}
+                  events={releaseEvents.events}
+                  loading={documentsLoading}
+                />
+                {detailContent}
+              </Card>
 
-            {/* In beta the footer's action cluster moved to the top rail and its Created status
-                moved into the properties panel, so the footer is dropped entirely. */}
-            {!variantsEnabled && (
-              <ReleaseDashboardFooter
-                documents={results}
-                release={releaseInDetail}
-                events={releaseEvents.events}
-              />
-            )}
-          </Flex>
+              {/* In beta the footer's action cluster moved to the top rail and its Created status
+                  moved into the properties panel, so the footer is dropped entirely. */}
+              {!variantsEnabled && (
+                <ReleaseDashboardFooter
+                  documents={results}
+                  release={releaseInDetail}
+                  events={releaseEvents.events}
+                />
+              )}
+            </Flex>
+          </ActivityPanelPushedContent>
 
           {/* Production: activity is an in-flow panel that pushes the content column aside. */}
           {!variantsEnabled && (

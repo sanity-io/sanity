@@ -31,6 +31,13 @@ export const perspectiveButtonCardFullWidth = css({
   },
 })
 
+/** The divider and the clear control, kept together so they move as one beside the label. */
+export const perspectiveButtonEnd = css({
+  display: 'flex',
+  alignItems: 'center',
+  alignSelf: 'stretch',
+})
+
 /** Hairline between the trigger and the clear control. */
 export const perspectiveButtonDivider = css({
   width: '1px',
@@ -61,7 +68,7 @@ export const perspectiveButtonClear = css({
 /**
  * Trigger. The button root ships `padding: 0` and `radius={0}`; `&&` wins
  * over both. The left corners follow the pill. The right corners do too when
- * this is the only control — a clear button beside it keeps that edge square.
+ * the card has no clear control — a clear button beside it keeps that edge square.
  */
 export const perspectiveButtonTrigger = css({
   '&&': {
@@ -71,7 +78,10 @@ export const perspectiveButtonTrigger = css({
     borderTopLeftRadius: pillRadius,
     borderBottomLeftRadius: pillRadius,
   },
-  '&:only-child': {
+  // The width animation wraps the trigger, so it is always the only child of
+  // that wrapper. Round the right corners from the card instead: only when the
+  // clear control is absent, so the edge stays square against the divider.
+  '[data-ui="GlobalPerspectiveButton"]:not([data-has-clear]) &': {
     borderTopRightRadius: pillRadius,
     borderBottomRightRadius: pillRadius,
   },

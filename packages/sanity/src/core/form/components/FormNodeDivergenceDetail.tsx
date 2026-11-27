@@ -1,12 +1,20 @@
 import {type Path} from '@sanity/types'
 import {useClickOutsideEvent, LayerProvider, Portal} from '@sanity/ui'
-import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type PropsWithChildren, Fragment, useEffect, useRef} from 'react'
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+} from 'react'
 
-import {DivergenceDetail} from '../../divergence/components/DivergenceDetail'
 import {type DivergenceNavigator, selectDivergence} from '../../divergence/divergenceNavigator'
 import {useWorkspace} from '../../studio/workspace'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
+
+const FormNodeDivergenceDetailPresence = lazy(() => import('./FormNodeDivergenceDetailPresence'))
 
 const canUseAnchorPositioning =
   'CSS' in globalThis && typeof CSS !== 'undefined' && typeof CSS.supports === 'function'
@@ -82,25 +90,14 @@ const FormNodeDivergenceDetailEnabled: ComponentType<
       {children}
       <MaybePortal>
         <LayerProvider zOffset={1}>
-          <AnimatePresence>
-            {divergence &&
-              divergence.status === 'unresolved' &&
-              divergenceNavigator.state.focusedDivergence === divergence.path && (
-                <motion.div
-                  initial={{opacity: 0}}
-                  exit={{opacity: 0}}
-                  animate={{opacity: 1}}
-                  transition={{duration: 0.1}}
-                >
-                  <DivergenceDetail
-                    containerElement={divergenceDetailContainerElement}
-                    divergence={divergence}
-                    divergenceNavigator={divergenceNavigator}
-                    readOnly={readOnly}
-                  />
-                </motion.div>
-              )}
-          </AnimatePresence>
+          <Suspense fallback={null}>
+            <FormNodeDivergenceDetailPresence
+              containerElement={divergenceDetailContainerElement}
+              divergence={divergence}
+              divergenceNavigator={divergenceNavigator}
+              readOnly={readOnly}
+            />
+          </Suspense>
         </LayerProvider>
       </MaybePortal>
     </div>

@@ -7,6 +7,7 @@ import {useWorkspace} from '../../../studio/workspace'
 import {ReleasesToolLink} from '../../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {usePerspective} from '../../usePerspective'
+import {AnimatedWidthPill, AnimatedWidthSibling} from '../AnimatedTextWidth'
 import {CurrentGlobalPerspectiveLabel} from '../currentGlobalPerspectiveLabel'
 import {ReleasesMenu} from './ReleasesMenu'
 
@@ -83,10 +84,16 @@ export const ReleasesNav: ComponentType<Props> = ({
   if (variantsEnabled) return menu
 
   return (
-    <ReleasesNavContainer border data-ui="ReleasesNav" flex="none" radius="full" tone="inherit">
-      {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
-      <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
-      {menu}
-    </ReleasesNavContainer>
+    <AnimatedWidthPill>
+      <ReleasesNavContainer border data-ui="ReleasesNav" flex="none" radius="full" tone="inherit">
+        {withReleasesToolButton && releasesToolAvailable && (
+          <AnimatedWidthSibling>
+            <ReleasesToolLink />
+          </AnimatedWidthSibling>
+        )}
+        <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
+        {menu}
+      </ReleasesNavContainer>
+    </AnimatedWidthPill>
   )
 }

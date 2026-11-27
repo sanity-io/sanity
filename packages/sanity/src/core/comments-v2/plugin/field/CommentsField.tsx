@@ -1,17 +1,14 @@
-import {hues} from '@sanity/color'
 import {type Path, type PortableTextBlock} from '@sanity/types'
 import {useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {use, useCallback, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {lazy, Suspense, use, useCallback, useMemo, useRef, useState} from 'react'
+import {styled} from 'styled-components'
 import {VStack} from 'ui5'
 
 import {type FieldProps} from '../../../form/types/fieldProps'
 import {getSchemaTypeTitle} from '../../../schema/helpers'
 import {useCurrentUser} from '../../../store/user/hooks'
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
@@ -31,17 +28,7 @@ const messageCache = new Map<string, CommentMessage>()
 
 const EMPTY_ARRAY: [] = []
 
-const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
-}
+const CommentsFieldHighlight = lazy(() => import('./CommentsFieldHighlight'))
 
 export default function CommentsField(props: FieldProps) {
   const enabled = useCommentsEnabled()
@@ -52,27 +39,6 @@ export default function CommentsField(props: FieldProps) {
 
   return <CommentFieldInner {...props} />
 }
-
-const HighlightDiv = styled(motion.div)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {radius, space, color} = theme.sanity
-  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
-
-  return css`
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-    border-radius: ${radius[3]}px;
-    top: -${space[2]}px;
-    left: -${space[2]}px;
-    bottom: -${space[2]}px;
-    right: -${space[2]}px;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1;
-    width: calc(100% + ${space[2] * 2}px);
-    height: calc(100% + ${space[2] * 2}px);
-    background-color: ${bg};
-  `
-})
 
 const FieldStack = styled(VStack)`
   position: relative;
@@ -136,6 +102,13 @@ function CommentFieldInner(props: FieldProps) {
       .filter((c) => c.threadId === selectedPath?.threadId)
       .some((x) => isTextSelectionComment(x.parentComment))
   }, [comments.data.open, selectedPath?.threadId])
+
+  // The highlight stays mounted once shown, so it can fade out
+  const showHighlight = isSelected && !isInlineCommentThread
+  const [hasShownHighlight, setHasShownHighlight] = useState(showHighlight)
+  if (showHighlight && !hasShownHighlight) {
+    setHasShownHighlight(true)
+  }
 
   // Total number of comments for the current field, including comments on
   // blocks nested below it (container-nested and dialog-authored comments
@@ -335,16 +308,11 @@ function CommentFieldInner(props: FieldProps) {
         __internal_comments: internalComments,
       })}
 
-      <AnimatePresence>
-        {isSelected && !isInlineCommentThread && (
-          <HighlightDiv
-            animate="animate"
-            exit="exit"
-            initial="initial"
-            variants={HIGHLIGHT_BLOCK_VARIANTS}
-          />
-        )}
-      </AnimatePresence>
+      {hasShownHighlight && (
+        <Suspense fallback={null}>
+          <CommentsFieldHighlight visible={showHighlight} />
+        </Suspense>
+      )}
     </FieldStack>
   )
 }

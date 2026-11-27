@@ -1,6 +1,5 @@
 import {Card, Layer, Spinner, useMediaIndex} from '@sanity/ui'
-import {AnimatePresence} from 'motion/react'
-import {lazy, Suspense} from 'react'
+import {lazy, Suspense, useState} from 'react'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
@@ -36,7 +35,7 @@ const ToolFrame = styled(Box)`
   }
 `
 
-const SidebarMotionLayer = styled(Layer)(({theme}) => {
+const SidebarLayer = styled(Layer)(({theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
 
@@ -85,6 +84,12 @@ export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps
     state: {isOpen},
   } = useTasksNavigation()
 
+  // A sidebar that is already open when the layout mounts appears without fading in
+  const [hasBeenClosed, setHasBeenClosed] = useState(!isOpen)
+  if (!isOpen && !hasBeenClosed) {
+    setHasBeenClosed(true)
+  }
+
   // Lock the scroll when the sidebar is open in fullscreen mode
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
   return (
@@ -99,18 +104,20 @@ export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps
         {props.renderDefault(props)}
       </ToolFrame>
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <SidebarMotionLayer zOffset={100} height="fill">
-            {/* The sidebar reads the tasks mode, which suspends until the feature check has
-                answered; this boundary keeps that wait inside the sidebar, which can be open
-                before the check settles (a `?sidebar=tasks` link, the navbar button). */}
-            <Suspense fallback={<TasksSidebarFallback />}>
-              <TasksStudioSidebar />
-            </Suspense>
-          </SidebarMotionLayer>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <SidebarLayer
+          data-tasks-sidebar-fade-in={hasBeenClosed ? '' : undefined}
+          height="fill"
+          zOffset={100}
+        >
+          {/* The sidebar reads the tasks mode, which suspends until the feature check has
+              answered; this boundary keeps that wait inside the sidebar, which can be open
+              before the check settles (a `?sidebar=tasks` link, the navbar button). */}
+          <Suspense fallback={<TasksSidebarFallback />}>
+            <TasksStudioSidebar />
+          </Suspense>
+        </SidebarLayer>
+      )}
     </RootFlex>
   )
 }
