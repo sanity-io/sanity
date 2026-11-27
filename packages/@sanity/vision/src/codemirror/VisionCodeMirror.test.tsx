@@ -184,4 +184,37 @@ describe('VisionCodeMirror', () => {
     // The parent already holds that value; nothing is echoed back as an edit
     expect(onChange).not.toHaveBeenCalled()
   })
+
+  it("takes a collaborator's edit without moving the cursor or adding it to the undo history", () => {
+    const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
+    const onChange = vi.fn()
+    const {container, unmount} = render(
+      editor('visible', ref, onChange, '*[_type == "post"]', HISTORY),
+    )
+    const view = () =>
+      EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement) ?? undefined
+
+    // The user types a projection at the end, the cursor after it
+    act(() =>
+      view()?.dispatch({
+        changes: {from: 18, insert: '{title}'},
+        selection: {anchor: 25},
+        userEvent: 'input',
+      }),
+    )
+    expect(view()?.state.selection.main.head).toBe(25)
+
+    // A collaborator renames the type, before the cursor
+    act(() => ref.current?.applyRemoteContent('*[_type == "article"]{title}'))
+    expect(ref.current?.getContent()).toBe('*[_type == "article"]{title}')
+    expect(view()?.state.selection.main.head).toBe(28)
+    expect(onChange).toHaveBeenLastCalledWith('*[_type == "article"]{title}', expect.anything())
+
+    // Undo takes back the user's own edit and keeps the collaborator's
+    act(() => {
+      ref.current?.runCommand(undo)
+    })
+    expect(ref.current?.getContent()).toBe('*[_type == "article"]')
+    unmount()
+  })
 })

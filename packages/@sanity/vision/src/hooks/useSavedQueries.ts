@@ -11,7 +11,9 @@ const SHARED_QUERIES_QUERY = `*[_type == $sharedQueryType]{
   authorId,
   savedAt,
   title,
-  url
+  url,
+  query,
+  params
 } | order(savedAt desc)`
 const SHARED_QUERY_LISTEN_OPTIONS: ListenOptions = {
   events: ['welcome', 'mutation', 'reconnect'],
@@ -27,7 +29,25 @@ export type QueryConfig = {
   shared?: boolean
   authorId?: string
   isOwnedByCurrentUser?: boolean
+  /**
+   * The query and params a shared query's collaborators have edited it to, ahead of its `url`,
+   * which is rebuilt as they edit but only while the params parse. Absent on one shared before
+   * tabs were edited together.
+   */
+  query?: string
+  rawParams?: string
 }
+
+/** The fields of a shared query its collaborators edit together */
+export interface SharedQueryFields {
+  query: string
+  rawParams: string
+  /** The tab's options, as `toStoredOptions` stores them */
+  options: Record<string, unknown>
+}
+
+/** What a shared query is created with: the tab's request, and the fields edited together */
+export type SharedQueryInit = Pick<QueryConfig, 'url' | 'title' | 'savedAt'> & SharedQueryFields
 
 interface SharedQueryDocument {
   _id: string
@@ -36,6 +56,9 @@ interface SharedQueryDocument {
   savedAt: string
   title?: string
   url: string
+  query?: unknown
+  params?: unknown
+  options?: unknown
 }
 
 /**
@@ -47,9 +70,12 @@ export function useSavedQueries(): {
   /** Whether the shared queries have been fetched, so one missing from the list is not shared */
   sharedQueriesLoaded: boolean
   /** Creates a shared query, and resolves with its document id */
-  shareQuery: (query: Pick<QueryConfig, 'url' | 'title' | 'savedAt'>) => Promise<string>
-  /** Replaces what a shared query the current user authored holds */
-  updateSharedQuery: (query: QueryConfig) => Promise<void>
+  shareQuery: (query: SharedQueryInit) => Promise<string>
+  /**
+   * Replaces what a shared query the current user authored holds, and with `fields` the query,
+   * params and options edited together too
+   */
+  updateSharedQuery: (query: QueryConfig, fields?: SharedQueryFields) => Promise<void>
   /** Deletes a shared query the current user authored; rejects when that fails */
   unshareQuery: (key: string) => Promise<void>
   saving: boolean
@@ -86,6 +112,8 @@ export function useSavedQueries(): {
         shared: true,
         title: doc.title,
         url: doc.url,
+        query: typeof doc.query === 'string' ? doc.query : undefined,
+        rawParams: typeof doc.params === 'string' ? doc.params : undefined,
       }))
     },
     [currentUser],
@@ -153,7 +181,7 @@ export function useSavedQueries(): {
   }, [])
 
   const shareQuery = useCallback(
-    (query: Pick<QueryConfig, 'url' | 'title' | 'savedAt'>): Promise<string> =>
+    (query: SharedQueryInit): Promise<string> =>
       runSave(async () => {
         if (!currentUser?.id) {
           throw new Error('No current user found. Unable to save shared query.')
@@ -164,6 +192,9 @@ export function useSavedQueries(): {
           savedAt: query.savedAt,
           title: query.title,
           url: query.url,
+          query: query.query,
+          params: query.rawParams,
+          options: query.options,
         })) as SharedQueryDocument
         setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
         return createdDoc._id
@@ -172,7 +203,7 @@ export function useSavedQueries(): {
   )
 
   const updateSharedQuery = useCallback(
-    (query: QueryConfig): Promise<void> =>
+    (query: QueryConfig, fields?: SharedQueryFields): Promise<void> =>
       runSave(async () => {
         if (!query.shared || !currentUser?.id || query.authorId !== currentUser.id) {
           throw new Error('Only the author can update a shared query.')
@@ -183,6 +214,7 @@ export function useSavedQueries(): {
             savedAt: query.savedAt,
             title: query.title,
             url: query.url,
+            ...(fields && {query: fields.query, params: fields.rawParams, options: fields.options}),
           })
           .commit()) as SharedQueryDocument
 

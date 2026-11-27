@@ -15,6 +15,8 @@ const mocks = vi.hoisted(() => ({
   deleteDoc: vi.fn(),
 }))
 
+const SHARED_FIELDS = {query: '*', rawParams: '', options: {}}
+
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
@@ -100,6 +102,9 @@ describe('useSavedQueries', () => {
         url: 'https://a',
         title: 'Posts',
         savedAt: '2026-01-01T00:00:00Z',
+        query: '*[_type == "post"]',
+        rawParams: '{}',
+        options: {apiVersion: 'v2025-01-01'},
       })
     })
 
@@ -110,6 +115,9 @@ describe('useSavedQueries', () => {
       savedAt: '2026-01-01T00:00:00Z',
       title: 'Posts',
       url: 'https://a',
+      query: '*[_type == "post"]',
+      params: '{}',
+      options: {apiVersion: 'v2025-01-01'},
     })
     expect(result.current.queries.map((query) => query._key)).toEqual(['shared-1'])
     expect(mocks.setItem).not.toHaveBeenCalled()
@@ -130,8 +138,16 @@ describe('useSavedQueries', () => {
     let slowShare: Promise<string>
     let fastShare: Promise<string>
     act(() => {
-      slowShare = result.current.shareQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'})
-      fastShare = result.current.shareQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+      slowShare = result.current.shareQuery({
+        ...SHARED_FIELDS,
+        url: 'https://a',
+        savedAt: '2026-01-01T00:00:00Z',
+      })
+      fastShare = result.current.shareQuery({
+        ...SHARED_FIELDS,
+        url: 'https://b',
+        savedAt: '2026-01-02T00:00:00Z',
+      })
     })
     expect(result.current.saving).toBe(true)
 

@@ -1525,6 +1525,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.tabs.share-update-success': 'Shared tab updated',
   /** Accessible label of the icon marking a tab the user shared */
   'vision.tabs.shared': 'Shared tab',
+  /** Toast shown when edits to a shared tab could not be saved, so they are undone */
+  'vision.tabs.sync-failed': 'Could not save your edits to the shared tab',
   /** Placeholder of the input renaming a tab */
   'vision.tabs.title-placeholder': 'Tab title',
   /** Menu item that stops sharing a tab: the tab stays open, only for the user who shared it */

@@ -22,6 +22,7 @@ import {
 
 import {EDITOR_FONT_SIZE, editorContentPaddingTop} from './editorMetrics'
 import {historyCompartment} from './extensions'
+import {textChanges} from './textChanges'
 import {visionTooltips} from './tooltips'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
@@ -92,6 +93,14 @@ export interface VisionCodeMirrorHandle {
    * follows the text at the top of the editor.
    */
   reformat: (formatted: string) => void
+  /** The document as the editor holds it, which may be ahead of what its parent was told */
+  getContent: () => string
+  /**
+   * Replaces the document with one a collaborator edited, outside the undo history: only the
+   * characters that differ are replaced, so the selection and the scroll position stay on the
+   * text they were on, and undo steps over the collaborator's edits to the user's own
+   */
+  applyRemoteContent: (content: string) => void
   /** Whether an input method composition is open, or the document was typed into just now */
   isEditing: () => boolean
 }
@@ -273,6 +282,26 @@ export function VisionCodeMirror({
     })
   }, [])
 
+  const getContent = useCallback(
+    () => codeMirrorRef.current?.view?.state.doc.toString() ?? value ?? '',
+    [value],
+  )
+
+  const applyRemoteContent = useCallback((content: string) => {
+    const editorView = codeMirrorRef.current?.view
+    if (!editorView) {
+      setValue(content)
+      return
+    }
+    const changes = textChanges(editorView.state.doc.toString(), content)
+    if (changes.length === 0) return
+    editorView.dispatch({
+      changes,
+      annotations: [Transaction.addToHistory.of(false), Transaction.remote.of(true)],
+      effects: editorView.scrollSnapshot(),
+    })
+  }, [])
+
   const isEditing = useCallback(() => {
     const editorView = codeMirrorRef.current?.view
     if (!editorView) return false
@@ -288,6 +317,8 @@ export function VisionCodeMirror({
       selectRange,
       getVisibleColumns: getVisibleColumnsOfEditor,
       reformat,
+      getContent,
+      applyRemoteContent,
       isEditing,
     }),
     [
@@ -297,6 +328,8 @@ export function VisionCodeMirror({
       selectRange,
       getVisibleColumnsOfEditor,
       reformat,
+      getContent,
+      applyRemoteContent,
       isEditing,
     ],
   )

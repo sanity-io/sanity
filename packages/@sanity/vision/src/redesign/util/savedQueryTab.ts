@@ -4,7 +4,7 @@ import JSON5 from 'json5'
 
 import {type QueryConfig} from '../../hooks/useSavedQueries'
 import {isPlainObject} from '../../util/isPlainObject'
-import {type ParsedQueryUrl} from '../../util/parseQueryUrl'
+import {parseQueryUrl, type ParsedQueryUrl} from '../../util/parseQueryUrl'
 import {type VisionTab, type VisionTabInit, type VisionTabOptions} from '../store/types'
 
 /**
@@ -40,6 +40,23 @@ export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VisionTabInit {
   options.variant = parsed.variant === undefined ? 'none' : 'global'
 
   return {query: parsed.query, rawParams: parsed.rawParams, options}
+}
+
+/**
+ * A saved query's URL, parsed, with the query and params of a shared one as its collaborators
+ * have edited them (`QueryConfig.query`), which its URL may not have caught up with
+ */
+export function parseSavedQuery(
+  saved: QueryConfig,
+  datasets: readonly string[],
+): ParsedQueryUrl | null {
+  const parsed = parseQueryUrl(saved.url, datasets)
+  if (!parsed) return null
+  return {
+    ...parsed,
+    query: saved.query ?? parsed.query,
+    rawParams: saved.rawParams ?? parsed.rawParams,
+  }
 }
 
 /** Like `parsedQueryToTabInit`, also applying the saved query's title (clearing a stale one) */
