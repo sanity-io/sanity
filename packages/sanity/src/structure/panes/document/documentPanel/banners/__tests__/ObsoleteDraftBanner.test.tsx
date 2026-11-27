@@ -1,5 +1,5 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {render, screen} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type TargetDocumentState, useDocumentOperation} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
@@ -190,5 +190,32 @@ describe('ObsoleteDraftBanner', () => {
 
     await hoverButton('Publish draft')
     expect(await screen.findByText('Publish draft to continue editing.')).toBeInTheDocument()
+  })
+
+  it.each([
+    {variants: 'off', config: undefined},
+    {variants: 'on', config: {beta: {variants: {enabled: true}}}},
+  ])('shows Compare, Publish and Discard in that order with Variants $variants', async ({config}) => {
+    mockOperations()
+    const variantsWrapper = await createTestProvider({
+      resources: [structureUsEnglishLocaleBundle],
+      config,
+    })
+
+    render(
+      <ObsoleteDraftBanner
+        displayed={displayed}
+        documentId={DOCUMENT_ID}
+        schemaType={schemaType}
+        i18nKey="banners.live-edit-draft-banner.text"
+      />,
+      {wrapper: variantsWrapper},
+    )
+
+    const banner = await screen.findByTestId('live-edit-type-banner')
+    const names = within(banner)
+      .getAllByRole('button')
+      .map((button) => button.textContent?.trim())
+    expect(names).toEqual(['Compare draft', 'Publish draft', 'Discard draft'])
   })
 })

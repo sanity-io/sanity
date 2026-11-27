@@ -121,9 +121,10 @@ function mockDocumentPane({
   } as unknown as ReturnType<typeof useDocumentPane>)
 }
 
-async function renderBanner() {
+async function renderBanner({variantsEnabled = false}: {variantsEnabled?: boolean} = {}) {
   const wrapper = await createTestProvider({
     resources: [structureUsEnglishLocaleBundle],
+    config: variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined,
   })
 
   return render(<SeeDraftBanner />, {wrapper})
@@ -232,5 +233,21 @@ describe('SeeDraftBanner', () => {
     await renderBanner()
 
     expect(screen.queryByTestId('see-draft-banner')).not.toBeInTheDocument()
+  })
+
+  it('keeps the purple (suggest) tone with Variants off', async () => {
+    await renderBanner()
+
+    const banner = await screen.findByTestId('see-draft-banner')
+    expect(banner).toHaveAttribute('data-tone', 'suggest')
+  })
+
+  it('is neutral grey with Variants on, so it keeps a background', async () => {
+    await renderBanner({variantsEnabled: true})
+
+    const banner = await screen.findByTestId('see-draft-banner')
+    // `default` would paint the pane's own colour and the banner would have no visible fill
+    expect(banner).toHaveAttribute('data-tone', 'neutral')
+    expect(screen.getByRole('button', {name: 'View draft'})).toBeInTheDocument()
   })
 })
