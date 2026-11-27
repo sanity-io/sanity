@@ -54,6 +54,17 @@ export const content = css({
 })
 
 /**
+ * For the variant banners: the sentence may narrow below its longest unbreakable run (an inline
+ * name chip), so a chip truncates inside the banner instead of widening it.
+ */
+export const contentTruncatesChips = css({
+  '& > *': {
+    minWidth: 0,
+    maxWidth: '100%',
+  },
+})
+
+/**
  * The action column hugs its button, 16px after the text (the row's gap); it is pushed to the right edge when the banner is wider than
  * the text's cap, the gap and the button. A banner with no action has no column. On a narrow banner the action goes under the text.
  */

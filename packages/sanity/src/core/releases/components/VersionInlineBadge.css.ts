@@ -7,6 +7,36 @@ const base = css.raw({
   fontWeight: 500,
 })
 
+/**
+ * The variant banners' chip (with a glyph or `truncate`). The glyph and the name sit inside one
+ * box that never breaks: the chip wraps to the next line as a unit, and a name longer than the
+ * line truncates with an ellipsis (the full name stays in the DOM, and in the title while it is
+ * cut short).
+ */
+export const versionInlineBadgeChip = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  whiteSpace: 'nowrap',
+  maxWidth: '100%',
+  // The name is the box's baseline item, so the chip sits on the sentence's baseline
+  verticalAlign: 'baseline',
+})
+
+/** The chip's glyph (a variant's diamond, a release's mark), centred on the name. */
+export const versionInlineBadgeIcon = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  flex: 'none',
+})
+
+/** The chip's name: it gives the chip its baseline and truncates when the chip is at its limit. */
+export const versionInlineBadgeName = css({
+  alignSelf: 'baseline',
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+})
+
 // Keyed by `BadgeTone`; colours are read through the `--card-badge-*` variables the nearest Card
 // publishes, so they follow tone and scheme like the original template did. Each tone is spelled
 // out (rather than mapped over) so the calls stay statically extractable.

@@ -32,14 +32,14 @@ import {
 } from 'sanity/_singletons'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
-import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
+import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {ArchivedReleaseDocumentBanner} from '../ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from '../CanvasLinkedBanner'
@@ -57,6 +57,7 @@ import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 import {SeeDraftBanner} from '../SeeDraftBanner'
 import {UnpublishedDocumentBanner} from '../UnpublishedDocumentBanner'
+import {VariantDefinitionNotFoundBanner} from '../VariantDefinitionNotFoundBanner'
 import {backgroundBehind, contrastRatio} from './contrast'
 
 vi.mock('sanity', async (importOriginal) => {
@@ -320,6 +321,14 @@ afterEach(() => {
   vi.mocked(useOnlyHasVersions).mockReset()
 })
 
+function withVariant(perspective: PerspectiveContextValue): PerspectiveContextValue {
+  return {
+    ...perspective,
+    selectedVariantNames: ['alpha-audience'],
+    selectedVariants: [alphaVariant],
+  }
+}
+
 describe('document panel banners', () => {
   it('flags a deprecated type and a missing revision', async () => {
     await render(
@@ -578,7 +587,161 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
-  it('offers to add the document to the selected variant', async () => {
+  describe.each([320, 480])('keeps every inline chip whole at %ipx', (width) => {
+    const germany = {
+      ...alphaVariant,
+      _id: '_.variants.germany',
+      metadata: {title: 'Germany', description: []},
+    } as SystemVariant
+    const longVariant = {
+      ...alphaVariant,
+      _id: '_.variants.long',
+      metadata: {
+        title: 'Returning customers in the German-speaking markets during the winter sale',
+        description: [],
+      },
+    } as SystemVariant
+    const autumnCatalogue = release('rAutumnCatalogue', {
+      title: 'Autumn catalogue',
+      releaseType: 'undecided',
+    })
+    const longRelease = release('rLong', {
+      title: 'Spring collection launch for every storefront in the Nordic region',
+      releaseType: 'scheduled',
+      intendedPublishAt: FAR_FUTURE,
+    })
+
+    function withVariantNamed(perspective: PerspectiveContextValue, variant: SystemVariant) {
+      return {
+        ...perspective,
+        selectedVariantNames: [variant._id.replace('_.variants.', '')],
+        selectedVariants: [variant],
+      }
+    }
+
+    function Banners({variant}: {variant: SystemVariant}) {
+      const schemaType = useSchema().get('article') as ObjectSchemaType
+      return (
+        <>
+          <BannerHarness perspective={withVariantNamed(draftsPerspective, variant)}>
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+          </BannerHarness>
+          {[autumnCatalogue, springRelease, longRelease].map((item) => (
+            <BannerHarness
+              key={item._id}
+              perspective={withVariantNamed(releasePerspective(item), variant)}
+            >
+              <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+            </BannerHarness>
+          ))}
+          <BannerHarness
+            perspective={withVariantNamed(releasePerspective(scheduledRelease), variant)}
+          >
+            <DocumentNotInVariantBanner bannerCase={{kind: 'locked-release'}} />
+          </BannerHarness>
+          <BannerHarness perspective={withVariantNamed(publishedPerspective, variant)}>
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'published'}} />
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create-in-drafts'}} />
+            <DocumentNotInVariantBanner bannerCase={{kind: 'switch-to-drafts'}} />
+          </BannerHarness>
+          <BannerHarness>
+            {[autumnCatalogue, springRelease, longRelease].map((item) => (
+              <DocumentNotInReleaseBanner
+                key={item._id}
+                documentId={DOCUMENT_ID}
+                currentRelease={item}
+              />
+            ))}
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={scheduledRelease}
+              reason="RELEASE_NOT_ACTIVE"
+            />
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={longRelease}
+              reason="RELEASE_NOT_ACTIVE"
+            />
+          </BannerHarness>
+        </>
+      )
+    }
+
+    it.each([
+      ['a short variant name', germany],
+      ['a variant name longer than the line', longVariant],
+    ])('with %s', async (_label, variant) => {
+      vi.mocked(useDocumentVersions).mockReturnValue({
+        data: [],
+        versions: [],
+        loading: false,
+        error: null,
+      })
+
+      await render(
+        <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
+          <div data-testid="narrow-banners" style={{width}}>
+            <Banners variant={variant} />
+          </div>
+        </TestWrapper>,
+      )
+
+      const visibleChips = () =>
+        [
+          ...document
+            .querySelector('[data-testid="narrow-banners"]')!
+            .querySelectorAll<HTMLElement>('[data-inline-chip]'),
+        ].filter((chip) => chip.checkVisibility({visibilityProperty: true}))
+
+      // Every banner's sentence is on screen, the variant chip with its diamond in each variant one
+      await expect.poll(() => visibleChips().length).toBeGreaterThanOrEqual(14)
+      await expect
+        .poll(
+          () =>
+            visibleChips().filter((chip) => chip.querySelector('[data-inline-chip-icon] svg'))
+              .length,
+        )
+        .toBeGreaterThanOrEqual(7)
+
+      for (const chip of visibleChips()) {
+        const label = chip.textContent ?? ''
+        // One box on one line: the chip never breaks between lines
+        expect(chip.getClientRects(), `${label}: line boxes`).toHaveLength(1)
+        const box = chip.getBoundingClientRect()
+        const name = chip.querySelector('[data-inline-chip-name]')!.getBoundingClientRect()
+        const icon = chip.querySelector('[data-inline-chip-icon]')?.getBoundingClientRect()
+        if (icon) {
+          // The glyph is on the name's line, centred on it
+          const iconCentre = icon.top + icon.height / 2
+          expect(iconCentre, `${label}: glyph on the name's line`).toBeGreaterThanOrEqual(name.top)
+          expect(iconCentre, `${label}: glyph on the name's line`).toBeLessThanOrEqual(name.bottom)
+          expect(icon.right, `${label}: glyph before the name`).toBeLessThanOrEqual(name.left + 1)
+        }
+        // The chip stays inside the banner, which stays inside the narrow pane
+        const bounds = document
+          .querySelector('[data-testid="narrow-banners"]')!
+          .getBoundingClientRect()
+        expect(box.left, `${label}: left edge`).toBeGreaterThanOrEqual(bounds.left - 0.5)
+        expect(box.right, `${label}: right edge`).toBeLessThanOrEqual(bounds.right + 0.5)
+      }
+
+      // A name longer than the line is cut short with an ellipsis, and the chip names it in full
+      const truncated = visibleChips().filter((chip) => {
+        const nameElement = chip.querySelector<HTMLElement>('[data-inline-chip-name]')!
+        return nameElement.scrollWidth > nameElement.clientWidth
+      })
+      if (variant === longVariant) expect(truncated.length, 'chips cut short').toBeGreaterThan(0)
+      for (const chip of truncated) {
+        const nameElement = chip.querySelector<HTMLElement>('[data-inline-chip-name]')!
+        expect(getComputedStyle(nameElement).textOverflow).toBe('ellipsis')
+        await userEvent.hover(chip)
+        await expect.poll(() => chip.title).toBe(nameElement.textContent)
+      }
+      await settleChromaticEndState()
+    })
+  })
+
+  it('explains a missing variant version in each perspective', async () => {
     vi.mocked(useDocumentVersions).mockReturnValue({
       data: [],
       versions: [],
@@ -587,21 +750,239 @@ describe('document panel banners', () => {
     })
 
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
-        <BannerHarness
-          perspective={{
-            ...draftsPerspective,
-            selectedVariantNames: ['alpha-audience'],
-            selectedVariants: [alphaVariant],
-          }}
-        >
-          <DocumentNotInVariantBanner />
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
+        <BannerHarness perspective={withVariant(draftsPerspective)}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+        </BannerHarness>
+        <BannerHarness perspective={withVariant(releasePerspective(springRelease))}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+        </BannerHarness>
+        <BannerHarness perspective={withVariant(releasePerspective(scheduledRelease))}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'locked-release'}} />
+        </BannerHarness>
+        <BannerHarness perspective={withVariant(publishedPerspective)}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create-in-drafts'}} />
+          <DocumentNotInVariantBanner bannerCase={{kind: 'switch-to-drafts'}} />
+        </BannerHarness>
+        <BannerHarness>
+          <VariantDefinitionNotFoundBanner requestedVariantName="never-seen" />
         </BannerHarness>
       </TestWrapper>,
     )
 
-    await expect.element(page.getByText('Alpha audience')).toBeVisible()
-    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeEnabled()
+    await expect
+      .poll(
+        () =>
+          // The chips of the sentences on screen; a banner with a create action also keeps the
+          // sentences of its other states, hidden
+          [...document.querySelectorAll('[data-testid="variant-banner-variant-chip"]')].filter(
+            (chip) => getComputedStyle(chip).visibility === 'visible',
+          ).length,
+      )
+      .toBe(5)
+    await expect
+      .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
+      .toBe(2)
+    // In an open release the action is Add to release, as on the not-in-release banner
+    await expect.element(page.getByRole('button', {name: 'Add to release'})).toBeEnabled()
+    await expect.element(page.getByRole('button', {name: 'Open release'})).toBeEnabled()
+    await expect.element(page.getByRole('button', {name: 'Switch to Drafts'})).toBeEnabled()
+    await expect.element(page.getByText('The selected variant no longer exists.')).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Back to Default'})).toBeEnabled()
+    await settleChromaticEndState()
+  })
+
+  it.each([420, 900])(
+    'follows the document inventory and its form opening and closing while it is on screen, %ipx wide',
+    async (width) => {
+      vi.mocked(useDocumentVersions).mockReturnValue({
+        data: [],
+        versions: [],
+        loading: false,
+        error: null,
+      })
+      type Step = 'closed' | 'open' | 'form'
+      const paramsFor: Record<Step, Record<string, string>> = {
+        closed: {},
+        open: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
+        form: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME, [CREATE_VARIANT_PARAM]: alphaVariant._id},
+      }
+      function Toggling() {
+        const [step, setStep] = useState<Step>('closed')
+        return (
+          <BannerHarness
+            perspective={withVariant(draftsPerspective)}
+            router={{params: paramsFor[step]}}
+          >
+            <div data-testid="banner-host">
+              <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+            </div>
+            {(['closed', 'open', 'form'] as const).map((next) => (
+              <button key={next} type="button" onClick={() => setStep(next)}>
+                {`Go ${next}`}
+              </button>
+            ))}
+          </BannerHarness>
+        )
+      }
+      await render(
+        <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
+          <div style={{width}}>
+            <Toggling />
+          </div>
+        </TestWrapper>,
+      )
+
+      const $host = page.getByTestId('banner-host')
+      const $filled = $host.getByRole('button', {name: 'Create variant'})
+      const $link = $host.getByRole('button', {name: 'Create it in the document inventory.'})
+      const $pointer = $host.getByTestId('document-not-in-variant-banner-hand-off')
+      for (const step of ['closed', 'open', 'closed', 'open', 'form', 'open', 'closed'] as const) {
+        await page.getByRole('button', {name: `Go ${step}`}).click()
+        if (step === 'closed') {
+          await expect.element($filled).toBeVisible()
+          await expect.element($link).not.toBeInTheDocument()
+        } else if (step === 'open') {
+          await expect.element($link).toBeVisible()
+          await expect.element($filled).not.toBeInTheDocument()
+        } else {
+          await expect.element($pointer).toBeVisible()
+          await expect.element($link).not.toBeInTheDocument()
+          await expect.element($filled).not.toBeInTheDocument()
+        }
+      }
+      await settleChromaticEndState()
+    },
+  )
+
+  it('keeps Add to release in an open release while the document inventory and its form open and close', async () => {
+    vi.mocked(useDocumentVersions).mockReturnValue({
+      data: [],
+      versions: [],
+      loading: false,
+      error: null,
+    })
+    type Step = 'closed' | 'open' | 'form'
+    const paramsFor: Record<Step, Record<string, string>> = {
+      closed: {},
+      open: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
+      form: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME, [CREATE_VARIANT_PARAM]: alphaVariant._id},
+    }
+    function Toggling() {
+      const [step, setStep] = useState<Step>('closed')
+      return (
+        <BannerHarness
+          perspective={withVariant(releasePerspective(springRelease))}
+          router={{params: paramsFor[step]}}
+        >
+          <div data-testid="banner-host">
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+          </div>
+          {(['closed', 'open', 'form'] as const).map((next) => (
+            <button key={next} type="button" onClick={() => setStep(next)}>
+              {`Go ${next}`}
+            </button>
+          ))}
+        </BannerHarness>
+      )
+    }
+    await render(
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
+        <Toggling />
+      </TestWrapper>,
+    )
+
+    const $host = page.getByTestId('banner-host')
+    const $add = $host.getByRole('button', {name: 'Add to release'})
+    for (const step of ['closed', 'open', 'form', 'open', 'closed'] as const) {
+      await page.getByRole('button', {name: `Go ${step}`}).click()
+      await expect.element($add).toBeVisible()
+      await expect.element($add).toBeEnabled()
+      // Filled at every step: the inventory's Create variant is the one that steps down
+      await expect.element($add).toHaveAttribute('data-mode', 'default')
+      await expect
+        .element($host.getByRole('button', {name: 'Create it in the document inventory.'}))
+        .not.toBeInTheDocument()
+      await expect
+        .element($host.getByTestId('document-not-in-variant-banner-hand-off'))
+        .not.toBeInTheDocument()
+    }
+    await settleChromaticEndState()
+  })
+
+  it('yields its create action to the open document inventory, in light and dark', async () => {
+    vi.mocked(useDocumentVersions).mockReturnValue({
+      data: [],
+      versions: [],
+      loading: false,
+      error: null,
+    })
+    const setParams = vi.fn()
+    const draftsBanner = (scheme: 'light' | 'dark', testId: string) => (
+      <ThemeColorProvider scheme={scheme}>
+        <div data-testid={testId}>
+          <BannerHarness
+            perspective={withVariant(draftsPerspective)}
+            router={{params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}, setParams}}
+          >
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+          </BannerHarness>
+        </div>
+      </ThemeColorProvider>
+    )
+
+    await render(
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
+        {/* Closed inventory: the filled button */}
+        <BannerHarness perspective={withVariant(draftsPerspective)}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+        </BannerHarness>
+        {/* Open inventory: the link, in both schemes */}
+        {draftsBanner('light', 'light-banner')}
+        {draftsBanner('dark', 'dark-banner')}
+        {/* Open inventory with its Create variant form open: the pointer only */}
+        <BannerHarness
+          perspective={withVariant(draftsPerspective)}
+          router={{
+            params: {
+              inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
+              [CREATE_VARIANT_PARAM]: alphaVariant._id,
+            },
+          }}
+        >
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+        </BannerHarness>
+      </TestWrapper>,
+    )
+
+    const linkName = 'Create it in the document inventory.'
+    await expect
+      .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
+      .toBe(1)
+    await expect.poll(() => page.getByRole('button', {name: linkName}).elements().length).toBe(2)
+    // The pointer on screen; every stacked banner also keeps it, hidden, for its height
+    await expect
+      .element(page.getByTestId('document-not-in-variant-banner-hand-off'))
+      .toHaveTextContent('Finish creating it in the document inventory.')
+
+    // The link reads as text in both schemes: at least 4.5:1 against the banner behind it
+    for (const testId of ['light-banner', 'dark-banner']) {
+      const link = page.getByTestId(testId).getByRole('button', {name: linkName}).element()
+      const ratio = contrastRatio(getComputedStyle(link).color, backgroundBehind(link))
+      expect(ratio, testId).toBeGreaterThanOrEqual(4.5)
+    }
+
+    // A real button, reached from the keyboard, with a visible focus ring
+    const $lightLink = page.getByTestId('light-banner').getByRole('button', {name: linkName})
+    ;($lightLink.element() as HTMLElement).focus()
+    await userEvent.keyboard('{Shift>}{Tab}{/Shift}{Tab}')
+    await expect.element($lightLink).toHaveFocus()
+    expect(getComputedStyle($lightLink.element()).boxShadow).not.toBe('none')
+    await userEvent.keyboard('{Enter}')
+    expect(setParams).toHaveBeenCalledWith({
+      inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
+      [CREATE_VARIANT_PARAM]: alphaVariant._id,
+    })
     await settleChromaticEndState()
   })
 

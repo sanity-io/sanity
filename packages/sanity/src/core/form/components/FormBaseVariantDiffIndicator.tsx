@@ -1,5 +1,5 @@
 import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type ReactNode, useContext} from 'react'
+import {type ComponentType, useContext} from 'react'
 import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {Flex, Text} from 'ui5'
 
@@ -15,7 +15,7 @@ import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {type BaseFieldProps} from '../types/fieldProps'
-import {chip, chipGlyph, markButton} from './FormBaseVariantDiffIndicator.css'
+import {chip, markButton} from './FormBaseVariantDiffIndicator.css'
 
 type Props = Pick<BaseFieldProps, 'changedFromBaseVariant'>
 
@@ -97,15 +97,6 @@ function useComparedSlotName(): string {
   return t('release.chip.draft')
 }
 
-/** A glyph inside a chip, centred on the chip's text line. */
-function ChipGlyph({children}: {children: ReactNode}) {
-  return (
-    <span aria-hidden className={chipGlyph}>
-      {children}
-    </span>
-  )
-}
-
 /**
  * The mark's tooltip, as chips: "Differs from [Default] [Draft]". It names the base variant and the slot
  * of the version actually compared (Published, Draft or the release), which can be a fallback below the
@@ -115,10 +106,11 @@ function DiffersFrom() {
   const {t} = useTranslation()
   const {compared, isReleaseSlot, release} = useComparedSlot()
   const slot = release ? (
-    <VersionInlineBadge $tone={getReleaseTone(release)} className={chip}>
-      <ChipGlyph>
-        <ReleaseAvatarIcon release={release} size="small" />
-      </ChipGlyph>
+    <VersionInlineBadge
+      $tone={getReleaseTone(release)}
+      className={chip}
+      icon={<ReleaseAvatarIcon release={release} size="small" />}
+    >
       {release.metadata.title || t('release.placeholder-untitled-release')}
     </VersionInlineBadge>
   ) : isReleaseSlot ? (
@@ -126,17 +118,19 @@ function DiffersFrom() {
       {compared}
     </VersionInlineBadge>
   ) : compared === 'published' ? (
-    <VersionInlineBadge $tone="positive" className={chip}>
-      <ChipGlyph>
-        <ReleaseAvatarIcon release={PUBLISHED} size="small" />
-      </ChipGlyph>
+    <VersionInlineBadge
+      $tone="positive"
+      className={chip}
+      icon={<ReleaseAvatarIcon release={PUBLISHED} size="small" />}
+    >
       {t('release.chip.published')}
     </VersionInlineBadge>
   ) : (
-    <VersionInlineBadge $tone="caution" className={chip}>
-      <ChipGlyph>
-        <ReleaseAvatarIcon release={LATEST} size="small" />
-      </ChipGlyph>
+    <VersionInlineBadge
+      $tone="caution"
+      className={chip}
+      icon={<ReleaseAvatarIcon release={LATEST} size="small" />}
+    >
       {t('release.chip.draft')}
     </VersionInlineBadge>
   )
