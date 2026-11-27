@@ -1318,6 +1318,9 @@ importers:
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
+      google-auth-library:
+        specifier: ^11.3.4
+        version: 11.3.4(supports-color@8.1.1)
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
