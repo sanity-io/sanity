@@ -25,6 +25,7 @@ import {Text, Box, Flex, Icon} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type Params} from '../../../util/parseParams'
+import {stringifyParams} from '../../../util/stringifyParams'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {cx} from '../../util/cx'
 import {GROQ_PARAMETERS_DOCS_URL} from '../../util/docsUrls'
@@ -773,33 +774,36 @@ function ParamField(props: {
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
         </Text>
-        <HelpPopover
-          docsUrl={GROQ_PARAMETERS_DOCS_URL}
-          label={t('vision.params-form.details', {name: param.name})}
-          testId={`vision-params-form-${param.name}-details`}
-        >
-          <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
-            {t('vision.params-form.type-detail', {
-              type: object ? t('vision.params-form.type.object') : describeType(type, t),
-            })}
-          </Text>
-          {param.usages.length > 0 && (
-            <Text size={1} as="div" trim={true}>
-              {t('vision.params-form.used-in')}{' '}
-              {param.usages.map((usage, index) => (
-                <span key={usage}>
-                  {index > 0 && ', '}
-                  <InlineCode>{usage}</InlineCode>
-                </span>
-              ))}
+        {/* The help button fills its container, so unwrapped it would take the rest of the row */}
+        <Flex flexShrink={0}>
+          <HelpPopover
+            docsUrl={GROQ_PARAMETERS_DOCS_URL}
+            label={t('vision.params-form.details', {name: param.name})}
+            testId={`vision-params-form-${param.name}-details`}
+          >
+            <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
+              {t('vision.params-form.type-detail', {
+                type: object ? t('vision.params-form.type.object') : describeType(type, t),
+              })}
             </Text>
-          )}
-          {schemaNote && (
-            <Text muted size={1} as="div" trim={true}>
-              {t('vision.params-form.no-schema')}
-            </Text>
-          )}
-        </HelpPopover>
+            {param.usages.length > 0 && (
+              <Text size={1} as="div" trim={true}>
+                {t('vision.params-form.used-in')}{' '}
+                {param.usages.map((usage, index) => (
+                  <span key={usage}>
+                    {index > 0 && ', '}
+                    <InlineCode>{usage}</InlineCode>
+                  </span>
+                ))}
+              </Text>
+            )}
+            {schemaNote && (
+              <Text muted size={1} as="div" trim={true}>
+                {t('vision.params-form.no-schema')}
+              </Text>
+            )}
+          </HelpPopover>
+        </Flex>
         {required && (
           <VisionTooltip
             content={
@@ -908,11 +912,11 @@ export function ParamsForm({
       value === undefined
         ? Object.fromEntries(Object.entries(values).filter(([key]) => key !== name))
         : {...values, [name]: value}
-    onChange(JSON.stringify(next, null, 2))
+    onChange(stringifyParams(next))
   }
   const removeUnused = () => {
     const next = Object.fromEntries(Object.entries(values).filter(([key]) => known.has(key)))
-    onChange(JSON.stringify(next, null, 2))
+    onChange(stringifyParams(next))
   }
 
   const schemaUnavailable = inference.params.length > 0 && inference.schemaUnavailable
@@ -969,14 +973,16 @@ export function ParamsForm({
                 {t('vision.params-form.unused')}
               </Text>
               {schemaUnavailable && (
-                <HelpPopover
-                  label={t('vision.params-form.types-details')}
-                  testId="vision-params-form-no-schema"
-                >
-                  <Text size={1} as="div" trim={true}>
-                    {t('vision.params-form.no-schema')}
-                  </Text>
-                </HelpPopover>
+                <Flex flexShrink={0}>
+                  <HelpPopover
+                    label={t('vision.params-form.types-details')}
+                    testId="vision-params-form-no-schema"
+                  >
+                    <Text size={1} as="div" trim={true}>
+                      {t('vision.params-form.no-schema')}
+                    </Text>
+                  </HelpPopover>
+                </Flex>
               )}
               <Box flexGrow={1} />
               <Button

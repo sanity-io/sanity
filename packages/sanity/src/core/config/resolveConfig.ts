@@ -18,8 +18,7 @@ import {
  * workspaces from a config. Returns an `Observable` that waits till all sources
  * emit once before emitting an array of fully resolved sources and workspaces.
  *
- * @hidden
- * @public
+ * @internal
  */
 export function resolveConfig(config: Config): Observable<Workspace[]> {
   const {workspaces} = prepareConfig(config)

@@ -1,0 +1,13 @@
+diff --git a/dist/actions/graphql/extractGraphQLAPIs.js b/dist/actions/graphql/extractGraphQLAPIs.js
+index 7697cc7592fbe7c115f729da11d753880cadcc49..a5c06a7ccee8fa4a73b71dc31054235c6f68530c 100644
+--- a/dist/actions/graphql/extractGraphQLAPIs.js
++++ b/dist/actions/graphql/extractGraphQLAPIs.js
+@@ -72,7 +72,7 @@ export async function extractGraphQLAPIsWorker(port, data, deps) {
+         workspaces
+     });
+     // Get createSchema from sanity (0ms — already cached by ViteNodeRunner)
+-    const { createSchema, RELEASE_DOCUMENT_TYPE: releaseDocumentType } = await deps.resolveLocalPackage('sanity', workDir);
++    const { createSchema, RELEASE_DOCUMENT_TYPE: releaseDocumentType } = { ...(await deps.resolveLocalPackage('sanity', workDir)), ...(await deps.resolveLocalPackage('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', workDir).catch(()=>({}))) };
+     // Build default schema to identify built-in types that should be filtered out
+     const defaultSchema = createSchema({
+         name: 'default',

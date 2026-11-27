@@ -75,11 +75,8 @@ export {
   type OAuthConfig,
   type LegacyAuthConfig,
 } from '../core/config/auth/types'
-export {createDefaultIcon} from '../core/config/createDefaultIcon'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {createConfig, defineConfig} from '../core/config/defineConfig'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
+export {defineConfig} from '../core/config/defineConfig'
+export {definePlugin, type PluginFactory} from '../core/config/definePlugin'
 export {defineSingleton} from '../core/config/defineSingleton'
 export {
   type DocumentActionComponent,
@@ -131,8 +128,6 @@ export {
   type ReleaseActionProps,
   type ReleaseActionsContext,
 } from '../core/config/releases/actions'
-export {resolveConfig} from '../core/config/resolveConfig'
-export {SchemaError} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
@@ -451,7 +446,6 @@ export {
   type PreviewableType,
   type PreviewPath,
 } from '../core/preview/types'
-export {createSchema} from '../core/schema/createSchema'
 export {
   type AuthProbeResult,
   type AuthState,
@@ -555,8 +549,6 @@ export {
   type PasteOptions,
   type SanityClipboardItem,
 } from '../core/studio/copyPaste/types'
-export {generateStudioManifest} from '../core/studio/manifest/generateStudioManifest'
-export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {renderStudio} from '../core/studio/renderStudio'
 export {
@@ -2449,6 +2441,10 @@ export declare const ScheduledBadge: never
  */
 export declare const SchedulesContext: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{SchemaError}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const SchemaError: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export type SchemaErrorContext = never
@@ -3141,9 +3137,17 @@ export declare const createAuthStore: never
  */
 export declare const createBufferedDocument: never
 /**
+ * @deprecated Removed in v7. Use `defineConfig` instead: `export default defineConfig({…})`.
+ */
+export declare const createConfig: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const createConnectionStatusStore: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{createDefaultIcon}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const createDefaultIcon: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
@@ -3185,6 +3189,10 @@ export declare const createObservableBufferedDocument: never
  */
 export declare const createPatchChannel: never
 /**
+ * @deprecated Removed in v7. Use `definePlugin` instead: `export const myPlugin = definePlugin((options) => ({…}))`.
+ */
+export declare const createPlugin: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const createPresenceStore: never
@@ -3212,6 +3220,10 @@ export declare const createSanityMediaLibraryFileSource: never
  * @deprecated Moved to `sanity/media-library`. Import `{createSanityMediaLibraryImageSource}` from `sanity/media-library` instead of `sanity`.
  */
 export declare const createSanityMediaLibraryImageSource: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{createSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const createSchema: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
@@ -3364,6 +3376,10 @@ export declare const formatRelativeLocalePublishDate: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const fromMutationPatches: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{generateStudioManifest}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const generateStudioManifest: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -4041,6 +4057,10 @@ export declare const removeUndefinedLocaleResources: never
  */
 export declare const resolveConditionalProperty: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{resolveConfig}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const resolveConfig: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const resolveDiffComponent: never
@@ -4128,6 +4148,10 @@ export declare const unstable_useObserveDocument: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const unstable_useValuePreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{uploadSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const uploadSchema: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */

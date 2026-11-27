@@ -1,13 +1,14 @@
 import {ChannelError, type SanityClient} from '@sanity/client'
 import {act, renderHook, screen, waitFor} from '@testing-library/react'
 import {firstValueFrom, mergeMap, type Observable, of, throwError, timer} from 'rxjs'
-import {createSchema, defineConfig, defineField, defineType, type SanityDocument} from 'sanity'
+import {defineConfig, defineField, defineType, type SanityDocument} from 'sanity'
 import {afterEach, describe, expect, onTestFinished, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../test/mocks/mockSanityClient'
 import {it} from '../../../test/testUtils/listenerErrorHandlerTest'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {useDocumentForm} from '../../core/form/useDocumentForm'
+import {createSchema} from '../../core/schema/createSchema'
 import {remoteSnapshots} from '../../core/store/document/document-pair/remoteSnapshots'
 import {listenSearchQuery} from '../panes/documentList/listenSearchQuery'
 

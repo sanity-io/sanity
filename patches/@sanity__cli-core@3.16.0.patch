@@ -1,0 +1,13 @@
+diff --git a/dist/config/studio/getStudioWorkspaces.js b/dist/config/studio/getStudioWorkspaces.js
+index a9c15aced0a61288546a289b5c6fb45c6248ee66..ba32124f9bcea420312e28dd21d9439c8906622f 100644
+--- a/dist/config/studio/getStudioWorkspaces.js
++++ b/dist/config/studio/getStudioWorkspaces.js
+@@ -34,7 +34,7 @@ const debug = subdebug('worker:getStudioWorkspaces');
+     }
+     const workDir = dirname(configPath);
+     debug('Work dir %s', workDir);
+-    const { resolveConfig } = await resolveLocalPackage('sanity', workDir);
++    const { resolveConfig } = { ...(await resolveLocalPackage('sanity', workDir)), ...(await resolveLocalPackage('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', workDir).catch(()=>({}))) };
+     if (typeof resolveConfig !== 'function') {
+         throw new TypeError('Expected `resolveConfig` from `sanity` to be a function');
+     }

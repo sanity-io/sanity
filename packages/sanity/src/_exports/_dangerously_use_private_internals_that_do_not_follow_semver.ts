@@ -98,6 +98,7 @@ export {
   ConfigResolutionError,
   type ConfigResolutionErrorOptions,
 } from '../core/config/ConfigResolutionError'
+export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {initialDocumentFieldActions} from '../core/config/document/fieldActions'
 export {documentFieldActionsReducer} from '../core/config/document/fieldActions/reducer'
 export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
@@ -107,9 +108,10 @@ export {
   createSourceFromConfig,
   createWorkspaceFromConfig,
   type CreateWorkspaceFromConfigOptions,
+  resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {type SchemaErrorContext} from '../core/config/SchemaError'
+export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
 export {type NavbarAction} from '../core/config/studio/types'
 export {
   type AsyncConfigPropertyReducer,
@@ -293,6 +295,7 @@ export {
   isReleaseScheduledOrScheduling,
 } from '../core/releases/util/util'
 export {useReleasesToolAvailable} from '../core/schedules/hooks/useReleasesToolAvailable'
+export {createSchema} from '../core/schema/createSchema'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
 export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
@@ -530,7 +533,9 @@ export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
+export {generateStudioManifest} from '../core/studio/manifest/generateStudioManifest'
 export {LiveManifestRegisterProvider} from '../core/studio/manifest/LiveManifestRegisterProvider'
+export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 export {
   classifyConfigError,
   classifyRequestError,
@@ -1696,10 +1701,6 @@ export declare const STICKY_PARAMS: never
  */
 export declare const SchedulesContext: never
 /**
- * @deprecated Moved to `sanity`. Import `{SchemaError}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
- */
-export declare const SchemaError: never
-/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{SerializablePaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export type SerializablePaneNode = never
@@ -1860,10 +1861,6 @@ export declare const buildRangeDecorationSelectionsFromComments: never
  */
 export declare const buildTextSelectionFromFragment: never
 /**
- * @deprecated Moved to `sanity`. Import `{createDefaultIcon}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
- */
-export declare const createDefaultIcon: never
-/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const createPatchChannel: never
@@ -1923,10 +1920,6 @@ export declare const encodePath: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const fromMutationPatches: never
-/**
- * @deprecated Moved to `sanity`. Import `{generateStudioManifest}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
- */
-export declare const generateStudioManifest: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -2004,10 +1997,6 @@ export declare const renderStudio: never
  */
 export declare const resolveConditionalProperty: never
 /**
- * @deprecated Moved to `sanity`. Import `{resolveConfig}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
- */
-export declare const resolveConfig: never
-/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const resolveDiffComponent: never
@@ -2019,10 +2008,6 @@ export declare const setAtPath: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const toMutationPatches: never
-/**
- * @deprecated Moved to `sanity`. Import `{uploadSchema}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
- */
-export declare const uploadSchema: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */

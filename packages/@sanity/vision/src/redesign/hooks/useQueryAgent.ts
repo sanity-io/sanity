@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
+import {stringifyParams} from '../../util/stringifyParams'
 import {useAiCreditsUpsell} from '../components/AiCreditsUpsellContext'
 import {type AiQueryAction, type AiQueryChange, type VisionTab} from '../store/types'
 import {useVisionActor} from '../store/VisionActorContext'
@@ -101,7 +102,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
         id: tab.id,
         tab: {
           ...(options.keepQuery ? {} : {query}),
-          ...(options.keepParams ? {} : {rawParams: JSON.stringify(generated.params, null, 2)}),
+          ...(options.keepParams ? {} : {rawParams: stringifyParams(generated.params)}),
           ...(named ? {title: generated.title} : {}),
         },
         fetch: options.fetch ? aiGeneratedFetch(options.ai) : undefined,
