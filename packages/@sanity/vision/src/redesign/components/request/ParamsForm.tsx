@@ -773,33 +773,36 @@ function ParamField(props: {
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
         </Text>
-        <HelpPopover
-          docsUrl={GROQ_PARAMETERS_DOCS_URL}
-          label={t('vision.params-form.details', {name: param.name})}
-          testId={`vision-params-form-${param.name}-details`}
-        >
-          <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
-            {t('vision.params-form.type-detail', {
-              type: object ? t('vision.params-form.type.object') : describeType(type, t),
-            })}
-          </Text>
-          {param.usages.length > 0 && (
-            <Text size={1} as="div" trim={true}>
-              {t('vision.params-form.used-in')}{' '}
-              {param.usages.map((usage, index) => (
-                <span key={usage}>
-                  {index > 0 && ', '}
-                  <InlineCode>{usage}</InlineCode>
-                </span>
-              ))}
+        {/* The help button fills its container, so unwrapped it would take the rest of the row */}
+        <Flex flexShrink={0}>
+          <HelpPopover
+            docsUrl={GROQ_PARAMETERS_DOCS_URL}
+            label={t('vision.params-form.details', {name: param.name})}
+            testId={`vision-params-form-${param.name}-details`}
+          >
+            <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
+              {t('vision.params-form.type-detail', {
+                type: object ? t('vision.params-form.type.object') : describeType(type, t),
+              })}
             </Text>
-          )}
-          {schemaNote && (
-            <Text muted size={1} as="div" trim={true}>
-              {t('vision.params-form.no-schema')}
-            </Text>
-          )}
-        </HelpPopover>
+            {param.usages.length > 0 && (
+              <Text size={1} as="div" trim={true}>
+                {t('vision.params-form.used-in')}{' '}
+                {param.usages.map((usage, index) => (
+                  <span key={usage}>
+                    {index > 0 && ', '}
+                    <InlineCode>{usage}</InlineCode>
+                  </span>
+                ))}
+              </Text>
+            )}
+            {schemaNote && (
+              <Text muted size={1} as="div" trim={true}>
+                {t('vision.params-form.no-schema')}
+              </Text>
+            )}
+          </HelpPopover>
+        </Flex>
         {required && (
           <VisionTooltip
             content={
@@ -969,14 +972,16 @@ export function ParamsForm({
                 {t('vision.params-form.unused')}
               </Text>
               {schemaUnavailable && (
-                <HelpPopover
-                  label={t('vision.params-form.types-details')}
-                  testId="vision-params-form-no-schema"
-                >
-                  <Text size={1} as="div" trim={true}>
-                    {t('vision.params-form.no-schema')}
-                  </Text>
-                </HelpPopover>
+                <Flex flexShrink={0}>
+                  <HelpPopover
+                    label={t('vision.params-form.types-details')}
+                    testId="vision-params-form-no-schema"
+                  >
+                    <Text size={1} as="div" trim={true}>
+                      {t('vision.params-form.no-schema')}
+                    </Text>
+                  </HelpPopover>
+                </Flex>
               )}
               <Box flexGrow={1} />
               <Button
