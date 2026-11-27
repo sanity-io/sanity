@@ -4,7 +4,12 @@ import {type ReferenceFilterOptions} from '../reference/types'
 import {type PreviewConfig} from '../schema/preview'
 import {type ObjectSchemaType} from '../schema/types'
 
-/** @beta */
+/**
+ * The stored value of a cross-dataset reference: the `_ref` document ID plus the `_dataset` and
+ * `_projectId` the document lives in.
+ *
+ * @public
+ */
 export interface CrossDatasetReferenceValue {
   _type: string
   _dataset: string
@@ -14,7 +19,12 @@ export interface CrossDatasetReferenceValue {
   _weak?: boolean
 }
 
-/** @beta */
+/**
+ * A document type a cross-dataset reference can point to, with the title, icon and preview
+ * configuration used to display the referenced document.
+ *
+ * @public
+ */
 export interface CrossDatasetType {
   type: string
   title?: string
@@ -22,7 +32,12 @@ export interface CrossDatasetType {
   preview: PreviewConfig
 }
 
-/** @beta */
+/**
+ * The schema type of a cross-dataset reference field. Its `to` array lists the
+ * {@link CrossDatasetType | types} it can reference in the given `dataset`.
+ *
+ * @public
+ */
 export interface CrossDatasetReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
   jsonType: 'object'
   to: CrossDatasetType[]

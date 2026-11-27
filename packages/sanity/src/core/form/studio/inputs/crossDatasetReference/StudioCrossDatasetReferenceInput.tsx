@@ -55,9 +55,10 @@ async function resolveUserDefinedFilter(
 }
 
 /**
+ * The props passed to the input component of a cross-dataset reference field.
  *
  * @hidden
- * @beta
+ * @public
  */
 export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
   CrossDatasetReferenceValue,

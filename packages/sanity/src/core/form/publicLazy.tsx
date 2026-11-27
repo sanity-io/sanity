@@ -112,8 +112,11 @@ export const ArrayOfPrimitivesItem = createLazyComponent<PrimitiveMemberItemProp
 )
 
 /**
+ * The default input component for cross-dataset reference fields, for wrapping or rendering in a
+ * custom input.
+ *
  * @hidden
- * @beta
+ * @public
  */
 export const CrossDatasetReferenceInput =
   createLazyComponent<StudioCrossDatasetReferenceInputProps>(() =>
