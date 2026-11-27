@@ -2,8 +2,15 @@ import {cssModulesPattern} from '@repo/css-modules-kit'
 import {defineConfig} from '@repo/tsdown.config'
 import {Features} from 'lightningcss'
 
+import pkg from './package.json' with {type: 'json'}
+
 export default defineConfig({
   entry: './src/index.ts',
+  define: {
+    // `VISION_VERSION` reads this (see `src/version.ts`). An explicit env var wins so preview
+    // releases can attach their own version, otherwise the version from package.json is inlined.
+    __PKG_VERSION__: JSON.stringify(process.env.PKG_VERSION || pkg.version),
+  },
   // React Compiler on oxc-transform-react (the native Rust port), see packages/sanity/tsdown.config.ts
   reactCompiler: {transform: 'oxc', target: '19'},
   // Compiles the `*.module.css` files with Lightning CSS, through `@tsdown/css`, and extracts the

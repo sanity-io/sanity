@@ -11,6 +11,15 @@ describe('presentationTool()', () => {
     assertType<PresentationToolPluginType>(presentationTool({previewUrl: 'https://example.com'}))
   })
 
+  describe('options.defaultDocumentPanelOpen', () => {
+    test('can hide the document panel by default', () => {
+      assertType<PresentationPluginOptions>({
+        defaultDocumentPanelOpen: false,
+        previewUrl: 'http://localhost:3000',
+      })
+    })
+  })
+
   describe('options.allowOrigins', () => {
     test('allow can be set', () => {
       assertType<PresentationPluginOptions>({

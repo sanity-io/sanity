@@ -974,7 +974,7 @@ export declare const CommentsAuthoringPathProvider: never
  */
 export declare const CommentsEnabledProvider: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from the same entry.
  */
 export declare const CommentsEnabledProviderV2: never
 /**
@@ -990,7 +990,7 @@ export declare const CommentsList: never
  */
 export declare const CommentsProvider: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsProviderLegacy` from the same entry.
  */
 export declare const CommentsProviderV2: never
 /**
@@ -2598,7 +2598,7 @@ export type StringSegmentUnchanged = never
  */
 export type StructureNodeIdValidationResult = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const Studio: never
 /**
@@ -2614,11 +2614,11 @@ export declare const StudioAnnouncementsDialog: never
  */
 export type StudioDiagnostics = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const StudioDiagnosticsBridge: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export type StudioDiagnosticsBridgeApi = never
 /**
@@ -2634,7 +2634,7 @@ export type StudioFeedbackDialogProps = never
  */
 export declare const StudioFeedbackProvider: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const StudioLayout: never
 /**
@@ -2654,7 +2654,7 @@ export type StudioManifest = never
  */
 export declare const StudioNavbar: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const StudioProvider: never
 /**
@@ -2710,11 +2710,11 @@ export declare const TemplatePreview: never
  */
 export declare const TextInput: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const TextWithTone: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export type TextWithToneProps = never
 /**
@@ -4158,7 +4158,7 @@ export declare const useComments: never
  */
 export declare const useCommentsEnabled: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from the same entry.
  */
 export declare const useCommentsEnabledV2: never
 /**
@@ -4166,7 +4166,7 @@ export declare const useCommentsEnabledV2: never
  */
 export declare const useCommentsMode: never
 /**
- * @deprecated Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`.
+ * @deprecated Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from the same entry.
  */
 export declare const useCommentsModeV2: never
 /**
@@ -4538,7 +4538,7 @@ export declare const useScheduledDraftDocument: never
  */
 export declare const useScheduledDraftsEnabled: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const useSchema: never
 /**

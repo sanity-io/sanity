@@ -17,7 +17,8 @@
     "start": "pnpm --filter studio-e2e-testing preview",
     "test": "playwright test",
     "test:auth": "playwright test --config=playwright.auth.config.ts",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "version-compare": "tsx scripts/versionCompare/index.ts"
   },
   "devDependencies": {
     "@chromatic-com/playwright": "^1.0.0",

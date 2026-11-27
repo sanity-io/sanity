@@ -440,6 +440,10 @@ See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The 
 
 Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
 
+### Studio v6 vs v7 comparison (Token Required)
+
+`pnpm perf:version-compare` builds one minimal studio (`dev/starter-studio` with its config overwritten, so both refs compile identical configuration) from `main` (v6) and `next-major` (v7), each in its own git worktree, serves them in production mode on `localhost:3339` and measures them with Playwright + Chromium. It reports median and p75 over `--runs` interleaved samples (fresh browser context each, HTTP cache disabled) for the login screen becoming interactive (unauthenticated) and the `/404` tool page showing the navbar tool list (authenticated through the e2e token mechanism), and JS size (total emitted and downloaded by the login page; raw, gzip, brotli). Load times run under CDP network and CPU emulation, `--network slow-4g,fast-4g` by default (DevTools presets: 150 ms RTT, 1.6 Mbps down / 750 kbps up with 4x CPU throttle; 60 ms RTT, 9 Mbps / 1.5 Mbps, no CPU throttle; `none` disables it) with `--cpu-throttle N` overriding the slowdown; the static server compresses with brotli like a CDN. The result is one JSON file with the sizes at the top level and the timings per profile, each with v6, v7 and the difference, written to `--out` (default `version-compare.json`) and to the job summary. Needs `SANITY_E2E_PROJECT_ID`, `SANITY_E2E_SESSION_TOKEN` and `SANITY_E2E_DATASET` as for the e2e suite (`pnpm e2e:setup` creates the dataset); `--skip-authenticated` drops the third metric and the token. Options: `--v6-ref`, `--v7-ref`, `--runs`, `--work-dir`, `--reuse-builds`. `.github/workflows/version-compare.yml` runs it on pushes to `next-major` and on dispatch. Timings include real round trips to the staging API, so compare numbers from the same machine and run only.
+
 ### Engine confidence score (No Auth Required locally)
 
 The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). Each weekly run stores two Stryker mutation scores: `score.ratio`, the total engine score over both mutation runs (`sanity` and `@sanity/mutator`), and `studioScore.ratio`, the core Studio engine score over the `sanity` target alone. Reporting that reads the dataset directly reads those two fields and needs no understanding of how they are computed. `studioScore` is derived from the per-file results of the same run, so it needs no extra Stryker run and no `config.version` change. A catalogue of known-bug patches is also replayed and stored as `knownBugs`, shown in Radar as supporting detail ("X of N known bugs caught"), but it never feeds the score. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
@@ -693,7 +697,10 @@ Rules that follow from this:
   them relatively without them being exported from the public `sanity/router` entry.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
-  404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
+  404 on the module host. A nested entry (`…/1`, `…/structure`) is uploaded to
+  `bare/<entry>.mjs` with its directory kept (`@repo/bundle-manager`), and it also needs the
+  module server (`sanity-io/module-server`) to route subpaths with more than one segment.
+  `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 - A change to any entry's export list also changes `packages/sanity/test/__snapshots__/exports.test.ts.snap`,
   a unit test in the `sanity` project rather than part of `pnpm test:exports`. It imports the
@@ -882,6 +889,8 @@ and another when the file has entries `origin/main`'s copy lacks. When either fa
 export to `main` first (a re-export, never a copy of the module), then copy the file over.
 On `main`, the internals entry's completeness test accepts the non-`@internal` names v7 puts there.
 Type-only export tombstones are excluded from the map (see [Export tombstones (v7)](#export-tombstones-v7)).
+Exports of features that only exist on v7, which `main` has nothing to re-export for, are listed
+in `V7_ONLY_EXPORTS` in `exportMap.mjs` and excluded too; a moved export never belongs there.
 
 ### Effect events: native `useEffectEvent`, never in dependency arrays
 

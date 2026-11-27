@@ -49,6 +49,16 @@ function isPluginFacingEntry(subpath) {
 }
 
 /**
+ * Exports of features that only exist on v7, so `main` has no implementation to re-export. They
+ * are not moved exports, and a plugin that uses them only supports v7 anyway. Keyed by entry.
+ *
+ * @type {Record<string, ReadonlySet<string>>}
+ */
+const V7_ONLY_EXPORTS = {
+  '@sanity/vision': new Set(['VisionAiConfig', 'VisionAiFeatures']),
+}
+
+/**
  * v7 keeps removed/moved names as `@deprecated` `never` tombstones in the `.d.ts` so TypeScript
  * can name the replacement. They must not appear in this map: the map is the dual-support
  * contract of real exports, and tombstones have no runtime value for `@repo/test-exports` to
@@ -164,6 +174,7 @@ export function readExportMap() {
         value.default.replace(/\.(m|c)?js$/, '.d.ts'),
       )
       const sourceFile = project.addSourceFileAtPath(dtsFile)
+      const entry = path.posix.join(packageName, subpath)
       /** @type {Record<string, ExportKind>} */
       const names = {}
       const exported = sourceFile
@@ -171,11 +182,12 @@ export function readExportMap() {
         .toSorted((a, b) => (a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0))
       for (const symbol of exported) {
         if (isTombstoneExport(symbol)) continue
+        if (V7_ONLY_EXPORTS[entry]?.has(symbol.getName())) continue
         names[symbol.getName()] = isOnlyTypeStarExport(sourceFile, symbol)
           ? 'type'
           : getExportKind(symbol)
       }
-      map[path.posix.join(packageName, subpath)] = names
+      map[entry] = names
     }
   }
   return map

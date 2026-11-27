@@ -1,9 +1,11 @@
 import {defineEvent} from '@sanity/telemetry'
 
 /**
- * Usage events for the Vision tool. Payloads are coarse enums, counts and booleans only: never
- * query text, parameter names or values, results, document IDs or contents, dataset, project,
- * perspective or release names, prompts, titles, or anything else a user typed or fetched.
+ * Usage events for the Vision tool. Payloads are coarse enums, counts, booleans and
+ * `visionVersion` only: never query text, parameter names or values, results, document IDs or
+ * contents, dataset, project, perspective or release names, prompts, titles, or anything else a
+ * user typed or fetched. `visionVersion` is the `@sanity/vision` package version. This module
+ * does not read it; the logger adds the constant injected when that package is built.
  *
  * The shared section covers what both the classic tool and the redesign can do, and is kept
  * byte for byte the same on every release line that ships Vision, so usage compares across
@@ -14,6 +16,11 @@ import {defineEvent} from '@sanity/telemetry'
 /* -------------------------------------------------------------------------------------------
  * Shared: classic and redesign
  * ------------------------------------------------------------------------------------------- */
+
+/** `@sanity/vision` package version that logged the event. */
+export interface VisionVersionData {
+  visionVersion: string
+}
 
 /** Which Vision UI fired an event that both of them can fire */
 export type VisionUi = 'classic' | 'redesign'
@@ -29,14 +36,14 @@ export interface VisionQueryRunData {
 }
 
 /** The tool mounted. Fires once per visit to the tool, not on every render. */
-export const VisionOpened = defineEvent<{ui: VisionUi}>({
+export const VisionOpened = defineEvent<VisionVersionData & {ui: VisionUi}>({
   name: 'Vision Opened',
   version: 1,
   description: 'User opened the Vision tool. ui is the classic tool or the redesign.',
 })
 
 /** User ran the current query. A dataset, perspective, or API version change does not count. */
-export const VisionQueryRun = defineEvent<VisionQueryRunData>({
+export const VisionQueryRun = defineEvent<VisionVersionData & VisionQueryRunData>({
   name: 'Vision Query Run',
   version: 1,
   description:
@@ -45,7 +52,7 @@ export const VisionQueryRun = defineEvent<VisionQueryRunData>({
 })
 
 /** The run included parameters. Fires with Vision Query Run, and only then. */
-export const VisionParamsUsed = defineEvent<{mode: VisionQueryMode}>({
+export const VisionParamsUsed = defineEvent<VisionVersionData & {mode: VisionQueryMode}>({
   name: 'Vision Params Used',
   version: 1,
   description:
@@ -53,27 +60,27 @@ export const VisionParamsUsed = defineEvent<{mode: VisionQueryMode}>({
 })
 
 /** User stopped a fetch before it answered, or stopped listening */
-export const VisionQueryCancelled = defineEvent<{mode: VisionQueryMode}>({
+export const VisionQueryCancelled = defineEvent<VisionVersionData & {mode: VisionQueryMode}>({
   name: 'Vision Query Cancelled',
   version: 1,
   description: 'User cancelled a running Vision fetch, or stopped a Vision listener.',
 })
 
-export const VisionDatasetChanged = defineEvent({
+export const VisionDatasetChanged = defineEvent<VisionVersionData>({
   name: 'Vision Dataset Changed',
   version: 1,
   description:
     'User changed the dataset a Vision query runs against. The dataset name is not recorded.',
 })
 
-export const VisionPerspectiveChanged = defineEvent({
+export const VisionPerspectiveChanged = defineEvent<VisionVersionData>({
   name: 'Vision Perspective Changed',
   version: 1,
   description:
     'User changed the perspective a Vision query runs against. The perspective is not recorded.',
 })
 
-export const VisionApiVersionChanged = defineEvent<{custom: boolean}>({
+export const VisionApiVersionChanged = defineEvent<VisionVersionData & {custom: boolean}>({
   name: 'Vision API Version Changed',
   version: 1,
   description:
@@ -88,7 +95,7 @@ export const VisionApiVersionChanged = defineEvent<{custom: boolean}>({
  */
 export type VisionCopyTarget = 'query' | 'params' | 'url' | 'result'
 
-export const VisionCopied = defineEvent<{target: VisionCopyTarget}>({
+export const VisionCopied = defineEvent<VisionVersionData & {target: VisionCopyTarget}>({
   name: 'Vision Copied',
   version: 1,
   description:
@@ -97,7 +104,7 @@ export const VisionCopied = defineEvent<{target: VisionCopyTarget}>({
 })
 
 /** A query URL pasted into Vision loaded the query, its params and its options */
-export const VisionQueryUrlPasted = defineEvent({
+export const VisionQueryUrlPasted = defineEvent<VisionVersionData>({
   name: 'Vision Query URL Pasted',
   version: 1,
   description: 'User pasted a query URL into Vision, which loaded it. The URL is not recorded.',
@@ -120,11 +127,13 @@ export type VisionSavedQueryAction =
   | 'unshare'
   | 'delete'
 
-export const VisionSavedQueryUsed = defineEvent<{
-  action: VisionSavedQueryAction
-  /** Whether the query acted on is in the shared list. False for `save`. */
-  shared: boolean
-}>({
+export const VisionSavedQueryUsed = defineEvent<
+  VisionVersionData & {
+    action: VisionSavedQueryAction
+    /** Whether the query acted on is in the shared list. False for `save`. */
+    shared: boolean
+  }
+>({
   name: 'Vision Saved Query Used',
   version: 1,
   description:
@@ -138,7 +147,9 @@ export const VisionSavedQueryUsed = defineEvent<{
  */
 export type VisionSavedQueriesFilter = 'all' | 'personal' | 'shared' | 'search'
 
-export const VisionSavedQueriesFiltered = defineEvent<{filter: VisionSavedQueriesFilter}>({
+export const VisionSavedQueriesFiltered = defineEvent<
+  VisionVersionData & {filter: VisionSavedQueriesFilter}
+>({
   name: 'Vision Saved Queries Filtered',
   version: 1,
   description:
@@ -148,7 +159,9 @@ export const VisionSavedQueriesFiltered = defineEvent<{filter: VisionSavedQuerie
 /** `json`, `csv`: the result as a file. `typescript`, `zod`: types inferred from it (redesign). */
 export type VisionResultExportFormat = 'json' | 'csv' | 'typescript' | 'zod'
 
-export const VisionResultExported = defineEvent<{format: VisionResultExportFormat}>({
+export const VisionResultExported = defineEvent<
+  VisionVersionData & {format: VisionResultExportFormat}
+>({
   name: 'Vision Result Exported',
   version: 1,
   description:
@@ -161,7 +174,9 @@ export const VisionResultExported = defineEvent<{format: VisionResultExportForma
  */
 export type VisionDocumentOpenSource = 'result' | 'document-list'
 
-export const VisionDocumentOpened = defineEvent<{source: VisionDocumentOpenSource}>({
+export const VisionDocumentOpened = defineEvent<
+  VisionVersionData & {source: VisionDocumentOpenSource}
+>({
   name: 'Vision Document Opened',
   version: 1,
   description:
@@ -176,7 +191,9 @@ export const VisionDocumentOpened = defineEvent<{source: VisionDocumentOpenSourc
  */
 export type VisionPanel = 'saved-queries' | 'sidebar' | 'request' | 'response'
 
-export const VisionPanelToggled = defineEvent<{panel: VisionPanel; open: boolean}>({
+export const VisionPanelToggled = defineEvent<
+  VisionVersionData & {panel: VisionPanel; open: boolean}
+>({
   name: 'Vision Panel Toggled',
   version: 1,
   description: 'User opened or collapsed a Vision panel.',
@@ -188,7 +205,9 @@ export const VisionPanelToggled = defineEvent<{panel: VisionPanel; open: boolean
  * The redesign is the only Vision tool from v7 on. These events cover what only it can do.
  * ------------------------------------------------------------------------------------------- */
 
-export const VisionTabsChanged = defineEvent<{count: number; action: 'open' | 'add' | 'close'}>({
+export const VisionTabsChanged = defineEvent<
+  VisionVersionData & {count: number; action: 'open' | 'add' | 'close'}
+>({
   name: 'Vision Tabs Changed',
   version: 1,
   description:
@@ -199,7 +218,7 @@ export const VisionTabsChanged = defineEvent<{count: number; action: 'open' | 'a
 /** What the user did to a query tab, other than opening or closing it */
 export type VisionTabAction = 'select' | 'rename' | 'reorder'
 
-export const VisionTabUsed = defineEvent<{action: VisionTabAction}>({
+export const VisionTabUsed = defineEvent<VisionVersionData & {action: VisionTabAction}>({
   name: 'Vision Tab Used',
   version: 1,
   description:
@@ -217,16 +236,18 @@ export const VisionTabUsed = defineEvent<{action: VisionTabAction}>({
  */
 export type VisionSharedTabAction = 'share' | 'update' | 'unshare' | 'open' | 'load' | 'rename'
 
-export const VisionSharedTabUsed = defineEvent<{action: VisionSharedTabAction}>({
-  name: 'Vision Shared Tab Used',
-  version: 1,
-  description:
-    'User shared, updated, unshared, opened, loaded or renamed a shared Vision tab. ' +
-    'The query and its title are not recorded.',
-})
+export const VisionSharedTabUsed = defineEvent<VisionVersionData & {action: VisionSharedTabAction}>(
+  {
+    name: 'Vision Shared Tab Used',
+    version: 1,
+    description:
+      'User shared, updated, unshared, opened, loaded or renamed a shared Vision tab. ' +
+      'The query and its title are not recorded.',
+  },
+)
 
 /** User started filtering the Shared tabs drawer by text, once per search rather than per keystroke */
-export const VisionSharedTabsSearched = defineEvent({
+export const VisionSharedTabsSearched = defineEvent<VisionVersionData>({
   name: 'Vision Shared Tabs Searched',
   version: 1,
   description: 'User searched the shared Vision tabs. The search text is not recorded.',
@@ -239,16 +260,18 @@ export const VisionSharedTabsSearched = defineEvent({
  */
 export type VisionClosedTabAction = 'restore' | 'delete'
 
-export const VisionClosedTabUsed = defineEvent<{action: VisionClosedTabAction}>({
-  name: 'Vision Closed Tab Used',
-  version: 1,
-  description:
-    'User restored a closed Vision tab, or deleted it for good. ' +
-    'The query and its title are not recorded.',
-})
+export const VisionClosedTabUsed = defineEvent<VisionVersionData & {action: VisionClosedTabAction}>(
+  {
+    name: 'Vision Closed Tab Used',
+    version: 1,
+    description:
+      'User restored a closed Vision tab, or deleted it for good. ' +
+      'The query and its title are not recorded.',
+  },
+)
 
 /** User started filtering the Restore tabs drawer by text, once per search rather than per keystroke */
-export const VisionClosedTabsSearched = defineEvent({
+export const VisionClosedTabsSearched = defineEvent<VisionVersionData>({
   name: 'Vision Closed Tabs Searched',
   version: 1,
   description: 'User searched the closed Vision tabs. The search text is not recorded.',
@@ -257,7 +280,7 @@ export const VisionClosedTabsSearched = defineEvent({
 /** The sidebar's drawers */
 export type VisionDrawerId = 'closed-tabs' | 'shared' | 'delta' | 'mutate' | 'settings'
 
-export const VisionDrawerOpened = defineEvent<{drawer: VisionDrawerId}>({
+export const VisionDrawerOpened = defineEvent<VisionVersionData & {drawer: VisionDrawerId}>({
   name: 'Vision Drawer Opened',
   version: 1,
   description: 'User opened a drawer from the Vision sidebar.',
@@ -274,7 +297,7 @@ export type VisionDialogId =
   | 'export-result-types'
   | 'export-params-types'
 
-export const VisionDialogOpened = defineEvent<{dialog: VisionDialogId}>({
+export const VisionDialogOpened = defineEvent<VisionVersionData & {dialog: VisionDialogId}>({
   name: 'Vision Dialog Opened',
   version: 1,
   description: 'User opened a Vision dialog.',
@@ -294,7 +317,7 @@ export type VisionPanelTab =
   | 'explain'
   | 'source-map'
 
-export const VisionPanelTabOpened = defineEvent<{tab: VisionPanelTab}>({
+export const VisionPanelTabOpened = defineEvent<VisionVersionData & {tab: VisionPanelTab}>({
   name: 'Vision Panel Tab Opened',
   version: 1,
   description: 'User opened a tab of one of the Vision panels.',
@@ -308,7 +331,9 @@ export const VisionPanelTabOpened = defineEvent<{tab: VisionPanelTab}>({
 export type VisionViewTarget = 'result' | 'source-map' | 'params'
 export type VisionView = 'json' | 'tree' | 'graph' | 'documents' | 'form'
 
-export const VisionViewChanged = defineEvent<{target: VisionViewTarget; view: VisionView}>({
+export const VisionViewChanged = defineEvent<
+  VisionVersionData & {target: VisionViewTarget; view: VisionView}
+>({
   name: 'Vision View Changed',
   version: 1,
   description: 'User changed how Vision shows its result, its content source map, or its params.',
@@ -323,7 +348,9 @@ export const VisionViewChanged = defineEvent<{target: VisionViewTarget; view: Vi
  */
 export type VisionToggleOption = 'variant' | 'source-map' | 'cdn'
 
-export const VisionOptionToggled = defineEvent<{option: VisionToggleOption; enabled: boolean}>({
+export const VisionOptionToggled = defineEvent<
+  VisionVersionData & {option: VisionToggleOption; enabled: boolean}
+>({
   name: 'Vision Option Toggled',
   version: 1,
   description: 'User switched a Vision request option on or off.',
@@ -344,7 +371,9 @@ export type VisionSettingsSection =
   | 'export-snippets'
   | 'storage-cleared'
 
-export const VisionSettingsChanged = defineEvent<{section: VisionSettingsSection}>({
+export const VisionSettingsChanged = defineEvent<
+  VisionVersionData & {section: VisionSettingsSection}
+>({
   name: 'Vision Settings Changed',
   version: 1,
   description: 'User changed a Vision setting. The new value is not recorded.',
@@ -365,20 +394,22 @@ export type VisionShortcut =
   | 'next-tab'
   | 'previous-tab'
 
-export const VisionShortcutUsed = defineEvent<{shortcut: VisionShortcut}>({
+export const VisionShortcutUsed = defineEvent<VisionVersionData & {shortcut: VisionShortcut}>({
   name: 'Vision Shortcut Used',
   version: 1,
   description: 'User used a Vision keyboard shortcut.',
 })
 
-export const VisionQueryPrettified = defineEvent<{outcome: 'success' | 'error'}>({
+export const VisionQueryPrettified = defineEvent<
+  VisionVersionData & {outcome: 'success' | 'error'}
+>({
   name: 'Vision Query Prettified',
   version: 1,
   description:
     'User prettified the Vision query. outcome is error when the query does not parse. The query is not recorded.',
 })
 
-export const VisionLintUsed = defineEvent<{action: 'open' | 'fix'}>({
+export const VisionLintUsed = defineEvent<VisionVersionData & {action: 'open' | 'fix'}>({
   name: 'Vision Lint Used',
   version: 1,
   description:
@@ -388,7 +419,7 @@ export const VisionLintUsed = defineEvent<{action: 'open' | 'fix'}>({
 /** The export query dialog's snippets */
 export type VisionSnippet = 'client' | 'curl' | 'next-sanity' | 'astro' | 'sveltekit' | 'nuxt'
 
-export const VisionSnippetCopied = defineEvent<{snippet: VisionSnippet}>({
+export const VisionSnippetCopied = defineEvent<VisionVersionData & {snippet: VisionSnippet}>({
   name: 'Vision Snippet Copied',
   version: 1,
   description: 'User copied an exported Vision query snippet. The snippet source is not recorded.',
@@ -403,7 +434,9 @@ export type VisionAgentAction =
   | 'improve-query'
   | 'fit-document-list'
 
-export const VisionAgentActionInvoked = defineEvent<{action: VisionAgentAction}>({
+export const VisionAgentActionInvoked = defineEvent<
+  VisionVersionData & {action: VisionAgentAction}
+>({
   name: 'Vision Agent Action Invoked',
   version: 1,
   description:
@@ -411,14 +444,14 @@ export const VisionAgentActionInvoked = defineEvent<{action: VisionAgentAction}>
 })
 
 /** User opened the upsell for AI credits, from the credits status or an AI action out of credits */
-export const VisionAiUpsellOpened = defineEvent({
+export const VisionAiUpsellOpened = defineEvent<VisionVersionData>({
   name: 'Vision AI Upsell Opened',
   version: 1,
   description: 'User opened the Vision upsell for more AI credits.',
 })
 
 /** User asked for the query plan, without the AI explanation */
-export const VisionQueryPlanShown = defineEvent({
+export const VisionQueryPlanShown = defineEvent<VisionVersionData>({
   name: 'Vision Query Plan Shown',
   version: 1,
   description: 'User showed the execution plan of a Vision query. The plan is not recorded.',
@@ -431,7 +464,7 @@ export const VisionQueryPlanShown = defineEvent({
  */
 export type VisionHistoryAction = 'view-changes' | 'retry' | 'show-hidden'
 
-export const VisionHistoryUsed = defineEvent<{action: VisionHistoryAction}>({
+export const VisionHistoryUsed = defineEvent<VisionVersionData & {action: VisionHistoryAction}>({
   name: 'Vision History Used',
   version: 1,
   description: 'User used the Vision fetch history. Queries and results are not recorded.',
@@ -448,7 +481,7 @@ export const VisionHistoryUsed = defineEvent<{action: VisionHistoryAction}>({
  */
 export type VisionFunctionAction = 'save' | 'insert' | 'replace' | 'remove' | 'reveal' | 'extract'
 
-export const VisionFunctionUsed = defineEvent<{action: VisionFunctionAction}>({
+export const VisionFunctionUsed = defineEvent<VisionVersionData & {action: VisionFunctionAction}>({
   name: 'Vision Function Used',
   version: 1,
   description: 'User used the Vision GROQ functions library. Functions are not recorded.',
@@ -462,14 +495,14 @@ export const VisionFunctionUsed = defineEvent<{action: VisionFunctionAction}>({
  */
 export type VisionMutateAction = 'add-patch' | 'add-create' | 'add-delete' | 'preview' | 'apply'
 
-export const VisionMutateUsed = defineEvent<{action: VisionMutateAction}>({
+export const VisionMutateUsed = defineEvent<VisionVersionData & {action: VisionMutateAction}>({
   name: 'Vision Mutate Used',
   version: 1,
   description: 'User used the Vision Mutate drawer. Mutations and documents are not recorded.',
 })
 
 /** User loaded a document's changes in the Delta drawer */
-export const VisionDeltaLoaded = defineEvent({
+export const VisionDeltaLoaded = defineEvent<VisionVersionData>({
   name: 'Vision Delta Loaded',
   version: 1,
   description: 'User loaded a document in the Vision Delta drawer. The document is not recorded.',

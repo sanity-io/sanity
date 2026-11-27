@@ -132,3 +132,6 @@ packages/sanity/styled-system
 
 # CSS module typings css-modules-kit writes (`pnpm css:types`)
 **/generated/**/*.module.css.d.ts
+
+# Output of `pnpm perf:version-compare`
+version-compare.json

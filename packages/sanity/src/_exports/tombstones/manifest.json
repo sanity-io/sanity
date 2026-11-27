@@ -440,7 +440,7 @@
       {
         "name": "CommentsEnabledProviderV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`."
+        "message": "Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from the same entry."
       },
       {
         "name": "CommentsIntentProvider",
@@ -460,7 +460,7 @@
       {
         "name": "CommentsProviderV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`."
+        "message": "Removed in v7. Comments API is the default; use `CommentsProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsProviderLegacy` from the same entry."
       },
       {
         "name": "CommentsSelectedPath",
@@ -2470,7 +2470,7 @@
       {
         "name": "Studio",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "StudioAnnouncementsCard",
@@ -2490,12 +2490,12 @@
       {
         "name": "StudioDiagnosticsBridge",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "StudioDiagnosticsBridgeApi",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "StudioFeedbackDialog",
@@ -2515,7 +2515,7 @@
       {
         "name": "StudioLayout",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "StudioLayoutComponent",
@@ -2540,7 +2540,7 @@
       {
         "name": "StudioProvider",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "StudioToolMenu",
@@ -2610,12 +2610,12 @@
       {
         "name": "TextWithTone",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "TextWithToneProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "TimeAgoOpts",
@@ -4420,7 +4420,7 @@
       {
         "name": "useCommentsEnabledV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`."
+        "message": "Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from the same entry."
       },
       {
         "name": "useCommentsMode",
@@ -4430,7 +4430,7 @@
       {
         "name": "useCommentsModeV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use the `Legacy` exports from `sanity`."
+        "message": "Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from the same entry."
       },
       {
         "name": "useCommentsSelectedPath",
@@ -4895,7 +4895,7 @@
       {
         "name": "useSchema",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useSearchMachine",
@@ -5175,6 +5175,26 @@
         "message": "Removed in v7. This was internal document-action plumbing with no public replacement."
       },
       {
+        "name": "StudioDiagnosticsBridge",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "StudioDiagnosticsBridgeApi",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "TextWithTone",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "TextWithToneProps",
+        "kind": "type",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
         "name": "TimelineState",
         "kind": "type",
         "message": "Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release)."
@@ -5203,6 +5223,11 @@
         "name": "_createAuthStore",
         "kind": "value",
         "message": "Removed in v7. Pass the same options on the workspace `auth` config key directly instead of wrapping them in `createAuthStore()`."
+      },
+      {
+        "name": "renderStudio",
+        "kind": "value",
+        "message": "Moved to `sanity`. Import `{renderStudio}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "useTimelineSelector",
@@ -5496,7 +5521,7 @@
       {
         "name": "StrictVersionLayeringOptions",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure`. For an import that follows semver, use `{StrictVersionLayeringOptions}` from `@sanity/types`."
       },
       {
         "name": "StructureBuilderOptions",
