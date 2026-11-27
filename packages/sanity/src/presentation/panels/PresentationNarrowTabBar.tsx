@@ -9,6 +9,7 @@ import {getPresentationPanelHtmlId, type PresentationLayoutTab} from './presenta
 
 interface PresentationNarrowTabBarProps {
   activeTab: PresentationLayoutTab
+  documentPanelOpen: boolean
   navigatorEnabled: boolean
   onTabChange: (tab: PresentationLayoutTab) => void
 }
@@ -20,7 +21,7 @@ interface PresentationNarrowTabBarProps {
  */
 export const PresentationNarrowTabBar: FunctionComponent<PresentationNarrowTabBarProps> =
   function PresentationNarrowTabBar(props) {
-    const {activeTab, navigatorEnabled, onTabChange} = props
+    const {activeTab, documentPanelOpen, navigatorEnabled, onTabChange} = props
     const {t} = useTranslation(presentationLocaleNamespace)
 
     const tabs = useMemo<{id: PresentationLayoutTab; label: string}[]>(() => {
@@ -30,9 +31,11 @@ export const PresentationNarrowTabBar: FunctionComponent<PresentationNarrowTabBa
       if (navigatorEnabled) {
         orderedTabs.push({id: 'navigator', label: t('narrow-tabs.navigator-tab.label')})
       }
-      orderedTabs.push({id: 'content', label: t('narrow-tabs.content-tab.label')})
+      if (documentPanelOpen) {
+        orderedTabs.push({id: 'content', label: t('narrow-tabs.content-tab.label')})
+      }
       return orderedTabs
-    }, [navigatorEnabled, t])
+    }, [documentPanelOpen, navigatorEnabled, t])
 
     return (
       <Card borderBottom paddingX={2} paddingY={1}>

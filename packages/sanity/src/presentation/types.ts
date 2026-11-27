@@ -402,6 +402,14 @@ export interface PresentationPluginOptions {
     unstable_header?: HeaderOptions
     unstable_navigator?: NavigatorOptions
   }
+  /**
+   * Whether the document panel is open the first time someone opens Presentation. The panel sits
+   * to the right of the preview and shows the document being edited, or the documents used on the
+   * page. People can hide and show it with the toggle in the preview header, and the browser
+   * remembers their choice. Clicking an overlay in the preview opens the panel if it is hidden.
+   * @defaultValue true
+   */
+  defaultDocumentPanelOpen?: boolean
 }
 
 /**

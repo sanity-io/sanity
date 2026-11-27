@@ -1,18 +1,14 @@
 import {SparkleIcon} from '@sanity/icons/Sparkle'
 // oxlint-disable-next-line no-restricted-imports -- MenuItem with custom children not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
-import {type CSSProperties, memo, useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type AgentBundle} from '../../../store/agent/createAgentBundlesStore'
 import {usePerspective} from '../../usePerspective'
 import {useSetPerspective} from '../../useSetPerspective'
-
-const iconStyle: CSSProperties & {'--icon-color': string} = {
-  '--icon-color': 'var(--card-badge-suggest-icon-color)',
-  'margin': '-0.375rem',
-}
+import {agentBundleIcon} from './AgentBundleMenuItem.css'
 
 /**
  * Renders a menu item for an active agent bundle in the global perspective
@@ -39,7 +35,7 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
     <MenuItem onClick={handleClick} padding={1} pressed={active} selected={active}>
       <Flex alignItems="flex-start" gap={1}>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={3} paddingY={2}>
-          <Icon size={1} style={iconStyle} icon={SparkleIcon} />
+          <Icon size={1} className={agentBundleIcon} icon={SparkleIcon} />
         </Box>
         <Flex
           flexBasis="0%"

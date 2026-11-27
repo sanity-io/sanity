@@ -8,6 +8,7 @@ import {PresentationNarrowTabBar} from '../PresentationNarrowTabBar'
 
 async function renderTabBar(props: {
   activeTab?: 'preview' | 'navigator' | 'content'
+  documentPanelOpen?: boolean
   navigatorEnabled?: boolean
   onTabChange?: (tab: 'preview' | 'navigator' | 'content') => void
 }) {
@@ -18,6 +19,7 @@ async function renderTabBar(props: {
   return render(
     <PresentationNarrowTabBar
       activeTab={props.activeTab ?? 'preview'}
+      documentPanelOpen={props.documentPanelOpen ?? true}
       navigatorEnabled={props.navigatorEnabled ?? false}
       onTabChange={props.onTabChange ?? vi.fn()}
     />,
@@ -41,6 +43,13 @@ describe('PresentationNarrowTabBar', () => {
     await screen.findByRole('tab', {name: 'Presentation'})
     const tabs = screen.getAllByRole('tab').map((tab) => tab.textContent)
     expect(tabs).toEqual(['Presentation', 'Navigator', 'Structure'])
+  })
+
+  it('omits the structure tab when the document panel is hidden', async () => {
+    await renderTabBar({documentPanelOpen: false})
+
+    await screen.findByRole('tab', {name: 'Presentation'})
+    expect(screen.queryByRole('tab', {name: 'Structure'})).not.toBeInTheDocument()
   })
 
   it('marks the active tab as selected', async () => {

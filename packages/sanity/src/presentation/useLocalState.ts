@@ -6,8 +6,10 @@ export function useLocalState<T>(key: string, defaultValue: T): [T, Dispatch<Set
   )
 
   useEffect(() => {
+    // Leave the default unstored until the value changes, so a changed default still applies
+    if (value === defaultValue && localStorage.getItem(key) === null) return
     localStorage.setItem(key, JSON.stringify(value))
-  }, [key, value])
+  }, [defaultValue, key, value])
 
   return [value, setValue]
 }
