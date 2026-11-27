@@ -27,8 +27,8 @@ export interface ProfileResult {
   metrics: Record<string, MetricComparison>
   /** `null` when the network is not emulated. */
   network: {downloadKbps: number; latencyMs: number; uploadKbps: number} | null
-  /** One traced load per version, kept out of the timings. */
-  waterfall?: {v6: Waterfall; v7: Waterfall}
+  /** One traced load per version and authenticated page, keyed by page, kept out of the timings. */
+  waterfalls: Record<string, {v6: Waterfall; v7: Waterfall}>
 }
 
 export interface ComparisonReport {
@@ -38,7 +38,7 @@ export interface ComparisonReport {
   metrics: Record<string, MetricComparison>
   /** Timings keyed by profile name. */
   profiles: Record<string, ProfileResult>
-  schemaVersion: 3
+  schemaVersion: 4
   versions: {v6: VersionInfo; v7: VersionInfo}
 }
 
@@ -224,7 +224,9 @@ export function renderSummary(report: ComparisonReport): string {
       ...TABLE_HEAD,
       ...renderRows(profile.metrics),
     )
-    if (profile.waterfall) lines.push('', ...renderWaterfall(profile.waterfall))
+    for (const waterfall of Object.values(profile.waterfalls)) {
+      lines.push('', ...renderWaterfall(waterfall))
+    }
   }
   lines.push(
     '',
