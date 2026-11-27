@@ -228,7 +228,7 @@ describe('createFieldDefinitions', () => {
               title: (
                 <div>
                   <a href="#">
-                    <img src="./example.jpg" />
+                    <img alt="" src="./example.jpg" />
                   </a>
                   <span style={{color: 'red'}}>A title wrapped in a component</span>
                 </div>
