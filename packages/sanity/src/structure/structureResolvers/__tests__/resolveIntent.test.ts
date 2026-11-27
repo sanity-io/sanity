@@ -257,6 +257,55 @@ describe('resolveIntent', () => {
     ])
   })
 
+  it('forwards the `path` param to the matched document pane', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.documentTypeListItem('book').id('altBookId').title('Sick Books'),
+      ]) as unknown as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book', path: 'chapters[_key=="abc"].title'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    expect(routerPanes).toEqual([
+      [{id: 'altBookId'}],
+      [{id: 'book123', params: {path: 'chapters[_key=="abc"].title'}, payload: undefined}],
+    ])
+  })
+
+  it('forwards the `path` param to the fallback editor', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.documentTypeListItem('book').id('altBookId').title('Sick Books'),
+      ]) as unknown as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'author123', type: 'author', path: 'name'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    expect(routerPanes).toEqual([
+      [{id: '__edit__author123', params: {type: 'author', path: 'name'}, payload: undefined}],
+    ])
+  })
+
   it('matches document nodes that have the same ID as the target ID', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
     // @ts-expect-error -- pre-existing, fix later
