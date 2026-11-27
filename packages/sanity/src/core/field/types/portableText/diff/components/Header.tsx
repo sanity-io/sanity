@@ -1,6 +1,7 @@
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 import {Heading, type HeadingSize} from 'ui5'
+
+import {styledHeading} from './Header.css'
 
 const headingSizes: Record<string, HeadingSize | undefined> = {
   h1: 2,
@@ -11,16 +12,10 @@ const headingSizes: Record<string, HeadingSize | undefined> = {
   h6: 0,
 }
 
-const StyledHeading = styled(Heading)`
-  &:not([hidden]) {
-    display: inline;
-  }
-`
-
 export function Header({style, children}: {style: string; children: ReactNode}): React.JSX.Element {
   return (
-    <StyledHeading forwardedAs="h2" size={headingSizes[style]}>
+    <Heading as="h2" className={styledHeading} size={headingSizes[style]}>
       {children}
-    </StyledHeading>
+    </Heading>
   )
 }

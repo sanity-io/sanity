@@ -6,7 +6,17 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {BoundaryElementProvider} from '@sanity/ui'
-import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {
+  type CSSProperties,
+  type RefAttributes,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   createPatchChannel,
   type DocumentFieldAction,
@@ -17,6 +27,7 @@ import {
   getExpandOperations,
   type PatchEvent,
   ScrollContainer,
+  type ScrollContainerProps,
   setAtPath,
   type StateTree,
   useCopyPaste,
@@ -28,7 +39,6 @@ import {
   VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
@@ -57,19 +67,30 @@ interface TestFormProps {
   readOnly?: boolean
 }
 
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
+// Inline rather than Panda CSS: `test/` is outside the `include` globs of `panda.config.ts`, so a
+// `css()` call here would never be extracted.
+const SCROLLER_DISABLED_STYLE: CSSProperties = {height: '100%'}
+const SCROLLER_STYLE: CSSProperties = {
+  height: '100%',
+  overflow: 'auto',
+  position: 'relative',
+  scrollBehavior: 'smooth',
+  outline: 'none',
+}
 
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
+function Scroller(
+  props: ScrollContainerProps<'div'> & RefAttributes<HTMLDivElement> & {$disabled: boolean},
+) {
+  const {$disabled, style, ref, ...rest} = props
+
+  return (
+    <ScrollContainer
+      {...rest}
+      style={{...($disabled ? SCROLLER_DISABLED_STYLE : SCROLLER_STYLE), ...style}}
+      ref={ref}
+    />
+  )
+}
 
 export function TestForm(props: TestFormProps) {
   const {
