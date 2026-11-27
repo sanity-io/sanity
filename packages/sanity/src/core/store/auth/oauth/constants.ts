@@ -3,7 +3,7 @@ import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 // Constants and storage keys of the OAuth store (`createOAuthAuthStore`).
 
 // API version of the OAuth store's clients.
-const AUTH_API_VERSION = 'v2026-05-04'
+const AUTH_API_VERSION = 'v2026-11-24'
 
 // Prefix for the localStorage key holding the OAuth token pair of a project and client.
 const OAUTH_TOKENS_STORAGE_PREFIX = '__studio_oauth_tokens_'

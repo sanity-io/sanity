@@ -6,7 +6,7 @@ import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 // values defined here, so they live in one place to keep the two in sync.
 
 // API version used by all auth-related client requests.
-const AUTH_API_VERSION = 'v2026-05-04'
+const AUTH_API_VERSION = 'v2026-11-24'
 
 // Prefix for the localStorage key holding a per-project auth token.
 const AUTH_TOKEN_STORAGE_PREFIX = '__studio_auth_token_'

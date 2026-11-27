@@ -43,6 +43,7 @@ export const getCurrentUser = async (
     probeClient
       .request({
         url: '/users/me',
+        query: {includeUserAttributes: 'true'},
         tag: `users.get-current${tag ? `.${tag}` : ''}`,
       })
       .catch(async (err) => {
