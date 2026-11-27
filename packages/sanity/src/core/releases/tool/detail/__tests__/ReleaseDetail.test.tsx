@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../../config/types'
 import {useProjectSubscriptionsMockReturn} from '../../../../hooks/__mocks__/useProjectSubscriptions.mock'
 import {
   activeASAPRelease,
@@ -94,8 +95,9 @@ vi.mock('../../../../hooks/useStudioUrl', () => ({
 
 const mockRouterNavigate = vi.fn()
 
-const renderTest = async () => {
+const renderTest = async (config?: Partial<SingleWorkspace>) => {
   const wrapper = await createTestProvider({
+    config,
     resources: [releasesUsEnglishLocaleBundle],
   })
   // The studio tree suspends while mounting, and React parks work that suspended inside an
@@ -510,6 +512,54 @@ describe('after releases have loaded', () => {
 
       expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
       expect(screen.queryByTestId('release-menu-button')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('with content releases off', () => {
+    const scheduledDraft = {
+      ...activeASAPRelease,
+      _id: '_.releases.rScheduledDraft',
+      name: 'rScheduledDraft',
+      metadata: {...activeASAPRelease.metadata, cardinality: 'one' as const},
+    }
+
+    beforeEach(async () => {
+      vi.clearAllMocks()
+
+      mockUseActiveReleases.mockReset()
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, scheduledDraft],
+        loading: false,
+      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    })
+
+    it('reads a release as not found', async () => {
+      mockUseRouterReturn.state = {
+        releaseId: getReleaseIdFromReleaseDocumentId(activeASAPRelease._id),
+      }
+      await renderTest({releases: {enabled: false}})
+
+      await waitFor(() => {
+        expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith(
+          {_searchParams: [['releaseNotFound', 'true']]},
+          {replace: true},
+        )
+      })
+    })
+
+    it('still opens a scheduled draft', async () => {
+      mockUseRouterReturn.state = {
+        releaseId: getReleaseIdFromReleaseDocumentId(scheduledDraft._id),
+      }
+      await renderTest({releases: {enabled: false}})
+
+      expect(await screen.findByTestId('release-menu-button')).toBeInTheDocument()
+      expect(mockUseRouterReturn.navigate).not.toHaveBeenCalledWith(
+        {_searchParams: [['releaseNotFound', 'true']]},
+        {replace: true},
+      )
     })
   })
 

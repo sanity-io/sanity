@@ -27,8 +27,8 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
   } = useWorkspace()
 
   const {data: activeReleases, loading: activeLoading} = useActiveReleases()
-  // Not `useReleasesEnabled`: a tools filter (often per role) removes the releases tool while
-  // releases stay on, and a link to a release must still open there.
+  // Not whether the releases tool is mounted: a tools filter (often per role) removes the tool
+  // while releases stay on, and a link to a release must still open there.
   const releasesEnabled = Boolean(releases?.enabled)
   const stickyPerspective = router.stickyParams.perspective ?? undefined
   const {name: selectedPerspectiveName, ignored} = useMemo(
