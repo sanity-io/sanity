@@ -6,11 +6,8 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionExperience, VisionExperienceContext} from '../store/VisionActorContext'
 import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
-import {
-  type BottomPanelState,
-  MIN_PANEL_BODY_HEIGHT,
-  SplitWithBottomPanel,
-} from './SplitWithBottomPanel'
+import {MIN_PANEL_BODY_HEIGHT} from './panelSnapShut'
+import {type BottomPanelState, SplitWithBottomPanel} from './SplitWithBottomPanel'
 
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,

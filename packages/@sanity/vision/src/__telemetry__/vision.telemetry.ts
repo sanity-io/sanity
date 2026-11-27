@@ -188,8 +188,9 @@ export const VisionDocumentOpened = defineEvent<
  * - `sidebar`: the redesign's sidebar
  * - `request`: the redesign's tabbed panel below the query editor
  * - `response`: the redesign's tabbed panel below the result
+ * - `params`: the redesign's params section below the query editor
  */
-export type VisionPanel = 'saved-queries' | 'sidebar' | 'request' | 'response'
+export type VisionPanel = 'saved-queries' | 'sidebar' | 'request' | 'response' | 'params'
 
 export const VisionPanelToggled = defineEvent<
   VisionVersionData & {panel: VisionPanel; open: boolean}

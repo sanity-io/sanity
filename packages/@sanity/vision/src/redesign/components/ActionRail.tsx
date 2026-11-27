@@ -5,8 +5,8 @@ import {cx} from '../util/cx'
 import * as styles from './redesign.module.css'
 
 /**
- * The bottom action bar of the request panel, following the structure tool's document status bar:
- * request chips on the left, the primary CTA (with text and icon) on the right.
+ * The bottom action bar of the request panel. Fetch comes first, then Live fetch and the request
+ * chips, as the classic tool's Fetch and Listen buttons led its footer.
  */
 export function ActionRail({children, testId}: {children: ReactNode; testId: string}) {
   return (

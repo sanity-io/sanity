@@ -1501,6 +1501,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Accessible label of the divider between the result and the response details panel */
   'vision.split.bottom-panel':
     'Resize the response details panel: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
+  /** Accessible label of the divider between the query editor and the params */
+  'vision.split.query-params':
+    'Resize the query and params: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
   /** Accessible label of the divider between the request and response panes */
   'vision.split.request-response':
     'Resize the request and response panes: drag or use the arrow keys; Home and End go to the bounds, Enter resets',

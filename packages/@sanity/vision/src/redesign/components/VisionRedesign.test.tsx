@@ -896,8 +896,8 @@ function pickMenuItem(selectTestId: string, item: string) {
   fireEvent.click(screen.getByTestId(`${id}-item-${item}`))
 }
 
-/** The request column shows one tab at a time; Params is the one open at first */
-function openRequestTab(id: 'params' | 'options' | 'lint' | 'functions') {
+/** The request column shows one tab at a time; Options is the one open at first */
+function openRequestTab(id: 'options' | 'lint' | 'functions') {
   fireEvent.click(document.getElementById(`vision-request-${id}-tab`) as HTMLElement)
 }
 
@@ -1072,7 +1072,7 @@ describe('VisionRedesign', () => {
     expect(delta.getAttribute('tabindex')).toBeNull()
   })
 
-  it('shows the query editor over the request tabs, with Params open and the fetch actions under them', async () => {
+  it('shows the query editor over its params and the request tabs, with Fetch first under them', async () => {
     renderRedesign()
 
     const queryEditor = screen.getByTestId('vision-query-editor')
@@ -1080,36 +1080,88 @@ describe('VisionRedesign', () => {
     const header = within(queryEditor).getByText('query.label')
     expect(header.closest('[data-ui="Label"]')?.getAttribute('aria-label')).toBe('query.label')
     expect(visionLocaleStrings['query.label']).toBe('Query')
-    expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
-    expect(screen.queryByTestId('vision-options')).toBeNull()
+    // The params are a section of their own under the query, with a header like the query's
+    const params = screen.getByTestId('vision-params')
+    expect(within(params).getByTestId('vision-params-toolbar').textContent).toContain(
+      'params.label',
+    )
+    expect(within(params).getByTestId('vision-params-editor')).toBeTruthy()
+    expect(document.getElementById('vision-request-params-tab')).toBeNull()
     expect(screen.queryByTestId('vision-sidebar-lint')).toBeNull()
     expect(screen.queryByTestId('vision-sidebar-functions')).toBeNull()
-    // The fetch actions stay under the tabbed panel
+    // Fetch comes first under the request tabs, as in the classic tool, then Live fetch and the
+    // chips
     const actions = screen.getByTestId('vision-query-actions')
-    expect(within(actions).getByTestId('vision-api-version-button')).toBeTruthy()
-    expect(within(actions).getByTestId('vision-fetch-button')).toBeTruthy()
+    const fetchButton = within(actions).getByTestId('vision-fetch-button')
+    const liveButton = within(actions).getByTestId('vision-auto-refetch')
+    const chips = within(actions).getByTestId('vision-query-action-chips')
+    expect(within(chips).getByTestId('vision-api-version-button')).toBeTruthy()
+    expect(
+      fetchButton.compareDocumentPosition(liveButton) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(
+      liveButton.compareDocumentPosition(chips) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
 
     openRequestTab('options')
     expect(screen.getByTestId('vision-options')).toBeTruthy()
-    expect(screen.queryByTestId('vision-params-editor')).toBeNull()
+    // The request tabs no longer take the params' place
+    expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
     expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
 
     openRequestTab('lint')
     expect(screen.getByText('vision.lint.empty')).toBeTruthy()
 
-    // Closing the panel unmounts the params editor. An edit still in the debounce is committed,
-    // so the editor that comes back shows it
-    openRequestTab('params')
+    // Collapsing the params unmounts their editor. An edit still in the debounce is committed,
+    // so the editor that comes back shows it, and the section stays collapsed for the next visit
     const paramsEditor = () =>
       within(screen.getByTestId('vision-params-editor')).getByTestId(
         'codemirror-mock',
       ) as HTMLTextAreaElement
     fireEvent.change(paramsEditor(), {target: {value: '{"id": "pending"}'}})
-    fireEvent.click(screen.getByTestId('vision-request-panel-toggle'))
+    const toggle = screen.getByTestId('vision-params-toggle')
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    fireEvent.click(toggle)
     expect(screen.queryByTestId('vision-params-editor')).toBeNull()
+    expect(screen.getByTestId('vision-params-toggle').getAttribute('aria-expanded')).toBe('false')
     await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"id": "pending"}'))
-    fireEvent.click(screen.getByTestId('vision-request-panel-toggle'))
+    await waitFor(() => expect(getStoredState().panels.params).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-params-toggle'))
     expect(paramsEditor().value).toBe('{"id": "pending"}')
+    await waitFor(() => expect(getStoredState().panels.params).toBe(true))
+  })
+
+  it('snaps the params shut when their divider leaves less than a line of them, as the bottom panels do', async () => {
+    // Every box measures 800 × 600, so the divider has room to move
+    const ResizeObserverBefore = globalThis.ResizeObserver
+    vi.stubGlobal(
+      'ResizeObserver',
+      class implements ResizeObserver {
+        constructor(private readonly callback: ResizeObserverCallback) {}
+        observe() {
+          const entry = {contentRect: DOMRect.fromRect({width: 800, height: 600})}
+          this.callback([entry as ResizeObserverEntry], this)
+        }
+        unobserve() {}
+        disconnect() {}
+      },
+    )
+    onTestFinished(() => {
+      vi.stubGlobal('ResizeObserver', ResizeObserverBefore)
+    })
+    renderRedesign()
+    const handle = screen.getByTestId('vision-query-params-split-handle')
+    handle.focus()
+    fireEvent.keyDown(handle, {key: 'Home'})
+
+    const toggle = screen.getByTestId('vision-params-toggle')
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(document.activeElement).toBe(toggle)
+    expect(screen.queryByTestId('vision-params-editor')).toBeNull()
+    await waitFor(() => expect(getStoredState().panels.params).toBe(false))
+
+    fireEvent.click(toggle)
+    expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
   })
 
   it('edits the params in the form inferred from the query', async () => {
@@ -1209,11 +1261,10 @@ describe('VisionRedesign', () => {
     },
   )
 
-  it('shows a params syntax error under the editor and marks the Params tab', async () => {
+  it('shows a params syntax error under the editor and marks the Params header', async () => {
     const {unmount} = renderRedesign()
-    const paramsTab = () => document.getElementById('vision-request-params-tab') as HTMLElement
     const editorRoot = screen.getByTestId('vision-params-editor')
-    expect(paramsTab().getAttribute('data-tone')).toBeNull()
+    expect(screen.queryByTestId('vision-params-invalid')).toBeNull()
 
     fireEvent.change(within(editorRoot).getByTestId('codemirror-mock'), {
       target: {value: '{"limit": '},
@@ -1221,13 +1272,22 @@ describe('VisionRedesign', () => {
     const error = await screen.findByTestId('vision-params-error')
     // After the editor, so the editor does not move when the error appears
     expect(editorRoot.lastElementChild).toBe(error)
-    await waitFor(() => expect(paramsTab().getAttribute('data-tone')).toBe('critical'))
+    // The header says so too, which is what remains of the params while they are collapsed
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('vision-params-toolbar')).getByTestId('vision-params-invalid'),
+      ).toBeTruthy(),
+    )
+    fireEvent.click(screen.getByTestId('vision-params-toggle'))
+    expect(screen.getByTestId('vision-params-invalid')).toBeTruthy()
+    fireEvent.click(screen.getByTestId('vision-params-toggle'))
 
-    fireEvent.change(within(editorRoot).getByTestId('codemirror-mock'), {
-      target: {value: '{"limit": 1}'},
-    })
+    fireEvent.change(
+      within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
+      {target: {value: '{"limit": 1}'}},
+    )
     await waitFor(() => expect(screen.queryByTestId('vision-params-error')).toBeNull())
-    expect(paramsTab().getAttribute('data-tone')).toBeNull()
+    expect(screen.queryByTestId('vision-params-invalid')).toBeNull()
 
     unmount()
   })
@@ -2476,6 +2536,7 @@ describe('VisionRedesign', () => {
     expect(text(button)).toBe('vision.api-version.button:v2025-02-19')
 
     // Options is not the open tab, so the button opens it and focuses the field
+    openRequestTab('lint')
     expect(screen.queryByTestId('vision-option-api-version-select')).toBeNull()
     fireEvent.click(button)
     await waitFor(() =>
@@ -2524,7 +2585,7 @@ describe('VisionRedesign', () => {
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'overrides'})
     renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
 
-    // The strip is what scrolls when the bar is narrow; Live fetch, Fetch and the menu stay after it
+    // The strip is what scrolls when the bar is narrow; Fetch and Live fetch stay before it
     const actions = screen.getByTestId('vision-query-actions')
     const chips = within(actions).getByTestId('vision-query-action-chips')
     const chipOrder = [...chips.querySelectorAll('button')].map((button) =>
@@ -2560,11 +2621,11 @@ describe('VisionRedesign', () => {
     const liveButton = within(actions).getByTestId('vision-auto-refetch')
     expect(chips.contains(fetchButton)).toBe(false)
     expect(chips.contains(liveButton)).toBe(false)
-    expect(chips.compareDocumentPosition(liveButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
+    expect(chips.compareDocumentPosition(liveButton) & Node.DOCUMENT_POSITION_PRECEDING).toBe(
+      Node.DOCUMENT_POSITION_PRECEDING,
     )
-    expect(chips.compareDocumentPosition(fetchButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
+    expect(chips.compareDocumentPosition(fetchButton) & Node.DOCUMENT_POSITION_PRECEDING).toBe(
+      Node.DOCUMENT_POSITION_PRECEDING,
     )
   })
 
@@ -3279,7 +3340,6 @@ describe('VisionRedesign', () => {
   it('edits the query of the tab with Agent Actions, keeping its title, and closes on Escape', async () => {
     const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
     typeQuery('// Posts\n*[_type == "post"][0...$limit]')
-    openRequestTab('params')
     fireEvent.change(
       within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
       {target: {value: '{"limit": 5}'}},
@@ -3333,7 +3393,6 @@ describe('VisionRedesign', () => {
     const {promptCalls, replyToPrompts} = renderRedesign()
     const halfTyped = '{"limit": '
     typeQuery('*[_type == "post"][0...$limit]')
-    openRequestTab('params')
     fireEvent.change(
       within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
       {target: {value: halfTyped}},
@@ -3432,7 +3491,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-lint-fix'))
 
     // Another tab takes the request panel, unmounting the Lint tab's content
-    openRequestTab('params')
+    openRequestTab('options')
     expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
 
     await act(async () => answer({query: fixed, params: {}}))
@@ -4134,7 +4193,7 @@ describe('VisionRedesign', () => {
     expect(firstEditor.isConnected).toBe(true)
     expect(firstEditor.closest('[style*="display: none"]')).not.toBeNull()
     // Labels, tab panels and the code that looks elements up by id reach the shown tab's
-    for (const id of [QUERY_TAB_PANEL_ID, 'vision-request-params-tab', 'vision-result-content']) {
+    for (const id of [QUERY_TAB_PANEL_ID, 'vision-request-options-tab', 'vision-result-content']) {
       expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1)
       expect(shownTab().contains(document.getElementById(id))).toBe(true)
     }
@@ -6504,7 +6563,7 @@ describe('VisionRedesign', () => {
     expectSameLayout()
   })
 
-  it.each(['params', 'options', 'lint', 'functions'] as const)(
+  it.each(['options', 'lint', 'functions'] as const)(
     'fits the request panel to the %s tab on double-click, not on a single click',
     async (id) => {
       const offsetHeight = vi
@@ -6545,7 +6604,6 @@ describe('VisionRedesign', () => {
   it('places the params view menu between copy and the params menu, as the result view menu is', async () => {
     renderRedesign()
     await screen.findByTestId('vision-request-column-split')
-    fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
 
     const actions = screen.getByTestId('vision-params-toolbar-actions')
     const viewButton = within(actions).getByTestId('vision-params-view-button')
@@ -6573,7 +6631,6 @@ describe('VisionRedesign', () => {
   it('shows no fit tooltip on the panel tabs', async () => {
     renderRedesign()
     await screen.findByTestId('vision-request-column-split')
-    fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
 
     expect(screen.getByTestId('vision-params-view-button')).toBeTruthy()
     expect(document.getElementById('vision-response-response-tab')).not.toBeNull()
