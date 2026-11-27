@@ -15,6 +15,7 @@ import {type TargetPerspective} from '../../perspective/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {computeSets} from '../utils/computeSets'
 import {type deletionMachine} from './deletionMachine'
@@ -109,7 +110,7 @@ export const documentGroupInventoryMachine = setup({
     }),
     deletionRef: spawn(input.deletionMachine, {
       systemId: 'deletion',
-      input: {readOnly: input.readOnly},
+      input: {readOnly: input.readOnly, variantsEnabled: input.variantsEnabled ?? false},
     }),
     variantCreationRef: spawn(input.variantCreationMachine, {
       systemId: 'variantCreation',
@@ -154,6 +155,28 @@ export const documentGroupInventoryMachine = setup({
               variants: context.sets.flatMap((set) => set.variants),
               loaded: metaIsSettled(meta),
             } as const
+          },
+        ),
+        sendTo(
+          ({context}) => context.deletionRef,
+          ({context, event}) => {
+            const versions = context.sets.flatMap((set) => set.variants)
+            // Variants are counted from every version of the group, not only the listed ones.
+            // With Content Variants off the deletion machine ignores them and deletes as main does.
+            const allDocuments =
+              event.snapshot.context?.versionState.versions ??
+              versions.map(({document}) => document)
+            return {
+              type: 'versions.changed' as const,
+              versionIds: versions.map(({id}) => id),
+              variantIds: [
+                ...new Set(
+                  allDocuments
+                    .map((document) => getDocumentVersionVariantId(document))
+                    .filter((variantId) => typeof variantId === 'string'),
+                ),
+              ],
+            }
           },
         ),
       ],

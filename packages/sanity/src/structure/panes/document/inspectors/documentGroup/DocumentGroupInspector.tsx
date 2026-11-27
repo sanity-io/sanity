@@ -14,6 +14,7 @@ import {
   useDocumentStore,
   useSetVariant,
   useTranslation,
+  useWorkspace,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
@@ -23,6 +24,7 @@ import {referringDocuments} from '../../../../components/confirmDeleteDialog/use
 import {VersionsPreviewList} from '../../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../../components/DocTitle'
 import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../../constants'
 import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspectiveList'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -48,12 +50,29 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const perspectiveList = useDocumentPerspectiveList()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
+  // Link strengths (an extra read of the referring documents) are an open beta feature: the
+  // inventory can be on without Content Variants, and then it stays as it was
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const referringDocuments$ = useMemo(
-    () => referringDocuments({documentId, versionedClient: client, documentStore}),
-    [documentId, client, documentStore],
+    () =>
+      referringDocuments({
+        documentId,
+        versionedClient: client,
+        documentStore,
+        withReferenceStrength: variantsEnabled,
+      }),
+    [documentId, client, documentStore, variantsEnabled],
   )
 
   const setVariant = useSetVariant()
+  const paneRouter = usePaneRouter()
+
+  // Once the last version is gone there is no document left to show: close the pane, as the
+  // document menu's delete does, rather than leave an empty, editable form behind.
+  // With Content Variants off the pane stays open, as on main.
+  function handleAllVersionsDeleted() {
+    paneRouter.closeCurrentAndAfter()
+  }
 
   const [inventory, setInventory] = useState<DocumentGroupInventoryHandle | null>(null)
 
@@ -119,6 +138,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             referringDocuments$={referringDocuments$}
             components={documentGroupInventoryComponents}
             onSelect={selectDocumentGroupVariant}
+            onAllVersionsDeleted={variantsEnabled ? handleAllVersionsDeleted : undefined}
           />
         )}
       </div>
