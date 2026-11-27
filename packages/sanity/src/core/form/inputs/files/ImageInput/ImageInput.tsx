@@ -1,4 +1,5 @@
 import {isImageSource} from '@sanity/asset-utils'
+import {isImageToolEnabled} from '@sanity/schema/_internal'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -20,6 +21,8 @@ import {MemberFieldError} from '../../../members/object/MemberFieldError'
 import {MemberFieldSet} from '../../../members/object/MemberFieldset'
 import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {setIfMissing, unset} from '../../../patch/patch'
+import {type PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
 import {type InputProps} from '../../../types/inputProps'
@@ -28,6 +31,7 @@ import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
 import {useAssetSource} from '../common/useAssetSource'
+import {getImageToolPath} from '../ImageToolInput/imageToolOptions'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
@@ -37,6 +41,7 @@ import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps} from './types'
 import {useAccessPolicy} from './useAccessPolicy'
+import {getDefaultCropPatches, getSetAssetRef, withDefaultCrop} from './utils/defaultCrop'
 
 export {BaseImageInputProps}
 
@@ -76,6 +81,15 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
+  const imageOptions = schemaType.options
+  const storedHotspot = value?.hotspot
+  const storedAssetRef = value?.asset?._ref
+  const handleAssetChange = useCallback(
+    (patch: FormPatch | FormPatch[] | PatchEvent) =>
+      onChange(withDefaultCrop(patch, imageOptions, storedHotspot, storedAssetRef)),
+    [imageOptions, onChange, storedAssetRef, storedHotspot],
+  )
+
   const {
     action: assetSourceAction,
     selectedAssetSource,
@@ -96,7 +110,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectFilesToUpload,
   } = useAssetSource<ImageAsset>({
     client,
-    onChange,
+    onChange: handleAssetChange,
     schemaType,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
     onAllComplete: () => setMenuOpen(false),
@@ -109,10 +123,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     [handleSelectFilesToUpload],
   )
 
-  const isImageToolEnabled = useCallback(() => {
-    const hotspotOptions = get(schemaType, 'options.hotspot')
-    return typeof hotspotOptions === 'object' || hotspotOptions === true
-  }, [schemaType])
+  const imageToolEnabled = isImageToolEnabled(schemaType.options)
+  const imageToolPath = getImageToolPath(schemaType.options)
   const valueIsArrayElement = useCallback(() => {
     const parentPathSegment = path.slice(-1)[0]
 
@@ -150,9 +162,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       cancelUpload()
       setIsUploading(true)
       onChange(setIfMissing({_type: schemaType.name}))
+      let uploadedAssetRef: string | undefined
       uploadSubscription.current = uploader.upload(client, file, schemaType, options).subscribe({
         next: (uploadEvent) => {
           if (uploadEvent.patches) {
+            uploadedAssetRef =
+              uploadEvent.patches.map(getSetAssetRef).find(Boolean) ?? uploadedAssetRef
             onChange(uploadEvent.patches)
           }
         },
@@ -166,12 +181,28 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           clearUploadStatus()
         },
         complete: () => {
-          onChange([unset(['hotspot']), unset(['crop']), unset(['media'])])
+          onChange([
+            unset(['hotspot']),
+            unset(['crop']),
+            unset(['media']),
+            // Last, so the crop unset above does not clear it
+            ...getDefaultCropPatches(uploadedAssetRef, imageOptions),
+          ])
           setIsUploading(false)
         },
       })
     },
-    [cancelUpload, clearUploadStatus, client, onChange, push, schemaType, setIsUploading, t],
+    [
+      cancelUpload,
+      clearUploadStatus,
+      client,
+      imageOptions,
+      onChange,
+      push,
+      schemaType,
+      setIsUploading,
+      t,
+    ],
   )
 
   const handleClearField = useCallback(() => {
@@ -200,8 +231,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   }, [onChange, value, valueIsArrayElement])
 
   const handleOpenDialog = useCallback(() => {
-    onPathFocus(['hotspot'])
-  }, [onPathFocus])
+    onPathFocus(imageToolPath)
+  }, [imageToolPath, onPathFocus])
 
   const handleCloseDialog = useCallback(() => {
     onPathFocus([])
@@ -213,14 +244,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     (assetsFromSource: AssetFromSource[]) => {
       handleSelectAssetFromSourceShared({
         assetsFromSource,
-        onChange,
+        onChange: handleAssetChange,
         type: schemaType,
         resolveUploader,
         uploadWith,
       })
       handleAssetSourceResetOnComplete()
     },
-    [handleAssetSourceResetOnComplete, onChange, resolveUploader, schemaType, uploadWith],
+    [handleAssetChange, handleAssetSourceResetOnComplete, resolveUploader, schemaType, uploadWith],
   )
 
   const handleCancelUpload = useCallback(() => {
@@ -269,7 +300,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         onOpenSourceForUpload={handleOpenSourceForUpload}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
         imageUrlBuilder={imageUrlBuilder}
-        isImageToolEnabled={isImageToolEnabled()}
+        isImageToolEnabled={imageToolEnabled}
         isMenuOpen={isMenuOpen}
         observeAsset={observeAsset}
         onOpenInSource={handleOpenInSource}
@@ -292,7 +323,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectFileToUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
-    isImageToolEnabled,
+    imageToolEnabled,
     isMenuOpen,
     menuButtonRef,
     observeAsset,
@@ -400,14 +431,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     (inputProps: Omit<InputProps, 'renderDefault'>) => {
       return (
         <ImageInputHotspotInput
-          isImageToolEnabled={isImageToolEnabled()}
+          isImageToolEnabled={imageToolEnabled}
           handleCloseDialog={handleCloseDialog}
           imageInputProps={props}
           inputProps={inputProps}
         />
       )
     },
-    [handleCloseDialog, isImageToolEnabled, props],
+    [handleCloseDialog, imageToolEnabled, props],
   )
   const renderAssetSource = useCallback(() => {
     if (!selectedAssetSource) return null
@@ -440,13 +471,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     value,
   ])
 
-  // we use the hotspot field as the "owner" of both hotspot and crop
-  const hotspotField = useMemo(
+  // one field "owns" both hotspot and crop, see `getImageToolPath`
+  const imageToolField = useMemo(
     () =>
       members.find(
-        (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot',
+        (member): member is FieldMember =>
+          member.kind === 'field' && member.name === imageToolPath[0],
       ),
-    [members],
+    [imageToolPath, members],
   )
 
   return (
@@ -512,10 +544,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         )
       })}
 
-      {hotspotField && focusPath[0] === 'hotspot' && (
+      {imageToolField && focusPath[0] === imageToolPath[0] && (
         <FormInput
           {...props}
-          absolutePath={hotspotField.field.path}
+          absolutePath={imageToolField.field.path}
           renderInput={renderHotspotInput}
         />
       )}

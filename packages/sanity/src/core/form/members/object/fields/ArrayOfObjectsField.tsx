@@ -24,6 +24,7 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {pushAlreadyExistsWarnings} from '../../../inputs/files/common/alreadyExistsWarning'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
+import {withDefaultCrop} from '../../../inputs/files/ImageInput/utils/defaultCrop'
 import {applyAll} from '../../../patch/applyPatch'
 import {insert, set, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
@@ -383,7 +384,7 @@ export function ArrayOfObjectsField(props: {
       handleSelectAssetFromSourceShared({
         assetsFromSource: assets,
         onChange: (patches) =>
-          handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key})),
+          handleChange(withDefaultCrop(patches, schemaType.options).prefixAll({_key: key})),
         type: schemaType,
         resolveUploader,
         uploadWith: undefined,
@@ -470,7 +471,11 @@ export function ArrayOfObjectsField(props: {
           uploader.upload([file], {
             schemaType,
             onChange: (patches) => {
-              handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key}))
+              handleChange(
+                withDefaultCrop(patches as PatchEvent, schemaType.options).prefixAll({
+                  _key: key,
+                }),
+              )
             },
           })
         } catch (err) {

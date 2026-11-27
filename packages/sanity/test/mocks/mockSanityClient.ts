@@ -38,6 +38,7 @@ export function createMockSanityClient(
           data: any
         }
       | undefined
+    uploadedAssetId?: string
   } = {},
   options: {
     apiVersion?: string
@@ -216,7 +217,7 @@ export function createMockSanityClient(
             type: 'response',
             body: {
               document: {
-                _id: 'mock-asset-id',
+                _id: data.uploadedAssetId ?? 'mock-asset-id',
               },
             },
             url: '/uploads',

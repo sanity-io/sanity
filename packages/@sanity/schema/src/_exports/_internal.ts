@@ -23,6 +23,7 @@ export {
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
 export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
+export {isHotspotEnabled, isImageToolEnabled} from '../legacy/types/image/imageTool'
 export {
   createSchemaFromManifestTypes,
   type CreateSchemaFromManifestTypesOptions,
@@ -52,6 +53,7 @@ export {
 export {builtinTypes} from '../sanity/builtinTypes'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
+export {getValidImageCropOptions} from '../sanity/imageCropOptions'
 export {
   type _FIXME_ as FIXME,
   type SchemaValidationResult as Problem,

@@ -214,6 +214,52 @@ export default defineType({
       },
     },
     {
+      name: 'fixedAspectRatioImage',
+      title: 'Fixed 16:9 image with minimum size',
+      type: 'image',
+      description:
+        'Upload a portrait image: it is cropped to 16:9 automatically. The crop tool shows the crop size in pixels, in red for an image smaller than 800 × 450 px, and the crop stays 16:9 and stops at that size.',
+      options: {
+        hotspot: true,
+        aspectRatio: 16 / 9,
+        minDimensions: {width: 800, height: 450},
+      },
+    },
+    {
+      name: 'aspectRatioRangeImage',
+      title: '4:3 to 16:9 image with recommended size',
+      type: 'image',
+      description:
+        'Upload a square image: it is cropped to 4:3 automatically. The crop tool shows its size in pixels, with a warning below 1600 × 900 px, and previews 4:3 and 16:9. Resizing keeps the crop between 4:3 and 16:9; hold Shift on a corner to keep its current ratio.',
+      options: {
+        hotspot: true,
+        aspectRatio: {min: 4 / 3, max: 16 / 9},
+        recommendedDimensions: {width: 1600, height: 900},
+      },
+    },
+    {
+      name: 'snapAspectRatioImage',
+      title: '1:1, 4:3 or 16:9 image',
+      type: 'image',
+      description:
+        'Upload a 3:2 image: it is cropped to 4:3, the nearest allowed ratio. Resize the crop and it snaps to 1:1, 4:3 or 16:9 as you drag, with the size in pixels below it.',
+      options: {
+        hotspot: true,
+        aspectRatio: [1, 4 / 3, 16 / 9],
+      },
+    },
+    {
+      name: 'squareCropOnlyImage',
+      title: 'Square crop without hotspot',
+      type: 'image',
+      description:
+        'Upload a landscape image: it is cropped to a centered square automatically. The crop tool keeps it square, stops at 600 × 600 px, shows its size in pixels and has no hotspot.',
+      options: {
+        aspectRatio: 1,
+        minDimensions: {width: 600, height: 600},
+      },
+    },
+    {
       name: 'imageWithMediaLibraryFilters',
       title: 'Image with Media Library filter',
       type: 'image',

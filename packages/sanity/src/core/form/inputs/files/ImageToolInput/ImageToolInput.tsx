@@ -1,5 +1,17 @@
-import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
+import {getValidImageCropOptions, isHotspotEnabled} from '@sanity/schema/_internal'
+import {
+  type Image,
+  type ImageCropDimensions,
+  type ImageOptions,
+  type ImageSchemaType,
+} from '@sanity/types'
 import {Card} from '@sanity/ui'
+import {
+  getCroppedImageDimensions,
+  getImageRefDimensions,
+  isSvgImageRef,
+  resolveAspectRatio,
+} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -14,6 +26,7 @@ import {Heading, Text, Box, Flex, Grid, VStack} from 'ui5'
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {validationLocaleNamespace} from '../../../../i18n/localeNamespaces'
 import {Translate} from '../../../../i18n/Translate'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {Details} from '../../../components/Details'
@@ -25,7 +38,18 @@ import {RatioBox} from '../common/RatioBox'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool/constants'
 import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
+import {type CropConstraints} from './imagetool/types'
+import {constrainHotspotToCrop} from './imagetool/utils'
 import {placeholder} from './ImageToolInput.css'
+import {
+  getCropAspectRatioMessageOptions,
+  getCropSizeStatus,
+  getHotspotPreviews,
+  getImageToolPath,
+  getInitialToolCrop,
+  hasCropSizeReadout,
+  isImageTooSmallForMinimum,
+} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -47,18 +71,26 @@ function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
   )
 }
 
-const HOTSPOT_PATH = ['hotspot']
-
-const DEFAULT_PREVIEWS: HotspotPreview[] = [
-  {title: '3:4', aspectRatio: 3 / 4},
-  {title: 'Square', aspectRatio: 1 / 1},
-  {title: '16:9', aspectRatio: 16 / 9},
-  {title: 'Panorama', aspectRatio: 4 / 1},
-] as const
-
 const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
   hotspot: DEFAULT_HOTSPOT,
+}
+
+function getToolValue(
+  value: Partial<Image> | undefined,
+  aspectRatio: CropConstraints['aspectRatio'],
+  minDimensions: CropConstraints['minDimensions'],
+): Partial<Image> {
+  const base = value || DEFAULT_VALUE
+  const crop = getInitialToolCrop(value, aspectRatio, minDimensions)
+  if (crop === undefined || crop === base.crop) {
+    return base
+  }
+  const hotspot = {
+    ...base.hotspot,
+    ...constrainHotspotToCrop(base.hotspot || DEFAULT_HOTSPOT, crop),
+  }
+  return {...base, crop, hotspot}
 }
 
 function LoadStatus(props: {children: ReactNode}) {
@@ -74,6 +106,65 @@ function LoadStatus(props: {children: ReactNode}) {
   )
 }
 
+function CropSize(props: {
+  dimensions: ImageCropDimensions
+  source: ImageCropDimensions | undefined
+  options: ImageOptions | undefined
+  unsaved: boolean
+  readOnly: boolean | undefined
+}) {
+  const {dimensions, source, options, unsaved, readOnly} = props
+  const {t} = useTranslation()
+  const {t: tValidation} = useTranslation(validationLocaleNamespace)
+  const {tone, threshold} = getCropSizeStatus(dimensions, options)
+  const aspectRatioMessage = getCropAspectRatioMessageOptions(options)
+  const {minDimensions} = getValidImageCropOptions(options)
+  const minimumTone = tone === 'critical' ? tone : undefined
+  const imageTooSmall = source !== undefined && isImageTooSmallForMinimum(source, options)
+
+  return (
+    <Flex
+      marginTop={2}
+      gap={2}
+      alignItems="center"
+      flexWrap="wrap"
+      data-testid="image-tool-crop-size"
+      data-tone={tone ?? 'default'}
+    >
+      <Text size={1} weight="medium" tone={tone}>
+        {t('inputs.imagetool.crop-size.dimensions', {...dimensions})}
+      </Text>
+      {aspectRatioMessage ? (
+        <Text size={1} muted>
+          {tValidation('object.image-aspect-ratio-mismatch', aspectRatioMessage)}
+        </Text>
+      ) : null}
+      {minDimensions ? (
+        <Text size={1} muted={minimumTone === undefined} tone={minimumTone}>
+          {tValidation('object.image-below-min-dimensions', {...minDimensions})}
+        </Text>
+      ) : null}
+      {tone === 'caution' ? (
+        <Text size={1} tone={tone}>
+          {tValidation('object.image-below-recommended-dimensions', {...threshold})}
+        </Text>
+      ) : null}
+      {imageTooSmall ? (
+        <Text size={1} tone="critical">
+          {t('inputs.imagetool.crop-size.image-too-small', {...minDimensions})}
+        </Text>
+      ) : null}
+      {unsaved && !imageTooSmall ? (
+        <Text size={1} muted>
+          {readOnly
+            ? t('inputs.imagetool.crop-size.unsaved-read-only')
+            : t('inputs.imagetool.crop-size.unsaved')}
+        </Text>
+      ) : null}
+    </Flex>
+  )
+}
+
 export function ImageToolInput(props: ImageToolInputProps) {
   const {
     imageUrl,
@@ -83,6 +174,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
     path,
     focusPath = EMPTY_ARRAY,
     presence,
+    validation,
     onChange,
     schemaType,
     onPathFocus,
@@ -92,24 +184,45 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const ref = useRef<HTMLDivElement | null>(null)
   useImperativeHandle(forwardRef, () => ref.current)
 
-  const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
+  const {aspectRatio, minDimensions} = getValidImageCropOptions(schemaType.options)
+  const cropConstraints = useMemo<CropConstraints>(
+    () => ({
+      aspectRatio: aspectRatio === undefined ? undefined : resolveAspectRatio(aspectRatio),
+      minDimensions,
+    }),
+    [aspectRatio, minDimensions],
+  )
+
+  const [localValue, setLocalValue] = useState(() =>
+    getToolValue(value, cropConstraints.aspectRatio, cropConstraints.minDimensions),
+  )
 
   const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
 
+  const hotspotEnabled = isHotspotEnabled(schemaType.options)
+  const imageToolPath = getImageToolPath(schemaType.options)
+
+  const assetRef = value?.asset?._ref
+  const sourceSize = useMemo(() => getImageRefDimensions(assetRef), [assetRef])
+
   const handleFocus = useCallback(() => {
-    onPathFocus(HOTSPOT_PATH)
-  }, [onPathFocus])
+    onPathFocus(imageToolPath)
+  }, [imageToolPath, onPathFocus])
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setLocalValue(value || DEFAULT_VALUE)
-  }, [value])
+    setLocalValue(getToolValue(value, cropConstraints.aspectRatio, cropConstraints.minDimensions))
+  }, [value, cropConstraints.aspectRatio, cropConstraints.minDimensions])
 
-  const hasFocus = focusPath[0] === 'hotspot'
+  const hasFocus = focusPath[0] === imageToolPath[0]
 
-  const hotspotPreviews =
-    (typeof schemaType.options?.hotspot === 'object' && schemaType.options.hotspot.previews) ||
-    DEFAULT_PREVIEWS
+  const hotspotPreviews = getHotspotPreviews(schemaType.options)
+
+  const isCropProposed = getInitialToolCrop(value, cropConstraints.aspectRatio) !== value?.crop
+
+  const cropSize = hasCropSizeReadout(schemaType.options)
+    ? getCroppedImageDimensions({asset: value?.asset, crop: localValue.crop})
+    : undefined
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
@@ -131,31 +244,47 @@ export function ImageToolInput(props: ImageToolInputProps) {
         (field) => field.type.name !== 'object' && field.name === 'hotspot',
       )
 
-      // Note: when either hotspot or crop change we fill in the default if the other is missing
-      // (we can't have one without the other)
+      // With the hotspot on, a change to either fills in the default for the other if it is missing
       const crop = cropField
         ? {_type: cropField.type.name, ...(finalValue.crop || DEFAULT_CROP)}
         : finalValue.crop
 
-      const hotspot = hotspotField
-        ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
-        : finalValue.hotspot
+      if (hotspotEnabled) {
+        const hotspot = hotspotField
+          ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
+          : finalValue.hotspot
 
-      onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
+        onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
+        return
+      }
+
+      const storedHotspot = value?.hotspot
+      if (storedHotspot) {
+        const hotspot = {...storedHotspot, ...constrainHotspotToCrop(storedHotspot, crop)}
+        onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
+        return
+      }
+
+      onChange(set(crop, ['crop']))
     },
-    [onChange, readOnly, schemaType.fields],
+    [hotspotEnabled, onChange, readOnly, schemaType.fields, value?.hotspot],
   )
 
-  const isSvg = useMemo(() => value?.asset?._ref?.split('-').at(-1) === 'svg', [value?.asset?._ref])
+  const isSvg = useMemo(() => isSvgImageRef(assetRef), [assetRef])
 
   const {t} = useTranslation()
   return (
     <FormField
-      title={t('inputs.imagetool.title')}
+      title={hotspotEnabled ? t('inputs.imagetool.title') : t('inputs.imagetool.crop-only.title')}
       level={level}
-      description={t('inputs.imagetool.description')}
+      description={
+        hotspotEnabled
+          ? t('inputs.imagetool.description')
+          : t('inputs.imagetool.crop-only.description')
+      }
       deprecated={schemaType.deprecated}
       path={path}
+      validation={validation}
       __unstable_presence={presence}
     >
       {isSvg ? (
@@ -192,8 +321,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
           border
         >
           <ChangeIndicator
-            path={path.concat(HOTSPOT_PATH)}
-            hasFocus={focusPath[0] === 'hotspot'}
+            path={path.concat(imageToolPath)}
+            hasFocus={hasFocus}
             isChanged={changed}
           >
             <RatioBox $ratio={3 / 2}>
@@ -217,6 +346,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   <ImageTool
                     value={localValue}
                     src={image.src}
+                    sourceSize={sourceSize}
+                    cropConstraints={cropConstraints}
+                    hotspotEnabled={hotspotEnabled}
                     readOnly={Boolean(readOnly)}
                     onChangeEnd={handleChangeEnd}
                     onChange={setLocalValue}
@@ -227,11 +359,21 @@ export function ImageToolInput(props: ImageToolInputProps) {
           </ChangeIndicator>
         </Card>
 
+        {cropSize ? (
+          <CropSize
+            dimensions={cropSize}
+            source={sourceSize}
+            options={schemaType.options}
+            unsaved={isCropProposed}
+            readOnly={readOnly}
+          />
+        ) : null}
+
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
             <Grid gridTemplateColumns="repeat(4, minmax(0, 1fr))" gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
-                <Box key={title} marginTop={2}>
+                <Box key={`${title}-${aspectRatio}`} marginTop={2}>
                   <Heading as="h4" size={0} trim>
                     {title}
                   </Heading>

@@ -24,6 +24,9 @@ export const MARGIN_SIZE = HANDLE_INTERACTIVE_SIZE / 2
 // Prevent resizing the crop to less than 5% of the image size
 export const MIN_CROP_SIZE = 0.05
 
+// Keeps a crop on a tiny image from rounding to zero pixels
+export const MIN_CROP_PIXELS = 1
+
 // Keyboard control constants
 export const KEYBOARD_MOVEMENT_STEP = 0.005 // 0.5% of the image size
 export const KEYBOARD_RESIZE_STEP = 0.005 // 0.5% of the image size

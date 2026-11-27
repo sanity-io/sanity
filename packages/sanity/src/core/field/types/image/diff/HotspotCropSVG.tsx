@@ -1,4 +1,5 @@
 import {type Image, type ImageCrop, type ImageHotspot} from '@sanity/types'
+import {cropToPixelRect} from '@sanity/util/image'
 import {type SVGProps} from 'react'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -92,14 +93,13 @@ function CropSVG({
   SVGProps<SVGRectElement>,
   'width' | 'height'
 >) {
-  const rectProps = {
-    x: crop.left * width,
-    y: crop.top * height,
-    width: (1 - crop.right - crop.left) * width,
-    height: (1 - crop.bottom - crop.top) * height,
-  }
-
-  return <rect {...restProps} {...rectProps} style={{vectorEffect: 'non-scaling-stroke'}} />
+  return (
+    <rect
+      {...restProps}
+      {...cropToPixelRect(crop, {width, height})}
+      style={{vectorEffect: 'non-scaling-stroke'}}
+    />
+  )
 }
 
 function HotspotSVG({

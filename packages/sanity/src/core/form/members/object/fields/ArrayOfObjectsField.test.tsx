@@ -1,22 +1,28 @@
 import {
+  type AssetFromSource,
   type AssetSource,
   type AssetSourceComponentProps,
   type AssetSourceUploader,
 } from '@sanity/types'
+import {getCroppedImageDimensions} from '@sanity/util/image'
 import {act, render, screen} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type FIXME} from '../../../../FIXME'
 import {createSchema} from '../../../../schema/createSchema'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {type FormBuilderContextValue} from '../../../FormBuilderContext'
+import {applyAll} from '../../../patch/applyPatch'
 import {insert, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {type ArrayOfObjectsFormNode} from '../../../store/types/nodes'
+import {createDatasetUploader} from '../../../studio/assetSourceDataset/uploader'
 import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {
@@ -31,6 +37,7 @@ const EMPTY_ARRAY: never[] = []
 const schema = createSchema({
   name: 'test',
   types: [
+    {name: 'squareImage', type: 'image', options: {aspectRatio: 1}},
     {
       name: 'doc',
       type: 'document',
@@ -41,6 +48,12 @@ const schema = createSchema({
           type: 'array',
           of: [{type: 'object', name: 'thing', fields: [{name: 'title', type: 'string'}]}],
         },
+        {
+          name: 'photos',
+          type: 'array',
+          of: [{type: 'image', options: {hotspot: true, aspectRatio: 16 / 9}}],
+        },
+        {name: 'squares', type: 'array', of: [{type: 'squareImage'}]},
       ],
     },
   ],
@@ -122,7 +135,109 @@ describe('ArrayOfObjectsField', () => {
   })
 })
 
-async function setupTest(fieldName: 'body' | 'items', value?: {_key: string; _type: string}[]) {
+const PORTRAIT_ASSET_ID = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1200x1800-jpg'
+
+function NoopUploadComponent() {
+  return null
+}
+
+const datasetClient = createMockSanityClientAsClient({uploadedAssetId: PORTRAIT_ASSET_ID})
+
+function storedPhoto(onChange: FormCallbacksValue['onChange'], fieldName = 'photos') {
+  const patches: FormPatch[] = vi
+    .mocked(onChange)
+    .mock.calls.flatMap(([event]) => PatchEvent.from(event).patches)
+  return applyAll({}, patches)?.[fieldName]?.[0]
+}
+
+function storedRatio(onChange: FormCallbacksValue['onChange']): number {
+  const dimensions = getCroppedImageDimensions(storedPhoto(onChange))
+  return dimensions ? dimensions.width / dimensions.height : Number.NaN
+}
+
+describe('ArrayOfObjectsField image uploads', () => {
+  it('crops an image dropped into an array of 16:9 images to 16:9', async () => {
+    const {formCallbacks, onSelectFile, itemType} = await setupTest('photos')
+    const assetSource: AssetSource = {
+      name: 'dataset',
+      component: NoopUploadComponent,
+      Uploader: createDatasetUploader({client: datasetClient}),
+    }
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'portrait.jpg', {type: 'image/jpeg'}),
+      })
+    })
+
+    await vi.waitFor(() =>
+      expect(storedPhoto(formCallbacks.onChange)?.asset?._ref).toBe(PORTRAIT_ASSET_ID),
+    )
+    expect(storedRatio(formCallbacks.onChange)).toBeCloseTo(16 / 9, 2)
+  })
+
+  it('crops an image dropped into an array of a named image type to the ratio set on the type', async () => {
+    const {formCallbacks, onSelectFile, itemType} = await setupTest('squares')
+    const assetSource: AssetSource = {
+      name: 'dataset',
+      component: NoopUploadComponent,
+      Uploader: createDatasetUploader({client: datasetClient}),
+    }
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'portrait.jpg', {type: 'image/jpeg'}),
+      })
+    })
+
+    await vi.waitFor(() =>
+      expect(storedPhoto(formCallbacks.onChange, 'squares')?.asset?._ref).toBe(PORTRAIT_ASSET_ID),
+    )
+    expect(getCroppedImageDimensions(storedPhoto(formCallbacks.onChange, 'squares'))).toEqual({
+      width: 1200,
+      height: 1200,
+    })
+  })
+
+  it('crops an image picked from the asset source into an array of 16:9 images to 16:9', async () => {
+    const {formCallbacks, onSelectFile, itemType} = await setupTest('photos')
+
+    let selectAssets: ((assets: AssetFromSource[]) => void) | undefined
+    const SelectingUploadComponent = (props: AssetSourceComponentProps) => {
+      selectAssets = props.onSelect
+      return null
+    }
+    const assetSource: AssetSource = {
+      name: 'mock-source',
+      component: SelectingUploadComponent,
+      Uploader: MediaLibraryUploader,
+    }
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'portrait.jpg', {type: 'image/jpeg'}),
+      })
+    })
+
+    if (!selectAssets) throw new Error('asset source component was never mounted')
+    act(() => {
+      selectAssets?.([{kind: 'assetDocumentId', value: PORTRAIT_ASSET_ID}])
+    })
+
+    expect(storedRatio(formCallbacks.onChange)).toBeCloseTo(16 / 9, 2)
+  })
+})
+
+async function setupTest(
+  fieldName: 'body' | 'items' | 'photos' | 'squares',
+  value?: {_key: string; _type: string}[],
+) {
   const docType = schema.get('doc') as FIXME
   const schemaType = docType.fields.find((field: {name: string}) => field.name === fieldName)?.type
 

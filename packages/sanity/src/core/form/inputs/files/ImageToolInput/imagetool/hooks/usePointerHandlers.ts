@@ -4,8 +4,10 @@ import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '../constants'
 import {
   type Crop,
   type CropAndHotspot,
+  type CropConstraints,
   type Hotspot,
   type Rect,
+  type Size,
   type ToolHandleType,
   type ToolInteractionTarget,
 } from '../types'
@@ -26,6 +28,8 @@ interface UsePointerHandlersProps {
   readOnly: boolean
   hotspotRef: RefObject<SVGEllipseElement | null>
   cropRef: RefObject<SVGRectElement | null>
+  sourceSize: Size
+  cropConstraints?: CropConstraints
 }
 
 export function usePointerHandlers({
@@ -37,6 +41,8 @@ export function usePointerHandlers({
   readOnly,
   hotspotRef,
   cropRef,
+  sourceSize,
+  cropConstraints,
 }: UsePointerHandlersProps) {
   // Internal refs for tracking drag state
   const initialCropRef = useRef<Crop | null>(null)
@@ -142,6 +148,10 @@ export function usePointerHandlers({
           pointerPos,
           innerRect,
           activeHandle,
+          sourceSize,
+          constraints: cropConstraints,
+          // Read on every move so pressing or releasing a modifier takes effect mid-drag.
+          modifiers: {lockRatio: e.shiftKey, fromCenter: e.altKey},
         })
         onChange(result)
       }
@@ -155,6 +165,8 @@ export function usePointerHandlers({
       value.crop,
       size,
       svgRef,
+      sourceSize,
+      cropConstraints,
       initialHotspotRef,
       initialCropRef,
       initialCursorRef,
