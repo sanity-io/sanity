@@ -320,6 +320,7 @@ export function SettingsPanel() {
         />
 
         <PerspectiveSelect
+          apiVersion={apiVersionDraft}
           id="vision-settings-perspective"
           onChange={(perspective) =>
             updateSetting({type: 'settings.update', settings: {perspective}})
