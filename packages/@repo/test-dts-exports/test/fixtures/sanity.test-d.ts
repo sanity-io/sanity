@@ -167,15 +167,11 @@ import type {
   ConfigContext,
   CopyOptions,
   CopyPasteContextType,
-  createConfig,
-  createDefaultIcon,
   CreateDocumentVersionEvent,
   CreateIfNotExistsMutation,
   CreateLiveDocumentEvent,
   CreateMutation,
   CreateOrReplaceMutation,
-  createPlugin,
-  createSchema,
   CreateSquashedMutation,
   CrossDatasetReferenceComponents,
   CrossDatasetReferenceDefinition,
@@ -362,7 +358,6 @@ import type {
   FormUnsetPatch,
   GeneralDocumentListLayoutKey,
   GeneralPreviewLayoutKey,
-  generateStudioManifest,
   GeopointComponents,
   GeopointDefinition,
   GeopointOptions,
@@ -661,7 +656,6 @@ import type {
   renderStudio,
   RequestErrorReportOptions,
   ResetEvent,
-  resolveConfig,
   ResolvedTemplate,
   ResolvedUploader,
   ResolveProductionUrlContext,
@@ -685,7 +679,6 @@ import type {
   ScheduledPublishingPluginOptions,
   Schema,
   SchemaAssetSources,
-  SchemaError,
   SchemaPluginOptions,
   SchemaType,
   SchemaTypeDefinition,
@@ -805,7 +798,6 @@ import type {
   UploadEvent,
   UploadOptions,
   UploadProgressEvent,
-  uploadSchema,
   UploadState,
   UriValidationOptions,
   UrlComponents,
@@ -1367,12 +1359,6 @@ describe('sanity', () => {
   test('CopyPasteContextType', () => {
     expectTypeOf<CopyPasteContextType>().toBeObject()
   })
-  test('createConfig', () => {
-    expectTypeOf<typeof createConfig>().toBeFunction()
-  })
-  test('createDefaultIcon', () => {
-    expectTypeOf<typeof createDefaultIcon>().toBeFunction()
-  })
   test('CreateDocumentVersionEvent', () => {
     expectTypeOf<CreateDocumentVersionEvent>().toBeObject()
   })
@@ -1387,12 +1373,6 @@ describe('sanity', () => {
   })
   test('CreateOrReplaceMutation', () => {
     expectTypeOf<CreateOrReplaceMutation>().toBeObject()
-  })
-  test('createPlugin', () => {
-    expectTypeOf<typeof createPlugin>().toBeFunction()
-  })
-  test('createSchema', () => {
-    expectTypeOf<typeof createSchema>().toBeFunction()
   })
   test('CreateSquashedMutation', () => {
     expectTypeOf<CreateSquashedMutation>().toBeObject()
@@ -1958,9 +1938,6 @@ describe('sanity', () => {
   })
   test('GeneralPreviewLayoutKey', () => {
     expectTypeOf<GeneralPreviewLayoutKey>().not.toBeNever()
-  })
-  test('generateStudioManifest', () => {
-    expectTypeOf<typeof generateStudioManifest>().toBeFunction()
   })
   test('GeopointComponents', () => {
     expectTypeOf<GeopointComponents>().toBeObject()
@@ -2863,9 +2840,6 @@ describe('sanity', () => {
   test('ResetEvent', () => {
     expectTypeOf<ResetEvent>().not.toBeNever()
   })
-  test('resolveConfig', () => {
-    expectTypeOf<typeof resolveConfig>().toBeFunction()
-  })
   test('ResolvedTemplate', () => {
     expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
   })
@@ -2934,9 +2908,6 @@ describe('sanity', () => {
   })
   test('SchemaAssetSources', () => {
     expectTypeOf<SchemaAssetSources>().not.toBeNever()
-  })
-  test('SchemaError', () => {
-    expectTypeOf<SchemaError>().not.toBeNever()
   })
   test('SchemaPluginOptions', () => {
     expectTypeOf<SchemaPluginOptions>().toBeObject()
@@ -3297,9 +3268,6 @@ describe('sanity', () => {
   })
   test('UploadProgressEvent', () => {
     expectTypeOf<UploadProgressEvent>().not.toBeNever()
-  })
-  test('uploadSchema', () => {
-    expectTypeOf<typeof uploadSchema>().toBeFunction()
   })
   test('UploadState', () => {
     expectTypeOf<UploadState>().toBeObject()

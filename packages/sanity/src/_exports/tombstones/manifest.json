@@ -5261,6 +5261,46 @@
         "name": "UseTranslationResponse",
         "kind": "type",
         "message": "Moved to `sanity/i18n`. Import `{UseTranslationResponse}` from `sanity/i18n` instead of `sanity`."
+      },
+      {
+        "name": "SchemaError",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{SchemaError}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "createDefaultIcon",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{createDefaultIcon}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "createSchema",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{createSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "generateStudioManifest",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{generateStudioManifest}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "resolveConfig",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{resolveConfig}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "uploadSchema",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{uploadSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "createConfig",
+        "kind": "value",
+        "message": "Removed in v7. Use `defineConfig` instead: `export default defineConfig({…})`."
+      },
+      {
+        "name": "createPlugin",
+        "kind": "value",
+        "message": "Removed in v7. Use `definePlugin` instead: `export const myPlugin = definePlugin((options) => ({…}))`."
       }
     ],
     "./_dangerously_use_private_internals_that_do_not_follow_semver": [
@@ -6605,34 +6645,9 @@
         "message": "Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`."
       },
       {
-        "name": "SchemaError",
-        "kind": "value",
-        "message": "Moved to `sanity`. Import `{SchemaError}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
-      },
-      {
-        "name": "createDefaultIcon",
-        "kind": "value",
-        "message": "Moved to `sanity`. Import `{createDefaultIcon}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
-      },
-      {
         "name": "defineDocumentFieldAction",
         "kind": "value",
         "message": "Moved to `sanity`. Import `{defineDocumentFieldAction}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
-      },
-      {
-        "name": "generateStudioManifest",
-        "kind": "value",
-        "message": "Moved to `sanity`. Import `{generateStudioManifest}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
-      },
-      {
-        "name": "resolveConfig",
-        "kind": "value",
-        "message": "Moved to `sanity`. Import `{resolveConfig}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
-      },
-      {
-        "name": "uploadSchema",
-        "kind": "value",
-        "message": "Moved to `sanity`. Import `{uploadSchema}` from `sanity` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "StrictVersionLayeringOptions",

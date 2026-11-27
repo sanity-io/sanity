@@ -213,6 +213,13 @@ patchedDependencies:
   # subpaths of that entry. They, and the sanity-plugin-internationalized-array patch, import
   # useDocumentPane from the -1 subpath, which a studio config may load before sign-in.
   '@sanity/assist@6.3.0': patches/@sanity__assist@6.3.0.patch
+  # The three @sanity/cli patches read createSchema, createDefaultIcon, SchemaError, resolveConfig and
+  # generateStudioManifest from the private internals entry first and fall back to the sanity root,
+  # because the CLI resolves them from the root at runtime. Temporary until the upstream sanity-io/cli
+  # fix is released.
+  '@sanity/cli-build@7.5.1': patches/@sanity__cli-build@7.5.1.patch
+  '@sanity/cli-core@3.16.0': patches/@sanity__cli-core@3.16.0.patch
+  '@sanity/cli@8.35.0': patches/@sanity__cli@8.35.0.patch
   '@sanity/code-input@7.3.16': patches/@sanity__code-input@7.3.16.patch
   # Also rewrites defineLocaleResourceBundle / useTranslation to sanity/i18n.
   '@sanity/document-internationalization@6.3.1': patches/@sanity__document-internationalization@6.3.1.patch

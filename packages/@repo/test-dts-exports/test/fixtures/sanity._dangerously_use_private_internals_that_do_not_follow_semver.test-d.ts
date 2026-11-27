@@ -88,6 +88,7 @@ import type {
   CreatableTargetDocument,
   createBufferedDocument,
   createConnectionStatusStore,
+  createDefaultIcon,
   createDocumentPreviewStore,
   createDocumentStore,
   createDraftFrom,
@@ -101,6 +102,7 @@ import type {
   createProjectStore,
   createPublishedFrom,
   createRequestErrorChannel,
+  createSchema,
   createSearch,
   createSourceFromConfig,
   createStructureBuilder,
@@ -194,6 +196,7 @@ import type {
   formatRelativeLocalePublishDate,
   FormBuilderComponentResolverContext,
   FromToIndex,
+  generateStudioManifest,
   GenerateStudioManifestOptions,
   getApiErrorCode,
   getConfigContextFromSource,
@@ -464,6 +467,7 @@ import type {
   RequestFailureDiagnostics,
   Resizable,
   RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
+  resolveConfig,
   resolveInitialObjectValue,
   resolveInitialValue,
   resolveInitialValueForType,
@@ -477,6 +481,7 @@ import type {
   RovingFocusProps,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
+  SchemaError,
   SchemaErrorContext,
   ScrollContainer,
   ScrollContainerProps,
@@ -556,6 +561,7 @@ import type {
   uncaughtErrorHandler,
   unstable_useObserveDocument,
   unstable_useValuePreview,
+  uploadSchema,
   UpsellDataResult,
   UpsellDescriptionSerializer,
   UpsellDialog,
@@ -996,6 +1002,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('createConnectionStatusStore', () => {
     expectTypeOf<typeof createConnectionStatusStore>().toBeFunction()
   })
+  test('createDefaultIcon', () => {
+    expectTypeOf<typeof createDefaultIcon>().toBeFunction()
+  })
   test('createDocumentPreviewStore', () => {
     expectTypeOf<typeof createDocumentPreviewStore>().toBeFunction()
   })
@@ -1035,6 +1044,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('createRequestErrorChannel', () => {
     expectTypeOf<typeof createRequestErrorChannel>().toBeFunction()
+  })
+  test('createSchema', () => {
+    expectTypeOf<typeof createSchema>().toBeFunction()
   })
   test('createSearch', () => {
     expectTypeOf<typeof createSearch>().not.toBeNever()
@@ -1314,6 +1326,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('FromToIndex', () => {
     expectTypeOf<FromToIndex>().toBeObject()
+  })
+  test('generateStudioManifest', () => {
+    expectTypeOf<typeof generateStudioManifest>().toBeFunction()
   })
   test('GenerateStudioManifestOptions', () => {
     expectTypeOf<GenerateStudioManifestOptions<any>>().toBeObject()
@@ -2126,6 +2141,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('RESOLVE_INITIAL_VALUE_TIMEOUT_MS', () => {
     expectTypeOf<typeof RESOLVE_INITIAL_VALUE_TIMEOUT_MS>().not.toBeNever()
   })
+  test('resolveConfig', () => {
+    expectTypeOf<typeof resolveConfig>().toBeFunction()
+  })
   test('resolveInitialObjectValue', () => {
     expectTypeOf<typeof resolveInitialObjectValue>().toBeFunction()
   })
@@ -2164,6 +2182,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('SanityDefaultPreviewProps', () => {
     expectTypeOf<SanityDefaultPreviewProps>().toBeObject()
+  })
+  test('SchemaError', () => {
+    expectTypeOf<SchemaError>().not.toBeNever()
   })
   test('SchemaErrorContext', () => {
     expectTypeOf<SchemaErrorContext>().toBeObject()
@@ -2401,6 +2422,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('unstable_useValuePreview', () => {
     expectTypeOf<typeof unstable_useValuePreview>().not.toBeNever()
+  })
+  test('uploadSchema', () => {
+    expectTypeOf<typeof uploadSchema>().toBeFunction()
   })
   test('UpsellDataResult', () => {
     expectTypeOf<UpsellDataResult>().toBeObject()

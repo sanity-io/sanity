@@ -1,4 +1,5 @@
-import {createSchema, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
+import {createSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it} from 'vitest'
 
 import {getNumberRules} from './numberRules'
