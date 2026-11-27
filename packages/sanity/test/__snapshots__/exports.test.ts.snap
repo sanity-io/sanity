@@ -162,6 +162,7 @@ exports[`exports snapshot 1`] = `
     "RelativeTime": "function",
     "ReleaseAvatar": "function",
     "ReleaseAvatarIcon": "function",
+    "ReleaseDetailLinkClicked": "object",
     "ReleaseTitle": "function",
     "ReleasesNav": "function",
     "RequestErrorDialog": "function",
