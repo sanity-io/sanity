@@ -1,0 +1,147 @@
+import {createSanityInstance} from '@sanity/sdk'
+import {getOrCreateNode} from '@sanity/sdk/comlink'
+import {act, renderHook, waitFor} from '@testing-library/react'
+import {afterEach, expect, it, onTestFinished, vi} from 'vitest'
+
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {canvasUsEnglishLocaleBundle} from '../i18n'
+import {useCanvasNavigate} from '../useCanvasNavigate'
+
+// The Dashboard's `_context` param, read when the rendering context module loads.
+vi.hoisted(() => {
+  window.history.replaceState(
+    null,
+    '',
+    `?_context=${encodeURIComponent(JSON.stringify({mode: 'core-ui', env: 'test'}))}`,
+  )
+})
+
+// Comlink store override: undefined until a test sets it, so the store has no node.
+let comlinkStoreOverride: {node: undefined; start: () => void} | undefined
+
+vi.mock('../../store/datastores', async (importOriginal) => {
+  const original = await importOriginal<Record<string, unknown>>()
+  return {
+    ...original,
+    useComlinkStore: () =>
+      comlinkStoreOverride ?? (original.useComlinkStore as () => Record<string, unknown>)(),
+  }
+})
+
+afterEach(() => {
+  comlinkStoreOverride = undefined
+  vi.restoreAllMocks()
+})
+
+async function renderCanvas() {
+  const TestProvider = await createTestProvider({resources: [canvasUsEnglishLocaleBundle]})
+  return renderHook(() => useCanvasNavigate(), {wrapper: TestProvider})
+}
+
+it('hides "Link to Canvas" over Comlink when the Dashboard says Canvas is unlisted', async () => {
+  // Comlink needs Studio to be rendered in a frame.
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+  const node = getOrCreateNode(createSanityInstance(), {
+    name: 'dashboard/nodes/sdk',
+    connectTo: 'dashboard/channels/sdk',
+  })
+  const fetch = vi.spyOn(node, 'fetch').mockResolvedValue({context: {canvasVisibility: 'unlisted'}})
+  const {result} = await renderCanvas()
+
+  // Wait for mount and the call, then settle inside act so the reply's value is committed
+  // before the synchronous assertion. The settled answer and the closed starting point carry
+  // the same value, so the assertion must not run before the reply arrives.
+  await waitFor(() => expect(result.current).not.toBeNull())
+  await waitFor(() => expect(fetch).toHaveBeenCalledWith('dashboard/v1/context', undefined))
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
+  expect(result.current.canLink).toBe(false)
+  // "Edit in Canvas" gates on `isAvailable` only and must keep working.
+  expect(result.current.isAvailable).toBe(true)
+})
+
+it('keeps "Link to Canvas" when the Dashboard omits canvasVisibility (older Dashboards)', async () => {
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+  const node = getOrCreateNode(createSanityInstance(), {
+    name: 'dashboard/nodes/sdk',
+    connectTo: 'dashboard/channels/sdk',
+  })
+  vi.spyOn(node, 'fetch').mockResolvedValue({context: {organizationId: 'org-1'}})
+  const {result} = await renderCanvas()
+
+  await waitFor(() => expect(result.current.canLink).toBe(true))
+})
+
+it('fails closed on a Comlink timeout: no "Link to Canvas", "Edit in Canvas" unaffected', async () => {
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+  const node = getOrCreateNode(createSanityInstance(), {
+    name: 'dashboard/nodes/sdk',
+    connectTo: 'dashboard/channels/sdk',
+  })
+  vi.spyOn(node, 'fetch').mockReturnValue(new Promise(() => {}))
+  const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const TestProvider = await createTestProvider({resources: [canvasUsEnglishLocaleBundle]})
+  // Fake timers only from here: `createTestProvider` above needs real ones.
+  vi.useFakeTimers()
+  onTestFinished(() => {
+    vi.useRealTimers()
+  })
+
+  const {result} = renderHook(() => useCanvasNavigate(), {wrapper: TestProvider})
+  // Fail-closed from the start: `canLink` never flashes for a pending reply.
+  expect(result.current.canLink).toBe(false)
+
+  await act(() => vi.advanceTimersByTimeAsync(2999))
+  expect(result.current.canLink).toBe(false)
+
+  await act(() => vi.advanceTimersByTimeAsync(1))
+  // The timeout fails closed too, and `isAvailable` is untouched by it.
+  expect(result.current.canLink).toBe(false)
+  expect(result.current.isAvailable).toBe(true)
+  expect(error).toHaveBeenCalled()
+})
+
+it('fails closed on a Comlink error, with "Edit in Canvas" unaffected', async () => {
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+  const node = getOrCreateNode(createSanityInstance(), {
+    name: 'dashboard/nodes/sdk',
+    connectTo: 'dashboard/channels/sdk',
+  })
+  const fetch = vi.spyOn(node, 'fetch').mockRejectedValue(new Error('no dashboard'))
+  const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const {result} = await renderCanvas()
+
+  // Wait for mount and the call, then settle inside act so the rejection's value is
+  // committed before the synchronous assertion.
+  await waitFor(() => expect(result.current).not.toBeNull())
+  await waitFor(() => expect(fetch).toHaveBeenCalledWith('dashboard/v1/context', undefined))
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
+  expect(result.current.canLink).toBe(false)
+  expect(result.current.isAvailable).toBe(true)
+  expect(error).toHaveBeenCalledWith(
+    'Failed to read Canvas visibility from the Dashboard context',
+    expect.any(Error),
+  )
+})
+
+it('fails closed in a Comlink host whose store has no node yet', async () => {
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+  comlinkStoreOverride = {node: undefined, start: () => {}}
+  const {result} = await renderCanvas()
+
+  await waitFor(() => expect(result.current).not.toBeNull())
+  expect(result.current.canLink).toBe(false)
+  // "Edit in Canvas" keeps working: availability is not tied to the context reply.
+  expect(result.current.isAvailable).toBe(true)
+})
+
+it('standalone: does not ask a Dashboard about visibility', async () => {
+  const node = getOrCreateNode(createSanityInstance(), {
+    name: 'dashboard/nodes/sdk',
+    connectTo: 'dashboard/channels/sdk',
+  })
+  const fetch = vi.spyOn(node, 'fetch')
+  const {result} = await renderCanvas()
+
+  await waitFor(() => expect(result.current.canLink).toBe(true))
+  expect(fetch).not.toHaveBeenCalled()
+})

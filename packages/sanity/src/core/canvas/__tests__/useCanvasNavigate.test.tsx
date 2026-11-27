@@ -145,3 +145,57 @@ it('is available without a message bus host, which does not say', async () => {
 
   expect(result.current.isAvailable).toBe(true)
 })
+
+it.each([
+  {shape: 'an installation', listed: installation},
+  {shape: 'an application', listed: application},
+])('keeps "Link to Canvas" for a listed Canvas in $shape', async ({listed}) => {
+  const host = stubMessageBusHost()
+  const {result} = await renderCanvas()
+  expect(result.current.canLink).toBe(false)
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [listed('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.canLink).toBe(true))
+})
+
+it.each([
+  {shape: 'an installation', record: installation},
+  {shape: 'an application', record: application},
+])('hides "Link to Canvas" for an unlisted Canvas in $shape', async ({record}) => {
+  const host = stubMessageBusHost()
+  const {result} = await renderCanvas()
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [record('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.isAvailable).toBe(true))
+  expect(result.current.canLink).toBe(true)
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [withVisibility(record, 'unlisted')('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.canLink).toBe(false))
+  expect(result.current.isAvailable).toBe(true)
+})
+
+/**
+ * Returns a record builder that marks the Canvas record as unlisted. Both shapes carry
+ * `visibility` top-level, the same field the Dashboard now writes on each record.
+ */
+function withVisibility(
+  record: typeof installation | typeof application,
+  visibility: 'unlisted' | 'default',
+): (reference: string) => ListedApplication {
+  return (reference) => ({...record(reference), visibility})
+}
