@@ -4,9 +4,8 @@ import {FormBuilderContext} from 'sanity/_singletons'
 import {type FormBuilderContextValue} from './FormBuilderContext'
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export function useFormBuilder(): FormBuilderContextValue {
   const formBuilder = use(FormBuilderContext)

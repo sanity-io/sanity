@@ -102,7 +102,8 @@ export interface StudioProps {
  * Suspense boundary". Client-only Studios (`renderStudio`, `sanity dev`, `sanity build`) are not affected.
  *
  * @hidden
- * @internal */
+ * @beta
+ */
 export function Studio(props: StudioProps): React.JSX.Element {
   const {
     basePath,

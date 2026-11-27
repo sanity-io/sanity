@@ -10,9 +10,8 @@ import {type StringInputProps} from '../types/inputProps'
 export type EmailInputProps = StringInputProps
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export function EmailInput(props: EmailInputProps) {
   const {validationError, elementProps} = props

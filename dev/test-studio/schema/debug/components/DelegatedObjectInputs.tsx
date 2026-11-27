@@ -17,8 +17,6 @@ import {
   type StringInputProps,
   type UrlInputProps,
   PortableTextInput,
-} from 'sanity'
-import {
   ArrayOfObjectsInput,
   NumberInput,
   ObjectInput,
@@ -40,7 +38,7 @@ import {
   EmailInput,
   FileInput,
   ImageInput,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
+} from 'sanity'
 
 /* These ensure that all the native inputs are exported and assignable to defineField.components.input*/
 function DelegateBorder({children}: {children?: ReactNode | undefined}) {

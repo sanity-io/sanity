@@ -5,9 +5,8 @@ import {prefixPath} from './patch'
 import {type FormPatch, type PatchArg} from './types'
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export class PatchEvent {
   static from(input: PatchArg | PatchEvent): PatchEvent {

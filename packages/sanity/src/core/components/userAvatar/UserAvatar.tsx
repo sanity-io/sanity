@@ -40,8 +40,8 @@ export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
 })
 
 /**
- * @internal
  * @hidden
+ * @beta
  */
 export interface UserAvatarProps {
   __unstable_hideInnerStroke?: AvatarProps['__unstable_hideInnerStroke']
@@ -74,8 +74,8 @@ function nameToInitials(fullName: string) {
 }
 
 /**
- * @internal
  * @hidden
+ * @beta
  */
 export function UserAvatar(props: UserAvatarProps) {
   const {user, withTooltip, ...restProps} = props

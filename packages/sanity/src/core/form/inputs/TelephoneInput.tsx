@@ -10,9 +10,8 @@ import {type StringInputProps} from '../types/inputProps'
 export type TelephoneInputProps = StringInputProps
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export function TelephoneInput(props: TelephoneInputProps) {
   const {schemaType, validationError, value, elementProps} = props

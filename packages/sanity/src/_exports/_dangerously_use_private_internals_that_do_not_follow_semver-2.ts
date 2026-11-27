@@ -34,9 +34,7 @@ export {
 } from '../core/changeIndicators/types'
 export {CommentDisabledIcon} from '../core/comments-v2/components/icons/CommentDisabledIcon'
 export {CommentDisabledIcon as CommentDisabledIconLegacy} from '../core/comments/components/icons/CommentDisabledIcon'
-export {CommentDeleteDialog} from '../core/comments-v2/components/CommentDeleteDialog'
 export {CommentDeleteDialog as CommentDeleteDialogLegacy} from '../core/comments/components/CommentDeleteDialog'
-export {CommentsList} from '../core/comments-v2/components/list/CommentsList'
 export {CommentsList as CommentsListLegacy} from '../core/comments/components/list/CommentsList'
 export {
   CommentInput,
@@ -52,13 +50,10 @@ export {CommentInlineHighlightSpan} from '../core/comments-v2/components/pte/Com
 export {CommentInlineHighlightSpan as CommentInlineHighlightSpanLegacy} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments-v2/constants'
 export {COMMENTS_INSPECTOR_NAME as COMMENTS_INSPECTOR_NAME_LEGACY} from '../core/comments/constants'
-export {CommentsAuthoringPathProvider} from '../core/comments-v2/context/authoring-path/CommentsAuthoringPathProvider'
 export {CommentsAuthoringPathProvider as CommentsAuthoringPathProviderLegacy} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
 export {CommentsProvider} from '../core/comments-v2/context/comments/CommentsProvider'
 export {CommentsProvider as CommentsProviderLegacy} from '../core/comments/context/comments/CommentsProvider'
-export {CommentsEnabledProvider} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
 export {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../core/comments/context/enabled/CommentsEnabledProvider'
-export {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
 export {CommentsSelectedPathProvider} from '../core/comments-v2/context/selected-path/CommentsSelectedPathProvider'
 export {CommentsSelectedPathProvider as CommentsSelectedPathProviderLegacy} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 export {type CommentsSelectedPath} from '../core/comments-v2/context/selected-path/types'
@@ -68,9 +63,7 @@ export {
   hasCommentMessageValue as hasCommentMessageValueLegacy,
   isTextSelectionComment as isTextSelectionCommentLegacy,
 } from '../core/comments/helpers'
-export {useComments} from '../core/comments-v2/hooks/useComments'
 export {useComments as useCommentsLegacy} from '../core/comments/hooks/useComments'
-export {useCommentsEnabled} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {useCommentsEnabled as useCommentsEnabledLegacy} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsSelectedPath} from '../core/comments-v2/hooks/useCommentsSelectedPath'
 export {useCommentsSelectedPath as useCommentsSelectedPathLegacy} from '../core/comments/hooks/useCommentsSelectedPath'
@@ -234,26 +227,8 @@ export {
   ObjectMembers,
   FormBuilder,
   FormProvider,
-  ArrayOfObjectOptionsInput,
-  ArrayOfObjectsItem,
-  ArrayOfOptionsInput,
-  ArrayOfPrimitiveOptionsInput,
-  ArrayOfPrimitivesInput,
-  ArrayOfPrimitivesItem,
-  CrossDatasetReferenceInput,
-  DateInput,
-  DateTimeInput,
-  FileInput,
   FormField,
   FormInput,
-  ImageInput,
-  ArrayOfObjectsInput,
-  ObjectInput,
-  ReferenceInput,
-  SlugInput,
-  StringInput,
-  TagsArrayInput,
-  UniversalArrayInput,
   MemberField,
   MemberFieldError,
   ObjectInputMember,
@@ -299,7 +274,6 @@ export {
 } from '../core/form/studio/contexts/ParseErrors'
 export {
   type EditReferenceLinkComponentProps,
-  type EditReferenceOptions,
   type ReferenceInputOptions,
   ReferenceInputOptionsProvider,
   type TemplateOption,
@@ -363,13 +337,10 @@ export {EditScheduleForm} from '../core/scheduled-publishing/components/editSche
 export {usePausedScheduledDraft} from '../core/singleDocRelease/hooks/usePausedScheduledDraft'
 export {IsLastPaneProvider} from '../core/tasks/context/isLastPane/IsLastPaneProvider'
 export {useDocumentPreviewValues} from '../core/tasks/hooks/useDocumentPreviewValues'
-export {ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
 export {Pane} from '../structure/components/pane/Pane'
 export {PaneContent} from '../structure/components/pane/PaneContent'
-export {DocumentPane} from '../structure/panes/document/DocumentPane'
 export {usePaneOptions} from '../structure/panes/document/usePaneOptions'
 export {ORDER_BY_IDS_PARAM_FIELD} from '../structure/panes/documentList/orderByIdsParam'
-export {PaneContainer as DocumentListPane} from '../structure/panes/documentList/PaneContainer'
 export {
   StructureToolProvider,
   type StructureToolProviderProps,
@@ -379,23 +350,8 @@ export {MemberItemError} from '../core/form/members/array/MemberItemError'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {createPatchChannel} from '../core/form/patch/PatchChannel'
 export {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
-export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
-export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
-export {BooleanInput} from '../core/form/inputs/BooleanInput'
 // oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 // oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
-export {EmailInput} from '../core/form/inputs/EmailInput'
-export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
 export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
-export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
-export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
-export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
-export {SelectInput} from '../core/form/inputs/SelectInput'
-export {TelephoneInput} from '../core/form/inputs/TelephoneInput'
-export {TextInput} from '../core/form/inputs/TextInput'
-export {UrlInput} from '../core/form/inputs/UrlInput'
-export {PatchEvent} from '../core/form/patch/PatchEvent'
-export {useFormBuilder} from '../core/form/useFormBuilder'
-export {TransformPatches} from '../core/form/utils/TransformPatches'

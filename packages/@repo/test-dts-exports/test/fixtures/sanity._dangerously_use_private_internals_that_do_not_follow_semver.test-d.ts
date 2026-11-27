@@ -9,7 +9,6 @@ import type {
   ActiveWorkspaceMatcher,
   ActiveWorkspaceMatcherContextValue,
   ActiveWorkspaceMatcherProps,
-  AddonDatasetProvider,
   AgentVersionDisplay,
   ArrayDiff,
   ArrayItemMetadata,
@@ -21,9 +20,6 @@ import type {
   BetaBadge,
   BetaBadgeProps,
   BetaFeatures,
-  BlockImagePreview,
-  BlockImagePreviewProps,
-  BlockPreview,
   BooleanDiff,
   BufferedDocumentWrapper,
   CapabilityGate,
@@ -32,7 +28,6 @@ import type {
   ChangeNode,
   ChangeTitlePath,
   checkoutPair,
-  CircularProgress,
   classifyConfigError,
   classifyRequestError,
   CollapseMenu,
@@ -58,10 +53,7 @@ import type {
   CommitFunction,
   CommitRequest,
   CommonProps,
-  CompactPreview,
-  CompactPreviewProps,
   compileFieldPath,
-  component,
   ConcreteRuleClass,
   ConfigErrorClassification,
   ConfigErrorGate,
@@ -80,7 +72,6 @@ import type {
   CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
-  CopyPasteProvider,
   CorsCheckResult,
   CorsOriginErrorScreen,
   CorsProbeOutcome,
@@ -101,10 +92,9 @@ import type {
   createProjectStore,
   createPublishedFrom,
   createRequestErrorChannel,
-  createSchema,
+  createSchemaForCli,
   createSearch,
   createSourceFromConfig,
-  createStructureBuilder,
   createSWR,
   createUserColorManager,
   createUserStore,
@@ -114,16 +104,11 @@ import type {
   DEFAULT_ANNOTATIONS,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
-  DEFAULT_INTENT_HANDLER,
   DEFAULT_LIST_TYPES,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DEFAULT_VARIANT_TYPE_KEY,
-  defaultInitialValueTemplateItems,
-  defaultIntentChecker,
   defaultLocale,
-  DefaultPreview,
-  DefaultPreviewProps,
   defaultTemplateForType,
   defaultTemplatesForSchema,
   defaultTheme,
@@ -131,8 +116,6 @@ import type {
   defineSearchMachine,
   Delay,
   deriveDocumentSyncState,
-  DetailPreview,
-  DetailPreviewProps,
   DiagnosticsReport,
   DiagnosticsReportProps,
   Diff,
@@ -141,8 +124,6 @@ import type {
   DiffComponentResolver,
   DiffProps,
   documentFieldActionsReducer,
-  documentFromEditor,
-  documentFromEditorWithInitialValue,
   DocumentIdStack,
   DocumentLayoutProps,
   DocumentPairLoadedEvent,
@@ -189,7 +170,6 @@ import type {
   findIndex,
   FIXME,
   flattenConfig,
-  form,
   formatRelativeLocale,
   formatRelativeLocalePublishDate,
   FormBuilderComponentResolverContext,
@@ -212,8 +192,6 @@ import type {
   getItemKey,
   getItemKeySegment,
   getNamelessWorkspaceIdentifier,
-  getOrderingMenuItem,
-  getOrderingMenuItemsForSchemaType,
   getPairListener,
   getPairTarget,
   getPreviewPaths,
@@ -233,7 +211,6 @@ import type {
   getTargetScopeId,
   getTargetSiblings,
   getTemplatePermissions,
-  getTypeNamesFromFilter,
   getValueAtPath,
   getVariantPublishedSibling,
   getVariantTitle,
@@ -248,7 +225,6 @@ import type {
   GrantsStoreOptions,
   GroupChangeNode,
   HandleCallbackResult,
-  HELP_URL,
   HexColor,
   HistoryStoreOptions,
   I18nNode,
@@ -259,11 +235,8 @@ import type {
   initialDocumentFieldActions,
   InitialSnapshotEvent,
   InitialValueState,
-  InlinePreview,
-  InlinePreviewProps,
   InsufficientPermissionsMessage,
   InsufficientPermissionsMessageProps,
-  IntentButton,
   InterpolationProp,
   isAgentBundleName,
   isArray,
@@ -273,24 +246,18 @@ import type {
   isCardinalityOneRelease,
   isClientRequestError,
   isCookielessCompatibleLoginMethod,
-  isCreateDocumentVersionEvent,
   isCreateIfNotExistsMutation,
-  isCreateLiveDocumentEvent,
   isCreateMutation,
   isCreateOrReplaceMutation,
   isCreateSquashedMutation,
   isDefaultVariant,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
   isDeleteMutation,
   isDev,
   isDocumentInSelectedVariant,
   isDocumentLimitError,
-  isDocumentListItem,
   isDraft,
   isDraftId,
   isDraftPerspective,
-  isEditDocumentVersionEvent,
   isEmptyObject,
   isGoingToUnpublish,
   isImportError,
@@ -302,20 +269,17 @@ import type {
   isNetworkError,
   isNewDocument,
   isNonNullable,
-  isNonSelectableTerminalEvent,
   isPatchMutation,
   isPausedCardinalityOneRelease,
   isPerspectiveRaw,
   isPerspectiveWriteable,
   isProd,
-  isPublishDocumentVersionEvent,
   isPublishedId,
   isPublishedPerspective,
   isRecord,
   isReleaseDocument,
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
-  isScheduleDocumentVersionEvent,
   isSearchStrategy,
   isString,
   isSystemBundle,
@@ -324,9 +288,6 @@ import type {
   isTitledListValue,
   isTruthy,
   isUnauthorizedError,
-  isUnpublishDocumentEvent,
-  isUnscheduleDocumentVersionEvent,
-  isUpdateLiveDocumentEvent,
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
   isValidationError,
@@ -345,7 +306,6 @@ import type {
   LATEST,
   LegacyCallbackResult,
   LegacyLayerProvider,
-  LinearProgress,
   LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
   listenerGate,
@@ -365,16 +325,9 @@ import type {
   matchWorkspace,
   MatchWorkspaceOptions,
   MatchWorkspaceResult,
-  maybeSerializeInitialValueTemplateItem,
-  maybeSerializeMenuItem,
-  maybeSerializeMenuItemGroup,
-  maybeSerializeView,
   measureFirstEmission,
   measureFirstMatch,
   MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
-  MediaPreview,
-  MediaPreviewProps,
-  menuItemsFromInitialValueTemplateItems,
   MockAuthStoreOptions,
   MutationEvent,
   MutationPerformanceEvent,
@@ -465,8 +418,6 @@ import type {
   ResourceCacheProviderProps,
   RetryingStatus,
   retryTransientFetch,
-  RovingFocusNavigationType,
-  RovingFocusProps,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
   SchemaError,
@@ -499,9 +450,7 @@ import type {
   Sentiment,
   Serializeable,
   serializeError,
-  SerializeError,
   Session,
-  shallowIntentChecker,
   SingleDocReleaseProvider,
   Size,
   sliceString,
@@ -510,8 +459,6 @@ import type {
   SourceProvider,
   SourceProviderProps,
   Status,
-  StatusButton,
-  StatusButtonProps,
   StoreRequestErrorHandler,
   StringDiff,
   StringDiffSegment,
@@ -527,10 +474,7 @@ import type {
   StudioFeedbackDialogProps,
   StudioFeedbackProvider,
   StudioLayoutComponent,
-  StudioLogo,
   StudioManifest,
-  StudioNavbar,
-  StudioToolMenu,
   StudioWorkspaceManifest,
   supportsTouch,
   SyncState,
@@ -540,7 +484,6 @@ import type {
   TemplatePermissionsResult,
   TimeAgoOpts,
   ToastParams,
-  ToolLink,
   TooltipOfDisabled,
   truncateString,
   TypeChangeDiff,
@@ -561,7 +504,6 @@ import type {
   UpsellTelemetryLogs,
   useActiveReleases,
   useActiveWorkspace,
-  useAddonDataset,
   useAgentVersionDisplay,
   useAllReleases,
   useAllVariants,
@@ -578,7 +520,6 @@ import type {
   useConnectionState,
   useConnectionStatusStore,
   useCopyErrorDetails,
-  useCopyPaste,
   useCreatableVariantInitialValue,
   useDocumentIdStack,
   useDocumentLimitsUpsellContext,
@@ -587,14 +528,11 @@ import type {
   useDocumentPairPermissions,
   useDocumentPairPermissionsFromHookFactory,
   useDocumentPresence,
-  useDocumentPreviewStore,
-  useDocumentStore,
   useDocumentSyncState,
   useDocumentType,
   useDocumentValuePermissions,
   useDocumentValues,
   useDocumentVersionInfo,
-  useDocumentVersions,
   useDocumentVersionTitle,
   useEditState,
   useEvents,
@@ -607,7 +545,6 @@ import type {
   useFormatRelativeLocalePublishDate,
   useGetI18nText,
   useGlobalPresence,
-  useHistoryStore,
   useI18nText,
   useInitialValue,
   useInitialValueResolverContext,
@@ -623,13 +560,9 @@ import type {
   useOnScroll,
   usePauseToEditScheduledDraft,
   usePortalBoundary,
-  usePresenceStore,
   usePreviewCard,
   useProject,
   useProjectDatasets,
-  useProjectStore,
-  UserAvatar,
-  UserAvatarProps,
   UserColor,
   UserColorHue,
   UserColorManager,
@@ -645,7 +578,6 @@ import type {
   useResourceCache,
   useRetryCountdown,
   UserId,
-  useRovingFocus,
   UserSessionPair,
   UserStoreOptions,
   useScheduledDraftDocument,
@@ -669,7 +601,6 @@ import type {
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
-  useTemplates,
   useThrottledCallback,
   useTimeAgo,
   useTimeZone,
@@ -679,7 +610,6 @@ import type {
   useUser,
   useUserColor,
   useUserColorManager,
-  useUserStore,
   useValidationStatus,
   useValuePreview,
   useVariantDocumentOperations,
@@ -741,9 +671,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ActiveWorkspaceMatcherProps', () => {
     expectTypeOf<ActiveWorkspaceMatcherProps>().toBeObject()
   })
-  test('AddonDatasetProvider', () => {
-    expectTypeOf<typeof AddonDatasetProvider>().toBeFunction()
-  })
   test('AgentVersionDisplay', () => {
     expectTypeOf<AgentVersionDisplay>().not.toBeNever()
   })
@@ -777,15 +704,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('BetaFeatures', () => {
     expectTypeOf<BetaFeatures>().toBeObject()
   })
-  test('BlockImagePreview', () => {
-    expectTypeOf<typeof BlockImagePreview>().toBeFunction()
-  })
-  test('BlockImagePreviewProps', () => {
-    expectTypeOf<BlockImagePreviewProps>().not.toBeNever()
-  })
-  test('BlockPreview', () => {
-    expectTypeOf<typeof BlockPreview>().toBeFunction()
-  })
   test('BooleanDiff', () => {
     expectTypeOf<BooleanDiff>().not.toBeNever()
   })
@@ -809,9 +727,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('checkoutPair', () => {
     expectTypeOf<typeof checkoutPair>().toBeFunction()
-  })
-  test('CircularProgress', () => {
-    expectTypeOf<typeof CircularProgress>().toBeFunction()
   })
   test('classifyConfigError', () => {
     expectTypeOf<typeof classifyConfigError>().toBeFunction()
@@ -888,17 +803,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommonProps', () => {
     expectTypeOf<CommonProps>().toBeObject()
   })
-  test('CompactPreview', () => {
-    expectTypeOf<typeof CompactPreview>().toBeFunction()
-  })
-  test('CompactPreviewProps', () => {
-    expectTypeOf<CompactPreviewProps>().not.toBeNever()
-  })
   test('compileFieldPath', () => {
     expectTypeOf<typeof compileFieldPath>().toBeFunction()
-  })
-  test('component', () => {
-    expectTypeOf<typeof component>().not.toBeNever()
   })
   test('ConcreteRuleClass', () => {
     expectTypeOf<typeof ConcreteRuleClass>().not.toBeNever()
@@ -953,9 +859,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('CookielessCompatibleLoginMethod', () => {
     expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()
-  })
-  test('CopyPasteProvider', () => {
-    expectTypeOf<typeof CopyPasteProvider>().not.toBeNever()
   })
   test('CorsCheckResult', () => {
     expectTypeOf<CorsCheckResult>().not.toBeNever()
@@ -1018,17 +921,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('createRequestErrorChannel', () => {
     expectTypeOf<typeof createRequestErrorChannel>().toBeFunction()
   })
-  test('createSchema', () => {
-    expectTypeOf<typeof createSchema>().toBeFunction()
+  test('createSchemaForCli', () => {
+    expectTypeOf<typeof createSchemaForCli>().toBeFunction()
   })
   test('createSearch', () => {
     expectTypeOf<typeof createSearch>().not.toBeNever()
   })
   test('createSourceFromConfig', () => {
     expectTypeOf<typeof createSourceFromConfig>().toBeFunction()
-  })
-  test('createStructureBuilder', () => {
-    expectTypeOf<typeof createStructureBuilder>().toBeFunction()
   })
   test('createSWR', () => {
     expectTypeOf<typeof createSWR>().toBeFunction()
@@ -1057,9 +957,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DEFAULT_DECORATORS', () => {
     expectTypeOf<typeof DEFAULT_DECORATORS>().not.toBeNever()
   })
-  test('DEFAULT_INTENT_HANDLER', () => {
-    expectTypeOf<typeof DEFAULT_INTENT_HANDLER>().not.toBeNever()
-  })
   test('DEFAULT_LIST_TYPES', () => {
     expectTypeOf<typeof DEFAULT_LIST_TYPES>().not.toBeNever()
   })
@@ -1072,20 +969,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DEFAULT_VARIANT_TYPE_KEY', () => {
     expectTypeOf<typeof DEFAULT_VARIANT_TYPE_KEY>().not.toBeNever()
   })
-  test('defaultInitialValueTemplateItems', () => {
-    expectTypeOf<typeof defaultInitialValueTemplateItems>().toBeFunction()
-  })
-  test('defaultIntentChecker', () => {
-    expectTypeOf<typeof defaultIntentChecker>().not.toBeNever()
-  })
   test('defaultLocale', () => {
     expectTypeOf<typeof defaultLocale>().not.toBeNever()
-  })
-  test('DefaultPreview', () => {
-    expectTypeOf<typeof DefaultPreview>().toBeFunction()
-  })
-  test('DefaultPreviewProps', () => {
-    expectTypeOf<DefaultPreviewProps>().toBeObject()
   })
   test('defaultTemplateForType', () => {
     expectTypeOf<typeof defaultTemplateForType>().toBeFunction()
@@ -1107,12 +992,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('deriveDocumentSyncState', () => {
     expectTypeOf<typeof deriveDocumentSyncState>().toBeFunction()
-  })
-  test('DetailPreview', () => {
-    expectTypeOf<typeof DetailPreview>().toBeFunction()
-  })
-  test('DetailPreviewProps', () => {
-    expectTypeOf<DetailPreviewProps>().not.toBeNever()
   })
   test('DiagnosticsReport', () => {
     expectTypeOf<typeof DiagnosticsReport>().toBeFunction()
@@ -1137,12 +1016,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('documentFieldActionsReducer', () => {
     expectTypeOf<typeof documentFieldActionsReducer>().not.toBeNever()
-  })
-  test('documentFromEditor', () => {
-    expectTypeOf<typeof documentFromEditor>().toBeFunction()
-  })
-  test('documentFromEditorWithInitialValue', () => {
-    expectTypeOf<typeof documentFromEditorWithInitialValue>().toBeFunction()
   })
   test('DocumentIdStack', () => {
     expectTypeOf<DocumentIdStack>().toBeObject()
@@ -1282,9 +1155,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('flattenConfig', () => {
     expectTypeOf<typeof flattenConfig>().not.toBeNever()
   })
-  test('form', () => {
-    expectTypeOf<typeof form>().not.toBeNever()
-  })
   test('formatRelativeLocale', () => {
     expectTypeOf<typeof formatRelativeLocale>().not.toBeNever()
   })
@@ -1352,12 +1222,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getNamelessWorkspaceIdentifier', () => {
     expectTypeOf<typeof getNamelessWorkspaceIdentifier>().toBeFunction()
   })
-  test('getOrderingMenuItem', () => {
-    expectTypeOf<typeof getOrderingMenuItem>().toBeFunction()
-  })
-  test('getOrderingMenuItemsForSchemaType', () => {
-    expectTypeOf<typeof getOrderingMenuItemsForSchemaType>().toBeFunction()
-  })
   test('getPairListener', () => {
     expectTypeOf<typeof getPairListener>().toBeFunction()
   })
@@ -1415,9 +1279,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
-  test('getTypeNamesFromFilter', () => {
-    expectTypeOf<typeof getTypeNamesFromFilter>().toBeFunction()
-  })
   test('getValueAtPath', () => {
     expectTypeOf<typeof getValueAtPath>().toBeFunction()
   })
@@ -1460,9 +1321,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('HandleCallbackResult', () => {
     expectTypeOf<HandleCallbackResult>().not.toBeNever()
   })
-  test('HELP_URL', () => {
-    expectTypeOf<typeof HELP_URL>().not.toBeNever()
-  })
   test('HexColor', () => {
     expectTypeOf<HexColor>().not.toBeNever()
   })
@@ -1493,20 +1351,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('InitialValueState', () => {
     expectTypeOf<InitialValueState>().toBeObject()
   })
-  test('InlinePreview', () => {
-    expectTypeOf<typeof InlinePreview>().toBeFunction()
-  })
-  test('InlinePreviewProps', () => {
-    expectTypeOf<InlinePreviewProps>().not.toBeNever()
-  })
   test('InsufficientPermissionsMessage', () => {
     expectTypeOf<typeof InsufficientPermissionsMessage>().toBeFunction()
   })
   test('InsufficientPermissionsMessageProps', () => {
     expectTypeOf<InsufficientPermissionsMessageProps>().toBeObject()
-  })
-  test('IntentButton', () => {
-    expectTypeOf<typeof IntentButton>().toBeFunction()
   })
   test('InterpolationProp', () => {
     expectTypeOf<InterpolationProp>().not.toBeNever()
@@ -1535,14 +1384,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
   })
-  test('isCreateDocumentVersionEvent', () => {
-    expectTypeOf<typeof isCreateDocumentVersionEvent>().not.toBeNever()
-  })
   test('isCreateIfNotExistsMutation', () => {
     expectTypeOf<typeof isCreateIfNotExistsMutation>().toBeFunction()
-  })
-  test('isCreateLiveDocumentEvent', () => {
-    expectTypeOf<typeof isCreateLiveDocumentEvent>().not.toBeNever()
   })
   test('isCreateMutation', () => {
     expectTypeOf<typeof isCreateMutation>().toBeFunction()
@@ -1556,12 +1399,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isDefaultVariant', () => {
     expectTypeOf<typeof isDefaultVariant>().toBeFunction()
   })
-  test('isDeleteDocumentGroupEvent', () => {
-    expectTypeOf<typeof isDeleteDocumentGroupEvent>().not.toBeNever()
-  })
-  test('isDeleteDocumentVersionEvent', () => {
-    expectTypeOf<typeof isDeleteDocumentVersionEvent>().not.toBeNever()
-  })
   test('isDeleteMutation', () => {
     expectTypeOf<typeof isDeleteMutation>().toBeFunction()
   })
@@ -1574,9 +1411,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isDocumentLimitError', () => {
     expectTypeOf<typeof isDocumentLimitError>().not.toBeNever()
   })
-  test('isDocumentListItem', () => {
-    expectTypeOf<typeof isDocumentListItem>().toBeFunction()
-  })
   test('isDraft', () => {
     expectTypeOf<typeof isDraft>().toBeFunction()
   })
@@ -1585,9 +1419,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isDraftPerspective', () => {
     expectTypeOf<typeof isDraftPerspective>().toBeFunction()
-  })
-  test('isEditDocumentVersionEvent', () => {
-    expectTypeOf<typeof isEditDocumentVersionEvent>().not.toBeNever()
   })
   test('isEmptyObject', () => {
     expectTypeOf<typeof isEmptyObject>().toBeFunction()
@@ -1622,9 +1453,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isNonNullable', () => {
     expectTypeOf<typeof isNonNullable>().toBeFunction()
   })
-  test('isNonSelectableTerminalEvent', () => {
-    expectTypeOf<typeof isNonSelectableTerminalEvent>().not.toBeNever()
-  })
   test('isPatchMutation', () => {
     expectTypeOf<typeof isPatchMutation>().toBeFunction()
   })
@@ -1639,9 +1467,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isProd', () => {
     expectTypeOf<typeof isProd>().not.toBeNever()
-  })
-  test('isPublishDocumentVersionEvent', () => {
-    expectTypeOf<typeof isPublishDocumentVersionEvent>().not.toBeNever()
   })
   test('isPublishedId', () => {
     expectTypeOf<typeof isPublishedId>().toBeFunction()
@@ -1660,9 +1485,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isReleaseScheduledOrScheduling', () => {
     expectTypeOf<typeof isReleaseScheduledOrScheduling>().toBeFunction()
-  })
-  test('isScheduleDocumentVersionEvent', () => {
-    expectTypeOf<typeof isScheduleDocumentVersionEvent>().not.toBeNever()
   })
   test('isSearchStrategy', () => {
     expectTypeOf<typeof isSearchStrategy>().toBeFunction()
@@ -1687,15 +1509,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isUnauthorizedError', () => {
     expectTypeOf<typeof isUnauthorizedError>().toBeFunction()
-  })
-  test('isUnpublishDocumentEvent', () => {
-    expectTypeOf<typeof isUnpublishDocumentEvent>().not.toBeNever()
-  })
-  test('isUnscheduleDocumentVersionEvent', () => {
-    expectTypeOf<typeof isUnscheduleDocumentVersionEvent>().not.toBeNever()
-  })
-  test('isUpdateLiveDocumentEvent', () => {
-    expectTypeOf<typeof isUpdateLiveDocumentEvent>().not.toBeNever()
   })
   test('isValidAnnouncementAudience', () => {
     expectTypeOf<typeof isValidAnnouncementAudience>().toBeFunction()
@@ -1750,9 +1563,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
-  })
-  test('LinearProgress', () => {
-    expectTypeOf<typeof LinearProgress>().toBeFunction()
   })
   test('LISTENER_PAUSE_GRACE_PERIOD', () => {
     expectTypeOf<typeof LISTENER_PAUSE_GRACE_PERIOD>().not.toBeNever()
@@ -1811,18 +1621,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('MatchWorkspaceResult', () => {
     expectTypeOf<MatchWorkspaceResult>().not.toBeNever()
   })
-  test('maybeSerializeInitialValueTemplateItem', () => {
-    expectTypeOf<typeof maybeSerializeInitialValueTemplateItem>().toBeFunction()
-  })
-  test('maybeSerializeMenuItem', () => {
-    expectTypeOf<typeof maybeSerializeMenuItem>().toBeFunction()
-  })
-  test('maybeSerializeMenuItemGroup', () => {
-    expectTypeOf<typeof maybeSerializeMenuItemGroup>().toBeFunction()
-  })
-  test('maybeSerializeView', () => {
-    expectTypeOf<typeof maybeSerializeView>().toBeFunction()
-  })
   test('measureFirstEmission', () => {
     expectTypeOf<typeof measureFirstEmission>().toBeFunction()
   })
@@ -1831,15 +1629,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME', () => {
     expectTypeOf<typeof MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME>().not.toBeNever()
-  })
-  test('MediaPreview', () => {
-    expectTypeOf<typeof MediaPreview>().toBeFunction()
-  })
-  test('MediaPreviewProps', () => {
-    expectTypeOf<MediaPreviewProps>().not.toBeNever()
-  })
-  test('menuItemsFromInitialValueTemplateItems', () => {
-    expectTypeOf<typeof menuItemsFromInitialValueTemplateItems>().toBeFunction()
   })
   test('MockAuthStoreOptions', () => {
     expectTypeOf<MockAuthStoreOptions>().toBeObject()
@@ -2111,12 +1900,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('retryTransientFetch', () => {
     expectTypeOf<typeof retryTransientFetch>().toBeFunction()
   })
-  test('RovingFocusNavigationType', () => {
-    expectTypeOf<RovingFocusNavigationType>().not.toBeNever()
-  })
-  test('RovingFocusProps', () => {
-    expectTypeOf<RovingFocusProps>().toBeObject()
-  })
   test('SanityDefaultPreview', () => {
     expectTypeOf<typeof SanityDefaultPreview>().not.toBeNever()
   })
@@ -2213,14 +1996,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('serializeError', () => {
     expectTypeOf<typeof serializeError>().toBeFunction()
   })
-  test('SerializeError', () => {
-    expectTypeOf<SerializeError>().not.toBeNever()
-  })
   test('Session', () => {
     expectTypeOf<Session>().toBeObject()
-  })
-  test('shallowIntentChecker', () => {
-    expectTypeOf<typeof shallowIntentChecker>().not.toBeNever()
   })
   test('SingleDocReleaseProvider', () => {
     expectTypeOf<typeof SingleDocReleaseProvider>().toBeFunction()
@@ -2245,12 +2022,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('Status', () => {
     expectTypeOf<Status>().not.toBeNever()
-  })
-  test('StatusButton', () => {
-    expectTypeOf<typeof StatusButton>().toBeFunction()
-  })
-  test('StatusButtonProps', () => {
-    expectTypeOf<StatusButtonProps>().not.toBeNever()
   })
   test('StoreRequestErrorHandler', () => {
     expectTypeOf<StoreRequestErrorHandler>().toBeObject()
@@ -2297,17 +2068,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('StudioLayoutComponent', () => {
     expectTypeOf<typeof StudioLayoutComponent>().toBeFunction()
   })
-  test('StudioLogo', () => {
-    expectTypeOf<typeof StudioLogo>().toBeFunction()
-  })
   test('StudioManifest', () => {
     expectTypeOf<StudioManifest>().toBeObject()
-  })
-  test('StudioNavbar', () => {
-    expectTypeOf<typeof StudioNavbar>().not.toBeNever()
-  })
-  test('StudioToolMenu', () => {
-    expectTypeOf<typeof StudioToolMenu>().not.toBeNever()
   })
   test('StudioWorkspaceManifest', () => {
     expectTypeOf<StudioWorkspaceManifest>().toBeObject()
@@ -2335,9 +2097,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ToastParams', () => {
     expectTypeOf<ToastParams>().toBeObject()
-  })
-  test('ToolLink', () => {
-    expectTypeOf<typeof ToolLink>().toBeFunction()
   })
   test('TooltipOfDisabled', () => {
     expectTypeOf<typeof TooltipOfDisabled>().toBeFunction()
@@ -2399,9 +2158,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useActiveWorkspace', () => {
     expectTypeOf<typeof useActiveWorkspace>().toBeFunction()
   })
-  test('useAddonDataset', () => {
-    expectTypeOf<typeof useAddonDataset>().toBeFunction()
-  })
   test('useAgentVersionDisplay', () => {
     expectTypeOf<typeof useAgentVersionDisplay>().toBeFunction()
   })
@@ -2450,9 +2206,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useCopyErrorDetails', () => {
     expectTypeOf<typeof useCopyErrorDetails>().toBeFunction()
   })
-  test('useCopyPaste', () => {
-    expectTypeOf<typeof useCopyPaste>().not.toBeNever()
-  })
   test('useCreatableVariantInitialValue', () => {
     expectTypeOf<typeof useCreatableVariantInitialValue>().toBeFunction()
   })
@@ -2477,12 +2230,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useDocumentPresence', () => {
     expectTypeOf<typeof useDocumentPresence>().toBeFunction()
   })
-  test('useDocumentPreviewStore', () => {
-    expectTypeOf<typeof useDocumentPreviewStore>().toBeFunction()
-  })
-  test('useDocumentStore', () => {
-    expectTypeOf<typeof useDocumentStore>().toBeFunction()
-  })
   test('useDocumentSyncState', () => {
     expectTypeOf<typeof useDocumentSyncState>().toBeFunction()
   })
@@ -2497,9 +2244,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useDocumentVersionInfo', () => {
     expectTypeOf<typeof useDocumentVersionInfo>().toBeFunction()
-  })
-  test('useDocumentVersions', () => {
-    expectTypeOf<typeof useDocumentVersions>().toBeFunction()
   })
   test('useDocumentVersionTitle', () => {
     expectTypeOf<typeof useDocumentVersionTitle>().toBeFunction()
@@ -2536,9 +2280,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useGlobalPresence', () => {
     expectTypeOf<typeof useGlobalPresence>().toBeFunction()
-  })
-  test('useHistoryStore', () => {
-    expectTypeOf<typeof useHistoryStore>().toBeFunction()
   })
   test('useI18nText', () => {
     expectTypeOf<typeof useI18nText>().toBeFunction()
@@ -2586,9 +2327,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('usePortalBoundary', () => {
     expectTypeOf<typeof usePortalBoundary>().toBeFunction()
   })
-  test('usePresenceStore', () => {
-    expectTypeOf<typeof usePresenceStore>().toBeFunction()
-  })
   test('usePreviewCard', () => {
     expectTypeOf<typeof usePreviewCard>().toBeFunction()
   })
@@ -2597,15 +2335,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useProjectDatasets', () => {
     expectTypeOf<typeof useProjectDatasets>().toBeFunction()
-  })
-  test('useProjectStore', () => {
-    expectTypeOf<typeof useProjectStore>().toBeFunction()
-  })
-  test('UserAvatar', () => {
-    expectTypeOf<typeof UserAvatar>().toBeFunction()
-  })
-  test('UserAvatarProps', () => {
-    expectTypeOf<UserAvatarProps>().toBeObject()
   })
   test('UserColor', () => {
     expectTypeOf<UserColor>().toBeObject()
@@ -2651,9 +2380,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UserId', () => {
     expectTypeOf<UserId>().not.toBeNever()
-  })
-  test('useRovingFocus', () => {
-    expectTypeOf<typeof useRovingFocus>().toBeFunction()
   })
   test('UserSessionPair', () => {
     expectTypeOf<UserSessionPair>().toBeObject()
@@ -2725,9 +2451,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useTemplatePermissionsFromHookFactory', () => {
     expectTypeOf<typeof useTemplatePermissionsFromHookFactory>().not.toBeNever()
   })
-  test('useTemplates', () => {
-    expectTypeOf<typeof useTemplates>().toBeFunction()
-  })
   test('useThrottledCallback', () => {
     expectTypeOf<typeof useThrottledCallback>().toBeFunction()
   })
@@ -2754,9 +2477,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useUserColorManager', () => {
     expectTypeOf<typeof useUserColorManager>().toBeFunction()
-  })
-  test('useUserStore', () => {
-    expectTypeOf<typeof useUserStore>().toBeFunction()
   })
   test('useValidationStatus', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from

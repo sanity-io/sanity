@@ -116,7 +116,10 @@ function isSerializable(view: BaseView | Serializable<BaseView>): view is Serial
   return typeof (view as Serializable<BaseView>).serialize === 'function'
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function maybeSerializeView(
   item: View | Serializable<View>,
   index: number,

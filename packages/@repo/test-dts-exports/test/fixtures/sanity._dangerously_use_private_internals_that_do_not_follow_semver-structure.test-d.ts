@@ -3,24 +3,12 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  BackLinkProps,
   BaseResolvedPaneNode,
-  Builder,
-  ChildLinkProps,
   ComponentBuilder,
   ComponentViewBuilder,
-  ConfirmDeleteDialogProps,
-  CustomComponentPaneNode,
   DocumentBuilder,
-  DocumentFieldMenuActionNode,
-  DocumentInspectorHeader,
   DocumentListBuilder,
   DocumentListItemBuilder,
-  DocumentListPaneNode,
-  DocumentListPaneProps,
-  DocumentPaneNode,
-  DocumentPaneProvider,
-  DocumentPaneProviderProps,
   DocumentTypeListBuilder,
   FormViewBuilder,
   GenericListBuilder,
@@ -28,49 +16,17 @@ import type {
   InitialValueTemplateItemBuilder,
   ListBuilder,
   ListItemBuilder,
-  ListPaneNode,
   MenuItemBuilder,
   MenuItemGroupBuilder,
-  PaneLayout,
-  PaneListItem,
-  PaneListItemDivider,
-  PaneMenuItem,
-  PaneMenuItemGroup,
-  PaneNode,
-  PaneNodeResolver,
-  PaneRouterContextValue,
-  ParameterizedLinkProps,
-  ReferenceChildLinkProps,
-  RouterPaneGroup,
-  RouterPanes,
-  RouterPaneSibling,
-  RouterPaneSiblingContext,
-  SerializablePaneNode,
-  SortMenuItem,
-  StructureBuilderOptions,
-  StructureResolverContext,
   StructureToolContextValue,
   StructureToolFeatures,
   StructureToolPaneActionHandler,
-  UnresolvedPaneNode,
-  useDocumentTitle,
-  UseDocumentTitle,
-  usePaneRouter,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure', () => {
-  test('BackLinkProps', () => {
-    expectTypeOf<BackLinkProps>().toBeObject()
-  })
   test('BaseResolvedPaneNode', () => {
     expectTypeOf<BaseResolvedPaneNode<any>>().toBeObject()
-  })
-  test('Builder', () => {
-    expectTypeOf<Builder>().not.toBeNever()
-  })
-  test('ChildLinkProps', () => {
-    expectTypeOf<ChildLinkProps>().toBeObject()
   })
   test('ComponentBuilder', () => {
     expectTypeOf<ComponentBuilder>().not.toBeNever()
@@ -78,41 +34,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-st
   test('ComponentViewBuilder', () => {
     expectTypeOf<ComponentViewBuilder>().not.toBeNever()
   })
-  test('ConfirmDeleteDialogProps', () => {
-    expectTypeOf<ConfirmDeleteDialogProps>().toBeObject()
-  })
-  test('CustomComponentPaneNode', () => {
-    expectTypeOf<CustomComponentPaneNode>().toBeObject()
-  })
   test('DocumentBuilder', () => {
     expectTypeOf<DocumentBuilder>().not.toBeNever()
-  })
-  test('DocumentFieldMenuActionNode', () => {
-    expectTypeOf<DocumentFieldMenuActionNode>().not.toBeNever()
-  })
-  test('DocumentInspectorHeader', () => {
-    expectTypeOf<typeof DocumentInspectorHeader>().toBeFunction()
   })
   test('DocumentListBuilder', () => {
     expectTypeOf<DocumentListBuilder>().not.toBeNever()
   })
   test('DocumentListItemBuilder', () => {
     expectTypeOf<DocumentListItemBuilder>().not.toBeNever()
-  })
-  test('DocumentListPaneNode', () => {
-    expectTypeOf<DocumentListPaneNode>().toBeObject()
-  })
-  test('DocumentListPaneProps', () => {
-    expectTypeOf<DocumentListPaneProps>().not.toBeNever()
-  })
-  test('DocumentPaneNode', () => {
-    expectTypeOf<DocumentPaneNode>().toBeObject()
-  })
-  test('DocumentPaneProvider', () => {
-    expectTypeOf<typeof DocumentPaneProvider>().not.toBeNever()
-  })
-  test('DocumentPaneProviderProps', () => {
-    expectTypeOf<DocumentPaneProviderProps>().not.toBeNever()
   })
   test('DocumentTypeListBuilder', () => {
     expectTypeOf<DocumentTypeListBuilder>().not.toBeNever()
@@ -135,68 +64,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-st
   test('ListItemBuilder', () => {
     expectTypeOf<ListItemBuilder>().not.toBeNever()
   })
-  test('ListPaneNode', () => {
-    expectTypeOf<ListPaneNode>().toBeObject()
-  })
   test('MenuItemBuilder', () => {
     expectTypeOf<MenuItemBuilder>().not.toBeNever()
   })
   test('MenuItemGroupBuilder', () => {
     expectTypeOf<MenuItemGroupBuilder>().not.toBeNever()
-  })
-  test('PaneLayout', () => {
-    expectTypeOf<typeof PaneLayout>().toBeFunction()
-  })
-  test('PaneListItem', () => {
-    expectTypeOf<PaneListItem<any>>().toBeObject()
-  })
-  test('PaneListItemDivider', () => {
-    expectTypeOf<PaneListItemDivider>().toBeObject()
-  })
-  test('PaneMenuItem', () => {
-    expectTypeOf<PaneMenuItem>().toBeObject()
-  })
-  test('PaneMenuItemGroup', () => {
-    expectTypeOf<PaneMenuItemGroup>().toBeObject()
-  })
-  test('PaneNode', () => {
-    expectTypeOf<PaneNode>().not.toBeNever()
-  })
-  test('PaneNodeResolver', () => {
-    expectTypeOf<PaneNodeResolver>().not.toBeNever()
-  })
-  test('PaneRouterContextValue', () => {
-    expectTypeOf<PaneRouterContextValue>().toBeObject()
-  })
-  test('ParameterizedLinkProps', () => {
-    expectTypeOf<ParameterizedLinkProps>().toBeObject()
-  })
-  test('ReferenceChildLinkProps', () => {
-    expectTypeOf<ReferenceChildLinkProps>().toBeObject()
-  })
-  test('RouterPaneGroup', () => {
-    expectTypeOf<RouterPaneGroup>().not.toBeNever()
-  })
-  test('RouterPanes', () => {
-    expectTypeOf<RouterPanes>().not.toBeNever()
-  })
-  test('RouterPaneSibling', () => {
-    expectTypeOf<RouterPaneSibling>().toBeObject()
-  })
-  test('RouterPaneSiblingContext', () => {
-    expectTypeOf<RouterPaneSiblingContext>().toBeObject()
-  })
-  test('SerializablePaneNode', () => {
-    expectTypeOf<SerializablePaneNode>().not.toBeNever()
-  })
-  test('SortMenuItem', () => {
-    expectTypeOf<SortMenuItem>().toBeObject()
-  })
-  test('StructureBuilderOptions', () => {
-    expectTypeOf<StructureBuilderOptions>().toBeObject()
-  })
-  test('StructureResolverContext', () => {
-    expectTypeOf<StructureResolverContext>().toBeObject()
   })
   test('StructureToolContextValue', () => {
     expectTypeOf<StructureToolContextValue>().toBeObject()
@@ -206,17 +78,5 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-st
   })
   test('StructureToolPaneActionHandler', () => {
     expectTypeOf<StructureToolPaneActionHandler>().not.toBeNever()
-  })
-  test('UnresolvedPaneNode', () => {
-    expectTypeOf<UnresolvedPaneNode>().not.toBeNever()
-  })
-  test('useDocumentTitle', () => {
-    expectTypeOf<typeof useDocumentTitle>().toBeFunction()
-  })
-  test('UseDocumentTitle', () => {
-    expectTypeOf<UseDocumentTitle>().toBeObject()
-  })
-  test('usePaneRouter', () => {
-    expectTypeOf<typeof usePaneRouter>().toBeFunction()
   })
 })

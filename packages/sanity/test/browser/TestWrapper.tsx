@@ -13,9 +13,9 @@ import {
   type SchemaTypeDefinition,
   type SingleWorkspace,
   type WorkspaceOptions,
+  CopyPasteProvider,
 } from 'sanity'
 import {
-  CopyPasteProvider,
   ColorSchemeProvider,
   EMPTY_ARRAY,
   ResourceCacheProvider,

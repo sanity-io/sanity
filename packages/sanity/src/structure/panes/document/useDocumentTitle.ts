@@ -9,9 +9,8 @@ import {useDocumentPane} from './useDocumentPane'
 
 /**
  * useDocumentTitle hook return type.
- *
- * @internal
  * @hidden
+ * @beta
  */
 export interface UseDocumentTitle {
   error?: string
@@ -21,10 +20,10 @@ export interface UseDocumentTitle {
 /**
  * React hook that returns the document title for the current document in the document pane.
  *
- * @internal
- * @hidden
  *
  * @returns The document title or error. See {@link UseDocumentTitle}
+ * @hidden
+ * @beta
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {

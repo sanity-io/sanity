@@ -16,6 +16,7 @@ export default defineConfig(() => {
       // list must stay this short: anything else lazy (tools, `_dangerously…-2`) is on demand.
       preload: {
         entry: 'index',
+        packageName: 'sanity',
         lazyBoundaries: [
           './src/core/studio/AuthenticatedStudio.tsx',
           './src/core/config/resolveWorkspaceSource.tsx',

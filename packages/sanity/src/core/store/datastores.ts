@@ -78,7 +78,8 @@ const slowCommitCooldown = {lastToastAt: 0}
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function useUserStore(): UserStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, currentUser} = useSource()
@@ -136,7 +137,8 @@ export function useGrantsStore(): GrantsStore {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function useHistoryStore(): HistoryStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -187,7 +189,8 @@ export function useGlobalListenerStore(): GlobalListenerStore {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const globalListenerStore = useGlobalListenerStore()
@@ -212,7 +215,8 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function useDocumentStore(): DocumentStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
@@ -436,7 +440,8 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
@@ -465,7 +470,8 @@ export function usePresenceStore(): PresenceStore {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function useProjectStore(): ProjectStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()

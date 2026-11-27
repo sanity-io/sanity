@@ -4,12 +4,6 @@ import {createLazyComponent} from '../components/lazy/createLazyComponent'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {type FormField as FormFieldImplementation} from './components/formField/FormField'
 import {type FormInput as FormInputImplementation} from './components/FormInput'
-import {type DateInputProps} from './inputs/DateInputs/DateInput'
-import {type DateTimeInputProps} from './inputs/DateInputs/DateTimeInput'
-import {type SlugInputProps} from './inputs/Slug/SlugInput'
-import {type TagsArrayInputProps} from './inputs/TagsArrayInput'
-import {type MemberItemProps} from './members/array/items/ArrayOfObjectsItem'
-import {type PrimitiveMemberItemProps} from './members/array/items/ArrayOfPrimitivesItem'
 import {type MemberFieldProps} from './members/object/MemberField'
 import {type MemberFieldSet as MemberFieldSetImplementation} from './members/object/MemberFieldset'
 import {type ObjectInputMemberProps} from './members/object/ObjectInputMember'
@@ -17,20 +11,10 @@ import {type ObjectMembersProps} from './members/object/ObjectInputMembers'
 import {type FieldError} from './store/types/memberErrors'
 import {type FormBuilderProps} from './studio/FormBuilder'
 import {type FormProviderProps} from './studio/FormProvider'
-import {type StudioCrossDatasetReferenceInputProps} from './studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-import {type StudioReferenceInputProps} from './studio/inputs/reference/StudioReferenceInput'
-import {type FileInputProps} from './studio/inputs/StudioFileInput'
-import {type ImageInputProps} from './studio/inputs/StudioImageInput'
-import {
-  type ArrayOfObjectsInputProps,
-  type ArrayOfPrimitivesInputProps,
-  type ObjectInputProps,
-  type StringInputProps,
-} from './types/inputProps'
 
-// Code-split facades for the form components that the internals entries export (the two that the
-// root `sanity` entry exports, `PortableTextInput` and `EnhancedObjectDialog`, are in
-// `./publicLazy`, so this module stays out of a studio's first load). The form runtime is by far
+// Code-split facades for the form components that only the internals entries export (the ones the
+// root `sanity` entry exports are in `./publicLazy`, so this module stays out of a studio's first
+// load). The form runtime is by far
 // the largest part of the package, and nothing renders it before a document is opened, yet every
 // studio downloads it up front when these components are statically reachable from the entry
 // (with `autoUpdates: true` the entry graph is fetched through the import map, untouched by
@@ -68,15 +52,6 @@ export const FormField = createLazyComponent<ComponentProps<typeof FormFieldImpl
 export const FormInput = createLazyComponent<ComponentProps<typeof FormInputImplementation>>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.FormInput})),
 )
-
-/**
- * @hidden
- * @internal
- */
-export const ArrayOfObjectsItem = createLazyComponent<MemberItemProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfObjectsItem})),
-)
-
 /**
  * @hidden
  * @internal
@@ -117,122 +92,6 @@ export const FormBuilder = createLazyComponent<FormBuilderProps>(
 export const FormProvider = createLazyComponent<FormProviderProps>(() =>
   import('./publicComponents.lazy').then((module) => ({default: module.FormProvider})),
 )
-
-/**
- * @hidden
- * @internal
- */
-export const StringInput = createLazyComponent<StringInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.StringInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const DateInput = createLazyComponent<DateInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.DateInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const DateTimeInput = createLazyComponent<DateTimeInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.DateTimeInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const SlugInput = createLazyComponent<SlugInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.SlugInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const TagsArrayInput = createLazyComponent<TagsArrayInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.TagsArrayInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const ObjectInput = createLazyComponent<ObjectInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.ObjectInput})),
-)
-
-/**
- * Universal array input that will introspect its schemaType and delegate to the right implementation
- * Useful as a fallback/last resort input for an array type
- *
- * @hidden
- * @internal
- */
-export const UniversalArrayInput = createLazyComponent<
-  ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps
->(() => import('./publicComponents.lazy').then((module) => ({default: module.UniversalArrayInput})))
-
-/**
- * @hidden
- * @internal
- */
-export const ArrayOfObjectsInput = createLazyComponent<ArrayOfObjectsInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfObjectsInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const ArrayOfPrimitivesInput = createLazyComponent<ArrayOfPrimitivesInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfPrimitivesInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const ArrayOfOptionsInput = createLazyComponent<
-  ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps
->(() => import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfOptionsInput})))
-
-/**
- * Array of predefined object options input
- * Note: this input can handle only object values
- *
- * @hidden
- * @internal
- */
-export const ArrayOfObjectOptionsInput = createLazyComponent<ArrayOfObjectsInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfObjectOptionsInput})),
-)
-
-/**
- * Array of predefined primitive options input
- * Note: this input can only handle primitive values
- *
- * @hidden
- * @internal
- */
-export const ArrayOfPrimitiveOptionsInput = createLazyComponent<ArrayOfPrimitivesInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({
-    default: module.ArrayOfPrimitiveOptionsInput,
-  })),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const ArrayOfPrimitivesItem = createLazyComponent<PrimitiveMemberItemProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.ArrayOfPrimitivesItem})),
-)
-
 /**
  * Convenience component for wrapping an object input
  * @internal
@@ -251,38 +110,3 @@ export const ObjectMembers = ObjectInputMembers
 export const MemberFieldSet = createLazyComponent<
   ComponentProps<typeof MemberFieldSetImplementation>
 >(() => import('./publicComponents.lazy').then((module) => ({default: module.MemberFieldSet})))
-
-/**
- * @hidden
- * @internal
- */
-export const ReferenceInput = createLazyComponent<StudioReferenceInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.StudioReferenceInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const CrossDatasetReferenceInput =
-  createLazyComponent<StudioCrossDatasetReferenceInputProps>(() =>
-    import('./publicComponents.lazy').then((module) => ({
-      default: module.StudioCrossDatasetReferenceInput,
-    })),
-  )
-
-/**
- * @hidden
- * @internal
- */
-export const FileInput = createLazyComponent<FileInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.StudioFileInput})),
-)
-
-/**
- * @hidden
- * @internal
- */
-export const ImageInput = createLazyComponent<ImageInputProps>(() =>
-  import('./publicComponents.lazy').then((module) => ({default: module.StudioImageInput})),
-)

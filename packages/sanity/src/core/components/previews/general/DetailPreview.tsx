@@ -18,7 +18,8 @@ import {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export type DetailPreviewProps = PreviewProps<'detail'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -30,7 +31,8 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function DetailPreview(props: DetailPreviewProps) {
   const {
     title,

@@ -160,7 +160,10 @@ export type CollectionBuilder =
  */
 export type Child = Collection | CollectionBuilder | ChildResolver
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export type Builder =
   | CollectionBuilder
   | ComponentBuilder

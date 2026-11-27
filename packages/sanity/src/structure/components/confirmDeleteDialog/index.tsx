@@ -10,7 +10,10 @@ import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDelet
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
   const id = useId()

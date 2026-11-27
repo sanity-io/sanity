@@ -24,7 +24,10 @@ export interface DeleteReferenceCounts {
   crossDatasetReferenceCount: number
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface ConfirmDeleteDialogProps {
   /**
    * Incoming document ID used to find other referencing documents. This

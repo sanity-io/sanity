@@ -32,7 +32,8 @@ import {useResetHistoryParams} from './useResetHistoryParams'
 type DocumentPaneOptions = DocumentPaneNode['options']
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

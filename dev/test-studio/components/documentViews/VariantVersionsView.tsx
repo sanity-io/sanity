@@ -4,7 +4,13 @@ import {Button, Card, Dialog, Inline} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
-import {useClient, useDateTimeFormat, usePerspective} from 'sanity'
+import {
+  useClient,
+  useDateTimeFormat,
+  usePerspective,
+  useDocumentPreviewStore,
+  useDocumentVersions,
+} from 'sanity'
 import {
   getDefaultVariant,
   getPublishedId,
@@ -13,8 +19,6 @@ import {
   getVariantTitle,
   isRecord,
   useActiveReleases,
-  useDocumentPreviewStore,
-  useDocumentVersions,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Code, Text, Box, Grid, VStack, Icon, Link} from 'ui5'

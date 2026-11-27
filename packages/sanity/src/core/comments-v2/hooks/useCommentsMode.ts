@@ -9,9 +9,8 @@ import {type CommentsMode} from '../context/enabled/types'
  * disabled). Settles once the check has answered. Read it with `use()` in the leaf that renders
  * differently per mode, under a `Suspense` boundary; never on a path whose suspension would hold
  * up a layout, and never awaited in an event handler.
- *
- * @internal
  * @hidden
+ * @beta
  */
 export function useCommentsMode(): Promise<CommentsMode> {
   const promise = use(CommentsModePromiseContext)

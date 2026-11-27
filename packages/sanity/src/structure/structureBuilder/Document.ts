@@ -435,7 +435,10 @@ function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
   return opts
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function documentFromEditor(context: StructureContext, spec?: EditorNode): DocumentBuilder {
   let doc = spec?.type
     ? // Use user-defined document fragment as base if possible
@@ -461,7 +464,10 @@ export function documentFromEditor(context: StructureContext, spec?: EditorNode)
   return doc
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function documentFromEditorWithInitialValue(
   {resolveDocumentNode, templates}: StructureContext,
   templateId: string,

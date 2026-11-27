@@ -3,7 +3,10 @@ import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../ui-components/button/Button'
 
-/** @internal @hidden */
+/**
+ * @hidden
+ * @beta
+ */
 export type StatusButtonProps = ButtonProps & {
   ['aria-label']: HTMLProps<HTMLButtonElement>['aria-label']
   forwardedAs?: string
@@ -30,7 +33,10 @@ const Dot = styled.div({
   boxShadow: '0 0 0 1px var(--card-bg-color)',
 })
 
-/** @internal @hidden */
+/**
+ * @hidden
+ * @beta
+ */
 export function StatusButton(
   props: StatusButtonProps &
     Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size' | 'title'> &

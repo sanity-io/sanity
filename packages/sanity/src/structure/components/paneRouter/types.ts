@@ -6,7 +6,8 @@ import {type RouterPanes, type RouterPaneSibling} from '../../types'
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export interface ChildLinkProps {
   childId: string
   childParameters?: Record<string, string>
@@ -16,14 +17,16 @@ export interface ChildLinkProps {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export interface BackLinkProps {
   children?: ReactNode
 }
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export interface ReferenceChildLinkProps {
   documentId: string
   documentType: string
@@ -34,7 +37,8 @@ export interface ReferenceChildLinkProps {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export interface ParameterizedLinkProps {
   params?: Record<string, string>
   payload?: unknown
@@ -54,7 +58,8 @@ export interface EditReferenceOptions {
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export interface PaneRouterContextValue {
   /**
    * Zero-based index (position) of pane, visually

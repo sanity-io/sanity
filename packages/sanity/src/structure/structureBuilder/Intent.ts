@@ -57,7 +57,10 @@ export interface BaseIntentParams {
   [key: string]: string | undefined
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
 /**
@@ -100,7 +103,10 @@ export interface IntentChecker {
   identity?: symbol
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export const defaultIntentChecker: IntentChecker = (intentName, params, {pane}): boolean => {
   const isEdit = intentName === 'edit'
   const isCreate = intentName === 'create'

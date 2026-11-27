@@ -11,7 +11,8 @@ import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export type CompactPreviewProps = Omit<PreviewProps<'compact'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -33,7 +34,8 @@ const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, siz
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function CompactPreview(props: CompactPreviewProps) {
   const {children, isPlaceholder, media, status, title} = props
 

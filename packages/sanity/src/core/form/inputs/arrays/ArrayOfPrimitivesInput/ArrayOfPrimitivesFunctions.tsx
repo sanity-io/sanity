@@ -14,7 +14,8 @@ import {useArrayValidation} from '../common/ArrayValidationContext'
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function ArrayOfPrimitivesFunctions<
   MemberType extends string | boolean | number,
   SchemaType extends ArraySchemaType,

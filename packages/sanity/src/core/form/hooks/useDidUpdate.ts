@@ -13,9 +13,8 @@ import {shallowEquals} from '../../util/shallowEquals'
  *   }
  * })
  * ```
- *
- * @internal
  * @hidden
+ * @beta
  */
 export function useDidUpdate<T>(
   /** The value you want to respond to changes in. */

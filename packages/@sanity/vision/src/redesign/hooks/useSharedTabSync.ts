@@ -2,10 +2,8 @@ import {useToast} from '@sanity/ui/toast'
 import throttle from 'lodash-es/throttle.js'
 import {type RefObject, useEffect, useEffectEvent} from 'react'
 import {filter, take, timeout} from 'rxjs'
-import {
-  getIdPair,
-  useDocumentStore,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useDocumentStore} from 'sanity'
+import {getIdPair} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
