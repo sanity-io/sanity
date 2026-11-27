@@ -1963,25 +1963,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for a scheduled draft release */
   'scheduled-drafts.release.title': 'Scheduled publish',
 
-  /** Menu item in the scheduled publishing context menu that removes a completed schedule */
-  'scheduled-publishing.context-menu.clear-completed-schedule': 'Clear completed schedule',
-  /** Menu item in the scheduled publishing context menu that deletes a schedule */
-  'scheduled-publishing.context-menu.delete-schedule': 'Delete schedule',
-  /** Menu item in the scheduled publishing context menu that opens the edit schedule dialog */
-  'scheduled-publishing.context-menu.edit-schedule': 'Edit schedule',
-  /** Menu item in the scheduled publishing context menu that publishes the scheduled document right away */
-  'scheduled-publishing.context-menu.publish-now': 'Publish now',
-  /** Label for the scheduled publishing tool filter that shows failed schedules */
-  'scheduled-publishing.filter.state.cancelled': 'Failed',
-  /** Label for the scheduled publishing tool filter that shows upcoming schedules */
-  'scheduled-publishing.filter.state.scheduled': 'Upcoming',
-  /** Label for the scheduled publishing tool filter that shows completed schedules */
-  'scheduled-publishing.filter.state.succeeded': 'Completed',
-  /** Menu item in the scheduled publishing tool sort menu that sorts schedules by when they were created */
-  'scheduled-publishing.sort-menu.sort-by-time-added': 'Sort by time added',
-  /** Menu item in the scheduled publishing tool sort menu that sorts schedules by when they will run */
-  'scheduled-publishing.sort-menu.sort-by-time-scheduled': 'Sort by time scheduled',
-
   /** Label for the dataset of the workspace whose schema failed to compile */
   'schema-errors.location.dataset': 'Dataset',
   /** Label for the project ID of the workspace whose schema failed to compile */

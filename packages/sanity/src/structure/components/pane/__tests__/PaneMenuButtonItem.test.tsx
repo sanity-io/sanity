@@ -1,9 +1,9 @@
-import {Menu} from '@sanity/ui/menu'
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {PaneMenuButtonItem} from '../PaneMenuButtonItem'
 import {type _PaneMenuGroup} from '../types'

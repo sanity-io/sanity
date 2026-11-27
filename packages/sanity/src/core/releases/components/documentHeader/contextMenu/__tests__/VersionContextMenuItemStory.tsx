@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Card, Text} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {Menu} from '../../../../../../ui-components/menu/Menu'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 import {
   activeASAPRelease,

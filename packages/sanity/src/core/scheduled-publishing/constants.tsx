@@ -40,16 +40,6 @@ export const SCHEDULE_STATE_DICTIONARY: Record<
   },
 }
 
-/**
- * Locale keys (studio namespace) for the schedule state titles shown in the tool's state filter.
- * The English text matches `SCHEDULE_STATE_DICTIONARY`.
- */
-export const SCHEDULE_STATE_TITLE_KEYS = {
-  scheduled: 'scheduled-publishing.filter.state.scheduled',
-  succeeded: 'scheduled-publishing.filter.state.succeeded',
-  cancelled: 'scheduled-publishing.filter.state.cancelled',
-} as const satisfies Record<ScheduleState, string>
-
 // Tool: denotes order of filter tags as well as accessible routes
 export const SCHEDULE_FILTERS: ScheduleState[] = Object.keys(SCHEDULE_STATE_DICTIONARY).filter(
   (f): f is ScheduleState => !!f,

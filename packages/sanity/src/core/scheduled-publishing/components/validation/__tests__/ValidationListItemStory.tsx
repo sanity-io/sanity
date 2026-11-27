@@ -1,9 +1,9 @@
 import {type ValidationMarker} from '@sanity/types'
 import {Card} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {ValidationListItem} from '../ValidationListItem'
 
 const ERROR: ValidationMarker = {

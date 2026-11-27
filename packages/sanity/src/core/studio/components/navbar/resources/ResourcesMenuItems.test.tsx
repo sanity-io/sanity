@@ -1,5 +1,4 @@
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
@@ -8,6 +7,7 @@ import {of, Subject} from 'rxjs'
 import semver from 'semver'
 import {describe, expect, it, vi} from 'vitest'
 
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {type ResourcesResponse} from './helper-functions/types'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 

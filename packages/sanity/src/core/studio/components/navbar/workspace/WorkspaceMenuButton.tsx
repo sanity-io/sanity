@@ -1,12 +1,13 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports
 import {Button as UIButton} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {take} from 'rxjs/operators'
 import {Text, Box, Flex, VStack} from 'ui5'
 
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

@@ -2,7 +2,6 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {
   type RefAttributes,
   type SVGProps,
@@ -17,6 +16,7 @@ import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
