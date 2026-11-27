@@ -53,6 +53,17 @@ export interface EntryOverride {
 }
 
 /**
+ * Stand-in module for one CDN entry during a verification rebuild.
+ * Entry names follow the bundle keys, and some contain slashes
+ * (`_dangerously_use_private_internals_that_do_not_follow_semver/structure`).
+ */
+export function overrideModulePath(overrideDir: string, entry: string): string {
+  const file = path.join(overrideDir, `${entry}.ts`)
+  fs.mkdirSync(path.dirname(file), {recursive: true})
+  return file
+}
+
+/**
  * Build the CDN bundle (`packages/sanity/package.bundle.ts`, what `autoUpdates: true` studios
  * load through the module CDN) into `outDir`, and capture its module graph: every module's
  * transformed code and resolved imports, and which modules each output chunk renders.
@@ -143,7 +154,7 @@ export async function buildCdnBundle(options: {
     const original = path.join(SANITY_PACKAGE, 'src/_exports', `${override.entry}.ts`)
     const except = new Set(override.except)
     const kept = override.exports.filter((name) => !except.has(name))
-    const file = path.join(overrideDir!, `${override.entry}.ts`)
+    const file = overrideModulePath(overrideDir!, override.entry)
     fs.writeFileSync(
       file,
       // The original entry's side-effect imports (stylesheets, augmentations) still run

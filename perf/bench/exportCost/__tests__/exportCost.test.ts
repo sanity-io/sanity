@@ -1,7 +1,11 @@
+import * as fs from 'node:fs'
+import * as os from 'node:os'
+import path from 'node:path'
+
 import {describe, expect, it} from 'vitest'
 
 import {type ExportCost, entryForSpecifier} from '../analyze'
-import {type CapturedModule} from '../cdnBuild'
+import {type CapturedModule, overrideModulePath} from '../cdnBuild'
 import {BindingGraph} from '../graph'
 import {cdnFileForPath} from '../moduleHost'
 import {pickVerifications, runRange} from '../report'
@@ -131,5 +135,20 @@ describe('runRange', () => {
     expect(runRange(undefined, format)).toBe('')
     expect(runRange([4], format)).toBe('')
     expect(runRange([4, 4], format)).toBe('')
+  })
+})
+
+describe('overrideModulePath', () => {
+  it('creates the directory a nested entry name needs before the stand-in is written', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'export-cost-entry-'))
+    try {
+      const entry = '_dangerously_use_private_internals_that_do_not_follow_semver/structure'
+      const file = overrideModulePath(dir, entry)
+      fs.writeFileSync(file, 'export {}\n')
+      expect(file).toBe(path.join(dir, `${entry}.ts`))
+      expect(fs.readFileSync(file, 'utf8')).toBe('export {}\n')
+    } finally {
+      fs.rmSync(dir, {recursive: true, force: true})
+    }
   })
 })
