@@ -357,6 +357,49 @@ describe('FormView', () => {
       listItem.remove()
     })
   })
+
+  describe('initial focus on the pane title', () => {
+    async function renderInPane() {
+      mockUseDocumentTitle.mockReturnValue({title: 'Test Title'})
+      const wrapper = await createTestProvider()
+      return render(
+        <div data-ui="Pane">
+          <div data-pane-header-title="" tabIndex={-1}>
+            Test Title
+          </div>
+          <FormView hidden margins={[0, 0, 0, 0]} />
+        </div>,
+        {wrapper},
+      )
+    }
+
+    test('starts at the pane header title instead of the form', async ({
+      focusFirstDescendantSpy,
+      setDocumentPane,
+    }) => {
+      setDocumentPane({focusPath: []})
+      const {unmount} = await renderInPane()
+
+      expect(screen.getByText('Test Title')).toHaveFocus()
+      expect(focusFirstDescendantSpy).not.toHaveBeenCalled()
+      unmount()
+    })
+
+    test('leaves a focus path from the URL to win over the pane title', async ({
+      focusFirstDescendantSpy,
+      setDocumentPane,
+    }) => {
+      setDocumentPane({
+        focusPath: ['title'],
+        formState: {focusPath: ['title']} as DocumentPaneValue['formState'],
+      })
+      const {unmount} = await renderInPane()
+
+      expect(screen.getByText('Test Title')).not.toHaveFocus()
+      expect(focusFirstDescendantSpy).not.toHaveBeenCalled()
+      unmount()
+    })
+  })
 })
 
 /** Adds a node to `parent` and waits for MutationObserver callbacks to be delivered. */

@@ -28,6 +28,7 @@ import {isDocumentLoading} from '../../isDocumentLoading'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentTitleField} from '../useDocumentTitleField'
+import {focusDocumentPaneTitle} from './focusDocumentPaneTitle'
 import {FormHeader} from './FormHeader'
 
 interface FormViewProps {
@@ -192,7 +193,10 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
       return undefined
     }
-    if (focusFirstDescendant(formRef)) {
+    // Start at the document title in the pane header, so the Tab order from there is the same
+    // for every document. Outside a pane header, fall back to the first focusable in the form.
+    const focusInitial = () => focusDocumentPaneTitle(formRef) || focusFirstDescendant(formRef)
+    if (focusInitial()) {
       return undefined
     }
     // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
@@ -206,7 +210,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     }
     ownerDocument.addEventListener('focusin', handleFocusIn, true)
     const observer = new MutationObserver(() => {
-      if (focusMoved || focusFirstDescendant(formRef)) {
+      if (focusMoved || focusInitial()) {
         observer.disconnect()
         ownerDocument.removeEventListener('focusin', handleFocusIn, true)
       }
