@@ -2,11 +2,11 @@ import {createClient} from '@sanity/client'
 import {createImageUrlBuilder, type ImageUrlBuilder} from '@sanity/image-url'
 import {createQueryStore} from '@sanity/react-loader'
 
-const studioUrl =
-  import.meta.env.SANITY_STUDIO_URL ??
-  (import.meta.env.DEV
-    ? 'http://localhost:3333/coffee-shop'
-    : 'https://test-studio.sanity.dev/coffee-shop')
+// This branch's storefront opens this branch's studio. The project-wide SANITY_STUDIO_URL on
+// Vercel points at another branch's studio, so the deployed build does not read it.
+const studioUrl = import.meta.env.DEV
+  ? (import.meta.env.SANITY_STUDIO_URL ?? 'http://localhost:3333/coffee-shop')
+  : 'https://test-studio-git-preview-coffee-shop-open-beta.sanity.dev/coffee-shop'
 
 const client = createClient({
   projectId: 'ppsg7ml5',
