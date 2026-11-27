@@ -229,6 +229,12 @@ export interface PreloadModulesOptions {
    */
   entry: string
   /**
+   * The name the package's entries are imported by (`sanity`). The bundle imports its own entries
+   * through that name (`sanity/router`), which the import map resolves to their entry chunks, so
+   * the entry chunks a bare import reaches count as loaded at boot too.
+   */
+  packageName: string
+  /**
    * Source files, relative to the Vite root, that are `import()`ed lazily but that every studio
    * needs right after boot. Each must stay a chunk boundary of its own: the list holds the static
    * closure of each one's chunk, and no other lazy chunk.
@@ -248,7 +254,8 @@ function relativeChunkSpecifier(from: string, to: string): string {
  * that chunk so they resolve under whichever version the module server redirects to.
  *
  * The list is the static import closure of every {@link PreloadModulesOptions.lazyBoundaries}
- * chunk minus what the entry already loads statically: an `import()` is only discovered once the
+ * chunk minus what the entry already loads statically, through the package's other entries
+ * included: an `import()` is only discovered once the
  * code that calls it runs, so a lazy chunk and its imports are fetched in sequence unless something
  * fetches them ahead of time. Dynamic imports are never followed, so lazy tool code stays out. The
  * build fails when a boundary stops being a chunk boundary, when the list would reach into the
@@ -286,15 +293,31 @@ export function preloadModulesPlugin(options: PreloadModulesOptions): Plugin {
             normalizePath(chunk.facadeModuleId) === id &&
             (dynamicEntry ? chunk.isDynamicEntry : chunk.isEntry),
         )
-      // Imports of modules outside of the bundle (react, `sanity/router`) are not chunks
-      const closure = (start: Rolldown.OutputChunk, into = new Set<string>()) => {
+      // A bare import of one of the package's own entries (`sanity/router`) loads that entry's
+      // chunk at boot; imports of other packages (react) are not chunks of this bundle
+      const entryChunkOfSpecifier = (specifier: string) => {
+        const key =
+          specifier === options.packageName
+            ? options.entry
+            : specifier.startsWith(`${options.packageName}/`)
+              ? specifier.slice(options.packageName.length + 1)
+              : undefined
+        return key && libraryEntries[key]
+          ? findChunk(facadeOf(libraryEntries[key]), false)?.fileName
+          : undefined
+      }
+      const closure = (start: Rolldown.OutputChunk, {followEntries = false} = {}) => {
+        const into = new Set<string>()
         const queue = [start.fileName]
         for (const fileName of queue) {
           if (into.has(fileName)) continue
           const chunk = chunks.get(fileName)
           if (!chunk) continue
           into.add(fileName)
-          queue.push(...chunk.imports)
+          for (const imported of chunk.imports) {
+            const entryChunk = followEntries ? entryChunkOfSpecifier(imported) : undefined
+            queue.push(entryChunk ?? imported)
+          }
         }
         return into
       }
@@ -306,7 +329,7 @@ export function preloadModulesPlugin(options: PreloadModulesOptions): Plugin {
       if (!entryChunk) {
         this.error(`preload entry "${options.entry}" did not produce an entry chunk`)
       }
-      const loadedAtBoot = closure(entryChunk)
+      const loadedAtBoot = closure(entryChunk, {followEntries: true})
 
       const preload = new Set<string>()
       for (const source of options.lazyBoundaries) {

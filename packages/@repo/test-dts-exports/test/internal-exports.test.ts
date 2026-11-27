@@ -32,6 +32,7 @@
  *
  * Symbols re-exported from dependencies are skipped: their release tags belong to the dependency.
  */
+import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
@@ -174,8 +175,9 @@ describe('the internals entry is a superset, and the public compatibility list i
 
 /**
  * Studio 7 keeps implementation details off `sanity/structure`, `sanity/router` and
- * `sanity/presentation`, types included: whatever is tagged `@internal`, `@hidden` or
- * `@deprecated` is exported from the matching subpath of the internals entry instead, and the
+ * `sanity/presentation`, types included: whatever is tagged `@internal`, or `@hidden` or
+ * `@deprecated` without a release tag, is exported from the matching subpath of the internals
+ * entry instead (a `@hidden @beta` name is public API and stays on the subpath), and the
  * public entry keeps a `never` tombstone that names the new path (`test/tombstones.test.ts` covers
  * those). Unlike the checks above, these cover declarations re-exported from dependencies too,
  * because the entry decides what it re-exports. The one kind of public declaration a subpath may
@@ -199,12 +201,10 @@ function privateTagsOf(declaration: ExportedDeclarations): string[] {
     : Node.isJSDocable(declaration)
       ? declaration.getJsDocs()
       : []
-  return docs.flatMap((doc) =>
-    doc
-      .getTags()
-      .map((tag) => tag.getTagName())
-      .filter((tag) => PRIVATE_TAGS.has(tag)),
-  )
+  const tags = docs.flatMap((doc) => doc.getTags().map((tag) => tag.getTagName()))
+  // `@hidden` and `@deprecated` names that carry a release tag (`@hidden @beta`) are public API
+  const released = tags.some((tag) => tag === 'public' || tag === 'beta' || tag === 'alpha')
+  return tags.filter((tag) => PRIVATE_TAGS.has(tag) && (tag === 'internal' || !released))
 }
 
 /** Binding the built `.d.ts` files and the chunks they import takes seconds on a CI runner. */
@@ -252,7 +252,7 @@ describe('structure, router and presentation keep their internals on subpaths', 
     const internalsSubpath = `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-${subpath}`
     const dtsFiles = dtsFilesOf(subpath)
 
-    test(`${entry} exports nothing tagged @internal, @hidden or @deprecated`, () => {
+    test(`${entry} exports nothing private`, () => {
       expect(
         exportsOf(dtsFiles.entry, true),
         `Move these exports to \`${internalsSubpath}\` and leave a tombstone on \`${entry}\`.`,
@@ -262,7 +262,7 @@ describe('structure, router and presentation keep their internals on subpaths', 
     const internalsDtsFile = dtsFiles.internals
     if (!internalsDtsFile) continue
 
-    test(`${internalsSubpath} exports only declarations tagged @internal, @hidden or @deprecated`, () => {
+    test(`${internalsSubpath} exports only private declarations`, () => {
       const valuesOfPublicTypes = new Set(
         (manifest.typeOnly?.[`./${subpath}`] ?? [])
           .filter(({valueFrom}) => valueFrom === `./${internalsSubpath.slice('sanity/'.length)}`)
@@ -281,20 +281,23 @@ describe('structure, router and presentation keep their internals on subpaths', 
 })
 
 /**
- * Every internals entry: the base entry, its numbered entries (`-1`, `-2`) and the `-router` and
- * `-structure` subpaths.
+ * Every internals entry the package exports: the base entry, its numbered entries (`-1`, `-2`)
+ * and the `-router` and `-structure` subpaths, read from its exports map so that a new one is
+ * covered as soon as it is added.
  */
-const INTERNALS_ENTRIES = {
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver': INTERNALS_ENTRY_DTS,
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-1.d.ts',
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-2.d.ts',
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-router.d.ts',
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-structure.d.ts',
-} as const
+const INTERNALS_ENTRIES = Object.fromEntries(
+  Object.keys(
+    (
+      JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, '../../../sanity/package.json'), 'utf8'),
+      ) as {exports: Record<string, unknown>}
+    ).exports,
+  )
+    .filter((subpath) =>
+      subpath.startsWith('./_dangerously_use_private_internals_that_do_not_follow_semver'),
+    )
+    .map((subpath) => [`sanity/${subpath.slice(2)}`, `${subpath.slice(2)}.d.ts`]),
+)
 
 const PUBLIC_TAGS = new Set(['public', 'beta', 'alpha'])
 
@@ -320,6 +323,10 @@ function publicTagsOf(declaration: ExportedDeclarations): string[] {
  * internals entry as `valueFrom` (the Structure Builder classes).
  */
 describe('the internals entries export nothing tagged @public, @beta or @alpha', () => {
+  test('covers every internals entry', () => {
+    expect(Object.keys(INTERNALS_ENTRIES).length).toBeGreaterThanOrEqual(5)
+  })
+
   const project = new Project({skipAddingFilesFromTsConfig: true})
 
   for (const [entry, dtsFile] of Object.entries(INTERNALS_ENTRIES)) {

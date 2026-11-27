@@ -1,6 +1,5 @@
 import {Button} from '@sanity/ui'
-import {type ToolMenuProps} from 'sanity'
-import {ToolLink} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {type ToolMenuProps, ToolLink} from 'sanity'
 import {Flex} from 'ui5'
 
 export function ToolMenu(props: ToolMenuProps) {

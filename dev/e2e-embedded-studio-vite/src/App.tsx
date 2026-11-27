@@ -1,4 +1,4 @@
-import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
+import {Studio} from 'sanity'
 
 import config from '../sanity.config'
 

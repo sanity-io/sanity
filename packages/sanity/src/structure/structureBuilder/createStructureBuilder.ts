@@ -33,7 +33,10 @@ import {
 } from './types'
 import * as views from './views'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface StructureBuilderOptions {
   source: Source
   defaultDocumentNode?: DefaultDocumentNodeResolver
@@ -65,7 +68,10 @@ function getDefaultStructure(context: StructureContext): ListBuilder {
     .showIcons(items.some((item) => Boolean(item.getIcon()) || hasIcon(item.getSchemaType())))
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function createStructureBuilder({
   defaultDocumentNode,
   source,

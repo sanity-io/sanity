@@ -48,8 +48,8 @@ export interface StructureToolContextValue {
 
 /**
  *  Structure tool context. Extends from {@link ConfigContext}.
- *  @hidden
- *  @internal
+ * @hidden
+ * @beta
  */
 export interface StructureResolverContext extends ConfigContext {
   /**
@@ -226,9 +226,8 @@ export interface StructureToolOptions {
  *   ],
  * ]
  * ```
- *
  * @hidden
- * @internal
+ * @beta
  */
 export type RouterPanes = RouterPaneGroup[]
 
@@ -236,10 +235,8 @@ export type RouterPanes = RouterPaneGroup[]
  * Represents a "pane group" in the router.
  *
  * @see RouterPanes
- *
- *
  * @hidden
- * @internal
+ * @beta
  */
 export type RouterPaneGroup = RouterPaneSibling[]
 
@@ -247,10 +244,8 @@ export type RouterPaneGroup = RouterPaneSibling[]
  * Represents a "sibling pane" or "split pane" in the router.
  *
  * @see RouterPanes
- *
- *
  * @hidden
- * @internal
+ * @beta
  */
 export interface RouterPaneSibling {
   id: string
@@ -263,8 +258,8 @@ export interface RouterPaneSibling {
  * Passed as the second argument to the item of resolving pane children
  *
  * @see RouterPanes
- *
- * @internal
+ * @hidden
+ * @beta
  */
 export interface RouterPaneSiblingContext {
   id: string
@@ -290,8 +285,8 @@ export {type StructureToolMenuItem}
  * Represents what can be passed into `menuItems` inside of structure-tool panes
  *
  * @see BaseResolvedPaneNode
- *
- * @internal
+ * @hidden
+ * @beta
  */
 export interface PaneMenuItem extends StructureToolMenuItem {
   // TODO: these would be great options in the `MenuItemBuilder`
@@ -302,7 +297,10 @@ export interface PaneMenuItem extends StructureToolMenuItem {
   tone?: 'primary' | 'positive' | 'caution' | 'critical'
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface PaneMenuItemGroup {
   id: string
   title?: string
@@ -325,7 +323,10 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   child?: UnresolvedPaneNode
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
   component: UserComponent
   options?: Record<string, unknown>
@@ -335,7 +336,10 @@ export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component
   // component: React.ComponentType<Props> | React.ReactNode
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   options: {
     id: string
@@ -352,7 +356,10 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   defaultPanes?: string[]
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList'> {
   defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
@@ -372,7 +379,10 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
   maxWidth?: number
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface PaneListItem<TParams = unknown> {
   type: 'listItem'
   id: string
@@ -393,7 +403,10 @@ export interface PaneListItem<TParams = unknown> {
   singletonDocumentId?: string
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface PaneListItemDivider {
   type: 'divider'
   /**
@@ -406,7 +419,10 @@ export interface PaneListItemDivider {
   i18n?: I18nTextRecord<'title'>
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
@@ -418,24 +434,36 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   maxWidth?: number
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export type PaneNode =
   | CustomComponentPaneNode
   | DocumentPaneNode
   | DocumentListPaneNode
   | ListPaneNode
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export type SerializablePaneNode = {
   // TODO: unify this context with `SerializeOptions`
   serialize(context: RouterPaneSiblingContext): UnresolvedPaneNode
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export type PaneNodeResolver = (id: string, context: RouterPaneSiblingContext) => UnresolvedPaneNode
 
 // TODO: these types need to be unified with the buidlers `ListBuilder
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export type UnresolvedPaneNode =
   | PaneNodeResolver
   | SerializablePaneNode
@@ -445,7 +473,8 @@ export type UnresolvedPaneNode =
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
   intent?: Intent
 }

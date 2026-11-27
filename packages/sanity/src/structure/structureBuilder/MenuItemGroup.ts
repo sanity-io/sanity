@@ -4,7 +4,10 @@ import {HELP_URL, SerializeError} from './SerializeError'
 import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function maybeSerializeMenuItemGroup(
   item: MenuItemGroup | MenuItemGroupBuilder,
   index: number,

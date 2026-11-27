@@ -172,7 +172,10 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function defaultInitialValueTemplateItems(
   context: StructureContext,
 ): InitialValueTemplateItemBuilder[] {
@@ -191,7 +194,10 @@ export function defaultInitialValueTemplateItems(
   return ordered.map((tpl) => getStructureBuilder().initialValueTemplateItem(tpl.id))
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function maybeSerializeInitialValueTemplateItem(
   item: InitialValueTemplateItem | InitialValueTemplateItemBuilder,
   index: number,
@@ -200,7 +206,10 @@ export function maybeSerializeInitialValueTemplateItem(
   return item instanceof InitialValueTemplateItemBuilder ? item.serialize({path, index}) : item
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function menuItemsFromInitialValueTemplateItems(
   context: StructureContext,
   templateItems: InitialValueTemplateItem[],

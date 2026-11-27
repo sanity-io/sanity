@@ -18,11 +18,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "AddonDatasetProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "AgentVersionDisplay",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -36,21 +31,6 @@
         "name": "ArrayItemMetadata",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfObjectOptionsInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfObjectsFunctions",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfObjectsInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "ArrayOfObjectsInputMember",
@@ -68,38 +48,8 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "ArrayOfObjectsItem",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "ArrayOfObjectsMemberProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfOptionsInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfPrimitiveOptionsInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfPrimitivesFunctions",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfPrimitivesInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ArrayOfPrimitivesItem",
-        "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
@@ -143,29 +93,9 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "BlockImagePreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "BlockImagePreviewProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "BlockPreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "BooleanDiff",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "BooleanInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "BufferedDocumentWrapper",
@@ -283,11 +213,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "CircularProgress",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "CollapseMenu",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -383,11 +308,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "CommentDeleteDialog",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "CommentDisabledIcon",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
@@ -413,29 +333,9 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "CommentsAuthoringPathProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "CommentsEnabledProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "CommentsEnabledProviderV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from the same entry."
-      },
-      {
-        "name": "CommentsIntentProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "CommentsList",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. Comments API is the default; use `CommentsEnabledProvider` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `CommentsEnabledProviderLegacy` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` (`@internal`, can change or disappear in any release)."
       },
       {
         "name": "CommentsProvider",
@@ -474,16 +374,6 @@
       },
       {
         "name": "CommonProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "CompactPreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "CompactPreviewProps",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -573,11 +463,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "CopyPasteProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "CorsCheckResult",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -616,11 +501,6 @@
         "name": "CreateWorkspaceFromConfigOptions",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "CrossDatasetReferenceInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "CrossDatasetReferencePreview",
@@ -673,38 +553,8 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "DateInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DateTimeInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DefaultPreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DefaultPreviewProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "Delay",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DetailPreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DetailPreviewProps",
-        "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
@@ -1010,15 +860,10 @@
       {
         "name": "EditReferenceOptions",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{EditReferenceOptions}` from `sanity/structure` instead of `sanity`."
       },
       {
         "name": "EditScheduleForm",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "EmailInput",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
@@ -1210,11 +1055,6 @@
       {
         "name": "FieldValueError",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "FileInput",
-        "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
@@ -1483,11 +1323,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "ImageInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "ImperativeToast",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -1508,16 +1343,6 @@
         "message": "Moved to `sanity/i18n`. Import `{InlineCode}` from `sanity/i18n` instead of `sanity`."
       },
       {
-        "name": "InlinePreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "InlinePreviewProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "InsufficientPermissionsMessage",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -1525,11 +1350,6 @@
       {
         "name": "InsufficientPermissionsMessageProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "IntentButton",
-        "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
@@ -1596,11 +1416,6 @@
         "name": "LegacyThemeTints",
         "kind": "type",
         "message": "Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key."
-      },
-      {
-        "name": "LinearProgress",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "ListenQueryParams",
@@ -1679,16 +1494,6 @@
       },
       {
         "name": "MatchWorkspaceResult",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "MediaPreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "MediaPreviewProps",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -1773,11 +1578,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "NumberInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "OAuthCallbackResult",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -1786,11 +1586,6 @@
         "name": "ObjectDiff",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ObjectInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "ObjectInputMember",
@@ -1876,11 +1671,6 @@
         "name": "PartialIndexSettings",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "PatchEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "PauseWhileDocumentHiddenOptions",
@@ -2023,11 +1813,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "ReferenceInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "ReferenceInputOptions",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
@@ -2161,16 +1946,6 @@
         "name": "RevertChangesConfirmDialog",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "RovingFocusNavigationType",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "RovingFocusProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "SANITY_PATCH_TYPE",
@@ -2308,11 +2083,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "SelectInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "Selection",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -2353,11 +2123,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "SlugInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "SourceProvider",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -2369,16 +2134,6 @@
       },
       {
         "name": "Status",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "StatusButton",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "StatusButtonProps",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -2398,11 +2153,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "StringInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "StringSegmentChanged",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -2416,11 +2166,6 @@
         "name": "StructureNodeIdValidationResult",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "Studio",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "StudioAnnouncementsCard",
@@ -2468,28 +2213,8 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "StudioLogo",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "StudioManifest",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "StudioNavbar",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "StudioProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "StudioToolMenu",
-        "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
@@ -2508,11 +2233,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "TagsArrayInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "TargetDocumentState",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -2521,11 +2241,6 @@
         "name": "TargetScopeIdOptions",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "TelephoneInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "TemplateOption",
@@ -2541,16 +2256,6 @@
         "name": "TemplatePermissionsResult",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "TemplatePreview",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "TextInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "TextWithTone",
@@ -2603,11 +2308,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "ToolLink",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "TooltipOfDisabled",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -2638,11 +2338,6 @@
         "message": "Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release). `sanity/migrate` exports an unrelated `Transaction` for migrations."
       },
       {
-        "name": "TransformPatches",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "Translate",
         "kind": "value",
         "message": "Moved to `sanity/i18n`. Import `{Translate}` from `sanity/i18n` instead of `sanity`."
@@ -2651,11 +2346,6 @@
         "name": "TypeChangeDiff",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "UniversalArrayInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "UpdateReadOnlyPlugin",
@@ -2698,11 +2388,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "UrlInput",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "UseFeedbackReturn",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -2724,16 +2409,6 @@
       },
       {
         "name": "UseSearchMachineOptions",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "UserAvatar",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "UserAvatarProps",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -3608,17 +3283,7 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "isCreateDocumentVersionEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "isCreateIfNotExistsMutation",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isCreateLiveDocumentEvent",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -3639,16 +3304,6 @@
       },
       {
         "name": "isDefaultVariant",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isDeleteDocumentGroupEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isDeleteDocumentVersionEvent",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -3684,11 +3339,6 @@
       },
       {
         "name": "isDraftPerspective",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isEditDocumentVersionEvent",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -3753,11 +3403,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "isNonSelectableTerminalEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "isPatchMutation",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -3779,11 +3424,6 @@
       },
       {
         "name": "isProd",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isPublishDocumentVersionEvent",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -3821,11 +3461,6 @@
         "name": "isRemovedItemDiff",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isScheduleDocumentVersionEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "isSearchStrategy",
@@ -3876,21 +3511,6 @@
         "name": "isUnchangedDiff",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isUnpublishDocumentEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isUnscheduleDocumentVersionEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isUpdateLiveDocumentEvent",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "isValidAnnouncementAudience",
@@ -4223,11 +3843,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "useAddonDataset",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "useAgentVersionDisplay",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -4298,29 +3913,14 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "useComments",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useCommentsEnabled",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "useCommentsEnabledV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from the same entry."
-      },
-      {
-        "name": "useCommentsMode",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. Comments API is the default; use `useCommentsEnabled` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsEnabledLegacy` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` (`@internal`, can change or disappear in any release)."
       },
       {
         "name": "useCommentsModeV2",
         "kind": "value",
-        "message": "Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` (`@internal`, can change or disappear in any release). For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from the same entry."
+        "message": "Removed in v7. Comments API is the default; use `useCommentsMode` from `sanity`. For the add-on dataset escape hatch, set `comments: {legacy: true}` and use `useCommentsModeLegacy` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` (`@internal`, can change or disappear in any release)."
       },
       {
         "name": "useCommentsSelectedPath",
@@ -4358,11 +3958,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "useCopyPaste",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "useCreatableVariantInitialValue",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -4371,11 +3966,6 @@
         "name": "useCurrentLocale",
         "kind": "value",
         "message": "Moved to `sanity/i18n`. Import `{useCurrentLocale}` from `sanity/i18n` instead of `sanity`."
-      },
-      {
-        "name": "useDidUpdate",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useDiffAnnotationColor",
@@ -4438,19 +4028,9 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "useDocumentPreviewStore",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "useDocumentPreviewValues",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useDocumentStore",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useDocumentSyncState",
@@ -4479,11 +4059,6 @@
       },
       {
         "name": "useDocumentVersionTitle",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useDocumentVersions",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -4533,11 +4108,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "useFormBuilder",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "useFormCallbacks",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
@@ -4564,16 +4134,6 @@
       },
       {
         "name": "useGlobalPresence",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useGrantsStore",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useHistoryStore",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -4668,11 +4228,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "usePresenceStore",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "usePreviewCard",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -4684,11 +4239,6 @@
       },
       {
         "name": "useProjectDatasets",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useProjectStore",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -4746,11 +4296,6 @@
         "name": "useReviewChanges",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useRovingFocus",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useScheduledDraftDocument",
@@ -4843,11 +4388,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "useTemplates",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "useThrottledCallback",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -4871,11 +4411,6 @@
         "name": "useTimelineStore",
         "kind": "value",
         "message": "Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release)."
-      },
-      {
-        "name": "useTools",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "useTrackerStore",
@@ -4914,11 +4449,6 @@
       },
       {
         "name": "useUserColorManager",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useUserStore",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
       },
@@ -5113,11 +4643,6 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{createDefaultIcon}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "createSchema",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{createSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "generateStudioManifest",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{generateStudioManifest}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity`. This export is `@internal` and can change or disappear in any release."
@@ -5135,12 +4660,12 @@
       {
         "name": "createConfig",
         "kind": "value",
-        "message": "Removed in v7. Use `defineConfig` instead: `export default defineConfig({\u2026})`."
+        "message": "Removed in v7. Use `defineConfig` instead: `export default defineConfig({…})`."
       },
       {
         "name": "createPlugin",
         "kind": "value",
-        "message": "Removed in v7. Use `definePlugin` instead: `export const myPlugin = definePlugin((options) => ({\u2026}))`."
+        "message": "Removed in v7. Use `definePlugin` instead: `export const myPlugin = definePlugin((options) => ({…}))`."
       }
     ],
     "./_dangerously_use_private_internals_that_do_not_follow_semver": [
@@ -5287,12 +4812,12 @@
       {
         "name": "ConfirmDeleteDialog",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{ConfirmDeleteDialog}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "ConfirmDeleteDialogProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{ConfirmDeleteDialogProps}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "ConnectorContextValue",
@@ -5447,32 +4972,32 @@
       {
         "name": "DocumentInspectorHeader",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentInspectorHeader}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentListPane",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentListPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentListPaneProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentListPaneProps}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentPane",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentPaneProvider",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentPaneProvider}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentPaneProviderProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentPaneProviderProps}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentPreviewPresence",
@@ -5507,7 +5032,7 @@
       {
         "name": "EditReferenceOptions",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{EditReferenceOptions}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "EditScheduleForm",
@@ -6367,7 +5892,7 @@
       {
         "name": "useDocumentPane",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{useDocumentPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "useDocumentPreviewValues",
@@ -6502,7 +6027,7 @@
       {
         "name": "Builder",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{Builder}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{Builder}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "ConnectionStatus",
@@ -6512,17 +6037,17 @@
       {
         "name": "CustomComponentPaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{CustomComponentPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{CustomComponentPaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentListPaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{DocumentListPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentListPaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "DocumentPaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{DocumentPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{DocumentPaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "FeedbackContext",
@@ -6542,7 +6067,7 @@
       {
         "name": "ListPaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{ListPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{ListPaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "MatchError",
@@ -6572,32 +6097,32 @@
       {
         "name": "PaneListItem",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{PaneListItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{PaneListItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "PaneListItemDivider",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{PaneListItemDivider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{PaneListItemDivider}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "PaneMenuItem",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{PaneMenuItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{PaneMenuItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "PaneMenuItemGroup",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{PaneMenuItemGroup}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{PaneMenuItemGroup}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "PaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{PaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{PaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "PaneNodeResolver",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{PaneNodeResolver}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{PaneNodeResolver}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "RouterContext",
@@ -6607,22 +6132,22 @@
       {
         "name": "RouterPaneSiblingContext",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{RouterPaneSiblingContext}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{RouterPaneSiblingContext}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "SerializablePaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{SerializablePaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{SerializablePaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "SortMenuItem",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{SortMenuItem}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{SortMenuItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "StructureBuilderOptions",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{StructureBuilderOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{StructureBuilderOptions}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       },
       {
         "name": "StructureToolContextValue",
@@ -6642,7 +6167,107 @@
       {
         "name": "UnresolvedPaneNode",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. Import `{UnresolvedPaneNode}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/structure`. Import `{UnresolvedPaneNode}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "component",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{component}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "createStructureBuilder",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{createStructureBuilder}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "DEFAULT_INTENT_HANDLER",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{DEFAULT_INTENT_HANDLER}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "defaultInitialValueTemplateItems",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{defaultInitialValueTemplateItems}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "defaultIntentChecker",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{defaultIntentChecker}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "documentFromEditor",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{documentFromEditor}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "documentFromEditorWithInitialValue",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{documentFromEditorWithInitialValue}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "form",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{form}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "getOrderingMenuItem",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{getOrderingMenuItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "getOrderingMenuItemsForSchemaType",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{getOrderingMenuItemsForSchemaType}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "getTypeNamesFromFilter",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{getTypeNamesFromFilter}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "HELP_URL",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{HELP_URL}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "isDocumentListItem",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{isDocumentListItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "maybeSerializeInitialValueTemplateItem",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{maybeSerializeInitialValueTemplateItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "maybeSerializeMenuItem",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{maybeSerializeMenuItem}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "maybeSerializeMenuItemGroup",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{maybeSerializeMenuItemGroup}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "maybeSerializeView",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{maybeSerializeView}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "menuItemsFromInitialValueTemplateItems",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{menuItemsFromInitialValueTemplateItems}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "SerializeError",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{SerializeError}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
+      },
+      {
+        "name": "shallowIntentChecker",
+        "kind": "value",
+        "message": "Moved to `sanity/structure`. Import `{shallowIntentChecker}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`."
       }
     ],
     "./router": [
@@ -6714,102 +6339,7 @@
     ],
     "./structure": [
       {
-        "name": "BackLinkProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
         "name": "BaseResolvedPaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "Builder",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ChildLinkProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "ConfirmDeleteDialog",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ConfirmDeleteDialogProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "CustomComponentPaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DEFAULT_INTENT_HANDLER",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentFieldMenuActionNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentInspectorHeader",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentListPane",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentListPaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentListPaneProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentPane",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentPaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentPaneProvider",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "DocumentPaneProviderProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "EditReferenceOptions",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{EditReferenceOptions}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "HELP_URL",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "ListPaneNode",
         "kind": "type",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
       },
@@ -6829,109 +6359,14 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "PaneLayout",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "PaneListItem",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "PaneListItemDivider",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "PaneMenuItem",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "PaneMenuItemGroup",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "PaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "PaneNodeResolver",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "PaneRouterContext",
         "kind": "value",
         "message": "Moved to `sanity/_singletons`. Import `{PaneRouterContext}` from `sanity/_singletons` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "PaneRouterContextValue",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "ParameterizedLinkProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "ReferenceChildLinkProps",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "RouterPaneGroup",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "RouterPaneSibling",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "RouterPaneSiblingContext",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "RouterPanes",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "SerializablePaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "SerializeError",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "SortMenuItem",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
         "name": "StrictVersionLayeringOptions",
         "kind": "type",
         "message": "Moved to `sanity`. Import `{StrictVersionLayeringOptions}` from `sanity` instead of `sanity/structure`."
-      },
-      {
-        "name": "StructureBuilderOptions",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "StructureResolverContext",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
       },
       {
         "name": "StructureToolContextValue",
@@ -6959,119 +6394,9 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{StructureToolProviderProps}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/structure`. This export is `@internal` and can change or disappear in any release."
       },
       {
-        "name": "UnresolvedPaneNode",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "UseDocumentTitle",
-        "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
-        "name": "component",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "createStructureBuilder",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "defaultInitialValueTemplateItems",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "defaultIntentChecker",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "documentFromEditor",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "documentFromEditorWithInitialValue",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "form",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "getOrderingMenuItem",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "getOrderingMenuItemsForSchemaType",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "getTypeNamesFromFilter",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "isDocumentListItem",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "maybeSerializeInitialValueTemplateItem",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "maybeSerializeMenuItem",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "maybeSerializeMenuItemGroup",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "maybeSerializeView",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "menuItemsFromInitialValueTemplateItems",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "shallowIntentChecker",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useDocumentPane",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "useDocumentTitle",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
-      },
-      {
         "name": "usePaneOptions",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
-      },
-      {
-        "name": "usePaneRouter",
-        "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure`. This export is `@hidden` and can change or disappear in any release."
       },
       {
         "name": "useStructureTool",
@@ -7350,7 +6675,7 @@
       {
         "name": "CopyPasteProvider",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{CopyPasteProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity`. Import `{CopyPasteProvider}` from `sanity` instead of `sanity/_unstable-embedded`."
       },
       {
         "name": "DivergencesProvider",
@@ -7385,7 +6710,7 @@
       {
         "name": "PatchEvent",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{PatchEvent}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity`. Import `{PatchEvent}` from `sanity` instead of `sanity/_unstable-embedded`."
       },
       {
         "name": "PerspectiveProvider",
@@ -7415,7 +6740,7 @@
       {
         "name": "TransformPatches",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{TransformPatches}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity`. Import `{TransformPatches}` from `sanity` instead of `sanity/_unstable-embedded`."
       },
       {
         "name": "VirtualizerScrollInstanceProvider",

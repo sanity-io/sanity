@@ -4,8 +4,8 @@ import {AddonDatasetContext} from 'sanity/_singletons'
 import {type AddonDatasetContextValue} from './types'
 
 /**
- * @internal
  * @hidden
+ * @beta
  */
 export function useAddonDataset(): AddonDatasetContextValue {
   const ctx = use(AddonDatasetContext)

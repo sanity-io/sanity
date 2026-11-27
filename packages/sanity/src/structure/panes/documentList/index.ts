@@ -3,6 +3,7 @@ import {type ComponentProps} from 'react'
 import {type PaneContainer} from './PaneContainer'
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export type DocumentListPaneProps = ComponentProps<typeof PaneContainer>

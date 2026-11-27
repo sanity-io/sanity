@@ -163,7 +163,8 @@ export const appendRestoreDefaultItems = (options: {
 }
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,

@@ -1,8 +1,7 @@
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
 import {useCallback} from 'react'
-import {defineField, defineType, type FormPatch, set} from 'sanity'
-import {TransformPatches} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
+import {defineField, defineType, type FormPatch, set, TransformPatches} from 'sanity'
 
 export const myObject = defineType({
   type: 'object',

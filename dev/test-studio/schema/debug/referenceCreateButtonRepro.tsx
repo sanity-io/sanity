@@ -19,7 +19,7 @@ import {
   set,
   setIfMissing,
 } from 'sanity'
-import {usePaneRouter} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure'
+import {usePaneRouter} from 'sanity/structure'
 import {Flex, Box} from 'ui5'
 
 type CustomReferenceInputProps = ReferenceInputProps | ObjectItemProps

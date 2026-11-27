@@ -7,11 +7,8 @@ import {Button, Card, TextInput} from '@sanity/ui'
 import {MenuButton} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useDateTimeFormat} from 'sanity'
-import {
-  UserAvatar,
-  ContextMenuButton,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useDateTimeFormat, UserAvatar} from 'sanity'
+import {ContextMenuButton} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 import {Code, Text, Box, Flex} from 'ui5'
 

@@ -8,14 +8,14 @@ index 5e8678b243572674a3ff90158014a51940b386af..7e3b6a56873fcd3c9245d1681a9e8d3b
  import { useContext, useEffect, useRef, useState } from "react";
 -import { UserAvatar, useClient, useDocumentStore, useWorkspace } from "sanity";
 +import { useClient, useWorkspace } from "sanity";
-+import { UserAvatar, useDocumentStore } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { UserAvatar, useDocumentStore } from "sanity";
  import { createImageUrlBuilder } from "@sanity/image-url";
  import { dequal } from "dequal/lite";
  import { catchError, distinctUntilChanged } from "rxjs/operators";
 -import { RouterContext } from "sanity/router";
 -import { usePaneRouter } from "sanity/structure";
 +import { RouterContext } from "sanity/_singletons";
-+import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure";
++import { usePaneRouter } from "sanity/structure";
  const DEFAULT_PROPS = { tone: "primary" };
  function Feedback(props) {
  	let $ = c(12), t0;

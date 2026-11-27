@@ -15,9 +15,8 @@ import {type NavbarProps, type ToolMenuProps} from '../../../config/studio/types
 /**
  * The default Studio navbar. Renders the actual navbar once its code has loaded, for custom
  * navbars that render the default one.
- *
  * @hidden
- * @internal
+ * @beta
  */
 export const StudioNavbar = createLazyComponent<Omit<NavbarProps, 'renderDefault'>>(
   () => import('./StudioNavbar.lazy'),
@@ -25,9 +24,8 @@ export const StudioNavbar = createLazyComponent<Omit<NavbarProps, 'renderDefault
 
 /**
  * The default tool menu, from the same chunk as the navbar that renders it.
- *
  * @hidden
- * @internal
+ * @beta
  */
 export const StudioToolMenu = createLazyComponent<ToolMenuProps>(() =>
   import('./StudioNavbar.lazy').then((module) => ({default: module.StudioToolMenu})),

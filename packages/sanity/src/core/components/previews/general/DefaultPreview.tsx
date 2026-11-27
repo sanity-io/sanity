@@ -13,7 +13,8 @@ import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export interface DefaultPreviewProps extends Omit<PreviewProps<'default'>, 'renderDefault'> {
   styles?: {
     root?: string
@@ -53,7 +54,8 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
 const SKELETON_DELAY = 300
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles, progress} = props
   const {t} = useTranslation()

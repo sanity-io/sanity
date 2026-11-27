@@ -41,7 +41,8 @@ export interface StudioProviderProps extends StudioProps {
  * See `<Studio />`.
  *
  * @hidden
- * @internal */
+ * @beta
+ */
 export function StudioProvider({
   children,
   config,

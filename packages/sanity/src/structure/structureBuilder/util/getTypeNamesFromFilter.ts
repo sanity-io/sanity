@@ -1,4 +1,7 @@
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function getTypeNamesFromFilter(
   filter: string,
   params: Record<string, unknown> = {},
