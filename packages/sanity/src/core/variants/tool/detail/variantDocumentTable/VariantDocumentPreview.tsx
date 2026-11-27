@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
-import {useMemo, type RefAttributes} from 'react'
+import {useCallback, useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
@@ -12,6 +13,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getRe
 import {useDocumentPresence} from '../../../../store/presence/useDocumentPresence'
 import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../../util/draftUtils'
+import {VariantDefinitionDocumentOpened} from '../../../__telemetry__/variants.telemetry'
 import {encodeVariantLinkParam} from '../../../util/variantSelection'
 import {isPublishedBundleId} from '../../util'
 import {getPrimaryBundle} from '../releaseLane'
@@ -85,6 +87,7 @@ function getVersionPerspectiveNavigation(
   bundleId: DocumentInVariantGroup['version']['bundleId'],
   variantId?: string,
 ): {
+  bundle: 'published' | 'drafts' | 'release'
   perspectiveStack: string[]
   searchParams: Array<[string, string]> | undefined
 } {
@@ -94,6 +97,7 @@ function getVersionPerspectiveNavigation(
 
   if (isPublishedBundleId(bundleId)) {
     return {
+      bundle: 'published',
       perspectiveStack: ['published'],
       searchParams: [...searchParams, ['perspective', 'published']],
     }
@@ -101,12 +105,14 @@ function getVersionPerspectiveNavigation(
 
   if (bundleId === 'drafts') {
     return {
+      bundle: 'drafts',
       perspectiveStack: ['drafts'],
       searchParams: searchParams.length > 0 ? searchParams : undefined,
     }
   }
 
   return {
+    bundle: 'release',
     perspectiveStack: [bundleId ?? '', 'drafts'],
     searchParams: [...searchParams, ['perspective', bundleId ?? '']],
   }
@@ -124,7 +130,7 @@ export function VariantDocumentPreview({
   // drafts → releases), which is also what the "Appears in" chip leads with — so the icon and the
   // open target never disagree. `row.version` is the most-recently-updated version, which can be a
   // different bundle from the primary; falling back to it only when the primary can't be resolved.
-  const {perspectiveStack, searchParams} = useMemo(() => {
+  const {bundle, perspectiveStack, searchParams} = useMemo(() => {
     const primary = getPrimaryBundle(row, releasesById)
     const navBundleId =
       primary?.kind === 'published'
@@ -136,6 +142,11 @@ export function VariantDocumentPreview({
             : row.version.bundleId
     return getVersionPerspectiveNavigation(navBundleId, variantId)
   }, [row, releasesById, variantId])
+
+  const telemetry = useTelemetry()
+  const handleOpen = useCallback(() => {
+    telemetry.log(VariantDefinitionDocumentOpened, {bundle})
+  }, [bundle, telemetry])
 
   const previewPresence = useMemo(
     () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
@@ -160,6 +171,7 @@ export function VariantDocumentPreview({
         publishedId={publishedId}
         documentType={row.document._type}
         searchParams={searchParams}
+        onClick={handleOpen}
         radius={2}
         data-as="a"
         flex={1}

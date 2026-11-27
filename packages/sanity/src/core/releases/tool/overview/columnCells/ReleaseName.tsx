@@ -1,5 +1,6 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Skeleton} from '@sanity/ui'
 import {useCallback} from 'react'
 import {IntentLink} from 'sanity/router'
@@ -14,6 +15,7 @@ import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
+import {ReleaseDetailLinkClicked} from '../../../__telemetry__/releases.telemetry'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -28,6 +30,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
+  const telemetry = useTelemetry()
   const {selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
   const {state} = release
@@ -119,6 +122,9 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               data-as="a"
               flex={1}
               intent={RELEASES_INTENT}
+              onClick={() =>
+                telemetry.log(ReleaseDetailLinkClicked, {location: 'releases_overview'})
+              }
               padding={2}
               params={{id: releaseId}}
               radius={2}

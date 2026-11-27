@@ -17,6 +17,14 @@ const variantPermissionsMock = vi.hoisted(() => ({
   checkWithPermissionGuard: vi.fn(),
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
@@ -86,6 +94,16 @@ describe('VariantMenuButton', () => {
     await waitFor(() => {
       expect(variantOperationsMock.updateVariant).toHaveBeenCalled()
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Edited'}),
+      {
+        location: 'variants_overview',
+        titleChanged: false,
+        descriptionChanged: false,
+        conditionsChanged: false,
+        priorityChanged: false,
+      },
+    )
   })
 
   it('deletes the variant when delete is selected', async () => {
@@ -100,6 +118,10 @@ describe('VariantMenuButton', () => {
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Deleted'}),
+      {location: 'variants_overview'},
+    )
   })
 
   it('does not delete the variant when the confirmation dialog is cancelled', async () => {

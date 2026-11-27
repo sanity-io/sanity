@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, usePortal} from '@sanity/ui'
 import {
   Menu,
@@ -13,6 +14,7 @@ import {
   getVersionFromId,
   isReleaseDocument,
   type PublishDocumentVersionEvent,
+  ReleaseDetailLinkClicked,
   RELEASES_INTENT,
   ReleaseTitle,
   Translate,
@@ -37,6 +39,7 @@ function VersionBadge({children, tone}: {children?: React.ReactNode; tone?: Badg
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
+  const telemetry = useTelemetry()
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
   const setPerspective = useSetPerspective()
@@ -115,6 +118,9 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               <IntentLink
                 intent={RELEASES_INTENT}
                 params={{id: getReleaseIdFromReleaseDocumentId(release._id)}}
+                onClick={() =>
+                  telemetry.log(ReleaseDetailLinkClicked, {location: 'document_history'})
+                }
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>

@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -5,6 +6,7 @@ import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
+import {VariantsToolFiltered} from '../../__telemetry__/variants.telemetry'
 import {variantsLocaleNamespace} from '../../i18n'
 import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
 import {type DocumentInVariantGroup} from './types'
@@ -26,6 +28,7 @@ export function VariantDocumentsTable({
   variantId?: string
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const telemetry = useTelemetry()
   const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
   const {byId: releasesById} = useActiveReleases()
 
@@ -56,10 +59,20 @@ export function VariantDocumentsTable({
     return filtered.map((row) => ({...row, rowKey: row.groupId}))
   }, [rows, resolvedActiveLane, releasesById])
 
-  const handleSelectLane = useCallback((laneId: string) => {
-    // Clicking the already-active segment clears the filter back to "All".
-    setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
-  }, [])
+  const handleSelectLane = useCallback(
+    (laneId: string) => {
+      // Clicking the already-active segment clears the filter back to "All".
+      const nextLane = resolvedActiveLane === laneId ? RELEASE_LANE_ALL : laneId
+      setActiveLane(nextLane)
+      if (nextLane !== resolvedActiveLane) {
+        telemetry.log(VariantsToolFiltered, {
+          location: 'variant_detail',
+          activeFilterCount: nextLane === RELEASE_LANE_ALL ? 0 : 1,
+        })
+      }
+    },
+    [resolvedActiveLane, telemetry],
+  )
 
   const renderRowActions = useCallback(
     ({datum}: {datum: unknown}) => (

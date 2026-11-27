@@ -2,6 +2,7 @@ import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {AddIcon} from '@sanity/icons/Add'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
@@ -21,6 +22,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
+import {VariantDetailLinkClicked} from '../../__telemetry__/variants.telemetry'
 import {
   type ResolvedVariantType,
   useVariantConditions,
@@ -177,8 +179,14 @@ function getPortableTextDescriptionValue(description?: PortableTextBlock[]): str
 }
 
 function DuplicateVariantLink(props: {children?: ReactNode; variantId?: string}) {
+  const telemetry = useTelemetry()
+
   return (
-    <IntentLink intent={VARIANTS_INTENT} params={{id: props.variantId}}>
+    <IntentLink
+      intent={VARIANTS_INTENT}
+      params={{id: props.variantId}}
+      onClick={() => telemetry.log(VariantDetailLinkClicked, {location: 'variant_dialog'})}
+    >
       {props.children}
     </IntentLink>
   )

@@ -374,6 +374,7 @@ describe('DocumentNotInVariantBanner', () => {
           documentGroupId: DOCUMENT_ID,
           variant: variantAlphaAudience,
           selectedPerspective: 'drafts',
+          location: 'not_in_variant_banner',
         })
       })
     })
@@ -393,6 +394,7 @@ describe('DocumentNotInVariantBanner', () => {
           documentGroupId: DOCUMENT_ID,
           variant: variantAlphaAudience,
           selectedPerspective: 'drafts',
+          location: 'not_in_variant_banner',
         })
       })
     })
@@ -418,6 +420,7 @@ describe('DocumentNotInVariantBanner', () => {
           documentGroupId: DOCUMENT_ID,
           variant: variantAlphaAudience,
           selectedPerspective: 'published',
+          location: 'not_in_variant_banner',
         })
       })
     })
@@ -455,6 +458,7 @@ describe('DocumentNotInVariantBanner', () => {
           documentGroupId: DOCUMENT_ID,
           variant: variantAlphaAudience,
           selectedPerspective: 'drafts',
+          location: 'not_in_variant_banner',
         })
       })
     })
@@ -489,6 +493,7 @@ describe('DocumentNotInVariantBanner', () => {
           documentGroupId: DOCUMENT_ID,
           variant: variantAlphaAudience,
           selectedPerspective: titledRelease,
+          location: 'not_in_variant_banner',
         })
       })
     })
@@ -528,6 +533,7 @@ describe('DocumentNotInVariantBanner', () => {
           documentGroupId: DOCUMENT_ID,
           variant: variantAlphaAudience,
           selectedPerspective: titledRelease,
+          location: 'not_in_variant_banner',
         })
       })
     })

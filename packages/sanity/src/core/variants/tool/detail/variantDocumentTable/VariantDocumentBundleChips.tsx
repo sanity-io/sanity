@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Badge} from '@sanity/ui'
 import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
@@ -6,6 +7,7 @@ import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ReleaseDetailLinkClicked} from '../../../../releases/__telemetry__/releases.telemetry'
 import {ReleaseAvatarIcon} from '../../../../releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../../../releases/plugin'
@@ -55,6 +57,7 @@ function ChipIcon({chip}: {chip: ResolvedChip}) {
 
 function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
   return (
@@ -63,7 +66,11 @@ function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
       fallback={t('release.placeholder-untitled-release')}
     >
       {({displayTitle}) => (
-        <IntentLink intent={RELEASES_INTENT} params={{id: releaseId}}>
+        <IntentLink
+          intent={RELEASES_INTENT}
+          params={{id: releaseId}}
+          onClick={() => telemetry.log(ReleaseDetailLinkClicked, {location: 'variant_detail'})}
+        >
           {/* Constrain to a single line so a long release name truncates with an ellipsis instead
               of wrapping into a tall, heavy two-line filled badge that dominates the row. */}
           <Badge

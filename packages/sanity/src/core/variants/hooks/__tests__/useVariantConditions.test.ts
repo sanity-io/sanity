@@ -9,6 +9,20 @@ import {
   useVariantTypes,
 } from '../useVariantConditions'
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
+function conditionsLoadedEvents() {
+  return telemetryMock.log.mock.calls
+    .filter(([event]) => event.name === 'Variant Conditions Loaded')
+    .map(([, info]) => info)
+}
+
 describe('useVariantConditions', () => {
   beforeEach(() => {
     // Resolver failures and dropped invalid entries are logged for studio developers;
@@ -624,6 +638,182 @@ describe('useVariantConditions', () => {
             'Expected `beta.variants.types` to only include "variant", but received "language"',
         }),
       })
+    })
+  })
+
+  describe('Variant Conditions Loaded telemetry', () => {
+    it('reports a fixed list once, however many consumers read it', async () => {
+      const wrapper = await createTestProvider({
+        config: {
+          beta: {
+            variants: {
+              enabled: true,
+              types: {
+                variant: {
+                  conditions: [
+                    {name: 'audience', values: ['loyal', 'new']},
+                    {name: 'locale', values: ['en-US']},
+                  ],
+                },
+              },
+            },
+          },
+        },
+      })
+
+      renderHook(() => useVariantConditions(), {wrapper})
+      renderHook(() => useVariantConditions(), {wrapper})
+
+      expect(conditionsLoadedEvents()).toEqual([
+        {
+          source: 'static',
+          async: false,
+          outcome: 'ready',
+          durationMs: 0,
+          conditionCount: 2,
+          valueCount: 3,
+          usedSanityClient: false,
+        },
+      ])
+    })
+
+    it('reports a fixed list once in each workspace that shares it', async () => {
+      const conditions = [{name: 'audience', values: ['loyal']}]
+      const variants = {enabled: true, types: {variant: {conditions}}}
+      const firstWrapper = await createTestProvider({
+        config: {name: 'first', basePath: '/first', beta: {variants}},
+      })
+      const secondWrapper = await createTestProvider({
+        config: {name: 'second', basePath: '/second', beta: {variants}},
+      })
+
+      renderHook(() => useVariantConditions(), {wrapper: firstWrapper})
+      renderHook(() => useVariantConditions(), {wrapper: firstWrapper})
+      renderHook(() => useVariantConditions(), {wrapper: secondWrapper})
+
+      expect(conditionsLoadedEvents()).toEqual([
+        expect.objectContaining({source: 'static', outcome: 'ready'}),
+        expect.objectContaining({source: 'static', outcome: 'ready'}),
+      ])
+    })
+
+    it('reports a fixed list with no valid entries as an error', async () => {
+      const wrapper = await createTestProvider({
+        config: {
+          beta: {
+            variants: {
+              enabled: true,
+              types: {variant: {conditions: [{name: '', values: []}]}},
+            },
+          },
+        },
+      })
+
+      renderHook(() => useVariantConditions(), {wrapper})
+
+      expect(conditionsLoadedEvents()).toEqual([
+        expect.objectContaining({source: 'static', outcome: 'error', conditionCount: 0}),
+      ])
+    })
+
+    it('reports an async callback that loads its list with the Sanity client', async () => {
+      const wrapper = await createTestProvider({
+        config: {
+          beta: {
+            variants: {
+              enabled: true,
+              types: {
+                variant: {
+                  conditions: async (context: VariantConditionsContext) => {
+                    context.getClient({apiVersion: '2025-02-19'})
+                    return [{name: 'locale', values: ['en-US', 'nb-NO']}]
+                  },
+                },
+              },
+            },
+          },
+        },
+      })
+
+      const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+      await waitFor(() => {
+        expect(result.current).toMatchObject({mode: 'mapped', status: 'ready'})
+      })
+      expect(conditionsLoadedEvents()).toEqual([
+        {
+          source: 'function',
+          async: true,
+          outcome: 'ready',
+          durationMs: expect.any(Number),
+          conditionCount: 1,
+          valueCount: 2,
+          usedSanityClient: true,
+        },
+      ])
+    })
+
+    it('reports a callback that returns its list synchronously', async () => {
+      const wrapper = await createTestProvider({
+        config: {
+          beta: {
+            variants: {
+              enabled: true,
+              types: {variant: {conditions: () => [{name: 'audience', values: ['loyal']}]}},
+            },
+          },
+        },
+      })
+
+      const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+      await waitFor(() => {
+        expect(result.current).toMatchObject({mode: 'mapped', status: 'ready'})
+      })
+      expect(conditionsLoadedEvents()).toEqual([
+        expect.objectContaining({source: 'function', async: false, usedSanityClient: false}),
+      ])
+    })
+
+    it('reports every attempt of a callback that fails and is retried', async () => {
+      let shouldFail = true
+      const conditions = async () => {
+        if (shouldFail) throw new Error('unavailable')
+        return [{name: 'locale', values: ['en-US']}]
+      }
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true, types: {variant: {conditions}}}}},
+      })
+
+      const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+      await waitFor(() => {
+        expect(result.current).toMatchObject({mode: 'mapped', status: 'error'})
+      })
+      shouldFail = false
+      await act(async () => {
+        if (result.current.mode === 'mapped' && result.current.status === 'error') {
+          result.current.retry?.()
+        }
+      })
+      await waitFor(() => {
+        expect(result.current).toMatchObject({mode: 'mapped', status: 'ready'})
+      })
+
+      expect(conditionsLoadedEvents()).toEqual([
+        expect.objectContaining({source: 'function', async: true, outcome: 'error'}),
+        expect.objectContaining({source: 'function', async: true, outcome: 'ready'}),
+      ])
+    })
+
+    it('reports nothing for freeform conditions', async () => {
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true}}},
+      })
+
+      renderHook(() => useVariantConditions(), {wrapper})
+
+      expect(conditionsLoadedEvents()).toEqual([])
     })
   })
 })

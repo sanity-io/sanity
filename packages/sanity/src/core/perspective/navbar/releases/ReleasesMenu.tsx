@@ -9,6 +9,7 @@ import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ReleaseDetailLinkClicked} from '../../../releases/__telemetry__/releases.telemetry'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
@@ -121,7 +122,10 @@ export function ReleasesMenu({
     setFilterQuery('')
   }, [resetMenuWidth, resetRangeVisibility])
 
-  const {triggerRef, handleNavigate: handleNavigateToRelease} = usePerspectiveDetailLinkTrigger()
+  const {triggerRef, handleNavigate: handleNavigateToRelease} = usePerspectiveDetailLinkTrigger(
+    ReleaseDetailLinkClicked,
+    {location: 'navbar_menu'},
+  )
 
   return (
     <>

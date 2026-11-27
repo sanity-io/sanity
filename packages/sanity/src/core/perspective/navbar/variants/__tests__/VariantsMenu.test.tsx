@@ -34,6 +34,14 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('../../../../perspective/useSetVariant', () => ({
   useSetVariant: vi.fn(() => setVariant),
 }))
@@ -141,6 +149,21 @@ describe('VariantsMenu', () => {
     await renderMenu()
 
     expect(screen.getByTestId('view-all')).toHaveAttribute('href', `/intent/${VARIANTS_INTENT}`)
+  })
+
+  it('reports following the detail link of a variant', async () => {
+    await renderMenu()
+
+    await userEvent
+      .setup()
+      .click(screen.getByTestId(`variant-detail-link-${getVariantId(variantAlphaAudience._id)}`))
+
+    expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Detail Link Clicked'}),
+      {location: 'navbar_menu'},
+    )
+    expect(setVariant).not.toHaveBeenCalled()
   })
 
   it('names the unselected option Default', async () => {
@@ -257,6 +280,10 @@ describe('VariantsMenu', () => {
       type: 'language',
       variantId: createdVariant._id,
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Created'}),
+      {location: 'navbar_menu', conditionCount: 1},
+    )
     expect(
       screen.queryByRole('dialog', {name: 'Create variant definition'}),
     ).not.toBeInTheDocument()

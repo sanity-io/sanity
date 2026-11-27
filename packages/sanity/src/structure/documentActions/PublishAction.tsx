@@ -218,13 +218,21 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     telemetry.log(DocumentPublished, {
       publishedImmediately,
       previouslyPublished,
+      isVariant: isVariantTarget,
     })
     if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
     } else {
       doPublish()
     }
-  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
+  }, [
+    publishedImmediately,
+    previouslyPublished,
+    isVariantTarget,
+    telemetry,
+    setPublishScheduled,
+    doPublish,
+  ])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {
