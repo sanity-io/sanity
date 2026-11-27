@@ -323,7 +323,7 @@
   "peerDependencies": {
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.7.0"
   },
   "browserslist": [
     "node >=24.11",
