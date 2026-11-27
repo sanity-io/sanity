@@ -1,9 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {type Observable, of, Subscription} from 'rxjs'
+import {combineLatest, map, type Observable, of, shareReplay, Subscription} from 'rxjs'
 
 import {createEventsObservable} from './createEventsObservable'
 import {getDocumentChanges} from './getDocumentChanges'
-import {createEditChanges} from './getEditChanges'
+import {createEditChanges, getTransactionChains} from './getEditChanges'
 import {getExpandEvents} from './getExpandEvents'
 import {getInitialFetchEvents} from './getInitialFetchEvents'
 import {getRemoteTransactionsSubscription} from './getRemoteTransactionsSubscription'
@@ -49,8 +49,9 @@ function createIdleEventsStore() {
  * Returns:
  * - `eventsObservable$`: the final `{events, nextCursor, loading, error}` stream for the UI.
  * - `getDocumentChanges(revision$, since$)`: annotated diff stream between two revisions.
- * - `getEditChanges({fromRevisionId, toRevisionId})`: what a range of edit transactions changed
- *   (see `createEditChanges`).
+ * - `getEditChanges({fromRevisionId, toRevisionId})`: what a range of edit transactions changed,
+ *   rebuilt from the transactions fetched for the events and the live document (see
+ *   `createEditChanges`).
  * - `handleExpandEvent`, `loadMoreEvents`, `reloadEvents`: imperative actions.
  * - `remoteTransactionsListener`: call to activate the remote listener; returns the subscription
  *   (the caller owns unsubscription — `useEventsStore` ties it to the component lifecycle).
@@ -68,17 +69,16 @@ export function createEventsStore({
   }
 
   const initialEvents = getInitialFetchEvents({client, documentId})
-  const {expandedEvents$, frozenEditGroups$, handleExpandEvent} = getExpandEvents({
-    client,
-    documentId,
-  })
-  const {remoteEdits$, remoteTransactions$, subscribe} = getRemoteTransactionsSubscription({
-    client,
-    documentId,
-    documentType,
-    isLiveEdit,
-    onRefetch: initialEvents.reloadEvents,
-  })
+  const {expandedEvents$, expandedTransactions$, frozenEditGroups$, handleExpandEvent} =
+    getExpandEvents({client, documentId})
+  const {remoteEdits$, remoteTransactions$, remoteTransactionsStartRev$, liveDocument$, subscribe} =
+    getRemoteTransactionsSubscription({
+      client,
+      documentId,
+      documentType,
+      isLiveEdit,
+      onRefetch: initialEvents.reloadEvents,
+    })
   const eventsObservable$ = createEventsObservable({
     documentId,
     events$: initialEvents.events$,
@@ -86,6 +86,17 @@ export function createEventsStore({
     expandedEvents$,
     frozenEditGroups$,
   })
+  const transactionChains$ = combineLatest([
+    initialEvents.editTransactions$,
+    remoteTransactions$,
+    remoteTransactionsStartRev$,
+    expandedTransactions$,
+  ]).pipe(
+    map(([fetched, remote, remoteStartRev, expanded]) =>
+      getTransactionChains({fetched, remote, remoteStartRev, expanded}),
+    ),
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
 
   return {
     eventsObservable$,
@@ -102,7 +113,12 @@ export function createEventsStore({
         since$: since$,
       })
     },
-    getEditChanges: createEditChanges({client, documentId}),
+    getEditChanges: createEditChanges({
+      client,
+      documentId,
+      chains$: transactionChains$,
+      liveDocument$,
+    }),
     handleExpandEvent: handleExpandEvent,
     loadMoreEvents: initialEvents.loadMore,
     reloadEvents: initialEvents.reloadEvents,

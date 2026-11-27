@@ -21,8 +21,9 @@ import {
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ChangedFieldTitles} from './ChangedFieldTitles'
+import {ChangesErrorBoundary} from './ChangesErrorBoundary'
 import {EditEventChanges} from './EditEventChanges'
-import {useEditEventChanges} from './useEditEventChanges'
+import {getEditEventRange, useEditEventChanges} from './useEditEventChanges'
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent
@@ -42,15 +43,24 @@ const CHANGES_POPOVER_PROPS = {
   portal: true,
 } satisfies Partial<HoverPopoverProps>
 
-/** An edit event, with the titles of the fields it changed once they are loaded. */
-function EditEvent({event}: {event: EditDocumentVersionEvent}) {
+/** The titles of the fields an edit changed, once they are loaded. */
+function EditEventChangedFields({event}: {event: EditDocumentVersionEvent}) {
   const {schemaType} = useDocumentPane()
   const {diff} = useEditEventChanges(event)
+  return diff && <ChangedFieldTitles diff={diff} schemaType={schemaType} />
+}
 
+/** An edit event, with the titles of the fields it changed when they can be shown. */
+function EditEvent({event}: {event: EditDocumentVersionEvent}) {
+  const {fromRevisionId, toRevisionId} = getEditEventRange(event)
   return (
     <Event
       event={event}
-      changedFields={diff && <ChangedFieldTitles diff={diff} schemaType={schemaType} />}
+      changedFields={
+        <ChangesErrorBoundary key={`${fromRevisionId}:${toRevisionId}`} fallback={null}>
+          <EditEventChangedFields event={event} />
+        </ChangesErrorBoundary>
+      }
       // The row's avatars are already the edit's contributors.
       showChangesBy="hidden"
     />

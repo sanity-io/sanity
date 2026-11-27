@@ -61,12 +61,15 @@ describe('getExpandEvents', () => {
       versionRevisionId: 'published-version-rev',
       creationEvent,
     })
-    mockGetDocumentTransactions.mockResolvedValue([
-      editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)}),
-    ])
+    const transaction = editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)})
+    mockGetDocumentTransactions.mockResolvedValue([transaction])
 
-    const {handleExpandEvent, expandedEvents$} = getExpandEvents({client, documentId: DRAFT_ID})
+    const {handleExpandEvent, expandedEvents$, expandedTransactions$} = getExpandEvents({
+      client,
+      documentId: DRAFT_ID,
+    })
     const {values, subscription} = collectEmissions(expandedEvents$)
+    const transactions = collectEmissions(expandedTransactions$)
 
     await handleExpandEvent(publish)
 
@@ -83,6 +86,9 @@ describe('getExpandEvents', () => {
         parentId: publish.id,
       }),
     ])
+    // Kept, so what the edits changed is rebuilt without fetching them again.
+    expect(transactions.values.at(-1)).toEqual([[transaction]])
+    transactions.subscription.unsubscribe()
     subscription.unsubscribe()
   })
 
