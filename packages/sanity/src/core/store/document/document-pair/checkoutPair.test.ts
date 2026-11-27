@@ -335,6 +335,37 @@ describe('checkoutPair -- failed commit routing', () => {
     sub.unsubscribe()
   })
 
+  test('a 409 transactionConflictError is retried under the same transaction id, not cancelled', async () => {
+    // Contention while committing: Content Lake rolled the transaction back, so resending it is safe.
+    const conflict = Object.assign(new Error('Conflict'), {
+      statusCode: 409,
+      response: {body: {error: {type: 'transactionConflictError'}}},
+    })
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => conflict) as never)
+
+    const {draft, published} = checkoutPair(client as unknown as SanityClient, idPair, of(true))
+    const sub = merge(draft.events, published.events).subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'contended'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Not cancelled: a cancel resets to HEAD and reports consistent at once.
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    expect(consistency.values.at(-1)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    const calls = mockedActionRequest.mock.calls as unknown as [unknown, {transactionId: string}][]
+    expect(calls[1][1].transactionId).toBe(calls[0][1].transactionId)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
   test('a network commit failure is retried, not cancelled', async () => {
     // Network errors have no statusCode → transient → failure/retry path.
     const networkError = Object.assign(new Error('Request error'), {isNetworkError: true})
