@@ -74,11 +74,11 @@ export const redesignEditorTheme: Extension = [
         'boxShadow': '-1px 0 0 var(--card-bg-color)',
         'color': 'color-mix(in srgb, var(--card-muted-fg-color) 70%, transparent)',
       },
-      // A line number is as far from the gutters' left edge as from the text: the padding after
-      // it, the fold column and the line's left padding (`VisionCodeMirror`) add up to the 1.25rem
-      // before it
+      // A line number is as far from the gutters' left edge as from the divider, at any number of
+      // digits: the padding after it and the fold column, less the divider's pixel at the end of
+      // it, add up to the 1.25rem before it
       '&.cm-editor .cm-lineNumbers .cm-gutterElement': {
-        padding: '0 2px 0 1.25rem',
+        padding: '0 5px 0 1.25rem',
         minWidth: '2ch',
       },
       '&.cm-editor .cm-activeLine, &.cm-editor .cm-activeLineGutter': {
@@ -126,7 +126,7 @@ export const redesignEditorTheme: Extension = [
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '12px',
+        width: '16px',
         padding: '0',
       },
       [`&.cm-editor .cm-foldGutter .${FOLD_MARKER_CLASS}`]: {
