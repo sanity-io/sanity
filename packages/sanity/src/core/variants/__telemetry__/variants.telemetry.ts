@@ -118,6 +118,8 @@ export type VariantVersionCreatedLocation =
   | 'version_context_menu'
   | 'not_in_variant_banner'
   | 'schedule_draft_action'
+  /** Deleting a scheduled variant draft while keeping its content as the variant draft */
+  | 'delete_scheduled_draft_dialog'
   | 'document_pane'
 
 interface VariantVersionCreatedInfo {

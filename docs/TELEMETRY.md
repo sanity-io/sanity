@@ -99,27 +99,28 @@ Analytics team so downstream dbt models and Looker dashboards stay in sync.
 
 The UI surface an interaction happened on.
 
-| Value                      | Description                                                              |
-| -------------------------- | ------------------------------------------------------------------------ |
-| `document_pane`            | The main document editor pane                                            |
-| `array_list`               | An array-of-objects list field                                           |
-| `nested_object_dialog`     | A nested object edit dialog or popover (tree editing)                    |
-| `variants_overview`        | The Variants tool's list of variant definitions                          |
-| `variant_detail`           | A variant definition's detail page in the Variants tool                  |
-| `navbar_menu`              | A perspective menu in the studio navbar                                  |
-| `document_group_inventory` | The document group inventory beside the document pane                    |
-| `version_context_menu`     | The context menu of a version, on a version chip or an inventory row     |
-| `not_in_variant_banner`    | The document pane banner shown when a variant has no version yet         |
-| `schedule_draft_action`    | The schedule draft document action                                       |
-| `document_inspector`       | The document group inventory in the document inspector (Manage versions) |
-| `compare_versions_menu`    | The version picker of the compare versions view                          |
-| `navbar_label`             | The current perspective's label in the studio navbar                     |
-| `releases_overview`        | The Releases tool's list of releases                                     |
-| `document_header`          | A version chip in the document header                                    |
-| `document_history`         | The document's history timeline                                          |
-| `duplicate_release_toast`  | The toast shown after a release is duplicated                            |
-| `revert_release_toast`     | The toast shown after a release is reverted                              |
-| `variant_dialog`           | The dialog that creates or edits a variant definition                    |
+| Value                           | Description                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------- |
+| `document_pane`                 | The main document editor pane                                                          |
+| `array_list`                    | An array-of-objects list field                                                         |
+| `nested_object_dialog`          | A nested object edit dialog or popover (tree editing)                                  |
+| `variants_overview`             | The Variants tool's list of variant definitions                                        |
+| `variant_detail`                | A variant definition's detail page in the Variants tool                                |
+| `navbar_menu`                   | A perspective menu in the studio navbar                                                |
+| `document_group_inventory`      | The document group inventory beside the document pane                                  |
+| `version_context_menu`          | The context menu of a version, on a version chip or an inventory row                   |
+| `not_in_variant_banner`         | The document pane banner shown when a variant has no version yet                       |
+| `schedule_draft_action`         | The schedule draft document action                                                     |
+| `document_inspector`            | The document group inventory in the document inspector (Manage versions)               |
+| `compare_versions_menu`         | The version picker of the compare versions view                                        |
+| `navbar_label`                  | The current perspective's label in the studio navbar                                   |
+| `releases_overview`             | The Releases tool's list of releases                                                   |
+| `document_header`               | A version chip in the document header                                                  |
+| `document_history`              | The document's history timeline                                                        |
+| `duplicate_release_toast`       | The toast shown after a release is duplicated                                          |
+| `revert_release_toast`          | The toast shown after a release is reverted                                            |
+| `variant_dialog`                | The dialog that creates or edits a variant definition                                  |
+| `delete_scheduled_draft_dialog` | The dialog that deletes a scheduled draft, optionally keeping its content as the draft |
 
 ### `position`
 
@@ -386,7 +387,7 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 | `Variant Detail Link Clicked`               | A link to a definition's detail page is followed                                         | `{ location: 'navbar_menu' \| 'variants_overview' \| 'variant_dialog' }`                                                                        |
 | `Variant Conditions Loaded`                 | The conditions of a variant type are loaded from `beta.variants.types.<type>.conditions` | `{ source: 'static' \| 'function', async, outcome: 'ready' \| 'error' \| 'timeout', durationMs, conditionCount, valueCount, usedSanityClient }` |
 
-`Variant Version Created` carries one of `document_group_inventory`, `version_context_menu`, `not_in_variant_banner` and `schedule_draft_action` as its `location`, or `document_pane` for any other control in the document pane, such as a custom form component. It is logged by `useVariantDocumentOperations`, which the Studio's create paths go through, and by `useCopyToDrafts` when a version context menu copies a variant version to drafts, so a variant version created from the inventory logs both it and `Document Group Inventory Version Created`. Typing into the drafts version of a published variant also creates a variant version, through the document store rather than the create action, and logs neither. Copying a variant version to drafts logs it with `location: 'version_context_menu'` and `bundle: 'drafts'`, also when the copy replaces an existing variant draft; from the inventory it also logs `Document Group Inventory Version Created` with `copy_to_drafts`.
+`Variant Version Created` carries one of `document_group_inventory`, `version_context_menu`, `not_in_variant_banner`, `schedule_draft_action` and `delete_scheduled_draft_dialog` as its `location`, or `document_pane` for any other control in the document pane, such as a custom form component. It is logged by `useVariantDocumentOperations`, which the Studio's create paths go through, by `useCopyToDrafts` when a version context menu copies a variant version to drafts, and by `useScheduleDraftOperations` when deleting a scheduled variant draft keeps its content as the variant draft (`delete_scheduled_draft_dialog`, `bundle: 'drafts'`). A variant version created from the inventory logs both it and `Document Group Inventory Version Created`. Typing into the drafts version of a published variant also creates a variant version, through the document store rather than the create action, and logs neither. Copying a variant version to drafts logs it with `location: 'version_context_menu'` and `bundle: 'drafts'`, also when the copy replaces an existing variant draft; from the inventory it also logs `Document Group Inventory Version Created` with `copy_to_drafts`.
 
 `Variant Conditions Loaded` fires once per workspace and variant type when a variant surface first needs the conditions, and again on every retry of a callback that failed. A fixed list reports `source: 'static'`. A callback reports whether it returned a promise, how long it took and whether it called the `getClient` it is given. The hosts a callback requests are not reported, since they can identify a customer's own infrastructure.
 
