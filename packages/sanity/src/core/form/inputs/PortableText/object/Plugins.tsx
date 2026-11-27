@@ -11,8 +11,15 @@ import {type ComponentType, useMemo} from 'react'
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
+import {type OnCopyFn, type OnPasteFn} from '../../../types/inputProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {CopyPlugin} from '../CopyPlugin'
+import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
+import {HotkeysPlugin} from '../HotkeysPlugin'
+import {PastePlugin} from '../PastePlugin'
 import {PortableTextTablePlugin} from './TablePlugin'
+
+const softBreakBehaviors = [defineBehavior({on: 'insert.soft break', actions: []})]
 
 const markdownConfig: MarkdownConfig = {
   boldDecorator: ({context: {schema}}) =>
@@ -35,6 +42,10 @@ const markdownConfig: MarkdownConfig = {
 
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
+  hotkeys?: PortableTextInputHotkeys
+  onCopy?: OnCopyFn
+  onPaste?: OnPasteFn
+  onToggleFullscreen: () => void
 }) => {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
@@ -114,18 +125,14 @@ export const PortableTextEditorPlugins = (props: {
 
   return (
     <>
+      <HotkeysPlugin hotkeys={props.hotkeys} onToggleFullscreen={props.onToggleFullscreen} />
+      <PastePlugin onPaste={props.onPaste} />
+      <CopyPlugin onCopy={props.onCopy} />
       <BehaviorPlugin behaviors={htmlPasteBehaviors} />
       {isOneLineEditor && (
         <>
           <OneLinePlugin />
-          <BehaviorPlugin
-            behaviors={[
-              defineBehavior({
-                on: 'insert.soft break',
-                actions: [],
-              }),
-            ]}
-          />
+          <BehaviorPlugin behaviors={softBreakBehaviors} />
         </>
       )}
       {CustomComponent ? (
