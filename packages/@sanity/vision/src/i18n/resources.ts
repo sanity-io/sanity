@@ -942,8 +942,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.use-cdn.use-published': 'Use the published perspective',
   /** Under the perspective menu's Auto option; the name is the navbar's perspective */
   'vision.options.perspective.auto.subtitle': 'Follows the studio: {{name}}',
-  /** Under the perspective menu's API default option */
+  /** Under the perspective menu's API default option while the API version does not parse */
   'vision.options.perspective.default.subtitle': 'Whatever the API version defaults to',
+  /**
+   * Under the perspective menu's API default option: the perspective the API applies to a query
+   * without one, for the selected API version
+   */
+  'vision.options.perspective.default.subtitle-for-version':
+    'Defaults to {{perspective}} on API version {{apiVersion}}',
   /** Heading of the perspective menu's group of perspectives only Vision offers */
   'vision.options.perspective.more': 'More perspectives',
   /** Shown in the perspective menu when the search matches no perspective */
@@ -963,12 +969,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.variant.none': 'None',
   /** Label of the variant field */
   'vision.options.variant-label': 'Variant',
-  /** Chip in the request column's action bar while the tab queries another dataset than the workspace */
+  /**
+   * Accessible name of the chip in the request column's action bar while the tab queries another
+   * dataset than the workspace; the chip shows a database icon and the dataset name
+   */
   'vision.overrides.dataset.button': 'Dataset {{dataset}}',
   /** Tooltip of the dataset override chip */
   'vision.overrides.dataset.tooltip':
     'Dataset {{dataset}} differs from the workspace dataset {{workspaceDataset}}. Select to change it in Options.',
-  /** Chip in the request column's action bar while the tab's perspective differs from the navbar's */
+  /**
+   * Accessible name of the chip in the request column's action bar while the tab's perspective
+   * differs from the navbar's; the chip shows the perspective menu's icon and the perspective name
+   */
   'vision.overrides.perspective.button': 'Perspective {{perspective}}',
   /** Tooltip of the perspective override chip; both names as the perspective select shows them */
   'vision.overrides.perspective.tooltip':

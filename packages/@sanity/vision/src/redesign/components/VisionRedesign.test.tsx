@@ -2506,6 +2506,43 @@ describe('VisionRedesign', () => {
     )
   })
 
+  it('shows the dataset and perspective chips as an icon and a name, labelled with the option', () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'overrides',
+      query: '*',
+      options: {datasetMode: 'override', dataset: 'staging', perspective: 'raw'},
+    })
+    saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'overrides'})
+    renderRedesign()
+
+    const datasetChip = screen.getByTestId('vision-override-dataset-button')
+    expect(text(datasetChip)).toBe('staging')
+    expect(datasetChip.getAttribute('aria-label')).toBe('vision.overrides.dataset.button')
+    expect(datasetChip.querySelector('svg')).not.toBeNull()
+
+    const perspectiveChip = screen.getByTestId('vision-override-perspective-button')
+    expect(text(perspectiveChip)).toBe('raw')
+    expect(perspectiveChip.getAttribute('aria-label')).toBe('vision.overrides.perspective.button')
+    expect(perspectiveChip.querySelector('svg')).not.toBeNull()
+  })
+
+  it("says what the API default perspective is for the tab's API version, when it parses", () => {
+    renderRedesign()
+    openRequestTab('options')
+    const defaultItem = () => {
+      fireEvent.click(screen.getByTestId('vision-option-perspective-select'))
+      return screen.getByTestId('vision-option-perspective-item-default')
+    }
+    expect(text(defaultItem())).toContain('vision.options.perspective.default.subtitle-for-version')
+
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: 'nope'},
+    })
+    expect(text(defaultItem())).toContain('vision.options.perspective.default.subtitle')
+    expect(text(defaultItem())).not.toContain('subtitle-for-version')
+  })
+
   it('says at every control that calls Agent Actions that it uses AI credits', async () => {
     renderRedesign()
     // Tooltips stay mounted while closed, so the note is in the document for every control shown:

@@ -61,6 +61,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
     ),
     perspective: (
       <PerspectiveSelect
+        apiVersion={resolved.isApiVersionLocked ? resolved.apiVersion : options.apiVersion}
         id="vision-option-perspective"
         onChange={(perspective) => onChange({perspective})}
         value={options.perspective}
