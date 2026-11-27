@@ -4,7 +4,9 @@
  *
  *   pnpm perf:version-compare --runs 15 --out version-compare.json
  *
- * Load times are measured under emulated network and CPU conditions (--network, --cpu-throttle;
+ * The studios are served over HTTP/2 with TLS like a CDN does (--http-version 1.1 serves plain
+ * HTTP/1.1, whose six connections per host and per-request latency overstate the cost of many
+ * small chunks). Load times are measured under emulated network and CPU conditions (--network, --cpu-throttle;
  * `slow-4g` and `fast-4g` by default), each sample in a fresh context with the HTTP cache off.
  *
  * One more load of the authenticated `/404` page (the login page with --skip-authenticated) per
@@ -38,7 +40,7 @@ import {
   type ProfileResult,
   type VersionInfo,
 } from './report'
-import {startStaticServer} from './server'
+import {startStaticServer, type HttpVersion} from './server'
 import {isProfileName, PROFILES, type ProfileName, type ThrottleProfile} from './throttle'
 import {mainThreadTasks, mainThreadTime} from './trace'
 import {buildWaterfall, countBytes, type ByteCount, type Waterfall} from './waterfall'
@@ -47,7 +49,7 @@ import {buildWaterfall, countBytes, type ByteCount, type Waterfall} from './wate
 const INVOKED_FROM = process.env.INIT_CWD ?? process.cwd()
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
 const API_HOST = 'https://api.sanity.work'
-// The only origin the e2e project allows besides the e2e studio's own.
+// With HTTP/1.1 the studio is reached at the e2e studio's own origin, which the project allows.
 const DEFAULT_PORT = 3339
 
 type Side = 'v6' | 'v7'
@@ -56,6 +58,7 @@ function parseOptions() {
   const {values} = parseArgs({
     options: {
       'cpu-throttle': {type: 'string'},
+      'http-version': {default: '2', type: 'string'},
       'network': {default: 'slow-4g,fast-4g', type: 'string'},
       'out': {default: 'version-compare.json', type: 'string'},
       'port': {default: String(DEFAULT_PORT), type: 'string'},
@@ -70,6 +73,10 @@ function parseOptions() {
   })
   const runs = Number(values.runs)
   if (!Number.isInteger(runs) || runs < 1) throw new Error('--runs must be a positive integer')
+  if (values['http-version'] !== '1.1' && values['http-version'] !== '2') {
+    throw new Error('--http-version must be 1.1 or 2')
+  }
+  const httpVersion: HttpVersion = values['http-version']
   const names = values.network.split(',').map((name) => name.trim())
   const unknown = names.filter((name) => !isProfileName(name))
   if (unknown.length > 0 || names.length === 0) {
@@ -86,6 +93,7 @@ function parseOptions() {
   })
   const out = path.resolve(INVOKED_FROM, values.out)
   return {
+    httpVersion,
     out,
     profiles,
     port: Number(values.port),
@@ -135,8 +143,12 @@ async function main(): Promise<void> {
     })
   }
 
-  const server = await startStaticServer(options.port)
-  const browser: Browser = await chromium.launch()
+  const server = await startStaticServer({
+    certDir: path.join(options.workDir, 'certs'),
+    httpVersion: options.httpVersion,
+    port: options.port,
+  })
+  const browser: Browser = await chromium.launch({args: server.browserArgs})
   const sides: Side[] = ['v6', 'v7']
 
   try {
@@ -298,6 +310,7 @@ async function main(): Promise<void> {
         ci: process.env.CI === 'true',
         node: process.version,
         os: `${os.platform()} ${os.release()}`,
+        httpVersion: options.httpVersion === '2' ? 'HTTP/2 (TLS)' : 'HTTP/1.1',
         profiles: options.profiles.map((profile) => profile.name).join(','),
         runs: options.runs,
         staticServerCompression: 'brotli',
