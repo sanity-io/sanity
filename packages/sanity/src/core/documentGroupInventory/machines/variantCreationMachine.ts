@@ -27,7 +27,10 @@ interface VariantCreationContext {
   error?: unknown
   /** Whether this instance may never create a variant. */
   readOnly: boolean
-  /** Whether the variants feature is switched on for this workspace. */
+  /**
+   * Whether the variants feature is switched on for this workspace. When it is switched off, no
+   * variant is selected and creation makes a version of the default variant.
+   */
   enabled: boolean
 }
 
@@ -51,18 +54,20 @@ export const variantCreationMachine = setup({
     createVariant: fromPromise<
       void,
       {
-        variantDefinition: SystemVariant
+        /** Absent when the variants feature is switched off: the version is of the default variant. */
+        variantDefinition: SystemVariant | undefined
         bundle: Exclude<TargetPerspective, 'published'>
         baseId: string | undefined
       }
     >(() => Promise.reject(new Error('`createVariant` actor must be provided.'))),
   },
   guards: {
-    hasSelectedVariant: ({context}) => typeof context.selectedVariantId !== 'undefined',
     hasSelectedBundle: ({context}) => typeof context.selectedBundle !== 'undefined',
-    isMutable: ({context}) => !context.readOnly && context.enabled,
+    hasRequiredVariant: ({context}) =>
+      !context.enabled || typeof context.selectedVariantId !== 'undefined',
+    isMutable: ({context}) => !context.readOnly,
     canRequestCreation: and(['isMutable']),
-    canConfirmCreation: and(['isMutable', 'hasSelectedVariant', 'hasSelectedBundle']),
+    canConfirmCreation: and(['isMutable', 'hasRequiredVariant', 'hasSelectedBundle']),
   },
 }).createMachine({
   id: 'variantCreation',
@@ -142,14 +147,20 @@ export const variantCreationMachine = setup({
             input: ({context}) => {
               const {selectedVariantId, selectedBundle} = context
 
-              const variantDefinition = context.variants?.variants.get(selectedVariantId ?? '')
+              // Without the variants feature, the version is of the default variant.
+              const variantDefinition = context.enabled
+                ? context.variants?.variants.get(selectedVariantId ?? '')
+                : undefined
 
               const bundle =
                 selectedBundle?.type === 'drafts'
                   ? 'drafts'
                   : context.releases?.releases.get(selectedBundle?.releaseId ?? '')
 
-              if (typeof variantDefinition === 'undefined' || typeof bundle === 'undefined') {
+              if (
+                (context.enabled && typeof variantDefinition === 'undefined') ||
+                typeof bundle === 'undefined'
+              ) {
                 throw new Error('Cannot create a variant before a variant and bundle are selected.')
               }
 

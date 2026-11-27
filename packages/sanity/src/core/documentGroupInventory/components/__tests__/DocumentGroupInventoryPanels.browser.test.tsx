@@ -148,6 +148,16 @@ const VERSION_SETS: VariantSet[] = [
   },
 ]
 
+// The same versions while Content Variants is switched off: one set, its versions named after
+// their bundle.
+const FLAT_VERSION_SETS: VariantSet[] = [
+  {
+    key: 'studio:all',
+    name: '3 versions',
+    variants: [PUBLISHED, DRAFT, {...SUMMER_SALE_IN_ASAP, name: activeASAPRelease.metadata.title}],
+  },
+]
+
 const REFERRING_DOCUMENTS: ReferringDocuments = {
   isLoading: false,
   totalCount: 4,
@@ -200,6 +210,7 @@ const COMPONENTS: DocumentGroupInventoryComponents = {
  */
 const harnessMachine = setup({
   types: {} as {
+    input: {variantsEnabled?: boolean} | undefined
     context: {
       selectionRef: ActorRefFromLogic<typeof selectionMachine>
       deletionRef: ActorRefFromLogic<typeof deletionMachine>
@@ -214,7 +225,7 @@ const harnessMachine = setup({
   },
 }).createMachine({
   id: 'documentGroupInventoryPanelsHarness',
-  context: ({spawn}) => ({
+  context: ({spawn, input}) => ({
     selectionRef: spawn(selectionMachine, {input: undefined}),
     deletionRef: spawn(
       deletionMachine.provide({
@@ -233,7 +244,7 @@ const harnessMachine = setup({
           createVariant: fromPromise(() => new Promise<void>(() => {})),
         },
       }),
-      {input: {enabled: true}},
+      {input: {enabled: input?.variantsEnabled ?? true}},
     ),
   }),
   on: {
@@ -251,8 +262,8 @@ type HarnessActor = ReturnType<typeof createActor<typeof harnessMachine>>
 
 let harness: HarnessActor | undefined
 
-function startHarness() {
-  harness = createActor(harnessMachine).start()
+function startHarness({variantsEnabled}: {variantsEnabled?: boolean} = {}) {
+  harness = createActor(harnessMachine, {input: {variantsEnabled}}).start()
   const {selectionRef, deletionRef, variantCreationRef} = harness.getSnapshot().context
   selectionRef.send({type: 'variants.changed', variants: VARIANTS, loaded: true})
   return {selectionRef, deletionRef, variantCreationRef}
@@ -312,7 +323,9 @@ const CREATE_VARIANT_TITLE_DOCUMENT = {_id: PUBLISHED_ID, _type: DOCUMENT_TYPE}
 const CreateVariantHarness: ComponentType<{
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
   sets?: VariantSet[]
-}> = ({variantCreationRef, sets = VERSION_SETS}) => {
+  variantsEnabled?: boolean
+  liveEdit?: boolean
+}> = ({variantCreationRef, sets = VERSION_SETS, variantsEnabled = true, liveEdit = false}) => {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <Card border radius={3} style={{display: 'flex', width: 360, height: 480}}>
@@ -320,6 +333,8 @@ const CreateVariantHarness: ComponentType<{
           <CreateVariant
             variantCreationRef={variantCreationRef}
             sets={sets}
+            variantsEnabled={variantsEnabled}
+            liveEdit={liveEdit}
             documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
           />
           <Body />
@@ -461,6 +476,103 @@ describe('CreateVariant', () => {
       .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
       .toBeVisible()
     await expect.element($baseMenu.getByText(/Proposed changes/)).not.toBeInTheDocument()
+  })
+
+  it('creates a version of the default variant while Content Variants is switched off', async () => {
+    // Confirming swaps the button for a spinner, so archive the form before the click.
+    configure({disableAutoSnapshot: true})
+    const {settleChromaticEndState} = testHelpers()
+    const {variantCreationRef} = startHarness({variantsEnabled: false})
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        sets={FLAT_VERSION_SETS}
+        variantsEnabled={false}
+      />,
+    )
+
+    await expect.element($targetTrigger).toBeVisible()
+    await expect.element($variantTrigger).not.toBeInTheDocument()
+    await expect.element(page.getByText('Variant', {exact: true})).not.toBeInTheDocument()
+
+    // The default variant already has a draft, so the first release is the first target.
+    await expect.element($targetTrigger).toMatchTextContent(activeASAPRelease.metadata.title)
+    await userEvent.click($targetTrigger)
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+      .not.toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await expect.element($targetMenu).not.toBeVisible()
+
+    // Versions are named after their bundle.
+    await expect.element($baseTrigger).toMatchTextContent('Nearest version')
+    await userEvent.click($baseTrigger)
+    await expect.element($baseMenu.getByRole('menuitem', {name: 'Draft'})).toBeVisible()
+    await expect.element($baseMenu.getByRole('menuitem', {name: 'Published'})).toBeVisible()
+    await expect
+      .element($baseMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}))
+      .toBeVisible()
+    await expect.element($baseMenu.getByText(/·/)).not.toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await expect.element($baseMenu).not.toBeVisible()
+
+    await settleChromaticEndState()
+    await takeSnapshot('variants-switched-off')
+
+    await userEvent.click(page.getByRole('button', {name: 'Create version'}))
+    const snapshot = variantCreationRef.getSnapshot()
+    expect(snapshot.matches({active: 'creating'})).toBe(true)
+    expect(snapshot.context.selectedVariantId).toBeUndefined()
+    expect(snapshot.context.selectedBundle).toEqual({
+      type: 'release',
+      releaseId: activeASAPRelease._id,
+    })
+    expect(snapshot.context.selectedBaseId).toBeUndefined()
+  })
+
+  it('offers no drafts target for a live-edit document while Content Variants is switched off', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness({variantsEnabled: false})
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // A live-edit document has only its published version.
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        sets={[{key: 'studio:all', name: '1 version', variants: [PUBLISHED]}]}
+        variantsEnabled={false}
+        liveEdit
+      />,
+    )
+
+    await expect.element($targetTrigger).toMatchTextContent(activeASAPRelease.metadata.title)
+    await userEvent.click($targetTrigger)
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .toBeVisible()
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+      .not.toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await expect.element($targetMenu).not.toBeVisible()
+
+    await userEvent.click(page.getByRole('button', {name: 'Create version'}))
+    expect(variantCreationRef.getSnapshot().context.selectedBundle).toEqual({
+      type: 'release',
+      releaseId: activeASAPRelease._id,
+    })
+  })
+
+  it('still offers the drafts target for a variant of a live-edit document', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} liveEdit />)
+
+    await expect.element($targetTrigger).toMatchTextContent('Drafts')
   })
 
   it('offers the open releases not holding the variant, and falls back when one does', async () => {

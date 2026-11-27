@@ -27,6 +27,7 @@ import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {usePerspective} from '../../perspective/usePerspective'
+import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -59,6 +60,7 @@ import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVer
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
+import {createDefaultVersion} from './createDefaultVersion'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
@@ -163,6 +165,7 @@ export function DocumentGroupInventory(
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const {feedbackDialogOpened} = useFeedbackTelemetry()
   const setVariant = useSetVariant()
+  const setPerspective = useSetPerspective()
   const {createVariantDocument} = useVariantDocumentOperations()
 
   const filterString = useMemo(
@@ -241,6 +244,11 @@ export function DocumentGroupInventory(
                   variants: fromObservable(() => variants),
                   releases: fromObservable(() => releases),
                   createVariant: fromPromise(async ({input, signal}) => {
+                    const bundleId =
+                      typeof input.bundle === 'string'
+                        ? undefined
+                        : getReleaseIdFromReleaseDocumentId(input.bundle._id)
+
                     const baseBundle: VariantCreationBundle =
                       typeof input.bundle === 'string'
                         ? {type: 'drafts'}
@@ -272,6 +280,34 @@ export function DocumentGroupInventory(
                           : new Error('Failed to load document versions')
                       }
                       return versionSnapshot.versions
+                    }
+
+                    // Without the variants feature, the version is of the
+                    // default variant.
+                    if (typeof input.variantDefinition === 'undefined') {
+                      const versions = await readVersions()
+                      const pickedBaseId = input.baseId
+
+                      const base =
+                        typeof pickedBaseId === 'string'
+                          ? (versions.find(({_id}) => _id === pickedBaseId) ?? {_id: pickedBaseId})
+                          : getNearestBaseVersion({
+                              variantId: undefined,
+                              bundle: baseBundle,
+                              versions,
+                            })
+
+                      await createDefaultVersion({
+                        client,
+                        documentGroupId: getPublishedId(documentId),
+                        documentType,
+                        bundleId,
+                        base,
+                        signal,
+                      })
+
+                      setPerspective(perspective)
+                      return
                     }
 
                     const variantDefinition = input.variantDefinition
@@ -322,6 +358,8 @@ export function DocumentGroupInventory(
           releases,
           createVariantDocument,
           setVariant,
+          setPerspective,
+          client,
           documentType,
           documentId,
           schema,
@@ -362,6 +400,8 @@ export function DocumentGroupInventory(
           <CreateVariant
             variantCreationRef={variantCreationRef}
             sets={sets}
+            variantsEnabled={variantsEnabled ?? false}
+            liveEdit={schema?.liveEdit ?? false}
             documentTitle={components && <components.DocTitle document={titleDocument} />}
           />
         ) : (
