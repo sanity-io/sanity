@@ -1527,8 +1527,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       description-to-co-authors:
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.1
+        version: 0.3.1
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
@@ -11778,9 +11778,9 @@ packages:
   des.js@1.1.0:
     resolution: {integrity: sha512-r17GxjhUCjSRy8aiJpr8/UadFIzMzJGexI3Nmz4ADi9LYSFx4gTBp80+NaX/YsXWWLhpZ7v/v/ubEc/bCNfKwg==}
 
-  description-to-co-authors@0.3.0:
-    resolution: {integrity: sha512-GaMDuvOCmtkQ3tjjawAEl3YhxNEIsR9tmlXV4xeypGyiO75YLXRm3iHKltqrmxNgtNlppVzT2pdsPM2Yzm67CA==}
-    engines: {node: '>=18.3.0'}
+  description-to-co-authors@0.3.1:
+    resolution: {integrity: sha512-YHtCXNmjwCivlXUoNoZ49wqStJWXogOldslKut05F+2ybveNp+qEZcyxNrtjStk7AzntYIrwhM3dd1tT5dIyyw==}
+    engines: {node: '>=18.12.0'}
 
   destr@2.0.5:
     resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
@@ -26155,7 +26155,7 @@ snapshots:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
 
-  description-to-co-authors@0.3.0: {}
+  description-to-co-authors@0.3.1: {}
 
   destr@2.0.5: {}
 
