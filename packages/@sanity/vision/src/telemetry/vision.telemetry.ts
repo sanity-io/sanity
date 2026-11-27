@@ -1,9 +1,11 @@
 import {defineEvent} from '@sanity/telemetry'
 
 /**
- * Usage events for the Vision tool. Payloads are coarse enums, counts and booleans only: never
- * query text, parameter names or values, results, document IDs or contents, dataset, project,
- * perspective or release names, prompts, titles, or anything else a user typed or fetched.
+ * Usage events for the Vision tool. Payloads are coarse enums, counts, booleans and
+ * `visionVersion` only: never query text, parameter names or values, results, document IDs or
+ * contents, dataset, project, perspective or release names, prompts, titles, or anything else a
+ * user typed or fetched. `visionVersion` is the `@sanity/vision` package version. This module
+ * does not read it; the logger adds the constant injected when that package is built.
  *
  * The shared section covers what both the classic tool and the redesign can do, and is kept
  * byte for byte the same on every release line that ships Vision, so usage compares across
@@ -14,6 +16,11 @@ import {defineEvent} from '@sanity/telemetry'
 /* -------------------------------------------------------------------------------------------
  * Shared: classic and redesign
  * ------------------------------------------------------------------------------------------- */
+
+/** `@sanity/vision` package version that logged the event. */
+export interface VisionVersionData {
+  visionVersion: string
+}
 
 /** Which Vision UI fired an event that both of them can fire */
 export type VisionUi = 'classic' | 'redesign'
@@ -29,14 +36,14 @@ export interface VisionQueryRunData {
 }
 
 /** The tool mounted. Fires once per visit to the tool, not on every render. */
-export const VisionOpened = defineEvent<{ui: VisionUi}>({
+export const VisionOpened = defineEvent<VisionVersionData & {ui: VisionUi}>({
   name: 'Vision Opened',
   version: 1,
   description: 'User opened the Vision tool. ui is the classic tool or the redesign.',
 })
 
 /** User ran the current query. A dataset, perspective, or API version change does not count. */
-export const VisionQueryRun = defineEvent<VisionQueryRunData>({
+export const VisionQueryRun = defineEvent<VisionVersionData & VisionQueryRunData>({
   name: 'Vision Query Run',
   version: 1,
   description:
@@ -45,7 +52,7 @@ export const VisionQueryRun = defineEvent<VisionQueryRunData>({
 })
 
 /** The run included parameters. Fires with Vision Query Run, and only then. */
-export const VisionParamsUsed = defineEvent<{mode: VisionQueryMode}>({
+export const VisionParamsUsed = defineEvent<VisionVersionData & {mode: VisionQueryMode}>({
   name: 'Vision Params Used',
   version: 1,
   description:
@@ -53,27 +60,27 @@ export const VisionParamsUsed = defineEvent<{mode: VisionQueryMode}>({
 })
 
 /** User stopped a fetch before it answered, or stopped listening */
-export const VisionQueryCancelled = defineEvent<{mode: VisionQueryMode}>({
+export const VisionQueryCancelled = defineEvent<VisionVersionData & {mode: VisionQueryMode}>({
   name: 'Vision Query Cancelled',
   version: 1,
   description: 'User cancelled a running Vision fetch, or stopped a Vision listener.',
 })
 
-export const VisionDatasetChanged = defineEvent({
+export const VisionDatasetChanged = defineEvent<VisionVersionData>({
   name: 'Vision Dataset Changed',
   version: 1,
   description:
     'User changed the dataset a Vision query runs against. The dataset name is not recorded.',
 })
 
-export const VisionPerspectiveChanged = defineEvent({
+export const VisionPerspectiveChanged = defineEvent<VisionVersionData>({
   name: 'Vision Perspective Changed',
   version: 1,
   description:
     'User changed the perspective a Vision query runs against. The perspective is not recorded.',
 })
 
-export const VisionApiVersionChanged = defineEvent<{custom: boolean}>({
+export const VisionApiVersionChanged = defineEvent<VisionVersionData & {custom: boolean}>({
   name: 'Vision API Version Changed',
   version: 1,
   description:
@@ -88,7 +95,7 @@ export const VisionApiVersionChanged = defineEvent<{custom: boolean}>({
  */
 export type VisionCopyTarget = 'query' | 'params' | 'url' | 'result'
 
-export const VisionCopied = defineEvent<{target: VisionCopyTarget}>({
+export const VisionCopied = defineEvent<VisionVersionData & {target: VisionCopyTarget}>({
   name: 'Vision Copied',
   version: 1,
   description:
@@ -97,7 +104,7 @@ export const VisionCopied = defineEvent<{target: VisionCopyTarget}>({
 })
 
 /** A query URL pasted into Vision loaded the query, its params and its options */
-export const VisionQueryUrlPasted = defineEvent({
+export const VisionQueryUrlPasted = defineEvent<VisionVersionData>({
   name: 'Vision Query URL Pasted',
   version: 1,
   description: 'User pasted a query URL into Vision, which loaded it. The URL is not recorded.',
@@ -120,11 +127,13 @@ export type VisionSavedQueryAction =
   | 'unshare'
   | 'delete'
 
-export const VisionSavedQueryUsed = defineEvent<{
-  action: VisionSavedQueryAction
-  /** Whether the query acted on is in the shared list. False for `save`. */
-  shared: boolean
-}>({
+export const VisionSavedQueryUsed = defineEvent<
+  VisionVersionData & {
+    action: VisionSavedQueryAction
+    /** Whether the query acted on is in the shared list. False for `save`. */
+    shared: boolean
+  }
+>({
   name: 'Vision Saved Query Used',
   version: 1,
   description:
@@ -138,7 +147,9 @@ export const VisionSavedQueryUsed = defineEvent<{
  */
 export type VisionSavedQueriesFilter = 'all' | 'personal' | 'shared' | 'search'
 
-export const VisionSavedQueriesFiltered = defineEvent<{filter: VisionSavedQueriesFilter}>({
+export const VisionSavedQueriesFiltered = defineEvent<
+  VisionVersionData & {filter: VisionSavedQueriesFilter}
+>({
   name: 'Vision Saved Queries Filtered',
   version: 1,
   description:
@@ -148,7 +159,9 @@ export const VisionSavedQueriesFiltered = defineEvent<{filter: VisionSavedQuerie
 /** `json`, `csv`: the result as a file. `typescript`, `zod`: types inferred from it (redesign). */
 export type VisionResultExportFormat = 'json' | 'csv' | 'typescript' | 'zod'
 
-export const VisionResultExported = defineEvent<{format: VisionResultExportFormat}>({
+export const VisionResultExported = defineEvent<
+  VisionVersionData & {format: VisionResultExportFormat}
+>({
   name: 'Vision Result Exported',
   version: 1,
   description:
@@ -161,7 +174,9 @@ export const VisionResultExported = defineEvent<{format: VisionResultExportForma
  */
 export type VisionDocumentOpenSource = 'result' | 'document-list'
 
-export const VisionDocumentOpened = defineEvent<{source: VisionDocumentOpenSource}>({
+export const VisionDocumentOpened = defineEvent<
+  VisionVersionData & {source: VisionDocumentOpenSource}
+>({
   name: 'Vision Document Opened',
   version: 1,
   description:
@@ -176,7 +191,9 @@ export const VisionDocumentOpened = defineEvent<{source: VisionDocumentOpenSourc
  */
 export type VisionPanel = 'saved-queries' | 'sidebar' | 'request' | 'response'
 
-export const VisionPanelToggled = defineEvent<{panel: VisionPanel; open: boolean}>({
+export const VisionPanelToggled = defineEvent<
+  VisionVersionData & {panel: VisionPanel; open: boolean}
+>({
   name: 'Vision Panel Toggled',
   version: 1,
   description: 'User opened or collapsed a Vision panel.',

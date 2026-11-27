@@ -4,6 +4,7 @@ import {cleanup, fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {VISION_VERSION} from '../version'
 import {ResultView} from './ResultView'
 
 const log = vi.fn()
@@ -70,6 +71,6 @@ describe('ResultView', () => {
       name: 'Vision Document Opened',
       version: 1,
     })
-    expect(log.mock.calls[0][1]).toEqual({source: 'result'})
+    expect(log.mock.calls[0][1]).toEqual({source: 'result', visionVersion: VISION_VERSION})
   })
 })
