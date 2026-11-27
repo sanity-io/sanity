@@ -1,8 +1,9 @@
 name: Studio v6 vs v7
 
 # Builds a minimal studio from `main` (v6) and from the checked-out ref (v7), measures login
-# time, JS size and the authenticated tool page with Playwright, and publishes one JSON file
-# plus a job summary. See `e2e/scripts/versionCompare/index.ts`.
+# time, JS size and the authenticated tool page with Playwright, and publishes one JSON file,
+# a Chrome trace and network log of one tool page load per version, and a job summary. See
+# `e2e/scripts/versionCompare/index.ts`.
 on:
   push:
     branches: [next-major]
@@ -66,6 +67,7 @@ jobs:
           --v7-ref "$V7_REF"
           --runs "$RUNS"
           --out "$RUNNER_TEMP/version-compare.json"
+          --trace-dir "$RUNNER_TEMP/version-compare-traces"
           --work-dir "$RUNNER_TEMP/versions"
 
       - name: Upload results
@@ -73,7 +75,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: version-compare
-          path: ${{ runner.temp }}/version-compare.json
+          path: |
+            ${{ runner.temp }}/version-compare.json
+            ${{ runner.temp }}/version-compare-traces/
           if-no-files-found: ignore
 
       - name: Delete dataset

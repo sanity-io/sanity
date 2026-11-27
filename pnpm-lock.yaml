@@ -1171,6 +1171,9 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
+      '@vitejs/plugin-basic-ssl':
+        specifier: ^2.3.0
+        version: 2.3.0(vite@8.3.8)
       chromatic:
         specifier: ^18.15.1
         version: 18.15.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.4)
