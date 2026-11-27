@@ -3897,6 +3897,57 @@ describe('VisionRedesign', () => {
     expect(document.activeElement).toBe(params)
   })
 
+  it('puts the focus in the shown query editor when the tool opens and when a tab is clicked or added', async () => {
+    const {hide, show} = renderRedesign()
+    const tabButtons = () => screen.getAllByTestId('vision-tab-button')
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    typeQuery('*[_type == "author"]')
+
+    // `detail` counts the clicks of a pointer; a click from the keyboard has none
+    fireEvent.click(screen.getByTestId('vision-new-tab'), {detail: 1})
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    expect(getQueryEditor().value).toBe('')
+    act(() => tabButtons()[0].focus())
+    fireEvent.click(tabButtons()[0], {detail: 1})
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    expect(getQueryEditor().value).toBe('*[_type == "author"]')
+
+    // Enter or Space on a tab leaves the focus on the tabs, as the arrow keys do
+    act(() => tabButtons()[1].focus())
+    fireEvent.click(tabButtons()[1])
+    await act(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())))
+    expect(document.activeElement).toBe(tabButtons()[1])
+
+    // The rename field a double click opens keeps the focus its first click asked for
+    fireEvent.click(tabButtons()[1], {detail: 1})
+    fireEvent.doubleClick(tabButtons()[1])
+    const input = screen.getByTestId('vision-tab-title-input')
+    await act(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())))
+    expect(document.activeElement).toBe(input)
+    fireEvent.keyDown(input, {key: 'Escape'})
+    await waitFor(() => expect(document.activeElement).toBe(tabButtons()[1]))
+
+    // Shown again from a link to it in the navbar, the tool puts the focus back in the editor,
+    // but not when the focus is in a field outside it
+    const link = document.createElement('a')
+    link.href = '#vision'
+    const field = document.createElement('input')
+    document.body.append(link, field)
+    onTestFinished(() => {
+      link.remove()
+      field.remove()
+    })
+    hide()
+    act(() => link.focus())
+    show()
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    hide()
+    act(() => field.focus())
+    show()
+    await act(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())))
+    expect(document.activeElement).toBe(field)
+  })
+
   it('puts the focus on the tab when its editor cannot take it, as in the phone layout with the result shown', async () => {
     renderRedesign()
     const root = await screen.findByTestId('vision-root')
