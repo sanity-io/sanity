@@ -1,4 +1,5 @@
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -12,6 +13,14 @@ const intentLinkMock = vi.fn(({children, intent, searchParams, params, ...props}
 ))
 
 const useDocumentPreviewValuesMock = vi.fn(() => ({isLoading: false, value: {title: 'Article'}}))
+
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -61,6 +70,7 @@ describe('VariantDocumentPreview', () => {
   beforeEach(() => {
     intentLinkMock.mockClear()
     useDocumentPreviewValuesMock.mockClear()
+    telemetryMock.log.mockClear()
   })
 
   it('omits perspective search params for drafts', async () => {
@@ -82,6 +92,34 @@ describe('VariantDocumentPreview', () => {
       }),
     )
   })
+
+  it.each([
+    [undefined, 'published'],
+    ['drafts', 'drafts'],
+    ['rASAP', 'release'],
+  ] as const)(
+    'reports opening a %s version from the documents table as %s',
+    async (bundleId, bundle) => {
+      const user = userEvent.setup()
+      const wrapper = await createTestProvider()
+
+      render(
+        <VariantDocumentPreview
+          releasesById={releasesById}
+          row={createRow(bundleId)}
+          variantId={VARIANT_ID}
+        />,
+        {wrapper},
+      )
+      await user.click(screen.getByTestId('edit-intent-link'))
+
+      expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+      expect(telemetryMock.log).toHaveBeenCalledWith(
+        expect.objectContaining({name: 'Variant Definition Document Opened'}),
+        {bundle},
+      )
+    },
+  )
 
   it('adds perspective=published for published bundle versions', async () => {
     const wrapper = await createTestProvider()

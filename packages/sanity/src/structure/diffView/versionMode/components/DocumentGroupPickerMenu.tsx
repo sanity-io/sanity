@@ -80,6 +80,7 @@ export const DocumentGroupPickerMenu: ComponentType<{
           <div className={documentGroupPickerMenuPopover}>
             <DocumentGroupInventory
               mode="readOnly"
+              location="compare_versions_menu"
               documentId={document.id}
               documentType={document.type}
               selectedId={document.id}

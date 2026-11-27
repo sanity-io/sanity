@@ -33,7 +33,11 @@ export function VariantMenuButton({
     isDeleteDialogOpen,
     isDeleting,
     variantTitle: dialogVariantTitle,
-  } = useVariantDeleteAction(variant._id, {documentCount, variantTitle})
+  } = useVariantDeleteAction(variant._id, {
+    documentCount,
+    location: 'variants_overview',
+    variantTitle,
+  })
 
   return (
     <>
@@ -62,6 +66,7 @@ export function VariantMenuButton({
       />
       {isEditDialogOpen && (
         <EditVariantDialog
+          location="variants_overview"
           onCancel={() => setIsEditDialogOpen(false)}
           onSubmit={() => setIsEditDialogOpen(false)}
           variant={variant}

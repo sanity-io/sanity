@@ -1,7 +1,7 @@
 import {type SanityDocument, type ValidationMarker} from '@sanity/types'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
-import {type DocumentActionProps, type EditStateFor} from 'sanity'
+import {type DocumentActionProps, type EditStateFor, type SystemVariant} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -11,6 +11,7 @@ import {useSetImmediateValidation} from '../../../core/hooks/useSetImmediateVali
 import {useSyncState} from '../../../core/hooks/useSyncState'
 import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
 import {useValidationStatus} from '../../../core/hooks/useValidationStatus'
+import {type VersionInfoDocumentStub} from '../../../core/releases/store/types'
 import {useDocumentPairPermissions} from '../../../core/store/grants/documentPairPermissions'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
@@ -119,6 +120,54 @@ function keystroke(rev: string) {
   return {draft, editState, targetDocumentState, props}
 }
 
+const VARIANT: SystemVariant = {
+  _id: '_.variants.alpha-audience',
+  _type: 'system.variant',
+  _createdAt: '2024-01-01T00:00:00Z',
+  _updatedAt: '2024-01-01T00:00:00Z',
+  _rev: 'rev-alpha-audience',
+  conditions: {audience: 'alpha'},
+  priority: 0,
+}
+
+function versionStub(id: string, rev: string, bundleId?: string): VersionInfoDocumentStub {
+  return {
+    _id: id,
+    _type: 'author',
+    _rev: rev,
+    _createdAt: '2024-01-01T00:00:00Z',
+    _updatedAt: '2024-01-01T00:00:00Z',
+    _system: {
+      bundleId,
+      group: {_ref: ID, _weak: true},
+      variants: [{_ref: VARIANT._id, _key: 'variant'}],
+    },
+  }
+}
+
+/**
+ * The same keystroke on the drafts version of a variant, whose published version has revision
+ * `publishedRevision` (none when the variant was never published).
+ */
+function variantKeystroke(rev: string, publishedRevision: string | undefined) {
+  const state = keystroke(rev)
+  const draft = versionStub(`versions.scope-draft.${ID}`, `draft-${rev}`, 'drafts')
+  const targetDocumentState: TargetDocumentState = {
+    status: 'ready',
+    targetDocument: draft,
+    scopeId: 'scope-draft',
+    variant: VARIANT,
+    siblings: {
+      published: publishedRevision
+        ? versionStub(`versions.scope-published.${ID}`, publishedRevision)
+        : undefined,
+      draft,
+      version: undefined,
+    },
+  }
+  return {...state, targetDocumentState}
+}
+
 function applyKeystroke(
   state: ReturnType<typeof keystroke>,
   {
@@ -149,6 +198,10 @@ let operations: {publish: {disabled: false; execute: Mock}}
 beforeAll(async () => {
   wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 })
+
+function documentPublishedEvents() {
+  return telemetry.log.mock.calls.filter(([event]) => event.name === 'Document Published')
+}
 
 async function renderPublishAction(props: DocumentActionProps) {
   const rendered = renderHook(usePublishAction, {wrapper, initialProps: props})
@@ -224,5 +277,47 @@ describe('usePublishAction', () => {
     act(() => result.current?.onHandle?.())
     expect(operations.publish.execute).not.toHaveBeenCalled()
     expect(immediate()).toEqual({enabled: true})
+  })
+
+  describe('variant documents', () => {
+    it.each([
+      ['replaces an earlier published version', 'published-variant-1', true],
+      ['publishes the variant for the first time', undefined, false],
+    ] as const)(
+      'reports a variant publish when it %s',
+      async (_, publishedRevision, previouslyPublished) => {
+        const state = variantKeystroke('1', publishedRevision)
+        applyKeystroke(state)
+        const {result} = await renderPublishAction(state.props)
+
+        act(() => result.current?.onHandle?.())
+
+        expect(operations.publish.execute).toHaveBeenCalledWith({
+          publishedRevisionId: publishedRevision,
+        })
+        expect(documentPublishedEvents()).toEqual([
+          [
+            expect.objectContaining({name: 'Document Published'}),
+            expect.objectContaining({previouslyPublished, isVariant: true}),
+          ],
+        ])
+      },
+    )
+
+    it('reports a publish outside a variant as not in a variant', async () => {
+      const state = keystroke('1')
+      applyKeystroke(state)
+      const {result} = await renderPublishAction(state.props)
+
+      act(() => result.current?.onHandle?.())
+
+      expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+      expect(documentPublishedEvents()).toEqual([
+        [
+          expect.objectContaining({name: 'Document Published'}),
+          {publishedImmediately: false, previouslyPublished: true, isVariant: false},
+        ],
+      ])
+    })
   })
 })

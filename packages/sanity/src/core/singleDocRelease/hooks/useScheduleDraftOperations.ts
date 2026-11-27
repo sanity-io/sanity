@@ -12,6 +12,7 @@ import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
+import {VariantVersionCreated} from '../../variants/__telemetry__/variants.telemetry'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
 import {getVariantId} from '../../variants/tool/util'
@@ -139,6 +140,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
           documentGroupId: getPublishedId(documentId),
           variant: {_id: variant.variantId},
           selectedPerspective: releaseId,
+          location: 'schedule_draft_action',
         })
       } else {
         await releaseOperations.createVersion(releaseId, getDraftId(documentId), opts)
@@ -206,6 +208,11 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
           baseId: variant.versionId,
         })
         await variantsClient.action(actions, {tag: 'scheduled-draft.copy-to-draft'})
+        telemetry.log(VariantVersionCreated, {
+          location: 'delete_scheduled_draft_dialog',
+          bundle: 'drafts',
+          fromExistingVersion: true,
+        })
       } else if (shouldCopyToDraft && publishedId) {
         const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
         const scheduledDraftId = getVersionId(publishedId, releaseId)

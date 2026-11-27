@@ -1,4 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
+import {type DefinedTelemetryLog} from '@sanity/telemetry'
+import {useTelemetry} from '@sanity/telemetry/react'
 // oxlint-disable-next-line no-restricted-imports -- the studio Button types its ref for a <button>, and this is an <a>
 import {Button} from '@sanity/ui'
 import {
@@ -71,12 +73,19 @@ export function usePerspectiveDetailLink() {
  * A menu closes when one of its items is clicked, but a detail link is not a menu item. Focusing
  * the menu's trigger closes it: the menu closes when focus leaves it, which is also how it handles
  * Tab, and focus ends up where a menu item click leaves it.
+ *
+ * Following a detail link also logs `event` with `data`.
  */
-export function usePerspectiveDetailLinkTrigger() {
+export function usePerspectiveDetailLinkTrigger<Data>(
+  event: DefinedTelemetryLog<Data>,
+  data: NoInfer<Data>,
+) {
+  const telemetry = useTelemetry()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const handleNavigate = useCallback(() => {
+    telemetry.log(event, data)
     triggerRef.current?.focus()
-  }, [])
+  }, [data, event, telemetry])
 
   return {triggerRef, handleNavigate}
 }

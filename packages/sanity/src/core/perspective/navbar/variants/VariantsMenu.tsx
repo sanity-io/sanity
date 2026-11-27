@@ -22,6 +22,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {VariantDetailLinkClicked} from '../../../variants/__telemetry__/variants.telemetry'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
 import {useVariantsUpsell} from '../../../variants/contexts/upsell/useVariantsUpsell'
@@ -201,7 +202,10 @@ export function VariantsMenu({
     setFilterQuery('')
   }, [resetMenuWidth])
 
-  const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger()
+  const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger(
+    VariantDetailLinkClicked,
+    {location: 'navbar_menu'},
+  )
 
   const isDefaultSelected = !selectedVariant
 
@@ -341,6 +345,7 @@ export function VariantsMenu({
       />
       {creatingVariant ? (
         <CreateVariantDialog
+          location="navbar_menu"
           onCancel={handleCancelCreate}
           onSubmit={handleCreated}
           type={typeKey}

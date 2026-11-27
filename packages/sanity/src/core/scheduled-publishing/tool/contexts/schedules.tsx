@@ -16,7 +16,7 @@ function SchedulesProvider({
   children: ReactNode
   value: {
     schedules: Schedule[]
-    scheduleState: ScheduleState
+    scheduleState?: ScheduleState
     selectedDate?: Date
     sortBy?: ScheduleSort
   }
@@ -66,7 +66,7 @@ function SchedulesProvider({
           if (value.selectedDate) {
             return filterByDate(value.selectedDate)(scheduleState)
           }
-          return filterByState(value.scheduleState)(scheduleState)
+          return value.scheduleState ? filterByState(value.scheduleState)(scheduleState) : false
         })
         .sort((a, b) => {
           if (sortBy === 'createdAt') {

@@ -10,6 +10,11 @@ interface DocumentPublishedInfo {
    * The document had a previously published version when it was published
    */
   previouslyPublished: boolean
+
+  /**
+   * The published document belongs to a content variant
+   */
+  isVariant: boolean
 }
 
 interface PublishButtonDisabledInfo {

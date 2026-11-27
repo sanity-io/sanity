@@ -77,6 +77,7 @@ export function DocumentNotInVariantBanner() {
           documentGroupId: documentId,
           variant: selectedVariant,
           selectedPerspective: createPerspective,
+          location: 'not_in_variant_banner',
         })
       } else {
         const baseDocument = findVariantCreateBaseDocument({
@@ -91,6 +92,7 @@ export function DocumentNotInVariantBanner() {
           documentGroupId: documentId,
           variant: selectedVariant,
           selectedPerspective: createPerspective,
+          location: 'not_in_variant_banner',
         })
       }
       setStatus('success')

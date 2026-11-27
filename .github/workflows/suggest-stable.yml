@@ -84,7 +84,7 @@ jobs:
         run: pnpm stable-suggestion slack-route
       - name: Post the shortlist
         if: steps.route.outputs.route == 'webhook-trigger'
-        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        uses: slackapi/slack-github-action@0bc3581177d9a0f8d555e07689384b376528e8fa # v4.1.0
         with:
           # Fields: headline, text, cli, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts). run_url is the tag-stable workflow page
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
@@ -92,7 +92,7 @@ jobs:
           payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
       - name: Post the shortlist (CI alerts fallback)
         if: steps.route.outputs.route == 'incoming-webhook'
-        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        uses: slackapi/slack-github-action@0bc3581177d9a0f8d555e07689384b376528e8fa # v4.1.0
         with:
           # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
@@ -100,7 +100,7 @@ jobs:
           payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-fallback.json
       - name: Alert on failure
         if: failure() && steps.mode.outputs.live == 'true'
-        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        uses: slackapi/slack-github-action@0bc3581177d9a0f8d555e07689384b376528e8fa # v4.1.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook

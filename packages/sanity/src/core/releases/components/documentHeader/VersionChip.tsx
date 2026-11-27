@@ -165,6 +165,7 @@ export const VersionChip = memo(function VersionChip(props: {
       </Tooltip>
 
       <VersionContextMenuPopover
+        releaseLinkLocation="document_header"
         contextMenu={contextMenu}
         popoverRef={popoverRef}
         referenceElement={referenceElement}

@@ -14,6 +14,14 @@ import {type InjectedTableProps} from '../../../components/Table/types'
 import {ReleaseNameCell} from '../../columnCells/ReleaseName'
 import {type TableRelease} from '../../ReleasesOverview'
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('../../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
@@ -55,6 +63,18 @@ describe('ReleaseNameCell', () => {
     await renderTest(untitledRelease)
 
     expect(screen.getByText('Untitled release')).toBeInTheDocument()
+  })
+
+  it('reports following the release title to its detail page', async () => {
+    await renderTest(activeASAPRelease)
+
+    await userEvent.click(screen.getByText('active asap Release'))
+
+    expect(onNavigate).toHaveBeenCalled()
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Release Detail Link Clicked'}),
+      {location: 'releases_overview'},
+    )
   })
 
   it('disables the pin button for archived releases', async () => {

@@ -21,6 +21,14 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
@@ -147,6 +155,7 @@ describe('useCopyToDrafts', () => {
         useCopyToDrafts({
           documentGroupId: publishedId,
           documentVersionInfoStub,
+          location: 'version_context_menu',
           onNavigate,
           onConfirmationRequest,
         }),
@@ -175,6 +184,7 @@ describe('useCopyToDrafts', () => {
       {tag: 'document.copy-to-drafts'},
     )
     expect(onNavigate).toHaveBeenCalledTimes(1)
+    expect(telemetryMock.log).not.toHaveBeenCalled()
   })
 
   it('copies a release version to drafts using the provided stub', async () => {
@@ -321,6 +331,11 @@ describe('useCopyToDrafts', () => {
       {tag: 'document.copy-to-drafts'},
     )
     expect(onNavigate).toHaveBeenCalledTimes(1)
+    expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Version Created'}),
+      {location: 'version_context_menu', bundle: 'drafts', fromExistingVersion: true},
+    )
   })
 
   it('requests confirmation when the variant draft exists', async () => {
@@ -377,6 +392,10 @@ describe('useCopyToDrafts', () => {
       {tag: 'document.copy-to-drafts'},
     )
     expect(onNavigate).toHaveBeenCalledTimes(1)
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Version Created'}),
+      {location: 'version_context_menu', bundle: 'drafts', fromExistingVersion: true},
+    )
   })
 
   it('refuses to copy drafts onto themselves', async () => {
@@ -401,6 +420,19 @@ describe('useCopyToDrafts', () => {
         description: 'Cannot copy a draft onto itself',
       }),
     )
+  })
+
+  it('reports nothing when copying a variant version fails', async () => {
+    mockVariantsAction.mockRejectedValue(new Error('action failed'))
+
+    const {result} = await renderCopyToDrafts(variantVersion)
+
+    await act(async () => {
+      await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
+    })
+
+    expect(onNavigate).not.toHaveBeenCalled()
+    expect(telemetryMock.log).not.toHaveBeenCalled()
   })
 
   it('shows an error toast when the client action fails', async () => {

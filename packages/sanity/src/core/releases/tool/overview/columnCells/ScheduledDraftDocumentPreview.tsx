@@ -5,13 +5,14 @@ import {Text, Box, Flex, Icon} from 'ui5'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useScheduledDraftDocument} from '../../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
 import {getVariantId} from '../../../../variants/tool/util'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type VisibleColumn} from '../../components/Table/types'
+import {useScheduledDraftRowDocument} from '../hooks/useScheduledDraftRowDocument'
 import {type TableRelease} from '../ReleasesOverview'
+import {ScheduledDraftMissingDocumentPreview} from './ScheduledDraftMissingDocumentPreview'
 
 export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] = ({
   datum: release,
@@ -22,7 +23,17 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
     firstDocument,
     firstDocumentValidation,
     loading: documentsLoading,
-  } = useScheduledDraftDocument(release._id && !release.isLoading ? release._id : undefined)
+    missingDocument,
+  } = useScheduledDraftRowDocument(release)
+
+  if (missingDocument) {
+    return (
+      <ScheduledDraftMissingDocumentPreview
+        cellProps={cellProps}
+        missingDocument={missingDocument}
+      />
+    )
+  }
 
   const isLoading = release.isLoading || documentsLoading || !firstDocument
 

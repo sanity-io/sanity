@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Skeleton} from '@sanity/ui'
 import {StateLink} from 'sanity/router'
 import {Text, Flex, Box, VStack} from 'ui5'
@@ -5,6 +6,7 @@ import {Text, Flex, Box, VStack} from 'ui5'
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
+import {VariantDetailLinkClicked} from '../../__telemetry__/variants.telemetry'
 import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
 import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -46,6 +48,7 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
 
 const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum: variant}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const telemetry = useTelemetry()
   const mismatches = useVariantConditionMismatches(
     variant.conditions ?? {},
     getVariantType(variant),
@@ -76,6 +79,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
         <Card
           as={StateLink}
           state={{variantId: encodedVariantId}}
+          onClick={() => telemetry.log(VariantDetailLinkClicked, {location: 'variants_overview'})}
           data-as="a"
           flex={1}
           padding={2}

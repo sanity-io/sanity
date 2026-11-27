@@ -64,6 +64,8 @@ interface UseVersionContextMenuBaseOptions {
    * when needed.
    */
   onCopyToDraftsComplete?: () => void
+  /** Called after a version was successfully created in a release (after navigating to it). */
+  onAddVersionComplete?: () => void
 }
 /**
  * @internal
@@ -142,6 +144,7 @@ export function useVersionContextMenu(
     disabled = false,
     documentVersionInfoStub: _documentVersionInfoStub,
     onCopyToDraftsComplete,
+    onAddVersionComplete,
   } = options
 
   const {map: releasesMap} = useAllReleases()
@@ -228,6 +231,7 @@ export function useVersionContextMenu(
   const {handleCopyToDrafts} = useCopyToDrafts({
     documentGroupId,
     documentVersionInfoStub,
+    location: 'version_context_menu',
     onNavigate: handleCopyToDraftsNavigate,
     onConfirmationRequest: () => setDialogState('copy-to-drafts'),
   })
@@ -249,6 +253,7 @@ export function useVersionContextMenu(
             documentGroupId,
             variant: {_id: variantId},
             selectedPerspective: perspective,
+            location: 'version_context_menu',
           })
         } else {
           // Skip navigation here — the hook navigates once after creation so we
@@ -269,6 +274,7 @@ export function useVersionContextMenu(
         } else {
           setPerspective(perspective)
         }
+        onAddVersionComplete?.()
       } catch (err) {
         toast.push({
           closable: true,
@@ -284,6 +290,7 @@ export function useVersionContextMenu(
       closeContextMenu,
       createVersion,
       documentGroupId,
+      onAddVersionComplete,
       setPerspective,
       setVariant,
       variantId,

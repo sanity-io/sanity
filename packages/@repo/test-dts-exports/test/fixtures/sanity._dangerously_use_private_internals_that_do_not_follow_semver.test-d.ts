@@ -451,6 +451,7 @@ import type {
   RELEASE_DOCUMENT_TYPE,
   ReleaseAvatar,
   ReleaseAvatarIcon,
+  ReleaseDetailLinkClicked,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -2092,6 +2093,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ReleaseAvatarIcon', () => {
     expectTypeOf<typeof ReleaseAvatarIcon>().not.toBeNever()
+  })
+  test('ReleaseDetailLinkClicked', () => {
+    expectTypeOf<typeof ReleaseDetailLinkClicked>().not.toBeNever()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()

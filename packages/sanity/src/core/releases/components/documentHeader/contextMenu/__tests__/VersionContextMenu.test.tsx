@@ -16,10 +16,20 @@ import {VersionContextMenu} from '../VersionContextMenu'
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
-  IntentLink: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
+  IntentLink: ({children, onClick}: {children: React.ReactNode; onClick?: () => void}) => (
+    <div onClick={onClick}>{children}</div>
+  ),
   route: {
     create: vi.fn(),
   },
+}))
+
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
 }))
 
 vi.mock('../../../../store/useReleasePermissions', () => ({
@@ -126,6 +136,7 @@ describe('VersionContextMenu', () => {
     onCreateVersion: vi.fn(),
     disabled: false,
     type: 'document',
+    releaseLinkLocation: 'document_header' as const,
   }
 
   const draftChipProps = {...defaultProps, fromRelease: 'draft', versionId: 'drafts.doc1'}
@@ -156,6 +167,27 @@ describe('VersionContextMenu', () => {
       expect(screen.getByText('Release 1')).toBeInTheDocument()
       expect(screen.getByText('Release 2')).toBeInTheDocument()
     })
+  })
+
+  it('reports following "View release" with the location the menu was opened from', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    const wrapper = await createTestProvider()
+
+    render(
+      <VersionContextMenu
+        {...defaultProps}
+        release={mockReleases[0]}
+        releaseLinkLocation="document_inspector"
+      />,
+      {wrapper},
+    )
+    await flushMicrotasksThisIsACodeSmell()
+    await userEvent.click(screen.getByText('View release'))
+
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Release Detail Link Clicked'}),
+      {location: 'document_inspector'},
+    )
   })
 
   it('calls onCreateRelease when "New release" is clicked', async () => {

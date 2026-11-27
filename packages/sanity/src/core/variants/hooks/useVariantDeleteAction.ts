@@ -1,9 +1,14 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {defer} from 'rxjs'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {
+  VariantDefinitionDeleted,
+  type VariantsToolLocation,
+} from '../__telemetry__/variants.telemetry'
 import {variantsLocaleNamespace} from '../i18n'
 import {useVariantOperations} from '../store/useVariantOperations'
 import {useVariantPermissions} from '../store/useVariantPermissions'
@@ -15,6 +20,8 @@ import {
 interface UseVariantDeleteActionOptions {
   documentCount?: number | null
   documentsLoading?: boolean
+  /** The Variants tool page the delete action is offered on, reported with the deletion */
+  location: VariantsToolLocation
   onDeleted?: () => void
   variantTitle?: string
 }
@@ -31,7 +38,7 @@ interface UseVariantDeleteActionOptions {
  */
 export function useVariantDeleteAction(
   variantId: string,
-  options?: UseVariantDeleteActionOptions,
+  options: UseVariantDeleteActionOptions,
 ): {
   deleteDisabled: boolean
   deleteDisabledTooltip: string | undefined
@@ -42,9 +49,10 @@ export function useVariantDeleteAction(
   isDeleting: boolean
   variantTitle: string
 } {
-  const {documentCount, documentsLoading = false, onDeleted, variantTitle = ''} = options ?? {}
+  const {documentCount, documentsLoading = false, location, onDeleted, variantTitle = ''} = options
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
+  const telemetry = useTelemetry()
   const {deleteVariant} = useVariantOperations()
   const {checkWithPermissionGuard} = useVariantPermissions()
   const [isDeleting, setIsDeleting] = useState(false)
@@ -116,6 +124,7 @@ export function useVariantDeleteAction(
     const runDelete = async () => {
       setIsDeleting(true)
       await deleteVariant(variantId)
+      telemetry.log(VariantDefinitionDeleted, {location})
       setIsDeleting(false)
       setIsDeleteDialogOpen(false)
       onDeleted?.()
@@ -133,7 +142,17 @@ export function useVariantDeleteAction(
       })
       setIsDeleting(false)
     }
-  }, [canDelete, deleteVariant, getDeleteErrorDescription, onDeleted, t, toast, variantId])
+  }, [
+    canDelete,
+    deleteVariant,
+    getDeleteErrorDescription,
+    location,
+    onDeleted,
+    t,
+    telemetry,
+    toast,
+    variantId,
+  ])
 
   return {
     deleteDisabled,
