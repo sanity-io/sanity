@@ -17,8 +17,7 @@ import {
   useState,
   useEffectEvent,
 } from 'react'
-import {type TFunction} from 'sanity'
-import {useTranslation} from 'sanity/i18n'
+import {useTranslation, type TFunction} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {type ResultViewCopy} from '../../../components/ResultView'

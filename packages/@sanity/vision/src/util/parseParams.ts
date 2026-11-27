@@ -1,4 +1,4 @@
-import {type TFunction} from 'sanity'
+import {type TFunction} from 'sanity/i18n'
 
 import {type visionLocaleNamespace} from '../i18n'
 import {tryParseParams} from './tryParseParams'

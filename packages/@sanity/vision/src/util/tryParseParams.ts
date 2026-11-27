@@ -1,5 +1,5 @@
 import JSON5 from 'json5'
-import {type TFunction} from 'sanity'
+import {type TFunction} from 'sanity/i18n'
 
 export function tryParseParams(
   val: string,

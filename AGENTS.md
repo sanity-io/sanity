@@ -900,7 +900,20 @@ exports only.
 `// <tombstones>` blocks before `tsdown` and appends them to the matching `lib/*.d.ts` after.
 Feeding hundreds of inline `export declare` lines to rolldown-plugin-dts can mark unrelated value
 re-exports (e.g. `SANITY_VERSION`) as type-only; the strip/append keeps monorepo source tombstones
-intact while the published types stay correct.
+intact while the published types stay correct. When the bundled `.d.ts` already imports a name for
+its own declarations (`import {Serializable} from …` for a signature), the appended tombstone for
+that name is declared as `__tombstone_<name>` and exported under the real name, since a second
+declaration of the name is TS2440.
+
+**Every export name comes from exactly one entry.** v6 let a moved export live at its old and new
+entry so plugins could target both majors; v7 does not.
+`packages/@repo/test-dts-exports/test/unique-export-names.test.ts` (part of `pnpm test:exports`)
+fails when a real name is exported by more than one `sanity/package.json#exports` entry. A
+tombstone does not count: it is type-only, has no runtime binding, and exists to name the entry
+that owns the name. Keep a name at one entry, tombstone the others where `sanity@latest` exported
+it, and make the tombstone message say which one (a different declaration of the same name gets
+"Removed from … it was a different `X`", not "Moved to"). `.` wins ties because its wildcard
+re-exports cannot be pruned, and `sanity/_singletons` owns contexts.
 
 When the suite reports a missing export:
 
@@ -1044,6 +1057,28 @@ every effect cleanup in the subtree and showing runs the effects again, without 
   own `useContentSize`, which observes afresh on every effect run; the fix belongs in `@sanity/ui`.
 - Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
   boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
+
+### `<ViewTransition>`: key classes on transition types, and honor the skip type
+
+The studio's `<ViewTransition>` boundaries animate only transitions whose types they are keyed on
+(`{default: 'none', [type]: 'class'}`), so a transition elsewhere on the page never pictures them.
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1` exports the shared types
+(that subpath because plugins import them at module scope, which runs before sign-in):
+`STUDIO_SKIP_TRANSITION_TYPE` (`sanity-studio-skip`) takes every
+studio boundary out of a transition, so an app can own the whole animation;
+`STUDIO_RESIZE_TRANSITION_TYPE` (`sanity-studio-resize`) marks layout resizes (side panels, split
+panes, the preview viewport); `STUDIO_SCHEME_TRANSITION_TYPE` (`sanity-studio-scheme`) marks color
+scheme changes. The module is `core/viewTransitions/transitionTypes.ts`.
+
+- Build every class a boundary passes, `default`, `enter`, `exit`, `update` and `share` alike, with
+  `studioViewTransitionClass()` from that module (Vision, outside the package, spreads
+  `[STUDIO_SKIP_TRANSITION_TYPE]: 'none'` into its maps). React lets a `none` match win over every
+  other type of the transition, but an `enter`/`exit`/`update`/`share` class takes over from
+  `default`, so skipping only `default` leaves the others animating.
+- A layout resize the studio runs as a transition adds `STUDIO_RESIZE_TRANSITION_TYPE` next to its
+  own type, and a scheme change adds `STUDIO_SCHEME_TRANSITION_TYPE`, so plugin boundaries can opt in.
+- Test with `stubViewTransitions()` (`test/testUtils/stubViewTransitions.ts`), which records the
+  elements React names for each transition in jsdom.
 
 ### Listeners: pause in hidden tabs
 

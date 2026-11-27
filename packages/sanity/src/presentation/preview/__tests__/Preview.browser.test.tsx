@@ -205,7 +205,10 @@ describe('Preview viewport', () => {
 
     await expect.poll(iframeWidth).toBe(375)
     expect(transitions).toEqual([
-      {types: ['sanity-iframe-viewport'], named: ['Tooltip', 'iframe', 'preview-viewport-toggle']},
+      {
+        types: ['sanity-iframe-viewport', 'sanity-studio-resize'],
+        named: ['Tooltip', 'iframe', 'preview-viewport-toggle'],
+      },
     ])
   })
 

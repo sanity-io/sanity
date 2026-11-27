@@ -5,8 +5,8 @@ import {
   type DocumentBadgesContext,
   type DocumentInspector,
   type DocumentInspectorContext,
-  type LocaleSource,
 } from 'sanity'
+import {type LocaleSource} from 'sanity/i18n'
 import {describe, expect, it} from 'vitest'
 
 import {defaultLocale} from '../core/i18n/locales'

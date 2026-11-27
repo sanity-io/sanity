@@ -5,10 +5,11 @@ import {PanelRightIcon} from '@sanity/icons/PanelRight'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {Card, Hotkeys, Switch} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type RefObject, useCallback, useMemo, ViewTransition, type ViewTransitionClass} from 'react'
+import {type RefObject, useCallback, useMemo, ViewTransition} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
+import {studioViewTransitionClass} from '../../core/viewTransitions/transitionTypes'
 import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
@@ -24,7 +25,10 @@ import {SharePreviewMenu} from './SharePreviewMenu'
  * The toggle's tooltip is open while the iframe resizes, and has to be part of the transition to
  * stay above the iframe's snapshot
  */
-const VIEWPORT_TOGGLE: ViewTransitionClass = {default: 'none', [IFRAME_VIEWPORT_TRANSITION]: 'auto'}
+const VIEWPORT_TOGGLE = studioViewTransitionClass({
+  default: 'none',
+  [IFRAME_VIEWPORT_TRANSITION]: 'auto',
+})
 
 /** @public */
 export interface PreviewHeaderProps extends PreviewProps {

@@ -21,8 +21,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {type TFunction} from 'sanity'
-import {InlineCode, useTranslation} from 'sanity/i18n'
+import {InlineCode, useTranslation, type TFunction} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

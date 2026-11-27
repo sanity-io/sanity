@@ -6,22 +6,26 @@ import {
   useRef,
   type RefAttributes,
   ViewTransition,
-  type ViewTransitionClass,
 } from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
+
+import {
+  STUDIO_RESIZE_TRANSITION_TYPE,
+  studioViewTransitionClass,
+} from '../../core/viewTransitions/transitionTypes'
 
 /** Switching the preview between the desktop and mobile viewports */
 export const IFRAME_VIEWPORT_TRANSITION = 'sanity-iframe-viewport'
 
 /*
  * Keyed by transition type, with `none` for every other type: a transition elsewhere in the studio
- * pictures the iframe with the rest of the page.
+ * pictures the iframe with the rest of the page, unless it resizes the layout the iframe is in.
  */
-const IFRAME_VIEWPORT: ViewTransitionClass = {
+const IFRAME_VIEWPORT = studioViewTransitionClass({
   default: 'none',
-  [IFRAME_VIEWPORT_TRANSITION]: 'auto',
-}
+  [STUDIO_RESIZE_TRANSITION_TYPE]: 'auto',
+})
 
 interface IFrameProps {
   animate: VariantLabels
