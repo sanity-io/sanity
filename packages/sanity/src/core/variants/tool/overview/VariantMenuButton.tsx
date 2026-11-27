@@ -1,3 +1,4 @@
+import {CopyIcon} from '@sanity/icons/Copy'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
@@ -8,8 +9,10 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
+import {DuplicateVariantDialog} from '../../components/dialog/DuplicateVariantDialog'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
+import {useVariantDuplicateAction} from '../../hooks/useVariantDuplicateAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {getVariantId, getVariantTitle} from '../util'
@@ -34,6 +37,8 @@ export function VariantMenuButton({
     isDeleting,
     variantTitle: dialogVariantTitle,
   } = useVariantDeleteAction(variant._id, {documentCount, variantTitle})
+  const {handleCloseDuplicateDialog, handleDuplicate, handleDuplicated, isDuplicateDialogOpen} =
+    useVariantDuplicateAction()
 
   return (
     <>
@@ -46,6 +51,12 @@ export function VariantMenuButton({
               icon={EditIcon}
               onClick={() => setIsEditDialogOpen(true)}
               text={t('overview.action.edit-variant')}
+            />
+            <MenuItem
+              data-testid="duplicate-variant-menu-item"
+              icon={CopyIcon}
+              onClick={handleDuplicate}
+              text={t('overview.action.duplicate-variant')}
             />
             <MenuDivider />
             <MenuItem
@@ -64,6 +75,14 @@ export function VariantMenuButton({
         <EditVariantDialog
           onCancel={() => setIsEditDialogOpen(false)}
           onSubmit={() => setIsEditDialogOpen(false)}
+          variant={variant}
+        />
+      )}
+      {isDuplicateDialogOpen && (
+        <DuplicateVariantDialog
+          documentCount={documentCount}
+          onCancel={handleCloseDuplicateDialog}
+          onDuplicated={handleDuplicated}
           variant={variant}
         />
       )}

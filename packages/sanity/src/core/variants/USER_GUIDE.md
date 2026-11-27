@@ -25,6 +25,10 @@ Variants are managed in the **Variants tool** (the `/variants` route in the stud
 
 - **Create a variant**: give it a title and at least one complete condition (key and value). The condition inputs suggest keys and values already used by other variants, so teams converge on consistent naming — but any key/value is allowed.
 - **Edit a variant**: change its title, description, conditions, or priority from the variant's detail page.
+- **Duplicate a variant**: available from the overview row menu and the detail page's `⋯` menu. It opens the create form with everything copied from the original and "(duplicated)" added to the title. The copied conditions are the original's, so the duplicate can only be created once its conditions differ — usually you change one condition, like the audience or the market. If the original has documents, you are then asked whether to copy them too:
+  - Drafts are copied as drafts, and published documents are copied as drafts too, so nothing in the new variant goes live until you publish it. A document with both a published and a draft version gets one draft, copied from the draft.
+  - Documents in a release are copied into the same release. A scheduled release can't take new documents, so its documents are listed in the dialog and not copied, as are documents that are set to be unpublished by their release.
+  - The documents are copied together: either all of them are copied or none are. If copying fails, the duplicated variant still exists, without documents.
 - **Priority**: when multiple variants match a request, the highest priority wins. The default is `0`.
 - **Documents table**: each variant's detail page lists the documents that have content for it, grouped per document.
 - **Delete a variant**: available from the overview row menu and the detail page.

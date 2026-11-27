@@ -2,6 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode, useState} from 'react'
 import {NEVER, of} from 'rxjs'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -17,6 +18,7 @@ import {ResourceCacheProvider, useResourceCache} from '../../../../store/Resourc
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
+import {type VariantsMode} from '../../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type VariantStore} from '../../../store/createVariantsStore'
 import {type VariantStoreState} from '../../../store/reducer'
@@ -178,6 +180,12 @@ function SeededStores(props: {children: ReactNode}) {
 // The locale provider is needed by the relative "Created" / "Last edited" timestamps.
 const router = route.create('/', [route.intents('/intent'), route.create('/:variantId')])
 
+// The detail menu's duplicate action is gated on the variants mode, which it reads with `use()`.
+const DEFAULT_MODE = Object.assign(Promise.resolve<VariantsMode>('default'), {
+  status: 'fulfilled' as const,
+  value: 'default' as const,
+})
+
 function VariantDetailHarness(props: {variantId: string}) {
   const {variantId} = props
   return (
@@ -186,7 +194,9 @@ function VariantDetailHarness(props: {variantId: string}) {
         <ResourceCacheProvider>
           <SeededStores>
             <RouterProvider router={router} state={{variantId}} onNavigate={noop}>
-              <VariantDetail />
+              <VariantsModePromiseContext value={DEFAULT_MODE}>
+                <VariantDetail />
+              </VariantsModePromiseContext>
             </RouterProvider>
           </SeededStores>
         </ResourceCacheProvider>
