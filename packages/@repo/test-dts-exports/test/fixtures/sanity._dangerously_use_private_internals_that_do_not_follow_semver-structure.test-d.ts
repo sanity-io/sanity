@@ -7,16 +7,30 @@ import type {
   BaseResolvedPaneNode,
   Builder,
   ChildLinkProps,
+  ComponentBuilder,
+  ComponentViewBuilder,
   ConfirmDeleteDialogProps,
   CustomComponentPaneNode,
+  DocumentBuilder,
   DocumentFieldMenuActionNode,
   DocumentInspectorHeader,
+  DocumentListBuilder,
+  DocumentListItemBuilder,
   DocumentListPaneNode,
   DocumentListPaneProps,
   DocumentPaneNode,
   DocumentPaneProvider,
   DocumentPaneProviderProps,
+  DocumentTypeListBuilder,
+  FormViewBuilder,
+  GenericListBuilder,
+  GenericViewBuilder,
+  InitialValueTemplateItemBuilder,
+  ListBuilder,
+  ListItemBuilder,
   ListPaneNode,
+  MenuItemBuilder,
+  MenuItemGroupBuilder,
   PaneLayout,
   PaneListItem,
   PaneListItemDivider,
@@ -58,17 +72,32 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-st
   test('ChildLinkProps', () => {
     expectTypeOf<ChildLinkProps>().toBeObject()
   })
+  test('ComponentBuilder', () => {
+    expectTypeOf<ComponentBuilder>().not.toBeNever()
+  })
+  test('ComponentViewBuilder', () => {
+    expectTypeOf<ComponentViewBuilder>().not.toBeNever()
+  })
   test('ConfirmDeleteDialogProps', () => {
     expectTypeOf<ConfirmDeleteDialogProps>().toBeObject()
   })
   test('CustomComponentPaneNode', () => {
     expectTypeOf<CustomComponentPaneNode>().toBeObject()
   })
+  test('DocumentBuilder', () => {
+    expectTypeOf<DocumentBuilder>().not.toBeNever()
+  })
   test('DocumentFieldMenuActionNode', () => {
     expectTypeOf<DocumentFieldMenuActionNode>().not.toBeNever()
   })
   test('DocumentInspectorHeader', () => {
     expectTypeOf<typeof DocumentInspectorHeader>().toBeFunction()
+  })
+  test('DocumentListBuilder', () => {
+    expectTypeOf<DocumentListBuilder>().not.toBeNever()
+  })
+  test('DocumentListItemBuilder', () => {
+    expectTypeOf<DocumentListItemBuilder>().not.toBeNever()
   })
   test('DocumentListPaneNode', () => {
     expectTypeOf<DocumentListPaneNode>().toBeObject()
@@ -85,8 +114,35 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-st
   test('DocumentPaneProviderProps', () => {
     expectTypeOf<DocumentPaneProviderProps>().not.toBeNever()
   })
+  test('DocumentTypeListBuilder', () => {
+    expectTypeOf<DocumentTypeListBuilder>().not.toBeNever()
+  })
+  test('FormViewBuilder', () => {
+    expectTypeOf<FormViewBuilder>().not.toBeNever()
+  })
+  test('GenericListBuilder', () => {
+    expectTypeOf<GenericListBuilder<any, any>>().not.toBeNever()
+  })
+  test('GenericViewBuilder', () => {
+    expectTypeOf<GenericViewBuilder<any, any>>().not.toBeNever()
+  })
+  test('InitialValueTemplateItemBuilder', () => {
+    expectTypeOf<InitialValueTemplateItemBuilder>().not.toBeNever()
+  })
+  test('ListBuilder', () => {
+    expectTypeOf<ListBuilder>().not.toBeNever()
+  })
+  test('ListItemBuilder', () => {
+    expectTypeOf<ListItemBuilder>().not.toBeNever()
+  })
   test('ListPaneNode', () => {
     expectTypeOf<ListPaneNode>().toBeObject()
+  })
+  test('MenuItemBuilder', () => {
+    expectTypeOf<MenuItemBuilder>().not.toBeNever()
+  })
+  test('MenuItemGroupBuilder', () => {
+    expectTypeOf<MenuItemGroupBuilder>().not.toBeNever()
   })
   test('PaneLayout', () => {
     expectTypeOf<typeof PaneLayout>().toBeFunction()

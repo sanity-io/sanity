@@ -21,7 +21,18 @@ import {Node, Project} from 'ts-morph'
  */
 /** @typedef {Record<string, Record<string, ExportInfo>>} Surface */
 /** @typedef {{name: string, kind: ExportKind, message: string}} Tombstone */
-/** @typedef {{removedEntries: string[], tombstones: Record<string, Tombstone[]>}} Manifest */
+/**
+ * A value whose entry now only exports its type, because the type stays public API while the
+ * runtime value moved to `valueFrom`.
+ *
+ * @typedef {{name: string, valueFrom: string}} TypeOnlyExport
+ */
+/**
+ * @typedef {object} Manifest
+ * @property {string[]} removedEntries
+ * @property {Record<string, Tombstone[]>} tombstones
+ * @property {Record<string, TypeOnlyExport[]>} [typeOnly]
+ */
 
 const require = createRequire(import.meta.url)
 
@@ -313,6 +324,8 @@ export function entryImportPath(subpath) {
  *   says the name moved to an entry that exports a different type under that name
  * @property {string[]} staleRemovedEntries `removedEntries` that the workspace still exports or
  *   that the published package never had
+ * @property {{entry: string, name: string}[]} staleTypeOnly `typeOnly` exports the published
+ *   package did not export as a value
  */
 
 const MOVED_TO = /^Moved to `([^`]+)`/
@@ -354,6 +367,7 @@ export function diffSurfaces({published, workspace, manifest}) {
     misdirected: [],
     unrelated: [],
     staleRemovedEntries: [],
+    staleTypeOnly: [],
   }
   const removedEntries = new Set(manifest.removedEntries)
 
@@ -393,6 +407,7 @@ export function diffSurfaces({published, workspace, manifest}) {
       continue
     }
     const tombstoned = new Set((manifest.tombstones[entry] ?? []).map((t) => t.name))
+    const keptTypes = new Set((manifest.typeOnly?.[entry] ?? []).map((t) => t.name))
     for (const [name, info] of Object.entries(names)) {
       const current = provided[name]
       const typeOnly = Boolean(
@@ -400,6 +415,7 @@ export function diffSurfaces({published, workspace, manifest}) {
       )
       if (current && !current.tombstone && !typeOnly) continue
       if (tombstoned.has(name)) continue
+      if (typeOnly && keptTypes.has(name)) continue
       diff.missing.push({
         entry,
         name,
@@ -421,6 +437,12 @@ export function diffSurfaces({published, workspace, manifest}) {
     if (workspace[entry]) diff.staleRemovedEntries.push(`${entry} (still exported)`)
     else if (!published[entry])
       diff.staleRemovedEntries.push(`${entry} (not in the published package)`)
+  }
+
+  for (const [entry, kept] of Object.entries(manifest.typeOnly ?? {})) {
+    for (const {name} of kept) {
+      if (published[entry]?.[name]?.kind !== 'value') diff.staleTypeOnly.push({entry, name})
+    }
   }
 
   for (const [entry, tombstones] of Object.entries(manifest.tombstones)) {
@@ -521,6 +543,35 @@ export function findBrokenReplacementImports({workspace, manifest}) {
   return broken
 }
 
+/**
+ * `typeOnly` exports whose entry does not export the name type-only, or whose `valueFrom` entry
+ * does not export the runtime value.
+ *
+ * @param {{workspace: Surface, manifest: Manifest}} input
+ * @returns {{entry: string, name: string, reason: string}[]}
+ */
+export function findBrokenTypeOnlyExports({workspace, manifest}) {
+  /** @type {ReturnType<typeof findBrokenTypeOnlyExports>} */
+  const broken = []
+  for (const [entry, kept] of Object.entries(manifest.typeOnly ?? {})) {
+    for (const {name, valueFrom} of kept) {
+      const current = workspace[entry]?.[name]
+      const value = workspace[valueFrom]?.[name]
+      const reason = !workspace[entry]
+        ? `the workspace has no ${entryImportPath(entry)} entry`
+        : !current || current.tombstone
+          ? `${entryImportPath(entry)} does not export it`
+          : current.kind === 'value'
+            ? `${entryImportPath(entry)} still exports it as a value`
+            : !value || value.tombstone || value.kind !== 'value'
+              ? `${entryImportPath(valueFrom)} does not export it as a value`
+              : undefined
+      if (reason) broken.push({entry, name, reason})
+    }
+  }
+  return broken
+}
+
 const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
@@ -578,7 +629,9 @@ export function formatSurfaceDiff(diff, version) {
       const where = item.exportedFrom.length
         ? `now exported from ${item.exportedFrom.map(entryImportPath).join(', ')}`
         : `not exported${item.kind === 'value' ? ' as a value' : ''} from any other entry${unrelated}`
-      const typeOnly = item.typeOnly ? ' (the entry still exports its type)' : ''
+      const typeOnly = item.typeOnly
+        ? ' (the entry still exports its type; if only the runtime value moved, list it under "typeOnly" instead)'
+        : ''
       return `  - ${item.name} (${item.kind}) from ${entryImportPath(item.entry)}${typeOnly}: ${where}. Add to "tombstones"["${item.entry}"]: ${JSON.stringify(suggestTombstone(item))}`
     })
     sections.push(
@@ -634,6 +687,15 @@ export function formatSurfaceDiff(diff, version) {
     sections.push(
       `These "removedEntries" in ${MANIFEST_REPO_PATH} are wrong. Remove them:\n` +
         diff.staleRemovedEntries.map((entry) => `  - ${entry}`).join('\n'),
+    )
+  }
+  if (diff.staleTypeOnly.length > 0) {
+    sections.push(
+      `These "typeOnly" exports in ${MANIFEST_REPO_PATH} were not values in ` +
+        `${PACKAGE_NAME}@${version}, so there is no runtime value to account for. Remove them:\n` +
+        diff.staleTypeOnly
+          .map((item) => `  - ${item.name} in ${entryImportPath(item.entry)}`)
+          .join('\n'),
     )
   }
   return sections.length > 0 ? sections.join('\n\n') : undefined

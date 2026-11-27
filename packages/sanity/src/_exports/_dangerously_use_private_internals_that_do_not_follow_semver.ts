@@ -2064,7 +2064,7 @@ export declare const useDocumentDivergences: never
  */
 export declare const useDocumentForm: never
 /**
- * @deprecated Moved to `sanity/structure`. Import `{useDocumentPane}` from `sanity/structure` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const useDocumentPane: never
 /**

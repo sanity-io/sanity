@@ -12,6 +12,7 @@ import {
   entryImportPath,
   fetchPublishedPackage,
   findBrokenReplacementImports,
+  findBrokenTypeOnlyExports,
   formatSurfaceDiff,
   parseReplacementImports,
   isSameType,
@@ -105,6 +106,16 @@ describe('export tombstones', () => {
       ),
       'Point the message at an entry that exports the name and run ' +
         '`node packages/sanity/src/_exports/tombstones/generate.mjs`.',
+    ).toEqual([])
+  })
+
+  it('every typeOnly export is a type on its entry and a value on the entry it names', () => {
+    expect(
+      findBrokenTypeOnlyExports({workspace, manifest}).map(
+        ({entry, name, reason}) => `${name} in ${entryImportPath(entry)}: ${reason}`,
+      ),
+      'Export the name with `export {type X}` from its entry and as a value from `valueFrom`, ' +
+        'then rebuild with `pnpm --filter sanity build`.',
     ).toEqual([])
   })
 
@@ -213,6 +224,27 @@ describe('diffSurfaces', () => {
         typeOnly: true,
       },
     ])
+  })
+
+  it('accepts values listed under typeOnly, and reports listed names that were never values', () => {
+    const typeOnly = {kind: 'type', tombstone: false, deprecated: undefined} as const
+    const diff = diffSurfaces({
+      published: {'.': {demoted: real, keptType: typeOnly}},
+      workspace: {'.': {demoted: typeOnly, keptType: typeOnly}, './new': {demoted: real}},
+      manifest: {
+        removedEntries: [],
+        tombstones: {},
+        typeOnly: {
+          '.': [
+            {name: 'demoted', valueFrom: './new'},
+            {name: 'keptType', valueFrom: './new'},
+          ],
+        },
+      },
+    })
+    expect(diff.missing).toEqual([])
+    expect(diff.staleTypeOnly).toEqual([{entry: '.', name: 'keptType'}])
+    expect(formatSurfaceDiff(diff, '1.0.0')).toMatch(/- keptType in sanity$/m)
   })
 
   it('reports tombstones that point at an entry which does not export the name', () => {
@@ -375,5 +407,43 @@ describe('findBrokenReplacementImports', () => {
         },
       }).map(({reason}) => reason),
     ).toEqual(['the message says "the same entry" but names no entry before it'])
+  })
+})
+
+describe('findBrokenTypeOnlyExports', () => {
+  const value = {kind: 'value', tombstone: false, deprecated: undefined} as const
+  const type = {kind: 'type', tombstone: false, deprecated: undefined} as const
+  const tombstone = {kind: 'value', tombstone: true, deprecated: 'Moved.'} as const
+
+  it('reports names that are not type-only on their entry, or not values where they moved', () => {
+    expect(
+      findBrokenTypeOnlyExports({
+        workspace: {
+          '.': {moved: type, stillValue: value, gone: tombstone, typeEverywhere: type},
+          './internals': {moved: value, stillValue: value, gone: value, typeEverywhere: type},
+        },
+        manifest: {
+          removedEntries: [],
+          tombstones: {},
+          typeOnly: {
+            '.': ['moved', 'stillValue', 'gone', 'typeEverywhere', 'absent'].map((name) => ({
+              name,
+              valueFrom: './internals',
+            })),
+            './missing': [{name: 'moved', valueFrom: './internals'}],
+          },
+        },
+      }),
+    ).toEqual([
+      {entry: '.', name: 'stillValue', reason: 'sanity still exports it as a value'},
+      {entry: '.', name: 'gone', reason: 'sanity does not export it'},
+      {
+        entry: '.',
+        name: 'typeEverywhere',
+        reason: 'sanity/internals does not export it as a value',
+      },
+      {entry: '.', name: 'absent', reason: 'sanity does not export it'},
+      {entry: './missing', name: 'moved', reason: 'the workspace has no sanity/missing entry'},
+    ])
   })
 })

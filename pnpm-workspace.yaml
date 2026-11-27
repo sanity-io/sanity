@@ -210,7 +210,8 @@ patchedDependencies:
   # major ships.
   # The @sanity/assist, @sanity/document-internationalization and sanity-plugin-utils patches also
   # rewrite names that moved off sanity/structure and sanity/router to the /structure and /router
-  # subpaths of that entry.
+  # subpaths of that entry. They, and the sanity-plugin-internationalized-array patch, import
+  # useDocumentPane from the -1 subpath, which a studio config may load before sign-in.
   '@sanity/assist@6.3.0': patches/@sanity__assist@6.3.0.patch
   '@sanity/code-input@7.3.16': patches/@sanity__code-input@7.3.16.patch
   # Also rewrites defineLocaleResourceBundle / useTranslation to sanity/i18n.

@@ -87,7 +87,6 @@ import type {
   StructureToolOptions,
   UnserializedListItem,
   UnserializedListItemChild,
-  useDocumentPane,
   UserComponent,
   UserViewComponent,
   View,
@@ -347,9 +346,6 @@ describe('sanity/structure', () => {
   })
   test('UnserializedListItemChild', () => {
     expectTypeOf<UnserializedListItemChild>().not.toBeNever()
-  })
-  test('useDocumentPane', () => {
-    expectTypeOf<typeof useDocumentPane>().toBeFunction()
   })
   test('UserComponent', () => {
     expectTypeOf<UserComponent>().not.toBeNever()

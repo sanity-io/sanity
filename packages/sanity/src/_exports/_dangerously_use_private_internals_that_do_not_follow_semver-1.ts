@@ -30,3 +30,4 @@ export {
   STUDIO_SCHEME_TRANSITION_TYPE,
   STUDIO_SKIP_TRANSITION_TYPE,
 } from '../core/viewTransitions/transitionTypes'
+export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
