@@ -1,0 +1,84 @@
+name: Studio v6 vs v7
+
+# Builds a minimal studio from `main` (v6) and from the checked-out ref (v7), measures login
+# time, JS size and the authenticated tool page with Playwright, and publishes one JSON file
+# plus a job summary. See `e2e/scripts/versionCompare/index.ts`.
+on:
+  push:
+    branches: [next-major]
+  workflow_dispatch:
+    inputs:
+      v6_ref:
+        description: "Branch, tag or sha measured as v6"
+        required: false
+        type: string
+        default: main
+      v7_ref:
+        description: "Branch, tag or sha measured as v7 (defaults to the ref the workflow runs on)"
+        required: false
+        type: string
+      runs:
+        description: "Samples per metric and version"
+        required: false
+        type: string
+        default: "15"
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-8core
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    env:
+      SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+      SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
+      SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
+      # The `main-chromium-` prefix puts a leaked dataset in the e2e cleanup job's reach.
+      SANITY_E2E_DATASET: main-chromium-version-compare-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
+
+      - name: Create dataset
+        run: pnpm e2e:setup
+
+      - name: Compare v6 and v7
+        env:
+          V6_REF: ${{ inputs.v6_ref || 'main' }}
+          V7_REF: ${{ inputs.v7_ref || 'HEAD' }}
+          RUNS: ${{ inputs.runs || '15' }}
+        run: >
+          pnpm perf:version-compare
+          --v6-ref "$V6_REF"
+          --v7-ref "$V7_REF"
+          --runs "$RUNS"
+          --out "$RUNNER_TEMP/version-compare.json"
+          --work-dir "$RUNNER_TEMP/versions"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: version-compare
+          path: ${{ runner.temp }}/version-compare.json
+          if-no-files-found: ignore
+
+      - name: Delete dataset
+        if: always()
+        run: >
+          curl --fail --silent --show-error -X DELETE
+          "https://$SANITY_E2E_PROJECT_ID.api.sanity.work/v2023-02-03/datasets/$SANITY_E2E_DATASET"
+          -H "Authorization: Bearer $SANITY_E2E_SESSION_TOKEN"
