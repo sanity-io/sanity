@@ -1,8 +1,8 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Spinner} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type JSX, type RefObject, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, VStack} from 'ui5'
+import {Spinner, Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreateReleaseMenuItem} from '../../../releases/components/CreateReleaseMenuItem'
@@ -140,7 +140,11 @@ export function ReleasesList({
   if (loading) {
     return (
       <Flex padding={4} justifyContent="center" data-testid="spinner">
-        <Spinner muted />
+        <Spinner
+          style={{
+            color: 'var(--foreground-low)',
+          }}
+        />
       </Flex>
     )
   }

@@ -1,4 +1,4 @@
-import {focusFirstDescendant, Spinner} from '@sanity/ui'
+import {focusFirstDescendant} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,7 +20,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Spinner, Text, Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -258,7 +258,11 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                 height="100%"
                 justifyContent="center"
               >
-                <Spinner muted />
+                <Spinner
+                  style={{
+                    color: 'var(--foreground-low)',
+                  }}
+                />
                 <Box marginTop={3}>
                   <Text align="center" muted size={1} as="div" trim={true}>
                     {t('document-view.form-view.loading')}

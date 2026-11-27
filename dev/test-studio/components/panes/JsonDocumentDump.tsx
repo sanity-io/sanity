@@ -1,9 +1,8 @@
 import {type SanityDocument} from '@sanity/types'
-import {Spinner} from '@sanity/ui'
 import {type Ref, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {useClient} from 'sanity'
-import {Code, Text, Flex, Box} from 'ui5'
+import {Spinner, Code, Text, Flex, Box} from 'ui5'
 
 export function JsonDocumentDump(props: {
   itemId: string
@@ -64,7 +63,11 @@ export function JsonDocumentDump(props: {
   if (isLoading) {
     return (
       <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
-        <Spinner muted />
+        <Spinner
+          style={{
+            color: 'var(--foreground-low)',
+          }}
+        />
         <Box marginTop={3}>
           <Text align="center" muted size={1} as="div" trim={true}>
             Loading document…

@@ -1,5 +1,5 @@
-import {Spinner} from '@sanity/ui'
 import {useEffect, useState} from 'react'
+import {Spinner} from 'ui5'
 
 interface DelayedSpinnerProps {
   delay?: number
@@ -14,5 +14,12 @@ export function DelayedSpinner(props: DelayedSpinnerProps) {
     return () => clearTimeout(timer)
   }, [props.delay])
 
-  return show ? <Spinner muted size={4} /> : null
+  return show ? (
+    <Spinner
+      size={4}
+      style={{
+        color: 'var(--foreground-low)',
+      }}
+    />
+  ) : null
 }

@@ -1,5 +1,5 @@
-import {Card, Spinner} from '@sanity/ui'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Spinner, Text, Flex, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 

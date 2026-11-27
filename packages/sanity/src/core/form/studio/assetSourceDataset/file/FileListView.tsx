@@ -1,7 +1,7 @@
 import {type Asset} from '@sanity/types'
-import {Card, Spinner, useMediaIndex} from '@sanity/ui'
+import {Card, useMediaIndex} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
-import {Text, VStack, Flex, Grid, Box} from 'ui5'
+import {Spinner, Text, VStack, Flex, Grid, Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetRow} from './AssetRow'
@@ -64,7 +64,11 @@ export function FileListView(props: Props) {
         {isLoading && assets.length === 0 && (
           <Box paddingTop={4} paddingBottom={2}>
             <Flex justifyContent="center">
-              <Spinner muted />
+              <Spinner
+                style={{
+                  color: 'var(--foreground-low)',
+                }}
+              />
             </Flex>
           </Box>
         )}

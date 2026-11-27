@@ -1,7 +1,6 @@
-import {Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {Fragment} from 'react'
-import {Flex} from 'ui5'
+import {Spinner, Flex} from 'ui5'
 
 import {useQuery} from './loader'
 

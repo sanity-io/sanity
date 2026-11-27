@@ -1,7 +1,7 @@
 import {CATALOGUE_SUITE_IDS, type CatalogueSuiteStatus} from '@repo/utils/engine-confidence'
-import {Badge, Card, Spinner} from '@sanity/ui'
+import {Badge, Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Text, Flex, Grid, VStack} from 'ui5'
+import {Spinner, Text, Flex, Grid, VStack} from 'ui5'
 
 import {type TrendSeries, type TrendTag} from './data'
 import {
@@ -315,7 +315,11 @@ export function EngineConfidencePanel(props: {
   if (loading) {
     return (
       <Flex alignItems="center" justifyContent="center" padding={6}>
-        <Spinner muted />
+        <Spinner
+          style={{
+            color: 'var(--foreground-low)',
+          }}
+        />
       </Flex>
     )
   }

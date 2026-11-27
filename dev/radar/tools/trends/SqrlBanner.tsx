@@ -1,12 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {Badge, Button, Card, Spinner} from '@sanity/ui'
+import {Badge, Button, Card} from '@sanity/ui'
 import {ParentSize} from '@visx/responsive'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Text, Flex, Grid, VStack, Link} from 'ui5'
+import {Spinner, Text, Flex, Grid, VStack, Link} from 'ui5'
 
 import {CALIBRATION_EXPLAINER, type TrendTag} from './data'
 import {type DebugSource} from './debugData'
@@ -336,7 +336,11 @@ export function SqrlBanner(props: {
         />
         {state.status === 'loading' && (
           <Flex alignItems="center" justifyContent="center" padding={4}>
-            <Spinner muted />
+            <Spinner
+              style={{
+                color: 'var(--foreground-low)',
+              }}
+            />
           </Flex>
         )}
         {state.status === 'error' && (

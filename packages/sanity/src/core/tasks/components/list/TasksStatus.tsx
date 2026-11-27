@@ -1,6 +1,6 @@
-import {Checkbox, Spinner} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {Flex} from 'ui5'
+import {Spinner, Flex} from 'ui5'
 
 import {useTaskOperations} from '../../hooks/useTaskOperations'
 
@@ -39,8 +39,9 @@ export function TasksStatus(props: TasksStatusProps) {
   return (
     <Flex>
       {isLoading ? (
+        // Matches the 17px checkbox so the row doesn't shift while the status updates
         <div style={{height: '17px', width: '17px'}}>
-          <Spinner style={{marginLeft: '3.5px', marginRight: '3.5px', marginTop: '3.5px'}} />
+          <Spinner style={{fontSize: '20px', margin: '-1.5px'}} />
         </div>
       ) : (
         <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
