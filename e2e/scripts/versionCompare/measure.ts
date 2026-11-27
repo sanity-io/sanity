@@ -1,5 +1,6 @@
 import {type Browser, type BrowserContextOptions} from '@playwright/test'
 
+import {DOCUMENT_READY, STRUCTURE_READY} from './content'
 import {recordNetwork, type NetworkEvent, type RequestEntry} from './network'
 import {applyThrottle, type ThrottleProfile} from './throttle'
 import {
@@ -18,9 +19,12 @@ import {
  * the page's own clock is the only one involved.
  *
  * The checks avoid anything specific to one major: a visible provider link on the login screen,
- * and a visible link inside the navbar's tool menu.
+ * a visible link inside the navbar's tool menu, the Structure tool's root list with an item per
+ * document type, and the deep-linked document's title in an editable input.
  */
 const READY_PREDICATES = {
+  document: DOCUMENT_READY,
+  structure: STRUCTURE_READY,
   login: `() => {
     const isVisible = (el) => el.getClientRects().length > 0
     const heading = [...document.querySelectorAll('h1, h2')].some((el) => /Choose login provider/.test(el.textContent))

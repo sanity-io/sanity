@@ -25,9 +25,10 @@ describe('versionCompare report', () => {
             login: compareMetric('Login ready', 'ms', [1000, 2000, 3000], [500, 1000, 1500]),
           },
           network: {downloadKbps: 1600, latencyMs: 150, uploadKbps: 750},
+          waterfalls: {},
         },
       },
-      schemaVersion: 3,
+      schemaVersion: 4,
       versions: {
         v6: {ref: 'main', sanityVersion: '6.0.0', sha: 'a'.repeat(40)},
         v7: {ref: 'next-major', sanityVersion: '7.0.0', sha: 'b'.repeat(40)},

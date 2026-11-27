@@ -1,3 +1,5 @@
+import {renderSchemaTypes} from './content'
+
 export interface StudioConfigOptions {
   apiHost: string
   dataset: string
@@ -8,7 +10,7 @@ export interface StudioConfigOptions {
  * The studio both versions are built from. It is written over `dev/starter-studio` in each
  * checkout, which exists on every ref and already depends on `sanity`, so no install or
  * lockfile change is needed and both builds compile byte-identical configuration. It stays
- * minimal on purpose: one tool, no schema types, no plugins.
+ * minimal on purpose: one tool, three document types (`content.ts`), no other plugins.
  */
 export function renderStudioConfig({apiHost, dataset, projectId}: StudioConfigOptions): {
   cli: string
@@ -33,7 +35,9 @@ export default defineConfig({
   dataset: ${JSON.stringify(literal.dataset)},
   apiHost: ${JSON.stringify(literal.apiHost)},
   plugins: [structureTool()],
-  schema: {types: []},
+  schema: {
+    types: ${renderSchemaTypes()},
+  },
   announcements: {enabled: false},
 })
 `,
