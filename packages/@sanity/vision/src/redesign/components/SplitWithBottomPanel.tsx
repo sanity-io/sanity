@@ -27,19 +27,13 @@ import {
   PANEL_HEADER_HEIGHT,
 } from './CollapsiblePanel'
 import {type BottomPanelColumn, bottomPanelSizeToFit, defaultBottomPanelSize} from './fitPanelSize'
+import {usePanelSnapShut} from './panelSnapShut'
 import {PANEL_PANE, PANEL_TRANSITION, startLayoutTransition} from './panelTransitions'
 import * as styles from './redesign.module.css'
 import {ResizableSplit, SPLIT_HANDLE_SIZE} from './ResizableSplit'
 
 /** The main area may never be dragged smaller than this */
 const MIN_MAIN_HEIGHT = 120
-
-/**
- * A bottom panel left with less body than this under its tab header, by a drag or a key, snaps
- * shut: that is less than one line of its content
- */
-export const MIN_PANEL_BODY_HEIGHT = 24
-const COLLAPSE_BELOW = PANEL_HEADER_HEIGHT + MIN_PANEL_BODY_HEIGHT
 
 /**
  * How far above the bottom of the query tab the request panel's toolbar row and the response
@@ -147,36 +141,24 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
       setPanelState((current) => ({...current, collapsed: !current.collapsed})),
     )
   }, [panelState.collapsed, setPanelState, telemetry, column])
-  const snapShut = useCallback(
-    (size: number, startSize: number) => {
-      if (size >= COLLAPSE_BELOW) return
+  const collapseShrunk = useCallback(
+    (restoreSize: number | undefined) => {
       telemetry.panelToggled(column, false)
-      // The divider is disabled while collapsed, so keyboard focus moves on to the toggle that
-      // expands the panel again
-      const container = containerRef.current
-      if (
-        container?.querySelector(`[data-testid="${testId}-split-handle"]`) ===
-        document.activeElement
-      ) {
-        container
-          ?.querySelector<HTMLElement>(`[data-testid="${id}-panel-toggle"]`)
-          ?.focus({focusVisible: true} as FocusOptions)
-      }
-      // Expanding again opens it at the height it had before it was shrunk away
-      startLayoutTransition(PANEL_TRANSITION, () =>
-        setPanelState((current) => ({
-          ...current,
-          collapsed: true,
-          bottomSizes: {
-            ...current.bottomSizes,
-            [layout]:
-              startSize >= COLLAPSE_BELOW && startSize !== defaultSize ? startSize : undefined,
-          },
-        })),
-      )
+      setPanelState((current) => ({
+        ...current,
+        collapsed: true,
+        bottomSizes: {...current.bottomSizes, [layout]: restoreSize},
+      }))
     },
-    [column, defaultSize, id, layout, setPanelState, telemetry, testId],
+    [column, layout, setPanelState, telemetry],
   )
+  const snapShut = usePanelSnapShut({
+    containerRef,
+    handleTestId: `${testId}-split-handle`,
+    toggleTestId: `${id}-panel-toggle`,
+    defaultSize,
+    collapse: collapseShrunk,
+  })
   const requestFit = useCallback(
     (tabId?: string) => {
       const update = () => {

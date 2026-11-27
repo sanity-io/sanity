@@ -63,7 +63,8 @@ import {VISION_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
-import {useRequestBottomPanel} from '../queryTabLayout'
+import {PANEL_TRANSITION, startLayoutTransition} from '../panelTransitions'
+import {useParamsSection, useRequestBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {FunctionsTab, type QueryEdit} from '../response/FunctionsTab'
 import {LintTab, severityTone} from '../response/LintTab'
@@ -86,6 +87,7 @@ import {ParamsActionsMenu} from './ParamsActionsMenu'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
+import {QueryParamsSplit} from './QueryParamsSplit'
 import {RequestOverrideChips} from './RequestOverrideChips'
 import {SharedQueryPresence} from './SharedQueryPresence'
 
@@ -318,12 +320,19 @@ export function RequestPanel(props: RequestPanelProps) {
     ],
     [t],
   )
+  const {state: paramsSection, setCollapsed: setParamsCollapsed} = useParamsSection()
+  // Expanding the params section, from a lint finding or a fix about a param, or picking a view
+  const showParams = useCallback(() => {
+    if (!paramsSection.collapsed) return
+    startLayoutTransition(PANEL_TRANSITION, () => setParamsCollapsed(false))
+  }, [paramsSection.collapsed, setParamsCollapsed])
   const setParamsView = useCallback(
     (view: VisionParamsView) => {
       if (view !== paramsView) telemetry.viewChanged('params', view)
       actorRef.send({type: 'params.view', view})
+      showParams()
     },
-    [actorRef, paramsView, telemetry],
+    [actorRef, paramsView, showParams, telemetry],
   )
   const saveFunction = useCallback(
     (fn: VisionSavedFunction) => actorRef.send({type: 'functions.save', fn}),
@@ -398,10 +407,6 @@ export function RequestPanel(props: RequestPanelProps) {
     [setPanelState, tabElementId],
   )
 
-  const showParams = useCallback(
-    () => setPanelState((current) => ({...current, activeTabId: 'params', collapsed: false})),
-    [setPanelState],
-  )
   const paramLintFindings = useMemo(() => lintFindings.filter(isParamLintFinding), [lintFindings])
   const paramSuggestionLabel = useCallback(
     (suggestion: string) => t('vision.lint.use-suggestion', {suggestion}),
@@ -519,91 +524,6 @@ export function RequestPanel(props: RequestPanelProps) {
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
     return [
       {
-        id: 'params',
-        label: t('params.label'),
-        // Params that do not parse get the Lint tab's chip for an error
-        muted: !params.valid,
-        tone: params.valid ? undefined : severityTone('error'),
-        toolbar: (
-          <Flex
-            alignItems="center"
-            className={styles.panelBar}
-            data-vision-params-content=""
-            flexGrow={1}
-            gap={2}
-            minWidth="0"
-            justifyContent="flex-end"
-          >
-            {/* The view switch sits where the result panel has its view menu: after copy, before
-                the actions menu */}
-            <Flex
-              alignItems="center"
-              data-testid="vision-params-toolbar-actions"
-              flexShrink={0}
-              gap={1}
-            >
-              <EditorCornerActions
-                copied={copied === 'params'}
-                copyLabel={t('vision.params.copy')}
-                formatLabel={canFormatParams ? t('vision.params.format') : undefined}
-                onCopy={onCopyParams}
-                onFormat={onFormatParams}
-                testIdPrefix="vision-params"
-              />
-              <ResultViewMenu
-                buttonLabel={t('vision.params.view.button', {
-                  view:
-                    paramsViews.find((view) => view.id === paramsView)?.label ??
-                    t('vision.params.view.json'),
-                })}
-                controls={paramsContentId}
-                id={paramsViewMenuId}
-                menuLabel={t('vision.params.view.label')}
-                onChange={setParamsView}
-                testId="vision-params-view"
-                value={paramsView}
-                views={paramsViews}
-              />
-              <ParamsActionsMenu params={paramValues} tab={tab} />
-            </Flex>
-          </Flex>
-        ),
-        content: (
-          <Flex data-vision-params-content="" flexDirection="column">
-            <Box id={paramsContentId}>
-              {paramsView === 'form' ? (
-                <div {...formFocusProps}>
-                  <ParamsForm
-                    client={resolved.client}
-                    lintFindings={paramLintFindings}
-                    onApplySuggestion={onParamSuggestionApplied}
-                    onChange={onParamsReplace}
-                    onSubmit={onParamsSubmit}
-                    params={params}
-                    query={tab.query}
-                  />
-                </div>
-              ) : (
-                <>
-                  <ParamsPanel
-                    editorRef={paramsEditorRef}
-                    lintFindings={paramLintFindings}
-                    onActiveParamChange={highlightParam}
-                    onApplySuggestion={onParamSuggestionApplied}
-                    onChange={onParamsChange}
-                    params={params}
-                    query={tab.query}
-                    suggestionLabel={paramSuggestionLabel}
-                    value={tab.rawParams}
-                  />
-                  <FlushOnUnmount onUnmount={onParamsFlush} />
-                </>
-              )}
-            </Box>
-          </Flex>
-        ),
-      },
-      {
         id: 'options',
         label: t('vision.panel.options'),
         content: (
@@ -664,46 +584,88 @@ export function RequestPanel(props: RequestPanelProps) {
     ]
   }, [
     applyLintFixes,
-    onParamSuggestionApplied,
-    paramLintFindings,
-    paramSuggestionLabel,
     revealFinding,
     showParams,
     canFixLint,
-    canFormatParams,
-    copied,
     declaredFunctions,
-    formFocusProps,
-    highlightParam,
     lintAgent,
     functionCount,
     library,
     lintCount,
     lintSeverity,
     lintFindings,
-    onCopyParams,
     onEditQuery,
-    onFormatParams,
     onOptionsChange,
-    onParamsChange,
-    onParamsFlush,
-    onParamsReplace,
-    onParamsSubmit,
     onRevealRange,
     params,
-    paramValues,
-    paramsContentId,
-    paramsEditorRef,
-    paramsView,
-    paramsViewMenuId,
-    paramsViews,
     removeFunction,
     resolved,
     saveFunction,
-    setParamsView,
     t,
     tab,
   ])
+
+  const paramsActions = (
+    <>
+      <EditorCornerActions
+        copied={copied === 'params'}
+        copyLabel={t('vision.params.copy')}
+        formatLabel={
+          canFormatParams && !paramsSection.collapsed ? t('vision.params.format') : undefined
+        }
+        onCopy={onCopyParams}
+        onFormat={onFormatParams}
+        testIdPrefix="vision-params"
+      />
+      <ResultViewMenu
+        buttonLabel={t('vision.params.view.button', {
+          view:
+            paramsViews.find((view) => view.id === paramsView)?.label ??
+            t('vision.params.view.json'),
+        })}
+        controls={paramsContentId}
+        id={paramsViewMenuId}
+        menuLabel={t('vision.params.view.label')}
+        onChange={setParamsView}
+        testId="vision-params-view"
+        value={paramsView}
+        views={paramsViews}
+      />
+      <ParamsActionsMenu params={paramValues} tab={tab} />
+    </>
+  )
+  const paramsContent = (
+    <Box id={paramsContentId}>
+      {paramsView === 'form' ? (
+        <div {...formFocusProps}>
+          <ParamsForm
+            client={resolved.client}
+            lintFindings={paramLintFindings}
+            onApplySuggestion={onParamSuggestionApplied}
+            onChange={onParamsReplace}
+            onSubmit={onParamsSubmit}
+            params={params}
+            query={tab.query}
+          />
+        </div>
+      ) : (
+        <>
+          <ParamsPanel
+            editorRef={paramsEditorRef}
+            lintFindings={paramLintFindings}
+            onActiveParamChange={highlightParam}
+            onApplySuggestion={onParamSuggestionApplied}
+            onChange={onParamsChange}
+            params={params}
+            query={tab.query}
+            suggestionLabel={paramSuggestionLabel}
+            value={tab.rawParams}
+          />
+          <FlushOnUnmount onUnmount={onParamsFlush} />
+        </>
+      )}
+    </Box>
+  )
 
   const runLabel = isFetching ? t('vision.query.stop') : t('action.query-execute')
   // Next to Stop live, the tooltip and accessible name say what Stop stops
@@ -715,30 +677,6 @@ export function RequestPanel(props: RequestPanelProps) {
       fitOnTabDoubleClick
       footer={
         <ActionRail testId="vision-query-actions">
-          <Flex
-            alignItems="center"
-            className={styles.actionRailChips}
-            data-testid="vision-query-action-chips"
-            flexBasis="0%"
-            flexGrow={1}
-            gap={2}
-            justifyContent="flex-start"
-            minWidth="0"
-          >
-            <RequestOverrideChips
-              apiVersionButton={<ApiVersionButton onReveal={revealOption} resolved={resolved} />}
-              onReveal={revealOption}
-              options={tab.options}
-              resolved={resolved}
-            />
-          </Flex>
-          <LiveButton
-            active={tab.autoRefetch}
-            canFetch={request !== null}
-            connected={liveConnected}
-            onToggle={onToggleAutoRefetch}
-            supported={resolved.supportsSyncTags}
-          />
           <VisionTooltip
             content={runDescription}
             hotkeys={isFetching ? undefined : VISION_SHORTCUTS.fetch.keys}
@@ -757,6 +695,30 @@ export function RequestPanel(props: RequestPanelProps) {
               tone={isFetching ? 'critical' : 'primary'}
             />
           </VisionTooltip>
+          <LiveButton
+            active={tab.autoRefetch}
+            canFetch={request !== null}
+            connected={liveConnected}
+            onToggle={onToggleAutoRefetch}
+            supported={resolved.supportsSyncTags}
+          />
+          <Flex
+            alignItems="center"
+            className={styles.actionRailChips}
+            data-testid="vision-query-action-chips"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            justifyContent="flex-start"
+            minWidth="0"
+          >
+            <RequestOverrideChips
+              apiVersionButton={<ApiVersionButton onReveal={revealOption} resolved={resolved} />}
+              onReveal={revealOption}
+              options={tab.options}
+              resolved={resolved}
+            />
+          </Flex>
         </ActionRail>
       }
       id="vision-request"
@@ -766,79 +728,93 @@ export function RequestPanel(props: RequestPanelProps) {
       tabs={panelTabs}
       testId="vision-request-column"
     >
-      <Flex className={styles.querySection} ref={querySectionRef}>
-        <Flex
-          className={styles.editorContainer}
-          data-testid="vision-query-editor"
-          flexBasis="0%"
-          flexDirection="column"
-          flexGrow={1}
-          minHeight="0"
-          minWidth="0"
-          ref={setQueryEditorElement}
-        >
-          <div
-            className={cx(styles.paneToolbar, styles.paneToolbarMain)}
-            data-scrolled={queryScrolled}
-            data-testid="vision-query-toolbar"
-          >
-            <Flex alignItems="center" className={styles.paneToolbarLabel} gap={2}>
-              <Label aria-label={t('query.label')} muted size={1}>
-                {t('query.label')}
-              </Label>
-              {sharedQueryId !== undefined && <SharedQueryPresence documentId={sharedQueryId} />}
-            </Flex>
-            <Flex alignItems="center" data-testid="vision-query-toolbar-actions" gap={1}>
-              <EditorCornerActions
-                copied={copied === 'query'}
-                copyLabel={t('vision.query.copy')}
-                formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
-                onCopy={onCopyQuery}
-                onFormat={onFormatQuery}
-                testIdPrefix="vision-query"
-              />
-              <QueryActionsMenu
-                buildRequest={buildRequest}
-                request={request}
-                resolved={resolved}
-                tab={tab}
-              />
-            </Flex>
-          </div>
-          <div className={styles.paneScroll} data-fill="" ref={setQueryScroller}>
-            <VisionCodeMirror
-              extensions={queryExtensions}
-              initialValue={tab.query}
-              onChange={onQueryChange}
-              ref={queryEditorRef}
-              underHeader
-            />
-          </div>
-          {endMode &&
-            createPortal(
-              barMode ? (
-                <GenerateQueryBar
-                  client={resolved.client}
-                  formatForEditor={formatForEditor}
-                  mode={barMode}
-                  onClose={closeBar}
-                  params={params.valid ? params.parsed : undefined}
-                  tab={tab}
-                />
-              ) : (
-                <AgentActionsTooltip>
-                  <GenerateQueryButton
-                    className={styles.queryEndButton}
-                    data-testid={endMode === 'edit' ? 'vision-edit-query' : 'vision-generate-query'}
-                    onClick={() => setBarMode(endMode)}
-                    text={t(endMode === 'edit' ? 'vision.edit.button' : 'vision.generate.button')}
+      <QueryParamsSplit
+        actions={paramsActions}
+        invalid={!params.valid}
+        query={
+          <Flex className={styles.querySection} ref={querySectionRef}>
+            <Flex
+              className={styles.editorContainer}
+              data-testid="vision-query-editor"
+              flexBasis="0%"
+              flexDirection="column"
+              flexGrow={1}
+              minHeight="0"
+              minWidth="0"
+              ref={setQueryEditorElement}
+            >
+              <div
+                className={cx(styles.paneToolbar, styles.paneToolbarMain)}
+                data-scrolled={queryScrolled}
+                data-testid="vision-query-toolbar"
+              >
+                <Flex alignItems="center" className={styles.paneToolbarLabel} gap={2}>
+                  <Label aria-label={t('query.label')} muted size={1}>
+                    {t('query.label')}
+                  </Label>
+                  {sharedQueryId !== undefined && (
+                    <SharedQueryPresence documentId={sharedQueryId} />
+                  )}
+                </Flex>
+                <Flex alignItems="center" data-testid="vision-query-toolbar-actions" gap={1}>
+                  <EditorCornerActions
+                    copied={copied === 'query'}
+                    copyLabel={t('vision.query.copy')}
+                    formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
+                    onCopy={onCopyQuery}
+                    onFormat={onFormatQuery}
+                    testIdPrefix="vision-query"
                   />
-                </AgentActionsTooltip>
-              ),
-              generateSlot,
-            )}
-        </Flex>
-      </Flex>
+                  <QueryActionsMenu
+                    buildRequest={buildRequest}
+                    request={request}
+                    resolved={resolved}
+                    tab={tab}
+                  />
+                </Flex>
+              </div>
+              <div className={styles.paneScroll} data-fill="" ref={setQueryScroller}>
+                <VisionCodeMirror
+                  extensions={queryExtensions}
+                  initialValue={tab.query}
+                  onChange={onQueryChange}
+                  ref={queryEditorRef}
+                  underHeader
+                />
+              </div>
+              {endMode &&
+                createPortal(
+                  barMode ? (
+                    <GenerateQueryBar
+                      client={resolved.client}
+                      formatForEditor={formatForEditor}
+                      mode={barMode}
+                      onClose={closeBar}
+                      params={params.valid ? params.parsed : undefined}
+                      tab={tab}
+                    />
+                  ) : (
+                    <AgentActionsTooltip>
+                      <GenerateQueryButton
+                        className={styles.queryEndButton}
+                        data-testid={
+                          endMode === 'edit' ? 'vision-edit-query' : 'vision-generate-query'
+                        }
+                        onClick={() => setBarMode(endMode)}
+                        text={t(
+                          endMode === 'edit' ? 'vision.edit.button' : 'vision.generate.button',
+                        )}
+                      />
+                    </AgentActionsTooltip>
+                  ),
+                  generateSlot,
+                )}
+            </Flex>
+          </Flex>
+        }
+      >
+        {paramsContent}
+      </QueryParamsSplit>
     </SplitWithBottomPanel>
   )
 }
