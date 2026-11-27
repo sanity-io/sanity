@@ -88,6 +88,24 @@ describe('CollapsiblePanel', () => {
     expect(toggle.querySelector('svg')).toBe(chevron)
   })
 
+  it('shows no tab as selected while collapsed, and keeps the open one as the tab stop', () => {
+    render(<Harness />)
+    const tab = (name: string) => screen.getByRole('tab', {name})
+    expect(tab('Response').getAttribute('aria-selected')).toBe('true')
+    expect(tab('Response').tabIndex).toBe(0)
+    expect(tab('History').tabIndex).toBe(-1)
+
+    fireEvent.click(screen.getByTestId('vision-response-panel-toggle'))
+    for (const name of ['Response', 'History']) {
+      expect(tab(name).getAttribute('aria-selected')).toBe('false')
+      expect(tab(name).hasAttribute('data-selected')).toBe(false)
+      // No panel to point at
+      expect(tab(name).hasAttribute('aria-controls')).toBe(false)
+    }
+    expect(tab('Response').tabIndex).toBe(0)
+    expect(tab('History').tabIndex).toBe(-1)
+  })
+
   it('expands again on the picked tab when a tab is picked while collapsed', () => {
     render(<Harness />)
     fireEvent.click(screen.getByTestId('vision-response-panel-toggle'))
@@ -95,6 +113,8 @@ describe('CollapsiblePanel', () => {
     const toggle = screen.getByTestId('vision-response-panel-toggle')
     expect(toggle.getAttribute('aria-expanded')).toBe('true')
     expect(screen.getByTestId('history-content')).toBeTruthy()
+    expect(screen.getByRole('tab', {name: 'History'}).getAttribute('aria-selected')).toBe('true')
+    expect(screen.getByRole('tab', {name: 'History'}).tabIndex).toBe(0)
   })
 })
 

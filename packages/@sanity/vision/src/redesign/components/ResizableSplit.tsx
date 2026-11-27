@@ -30,6 +30,11 @@ export interface ResizableSplitProps {
   minSecondarySize: number
   /** A new size, and whether it holds equal halves (always `false` without `snapToCenter`) */
   onChange: (size: number, snapped: boolean) => void
+  /**
+   * A drag ended, or a key moved the divider: the size it was left at, and the size before the
+   * drag or the key press
+   */
+  onResizeEnd?: (size: number, startSize: number) => void
   /** Enter on the divider: back to the default size */
   onReset?: () => void
   allowResize?: boolean
@@ -73,6 +78,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
     minSize,
     minSecondarySize,
     onChange,
+    onResizeEnd,
     onReset,
     allowResize = true,
     snapToCenter = false,
@@ -123,18 +129,21 @@ export function ResizableSplit(props: ResizableSplitProps) {
       const handle = event.currentTarget
       const start = split === 'vertical' ? event.clientX : event.clientY
       let engaged = false
+      let dragged: number | undefined
       const onMove = (move: PointerEvent) => {
         const position = split === 'vertical' ? move.clientX : move.clientY
         const delta = position - start
         const drag = snapDragSize(shownSize + (primary === 'first' ? delta : -delta), snap, engaged)
         engaged = drag.engaged
-        change(clamp(drag.size, bounds))
+        dragged = clamp(drag.size, bounds)
+        change(dragged)
       }
       const onEnd = () => {
         handle.removeEventListener('pointermove', onMove)
         handle.removeEventListener('pointerup', onEnd)
         handle.removeEventListener('pointercancel', onEnd)
         setDragging(false)
+        if (dragged !== undefined) onResizeEnd?.(dragged, shownSize)
       }
       handle.setPointerCapture?.(event.pointerId)
       handle.addEventListener('pointermove', onMove)
@@ -142,7 +151,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
       handle.addEventListener('pointercancel', onEnd)
       setDragging(true)
     },
-    [allowResize, bounds, change, primary, shownSize, snap, split],
+    [allowResize, bounds, change, onResizeEnd, primary, shownSize, snap, split],
   )
 
   const onKeyDown = useCallback(
@@ -172,9 +181,11 @@ export function ResizableSplit(props: ResizableSplitProps) {
       }
       event.preventDefault()
       const next = clamp(target, bounds)
-      if (next !== shownSize) change(next)
+      if (next === shownSize) return
+      change(next)
+      onResizeEnd?.(next, shownSize)
     },
-    [allowResize, bounds, change, onReset, primary, shownSize, snap, split],
+    [allowResize, bounds, change, onResizeEnd, onReset, primary, shownSize, snap, split],
   )
 
   const primaryStyle = {flex: `0 0 ${shownSize}px`}

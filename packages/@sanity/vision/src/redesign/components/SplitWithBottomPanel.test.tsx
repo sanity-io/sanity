@@ -1,10 +1,16 @@
 import {LayerProvider, ThemeProvider, useBoundaryElement} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {cleanup, render, screen} from '@testing-library/react'
+import {cleanup, fireEvent, render, screen} from '@testing-library/react'
+import {useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionExperience, VisionExperienceContext} from '../store/VisionActorContext'
-import {SplitWithBottomPanel} from './SplitWithBottomPanel'
+import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
+import {
+  type BottomPanelState,
+  MIN_PANEL_BODY_HEIGHT,
+  SplitWithBottomPanel,
+} from './SplitWithBottomPanel'
 
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
@@ -68,6 +74,13 @@ function Pane({name}: {name: 'request' | 'response'}) {
 
 afterEach(() => {
   cleanup()
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  )
 })
 
 describe('SplitWithBottomPanel', () => {
@@ -90,5 +103,92 @@ describe('SplitWithBottomPanel', () => {
         )
       }
     }
+  })
+})
+
+function ControlledPane() {
+  const [state, setState] = useState<BottomPanelState>({
+    activeTabId: 'first',
+    collapsed: false,
+    bottomSizes: {columns: 200},
+  })
+  return (
+    <SplitWithBottomPanel
+      column="response"
+      id="vision-response"
+      onStateChange={setState}
+      state={state}
+      tabs={[{id: 'first', label: 'First', content: <div data-testid="first-content" />}]}
+      testId="vision-response"
+    >
+      <div />
+    </SplitWithBottomPanel>
+  )
+}
+
+function renderPane() {
+  // Every box measures 800 × 600, so the split has room to resize
+  vi.stubGlobal(
+    'ResizeObserver',
+    class implements ResizeObserver {
+      constructor(private readonly callback: ResizeObserverCallback) {}
+      observe() {
+        const entry = {contentRect: DOMRect.fromRect({width: 800, height: 600})}
+        this.callback([entry as ResizeObserverEntry], this)
+      }
+      unobserve() {}
+      disconnect() {}
+    },
+  )
+  render(
+    <ThemeProvider theme={theme}>
+      <LayerProvider>
+        <VisionExperienceContext value={EXPERIENCE}>
+          <ControlledPane />
+        </VisionExperienceContext>
+      </LayerProvider>
+    </ThemeProvider>,
+  )
+  return {
+    handle: screen.getByTestId('vision-response-split-handle'),
+    toggle: screen.getByTestId('vision-response-panel-toggle'),
+    size: () => Number(screen.getByTestId('vision-response-split-handle').ariaValueNow),
+  }
+}
+
+describe('SplitWithBottomPanel resizing', () => {
+  const snapBelow = PANEL_HEADER_HEIGHT + MIN_PANEL_BODY_HEIGHT
+
+  it('snaps shut when a drag leaves less than a line of body, and reopens at the earlier height', () => {
+    const {handle, toggle, size} = renderPane()
+    fireEvent.pointerDown(handle, {button: 0, clientY: 400, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientY: 400 + 200 - snapBelow + 1})
+    // Still open while the pointer is down
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    fireEvent.pointerUp(handle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(size()).toBe(PANEL_HEADER_HEIGHT)
+    expect(screen.queryByTestId('first-content')).toBeNull()
+
+    fireEvent.click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(size()).toBe(200)
+  })
+
+  it('stays open when a drag leaves at least a line of body', () => {
+    const {handle, toggle, size} = renderPane()
+    fireEvent.pointerDown(handle, {button: 0, clientY: 400, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientY: 400 + 200 - snapBelow})
+    fireEvent.pointerUp(handle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(size()).toBe(snapBelow)
+  })
+
+  it('snaps shut from the keyboard, and hands focus to the toggle', () => {
+    const {handle, toggle} = renderPane()
+    handle.focus()
+    fireEvent.keyDown(handle, {key: 'Home'})
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(document.activeElement).toBe(toggle)
   })
 })

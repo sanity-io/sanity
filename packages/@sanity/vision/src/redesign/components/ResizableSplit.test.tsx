@@ -162,6 +162,31 @@ describe('ResizableSplit', () => {
     expect(primaryPane().style.flex).toBe('0 0 700px')
   })
 
+  it('reports where a drag or a key press left the divider, and where it started', () => {
+    const onResizeEnd = vi.fn()
+    render(<Harness onResizeEnd={onResizeEnd} />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+
+    fireEvent.pointerDown(handle, {button: 0, clientX: 300, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 340})
+    fireEvent.pointerMove(handle, {clientX: 360})
+    expect(onResizeEnd).not.toHaveBeenCalled()
+    fireEvent.pointerUp(handle)
+    expect(onResizeEnd).toHaveBeenCalledExactlyOnceWith(360, 300)
+
+    // A click on the divider without a move is no resize
+    fireEvent.pointerDown(handle, {button: 0, clientX: 360, pointerId: 1})
+    fireEvent.pointerUp(handle)
+    expect(onResizeEnd).toHaveBeenCalledTimes(1)
+
+    fireEvent.keyDown(handle, {key: 'Home'})
+    expect(onResizeEnd).toHaveBeenLastCalledWith(100, 360)
+    // Already at the bound, so nothing moves
+    fireEvent.keyDown(handle, {key: 'Home'})
+    expect(onResizeEnd).toHaveBeenCalledTimes(2)
+  })
+
   it('clamps a size the container can no longer hold, and restores it when it can', () => {
     render(<Harness defaultSize={600} />)
     measure(801, 400)
