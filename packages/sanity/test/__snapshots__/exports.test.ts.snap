@@ -592,7 +592,7 @@ exports[`exports snapshot 1`] = `
     "validateWorkspaces": "function",
     "validation": "function",
   },
-  "./_dangerously_use_private_internals_that_do_not_follow_semver/1": {
+  "./_dangerously_use_private_internals_that_do_not_follow_semver-1": {
     "STUDIO_RESIZE_TRANSITION_TYPE": "string",
     "STUDIO_SCHEME_TRANSITION_TYPE": "string",
     "STUDIO_SKIP_TRANSITION_TYPE": "string",
@@ -603,7 +603,7 @@ exports[`exports snapshot 1`] = `
     "TextWithTone": "function",
     "useSchema": "function",
   },
-  "./_dangerously_use_private_internals_that_do_not_follow_semver/2": {
+  "./_dangerously_use_private_internals_that_do_not_follow_semver-2": {
     "ALL_FIELDS_GROUP": "object",
     "ArrayOfObjectOptionsInput": "function",
     "ArrayOfObjectsFunctions": "function",
@@ -834,8 +834,8 @@ exports[`exports snapshot 1`] = `
     "useVirtualizerScrollInstance": "function",
     "visitDiff": "function",
   },
-  "./_dangerously_use_private_internals_that_do_not_follow_semver/router": {},
-  "./_dangerously_use_private_internals_that_do_not_follow_semver/structure": {
+  "./_dangerously_use_private_internals_that_do_not_follow_semver-router": {},
+  "./_dangerously_use_private_internals_that_do_not_follow_semver-structure": {
     "DocumentInspectorHeader": "function",
     "DocumentPaneProvider": "object",
     "PaneLayout": "function",

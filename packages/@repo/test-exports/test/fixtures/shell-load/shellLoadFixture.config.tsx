@@ -6,7 +6,7 @@ import {structureTool} from 'sanity/structure'
 import {NavbarWithLazyOnlyInternals} from './NavbarWithLazyOnlyInternals'
 
 /**
- * The studio `shell-load.test.mjs` checks its own detection against: the navbar imports `/2`
+ * The studio `shell-load.test.mjs` checks its own detection against: the navbar imports `…-2`
  * statically, which is part of the shell, and a lazily loaded tool imports it too, which is not.
  */
 export default defineConfig({

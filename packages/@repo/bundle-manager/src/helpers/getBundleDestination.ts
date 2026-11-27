@@ -5,9 +5,8 @@ import {cleanDirName} from '../utils'
 
 /**
  * The bucket object a file of a package's `dist` directory is uploaded to. The module server
- * redirects `<package>/<subpath>` to `bare/<subpath>.mjs`, and nested entries (such as
- * `_dangerously_use_private_internals_that_do_not_follow_semver/1.mjs`) import their chunks
- * relative to their own directory, so the path below `dist` is kept as-is.
+ * redirects `<package>/<subpath>` to `bare/<subpath>.mjs`, and nested entries (`<dir>/<name>.mjs`)
+ * import their chunks relative to their own directory, so the path below `dist` is kept as-is.
  */
 export function getBundleDestination(options: {
   pkg: string

@@ -63,7 +63,7 @@
         "category": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
         "pattern": [
           "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts",
-          "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/*.ts"
+          "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver-*.ts"
         ]
       },
       {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},

@@ -4,7 +4,7 @@ import {Box} from '@sanity/ui'
 import {useState} from 'react'
 import Barcode from 'react-barcode'
 import {type FieldMember, type ObjectInputProps} from 'sanity'
-import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {styled} from 'styled-components'
 import {Text} from 'ui5'
 

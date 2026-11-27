@@ -1,14 +1,14 @@
 // After sign-in a studio renders its shell first: the navbar, the tool menu and, on a path that
 // matches no tool (`/404`), the "Tool not found" screen. The private internals that only lazily
 // loaded code needs (the document stack: forms and inputs, field diffs, comments, document panes)
-// are on `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`, and that subpath
+// are on `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`, and that subpath
 // must never be part of what a studio loads to render `/404`.
 //
 // This builds studio configs the way `sanity build` does (resolving `sanity` to its built `lib`) and
 // walks what the shell loads, starting from the studio's entry: every static import, and the
 // dynamic imports of the `sanity` package itself, whose lazy layout, navbar, plugin providers and
 // preloads load with the shell. A dynamic import in studio or plugin code is the lazy boundary of a
-// tool, an input or a document component, which is where `/2` belongs, so the walk stops there.
+// tool, an input or a document component, which is where `…-2` belongs, so the walk stops there.
 import assert from 'node:assert/strict'
 import {createRequire} from 'node:module'
 import path from 'node:path'
@@ -23,14 +23,14 @@ const repoRoot = path.resolve(here, '../../../..')
 const sanityLib = path.join(path.dirname(require.resolve('sanity/package.json')), 'lib')
 
 const INTERNALS = '_dangerously_use_private_internals_that_do_not_follow_semver'
-const LAZY_ONLY = `${INTERNALS}/2`
+const LAZY_ONLY = `${INTERNALS}-2`
 const LAZY_ONLY_ENTRY = path.join(sanityLib, `${LAZY_ONLY}.js`)
 const ENTRY = '\0shell-load-entry'
 
-/** Studio configs whose shell must not load `/2`, relative to the repo root. */
+/** Studio configs whose shell must not load `…-2`, relative to the repo root. */
 const STUDIO_CONFIGS = ['perf/bench/sanity.config.ts', 'perf/studio/sanity.config.ts']
 
-/** A studio that imports `/2` once from its navbar (the shell) and once from a lazy tool. */
+/** A studio that imports `…-2` once from its navbar (the shell) and once from a lazy tool. */
 const FIXTURE_CONFIG = path.join(here, 'fixtures/shell-load/shellLoadFixture.config.tsx')
 
 /** @param {string} id */
@@ -50,7 +50,7 @@ function isSanityModule(id) {
 
 /**
  * Builds the studio entry for `configPath` and returns every chain of imports through which the
- * shell's graph reaches `/2`.
+ * shell's graph reaches `…-2`.
  *
  * @param {string} configPath - absolute path to a studio config
  */

@@ -15,4 +15,4 @@ export {
   type MatchOk,
   type MatchResult,
   type NextStateOrOptions,
-} from '../../router/types'
+} from '../router/types'

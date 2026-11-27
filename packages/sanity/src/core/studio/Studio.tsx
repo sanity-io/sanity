@@ -24,7 +24,7 @@ export interface StudioProps {
    *
    * ```tsx
    * import {usePrefersDark} from '@sanity/ui'
-   * import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+   * import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
    *
    * export default function StudioPage() {
    *   const prefersDark = usePrefersDark()
@@ -53,7 +53,7 @@ export interface StudioProps {
    *
    * You may setup two-way sync and re-enable the "Appearance" dropdown menu by also providing an `onSchemeChange` callback:
    * ```tsx
-   * import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+   * import {Studio} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
    * import {useSession} from 'your-app'
    *
    * export default function StudioPage() {

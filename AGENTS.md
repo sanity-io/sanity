@@ -362,7 +362,7 @@ load, into the `__SANITY_PRELOAD_MODULES__` global as specifiers relative to the
 StrictMode) calls `preloadModule` from `react-dom` once for each. Only that build defines the global;
 the npm package, dev and test builds have no list and preload nothing. The build fails when a listed
 module stops being a lazy chunk of its own or when the list would reach into another entry's chunks
-(`_dangerously…/2`, `structure`, tools). Keep the allowlist to what the navbar on `/404` needs: a
+(`_dangerously…-2`, `structure`, tools). Keep the allowlist to what the navbar on `/404` needs: a
 lazy boundary added there preloads on every studio load.
 
 The CDN redirects cross-origin (`sanity-cdn.com` to `modules.sanity-cdn.com`), and WebKit forces a
@@ -726,9 +726,12 @@ Rules that follow from this:
   them relatively without them being exported from the public `sanity/router` entry.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
-  404 on the module host. A nested entry (`…/1`, `…/2`, `…/structure`) is uploaded to
-  `bare/<entry>.mjs` with its directory kept (`@repo/bundle-manager`), and it also needs the
-  module server (`sanity-io/module-server`) to route subpaths with more than one segment.
+  404 on the module host. The internals subpaths are single segments
+  (`…-1`, `…-2`, `…-structure`, `…-router`) because the module server (`sanity-io/module-server`)
+  only routes one segment after the package name. This is temporary: once
+  [module-server#251](https://github.com/sanity-io/module-server/pull/251) is deployed to
+  production, rename them back to `…/1`, `…/2`, `…/structure` and `…/router` (the TODOs in
+  `tsdown.config.ts` and `package.bundle.ts` mark the spots).
   `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 - A change to any entry's export list also changes `packages/sanity/test/__snapshots__/exports.test.ts.snap`,
@@ -839,15 +842,15 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
   `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
   `not.toBeNever()` to `toBeFunction()`; regenerate both.
 
-### Lazy-only internals: `…/2` is never part of the `/404` shell
+### Lazy-only internals: `…-2` is never part of the `/404` shell
 
 After sign-in a studio renders its shell: the navbar, the tool menu and, on a path that matches no
 tool (`/404`), the "Tool not found" screen. Nothing a tool loads belongs there.
-`sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`
-(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/2.ts`)
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`
+(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver-2.ts`)
 holds the internals that only code behind a lazy boundary uses: the document stack (forms and
 inputs, field diffs and change indicators, presence overlays, comments and tasks UI, document
-panes and the other structure panes). Next to it, `…/1` is what a studio config may import before
+panes and the other structure panes). Next to it, `…-1` is what a studio config may import before
 sign-in, and the bare entry is what the shell may import.
 
 - `packages/@repo/test-exports/test/shell-load.test.mjs` (part of `pnpm test:exports`, build
@@ -855,19 +858,19 @@ sign-in, and the bare entry is what the shell may import.
   built `lib`, walks from the studio entry through every static import and through the `sanity`
   package's own dynamic imports (its lazy layout, navbar, plugin providers and preloads load with
   the shell), stops at dynamic imports in studio or plugin code, and fails with every chain that
-  reaches `lib/…/2.js`. `test/fixtures/shell-load` checks the walk itself: a navbar that imports
-  `/2` is reported, a lazy tool that does is not. In a studio config, the
-  `@repo/studio/no-internals-before-sign-in` lint rule reports a static `/2` import too.
-- A name goes on `/2` when every consumer outside `packages/sanity` uses it from code that is
+  reaches `lib/…-2.js`. `test/fixtures/shell-load` checks the walk itself: a navbar that imports
+  `-2` is reported, a lazy tool that does is not. In a studio config, the
+  `@repo/studio/no-internals-before-sign-in` lint rule reports a static `-2` import too.
+- A name goes on `-2` when every consumer outside `packages/sanity` uses it from code that is
   already lazy (an input, a document component, a tool). Moving a name between the bare entry and
-  `/2` takes a tombstone on the entry it left (see Export tombstones), the `v7-export-map` entry,
-  and the regenerated exports snapshot and d.ts fixtures. A plugin that needs a `/2` name at
+  `-2` takes a tombstone on the entry it left (see Export tombstones), the `v7-export-map` entry,
+  and the regenerated exports snapshot and d.ts fixtures. A plugin that needs a `-2` name at
   module scope of a statically imported module imports it dynamically and destructures it, as the
   patched plugins under `patches/` do:
-  `lazy(() => import('sanity/…/2').then(({ArrayOfObjectsItem}) => ({default: ArrayOfObjectsItem})))`.
-- `/2` is listed in `package.bundle.ts`. Like `/1`, it is a nested path, so auto-updating studios
-  can only load it once the module server routes subpaths with more than one segment.
-- Keeping the shell small is about more than `/2`: rolldown puts the lib modules that the same
+  `lazy(() => import('sanity/…-2').then(({ArrayOfObjectsItem}) => ({default: ArrayOfObjectsItem})))`.
+- `-2` is listed in `package.bundle.ts`, like `-1`. Both are flattened to a single segment for the
+  module server; see the TODO under the CDN bundle bullet above.
+- Keeping the shell small is about more than `-2`: rolldown puts the lib modules that the same
   lazy boundaries reach into one chunk, so a module the shell imports statically drags every
   module in its chunk along. The usual fixes are a `lazy()` component (through a `.lazy.ts` shim)
   under a `Suspense` at its render site, for dialogs, popover contents and anything else that only
@@ -1100,7 +1103,7 @@ every effect cleanup in the subtree and showing runs the effects again, without 
 
 The studio's `<ViewTransition>` boundaries animate only transitions whose types they are keyed on
 (`{default: 'none', [type]: 'class'}`), so a transition elsewhere on the page never pictures them.
-`sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1` exports the shared types
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1` exports the shared types
 (that subpath because plugins import them at module scope, which runs before sign-in):
 `STUDIO_SKIP_TRANSITION_TYPE` (`sanity-studio-skip`) takes every
 studio boundary out of a transition, so an app can own the whole animation;
@@ -1467,9 +1470,13 @@ revealed. Two consequences for Suspense code:
   it. Tests mock `useUpsellData` with a module-scoped `of(result)`
   (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an observable
   created per render would resubscribe on every commit.
-- The feature requests start when the plugins' providers commit, once the auth state has settled
-  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
-  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+- The feature requests start as soon as the auth state has settled as signed in, not before:
+  nothing probes `/features` or the schedules usage for a visitor who is not logged in or whose
+  credentials the auth probe rejects. `PreloadNavbarData` (`core/studio/preloadNavbarData.tsx`,
+  rendered by `StudioProvider` inside `AuthBoundary`) sends both then, before the authenticated
+  studio, the workspace source and the plugins have loaded, because the navbar's tool menu
+  suspends on them; the providers that publish the promises read the cached answers. A new
+  request the navbar suspends on starts there too. `getFeatures` and
   `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
   both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
 - A default plugin's components never check the workspace flag that enables the plugin:

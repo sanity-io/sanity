@@ -8,10 +8,10 @@ import type {
   MatchOk,
   MatchResult,
   NextStateOrOptions,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router'
 import {describe, expectTypeOf, test} from 'vitest'
 
-describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router', () => {
+describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router', () => {
   test('InternalSearchParam', () => {
     expectTypeOf<InternalSearchParam>().not.toBeNever()
   })

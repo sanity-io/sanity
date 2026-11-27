@@ -21,14 +21,14 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..171f8b4f986fc14a3cb2ae6bf36a2dc4
  import camelCase from "lodash-es/camelCase.js";
  import upperFirst from "lodash-es/upperFirst.js";
  import { EventsContext } from "sanity/_singletons";
-+import { useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
++import { useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1";
  import { Menu, MenuButton, MenuDivider, MenuItem } from "@sanity/ui/menu";
  import { Code } from "@sanity/ui/code";
  import { WarningOutlineIcon } from "@sanity/icons/WarningOutline";
  import { RemoveCircleIcon } from "@sanity/icons/RemoveCircle";
  import { Tooltip } from "@sanity/ui/tooltip";
-+const ArrayOfObjectsItem = lazy(() => import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2").then(({ ArrayOfObjectsItem }) => ({ default: ArrayOfObjectsItem })));
-+const MemberItemError = lazy(() => import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2").then(({ MemberItemError }) => ({ default: MemberItemError })));
++const ArrayOfObjectsItem = lazy(() => import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2").then(({ ArrayOfObjectsItem }) => ({ default: ArrayOfObjectsItem })));
++const MemberItemError = lazy(() => import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2").then(({ MemberItemError }) => ({ default: MemberItemError })));
  const namespace = "sanity-plugin-internationalized-array", functionKeyCache = /* @__PURE__ */ new WeakMap(), promiseCache = /* @__PURE__ */ new Map(), functionCache = /* @__PURE__ */ new Map();
  function stringifyCacheKey(key) {
  	return JSON.stringify(key);
@@ -37,7 +37,7 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..171f8b4f986fc14a3cb2ae6bf36a2dc4
  			patches.push(ifMissing), patches.push(insertValue);
  		}
 -		onChange(PatchEvent.from(patches.flat()));
-+		void import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2").then(({ PatchEvent }) => onChange(PatchEvent.from(patches.flat())));
++		void import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2").then(({ PatchEvent }) => onChange(PatchEvent.from(patches.flat())));
  	}, $[2] = filteredLanguages, $[3] = getFormValue, $[4] = getInitialValueForType, $[5] = onChange, $[6] = toast, $[7] = t1) : t1 = $[7];
  	let handleDocumentButtonClick = t1, t2;
  	$[8] === Symbol.for("react.memo_cache_sentinel") ? (t2 = /* @__PURE__ */ jsx(Box, { children: /* @__PURE__ */ jsx(Text, {
@@ -46,7 +46,7 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..171f8b4f986fc14a3cb2ae6bf36a2dc4
  			path
  		});
 -		onChange(PatchEvent.from([setIfMissing([], path), ...patches]));
-+		void import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2").then(({ PatchEvent }) => onChange(PatchEvent.from([setIfMissing([], path), ...patches])));
++		void import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2").then(({ PatchEvent }) => onChange(PatchEvent.from([setIfMissing([], path), ...patches])));
  	}, [
  		language.id,
  		value,
@@ -55,7 +55,7 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..171f8b4f986fc14a3cb2ae6bf36a2dc4
  			path
  		});
 -		onChange(PatchEvent.from([setIfMissing([], path), ...patches]));
-+		void import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2").then(({ PatchEvent }) => onChange(PatchEvent.from([setIfMissing([], path), ...patches])));
++		void import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2").then(({ PatchEvent }) => onChange(PatchEvent.from([setIfMissing([], path), ...patches])));
  	}, [
  		fieldActionProps,
  		filteredLanguages,

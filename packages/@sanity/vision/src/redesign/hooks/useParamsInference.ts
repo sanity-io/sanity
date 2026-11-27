@@ -1,7 +1,7 @@
 import {type SchemaType} from 'groq-js'
 import {useMemo} from 'react'
 import {type Schema} from 'sanity'
-import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 
 import {getDocumentTypeNames} from '../util/documentTypes'
 import {getNumberRules} from '../util/numberRules'

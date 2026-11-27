@@ -11,7 +11,7 @@ import {type DocumentPresence} from 'sanity/_dangerously_use_private_internals_t
 import {
   PresenceOverlay,
   FieldPresence,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 
 export function CustomInputWithDialogOverlay(
   props: {

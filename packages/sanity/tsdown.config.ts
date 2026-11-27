@@ -3,13 +3,12 @@ import {defineConfig} from '@repo/tsdown.config'
 import pkg from './package.json' with {type: 'json'}
 
 export default defineConfig({
-  // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …), and the files
-  // in its `_dangerously_use_private_internals_that_do_not_follow_semver/` directory to the
-  // subpaths of that entry (`…/1`, `…/2`, `…/structure`, `…/router`)
-  entry: [
-    './src/_exports/*.ts',
-    './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/*.ts',
-  ],
+  // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …), including the
+  // `_dangerously_use_private_internals_that_do_not_follow_semver-{1,2,structure,router}` entries.
+  // TODO: those subpaths use `-` instead of `/` because module-server only serves single-segment
+  // subpaths until https://github.com/sanity-io/module-server/pull/251 is deployed to production.
+  // Once it is, move them back to `…/1`, `…/2`, `…/structure` and `…/router`.
+  entry: ['./src/_exports/*.ts'],
   // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
   // the shared `clean: ['lib']` default, so `lib` must be listed explicitly)
   clean: [

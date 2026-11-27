@@ -10,7 +10,7 @@ import {
   type ItemProps,
   type PreviewProps,
 } from 'sanity'
-import {ArrayOfPrimitivesFunctions} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+import {ArrayOfPrimitivesFunctions} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {Heading, Text, Box, Flex, Grid, VStack} from 'ui5'
 
 const COMPONENT_COLORS = {

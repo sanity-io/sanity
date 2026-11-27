@@ -36,6 +36,15 @@ function getUsedScheduledPublishing(client: SanityClient): Observable<boolean> {
 }
 
 /**
+ * Sends the usage probe for the client's dataset ahead of the scheduled publishing provider, which
+ * then reads the cached answer instead of sending its own. The client should be initialized with
+ * the options in `DEFAULT_STUDIO_CLIENT_OPTIONS`.
+ */
+export function preloadHasUsedScheduledPublishing(client: SanityClient): void {
+  getUsedScheduledPublishing(client).subscribe()
+}
+
+/**
  * Whether scheduled publishing counts as used for this workspace, as an observable of the
  * settled answer for `useObservablePromise` and `use()`. Never errors: a failed probe reads as
  * not used. A workspace that opted in explicitly counts as used without probing.

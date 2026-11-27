@@ -19,16 +19,11 @@ const CSS_IMPORT = /^import\s+["']sanity\/bundle\.css["'];?$/m
 // A chunk can import a dependency's own stylesheet (the Portable Text table plugin's, for one)
 const STYLESHEET_IMPORT = /^import\s+["'][^"']+\.css["'];?$/m
 
-// The subpaths of the internals entry (`…/structure`, …) are built into this directory of `lib`
-const BARREL_DIRS = ['', '_dangerously_use_private_internals_that_do_not_follow_semver']
-
 function barrelsImportingStylesheet() {
-  return BARREL_DIRS.flatMap((dir) =>
-    readdirSync(path.join(libDir, dir))
-      .filter((file) => file.endsWith('.js'))
-      .map((file) => path.posix.join(dir, file))
-      .filter((file) => CSS_IMPORT.test(readFileSync(path.join(libDir, file), 'utf8'))),
-  ).map((file) => `./lib/${file}`)
+  return readdirSync(libDir)
+    .filter((file) => file.endsWith('.js'))
+    .filter((file) => CSS_IMPORT.test(readFileSync(path.join(libDir, file), 'utf8')))
+    .map((file) => `./lib/${file}`)
 }
 
 void test('sanity lists its side-effectful files instead of declaring sideEffects: true', () => {

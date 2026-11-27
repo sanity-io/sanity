@@ -18,8 +18,8 @@ index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..b46c3d5eeb75819bdc0f9681b2c30f17
  import { useRouter } from "sanity/router";
 -import { structureLocaleNamespace, useDocumentPane, usePaneRouter } from "sanity/structure";
 +import { structureLocaleNamespace, useDocumentPane } from "sanity/structure";
-+import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure";
-+import { Preview, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { PatchEvent } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2"; import { TextWithTone, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
++import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure";
++import { Preview, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { PatchEvent } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2"; import { TextWithTone, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1";
  import { TranslateIcon } from "@sanity/icons/Translate";
  import { Popover } from "@sanity/ui/popover";
  import { CogIcon } from "@sanity/icons/Cog";

@@ -88,6 +88,24 @@ function getFeatures({
 }
 
 /**
+ * Sends the `/features` request for a project ahead of the first feature check, which then reads
+ * the cached answer instead of sending its own. The client should be initialized with the options
+ * in `DEFAULT_STUDIO_CLIENT_OPTIONS`.
+ *
+ * @internal
+ */
+export function preloadFeatures({
+  projectId,
+  versionedClient,
+}: {
+  projectId: string
+  versionedClient: SanityClient
+}): void {
+  // A failed request is reported by the feature checks that read it
+  getFeatures({projectId, versionedClient}).subscribe({error: () => {}})
+}
+
+/**
  * The same check as {@link useFeatureEnabled}, as an observable of the settled answer for
  * `useObservablePromise` and `use()`, so a component that decides the shape of the tree can
  * suspend until the answer is in instead of rendering a loading state first. Never errors: a

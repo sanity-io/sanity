@@ -1,5 +1,5 @@
 // A studio evaluates its config, and every module the config imports, before it can render the
-// login screen. Of the private internals entry, only its `/1` subpath may be part of that graph:
+// login screen. Of the private internals entry, only its `…-1` subpath may be part of that graph:
 // the bare entry and the other subpaths are large, and a studio that imports them up front
 // downloads all of it before the user has even signed in. The form components are the largest
 // part of the package and render only once a document is open, so neither they nor the facades
@@ -30,7 +30,7 @@ const STUDIO_CONFIGS = ['perf/bench/sanity.config.ts', 'perf/studio/sanity.confi
 const FORM_DIR = 'src/core/form'
 const FORM_FACADES = `${FORM_DIR}/lazy.tsx`
 const FORM_IMPLEMENTATIONS = `${FORM_DIR}/publicComponents.lazy.ts`
-const FIRST_LOAD_EXPORTS = `src/_exports/${INTERNALS}/${FIRST_LOAD_SUBPATH}.ts`
+const FIRST_LOAD_EXPORTS = `src/_exports/${INTERNALS}-${FIRST_LOAD_SUBPATH}.ts`
 const FACADES = `the form component facades (${FORM_FACADES})`
 
 /** @param {string} file - relative to the `sanity` package */
@@ -57,8 +57,8 @@ const formComponentModules = new Map(
 function internalsEntryOf(id) {
   const relative = path.relative(sanityLib, id.split('?')[0]).split(path.sep).join('/')
   if (relative === `${INTERNALS}.js`) return `sanity/${INTERNALS}`
-  const match = new RegExp(`^${INTERNALS}/([^/]+)\\.js$`).exec(relative)
-  return match ? `sanity/${INTERNALS}/${match[1]}` : undefined
+  const match = new RegExp(`^${INTERNALS}-([^/]+)\\.js$`).exec(relative)
+  return match ? `sanity/${INTERNALS}-${match[1]}` : undefined
 }
 
 /**
@@ -137,7 +137,7 @@ async function firstLoadGraph(configPath) {
           while (queue.length > 0) {
             const id = /** @type {string} */ (queue.shift())
             const entry = internalsEntryOf(id)
-            if (entry && entry !== `sanity/${INTERNALS}/${FIRST_LOAD_SUBPATH}`) {
+            if (entry && entry !== `sanity/${INTERNALS}-${FIRST_LOAD_SUBPATH}`) {
               internals.push({entry, chain: chainTo(id)})
             }
             const components = formComponentsIn(id)
@@ -167,15 +167,15 @@ for (const config of STUDIO_CONFIGS) {
     const {internals, formComponents} = await firstLoadGraph(path.join(repoRoot, config))
 
     await t.test(
-      `only imports private internals from sanity/${INTERNALS}/${FIRST_LOAD_SUBPATH}`,
+      `only imports private internals from sanity/${INTERNALS}-${FIRST_LOAD_SUBPATH}`,
       () => {
         assert.deepEqual(
           internals.map(({entry, chain}) => `${entry}, imported through ${chain.join(' → ')}`),
           [],
           [
             `${config} loads private internals before the login screen.`,
-            `Code that is evaluated before sign-in (the studio config and every module it imports statically) may only import private internals from \`sanity/${INTERNALS}/${FIRST_LOAD_SUBPATH}\`.`,
-            `Either import the name from \`sanity/${INTERNALS}/${FIRST_LOAD_SUBPATH}\` (moving it to packages/sanity/${FIRST_LOAD_EXPORTS} if a studio needs it up front), or load the code that uses it with a dynamic \`import()\` so it is fetched after sign-in.`,
+            `Code that is evaluated before sign-in (the studio config and every module it imports statically) may only import private internals from \`sanity/${INTERNALS}-${FIRST_LOAD_SUBPATH}\`.`,
+            `Either import the name from \`sanity/${INTERNALS}-${FIRST_LOAD_SUBPATH}\` (moving it to packages/sanity/${FIRST_LOAD_EXPORTS} if a studio needs it up front), or load the code that uses it with a dynamic \`import()\` so it is fetched after sign-in.`,
           ].join('\n'),
         )
       },

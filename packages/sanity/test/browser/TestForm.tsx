@@ -26,7 +26,7 @@ import {
   setAtPath,
   useFormState,
   useGlobalCopyPasteElementHandler,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
