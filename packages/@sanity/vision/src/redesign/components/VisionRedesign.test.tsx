@@ -56,6 +56,7 @@ import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import visionLocaleStrings from '../../i18n/resources'
 import {type VisionAiConfig} from '../../types'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
+import {VISION_VERSION} from '../../version'
 import {resetAiCredits} from '../hooks/useAiCredits'
 import {
   createInitialState,
@@ -5544,7 +5545,10 @@ describe('VisionRedesign', () => {
     const [[{url}]] = sanityMocks.shareQuery.mock.calls
     expect(new URL(url).searchParams.get('query')).toBe('*[_type == "page"]')
     expect(getStoredState().openedSavedQueries).toEqual([])
-    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'share'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionSharedTabUsed,
+      withVisionVersion({action: 'share'}),
+    )
     await screen.findByText('vision.tabs.share-success')
 
     // Listed as shared, the tab is marked as such and, unchanged, has nothing to share again
@@ -5590,7 +5594,10 @@ describe('VisionRedesign', () => {
     const [[updated]] = sanityMocks.updateSharedQuery.mock.calls
     expect(updated).toMatchObject({_key: 'shared-pages', shared: true, title: 'Pages'})
     expect(new URL(updated.url).searchParams.get('query')).toBe('*[_type == "post"]')
-    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'update'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionSharedTabUsed,
+      withVisionVersion({action: 'update'}),
+    )
     await screen.findByText('vision.tabs.share-update-success')
   })
 
@@ -5609,7 +5616,10 @@ describe('VisionRedesign', () => {
     expect(sanityMocks.unshareQuery).toHaveBeenCalledWith('shared-pages')
     expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
     expect(getQueryEditor().value).toBe('*[_type == "page"]')
-    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'unshare'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionSharedTabUsed,
+      withVisionVersion({action: 'unshare'}),
+    )
     await screen.findByText('vision.tabs.unshare-success')
   })
 
@@ -5626,7 +5636,10 @@ describe('VisionRedesign', () => {
 
     await screen.findByText('vision.tabs.unshare-failed')
     expect(getStoredState().tabs[0].sharedId).toBe('shared-pages')
-    expect(telemetry.log).not.toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'unshare'})
+    expect(telemetry.log).not.toHaveBeenCalledWith(
+      VisionSharedTabUsed,
+      withVisionVersion({action: 'unshare'}),
+    )
   })
 
   it("does not share a tab twice, and links the tab to the share when it is the user's own", async () => {
@@ -5704,7 +5717,10 @@ describe('VisionRedesign', () => {
       {title: 'Posts', query: '*[_type == "post"]'},
     ])
     expect(getStoredState().tabs[2].sharedId).toBeUndefined()
-    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'open'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionSharedTabUsed,
+      withVisionVersion({action: 'open'}),
+    )
     const handles = screen.getAllByTestId('vision-tab')
     expect(within(handles[1]).queryByRole('img', {name: 'vision.tabs.shared'})).not.toBeNull()
     expect(within(handles[2]).queryByRole('img', {name: 'vision.tabs.shared'})).toBeNull()
@@ -5721,7 +5737,7 @@ describe('VisionRedesign', () => {
     fireEvent.change(within(screen.getByTestId('vision-drawer-shared')).getByRole('textbox'), {
       target: {value: 'pa'},
     })
-    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabsSearched)
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabsSearched, withVisionVersion({}))
   })
 
   it('unshares a shared tab from the drawer, keeping its query open in a tab', async () => {
@@ -5743,7 +5759,10 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBeUndefined())
     expect(sanityMocks.unshareQuery).toHaveBeenCalledWith('shared-pages')
     expect(getStoredState().tabs).toHaveLength(1)
-    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'unshare'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionSharedTabUsed,
+      withVisionVersion({action: 'unshare'}),
+    )
 
     // One no tab shows opens in a tab of its own, so unsharing it does not lose it
     fireEvent.click(
@@ -5820,7 +5839,10 @@ describe('VisionRedesign', () => {
     )
     expect(getStoredState().tabs[1].title).toBe('Posts')
     expect(within(drawer).getAllByTestId('vision-closed-tab')).toHaveLength(1)
-    expect(telemetry.log).toHaveBeenCalledWith(VisionClosedTabUsed, {action: 'restore'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionClosedTabUsed,
+      withVisionVersion({action: 'restore'}),
+    )
 
     // Deleted from its menu, a closed tab is gone for good
     const menu = await openClosedTabMenu('pages')
@@ -5833,7 +5855,10 @@ describe('VisionRedesign', () => {
     expect(within(drawer).queryByTestId('vision-closed-tab')).toBeNull()
     expect(text(drawer)).toContain('vision.closed-tabs.empty')
     expect(screen.getAllByTestId('vision-tab')).toHaveLength(2)
-    expect(telemetry.log).toHaveBeenCalledWith(VisionClosedTabUsed, {action: 'delete'})
+    expect(telemetry.log).toHaveBeenCalledWith(
+      VisionClosedTabUsed,
+      withVisionVersion({action: 'delete'}),
+    )
     expect(logged(VisionSavedQueryUsed.name)).toEqual([])
   })
 
@@ -6313,6 +6338,10 @@ describe('VisionRedesign', () => {
   })
 })
 
+function withVisionVersion<Data extends object>(data: Data) {
+  return {...data, visionVersion: VISION_VERSION}
+}
+
 function logged(name: string): unknown[][] {
   return telemetry.log.mock.calls.filter((call) => call[0]?.name === name)
 }
@@ -6336,14 +6365,14 @@ describe('VisionRedesign adoption telemetry', () => {
   it('records a fetch, a shortcut and starting Live once each, and params only when the run has them', async () => {
     const {fetchCalls, setPerspective} = renderRedesign()
     expect(logged(VisionTabsChanged.name)).toEqual([
-      [VisionTabsChanged, {count: 1, action: 'open'}],
+      [VisionTabsChanged, withVisionVersion({count: 1, action: 'open'})],
     ])
 
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(logged(VisionQueryRun.name)).toEqual([
-      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: false}],
+      [VisionQueryRun, withVisionVersion({mode: 'fetch', trigger: 'button', hasParams: false})],
     ])
     expect(logged(VisionParamsUsed.name)).toEqual([])
 
@@ -6354,10 +6383,12 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.keyDown(getQueryEditor(), {key: 'Enter', ctrlKey: true, which: 13, keyCode: 13})
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(logged(VisionQueryRun.name)).toEqual([
-      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: false}],
-      [VisionQueryRun, {mode: 'fetch', trigger: 'shortcut', hasParams: true}],
+      [VisionQueryRun, withVisionVersion({mode: 'fetch', trigger: 'button', hasParams: false})],
+      [VisionQueryRun, withVisionVersion({mode: 'fetch', trigger: 'shortcut', hasParams: true})],
     ])
-    expect(logged(VisionParamsUsed.name)).toEqual([[VisionParamsUsed, {mode: 'fetch'}]])
+    expect(logged(VisionParamsUsed.name)).toEqual([
+      [VisionParamsUsed, withVisionVersion({mode: 'fetch'})],
+    ])
 
     // Starting Live counts as a listen run, though it fetches nothing
     fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
@@ -6365,11 +6396,11 @@ describe('VisionRedesign adoption telemetry', () => {
     expect(fetchCalls).toHaveLength(2)
     expect(logged(VisionQueryRun.name).at(-1)).toEqual([
       VisionQueryRun,
-      {mode: 'listen', trigger: 'button', hasParams: true},
+      withVisionVersion({mode: 'listen', trigger: 'button', hasParams: true}),
     ])
     expect(logged(VisionParamsUsed.name)).toEqual([
-      [VisionParamsUsed, {mode: 'fetch'}],
-      [VisionParamsUsed, {mode: 'listen'}],
+      [VisionParamsUsed, withVisionVersion({mode: 'fetch'})],
+      [VisionParamsUsed, withVisionVersion({mode: 'listen'})],
     ])
 
     // A live refetch, a pasted query and the navbar following along are not query runs
@@ -6387,11 +6418,15 @@ describe('VisionRedesign adoption telemetry', () => {
 
     expect(logged(VisionDatasetChanged.name)).toEqual([])
     pickDataset('staging')
-    expect(logged(VisionDatasetChanged.name)).toEqual([[VisionDatasetChanged]])
+    expect(logged(VisionDatasetChanged.name)).toEqual([
+      [VisionDatasetChanged, withVisionVersion({})],
+    ])
 
     pickMenuItem('vision-option-perspective-select', 'drafts')
     pickMenuItem('vision-option-perspective-select', 'drafts')
-    expect(logged(VisionPerspectiveChanged.name)).toEqual([[VisionPerspectiveChanged]])
+    expect(logged(VisionPerspectiveChanged.name)).toEqual([
+      [VisionPerspectiveChanged, withVisionVersion({})],
+    ])
 
     const apiVersion = screen.getByTestId('vision-option-api-version-select')
     fireEvent.change(apiVersion, {target: {value: 'v1'}})
@@ -6399,8 +6434,8 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.change(apiVersion, {target: {value: 'v2020-01-01'}})
     fireEvent.change(apiVersion, {target: {value: 'v2020-01-01'}})
     expect(logged(VisionApiVersionChanged.name)).toEqual([
-      [VisionApiVersionChanged, {custom: false}],
-      [VisionApiVersionChanged, {custom: true}],
+      [VisionApiVersionChanged, withVisionVersion({custom: false})],
+      [VisionApiVersionChanged, withVisionVersion({custom: true})],
     ])
     expect(logged(VisionQueryRun.name)).toEqual([])
 
@@ -6423,7 +6458,9 @@ describe('VisionRedesign adoption telemetry', () => {
       typeQuery('*[_type == "author"]')
       fireEvent.click(within(shownTab()).getByTestId('vision-query-copy'))
       await waitFor(() =>
-        expect(logged(VisionCopied.name)).toEqual([[VisionCopied, {target: 'query'}]]),
+        expect(logged(VisionCopied.name)).toEqual([
+          [VisionCopied, withVisionVersion({target: 'query'})],
+        ]),
       )
 
       fireEvent.click(screen.getByTestId('vision-fetch-button'))
@@ -6431,8 +6468,8 @@ describe('VisionRedesign adoption telemetry', () => {
       fireEvent.click(screen.getByRole('button', {name: 'action.copy-url-to-clipboard'}))
       await waitFor(() =>
         expect(logged(VisionCopied.name)).toEqual([
-          [VisionCopied, {target: 'query'}],
-          [VisionCopied, {target: 'url'}],
+          [VisionCopied, withVisionVersion({target: 'query'})],
+          [VisionCopied, withVisionVersion({target: 'url'})],
         ]),
       )
 
@@ -6442,7 +6479,7 @@ describe('VisionRedesign adoption telemetry', () => {
       fireEvent.click(copy)
       await waitFor(() =>
         expect(logged(VisionSnippetCopied.name)).toEqual([
-          [VisionSnippetCopied, {snippet: 'client'}],
+          [VisionSnippetCopied, withVisionVersion({snippet: 'client'})],
         ]),
       )
 
@@ -6468,7 +6505,7 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.change(screen.getByTestId('vision-generate-request'), {target: {value: 'Authors'}})
     fireEvent.click(screen.getByTestId('vision-generate-submit'))
     expect(logged(VisionAgentActionInvoked.name)).toEqual([
-      [VisionAgentActionInvoked, {action: 'generate-query'}],
+      [VisionAgentActionInvoked, withVisionVersion({action: 'generate-query'})],
     ])
 
     typeQuery('*[_type == "author"]')
@@ -6477,8 +6514,8 @@ describe('VisionRedesign adoption telemetry', () => {
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-explain-button'))
     expect(logged(VisionAgentActionInvoked.name)).toEqual([
-      [VisionAgentActionInvoked, {action: 'generate-query'}],
-      [VisionAgentActionInvoked, {action: 'explain'}],
+      [VisionAgentActionInvoked, withVisionVersion({action: 'generate-query'})],
+      [VisionAgentActionInvoked, withVisionVersion({action: 'explain'})],
     ])
 
     fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
@@ -6489,7 +6526,7 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.click(screen.getByTestId('vision-mutate-generate-submit'))
     expect(logged(VisionAgentActionInvoked.name).at(-1)).toEqual([
       VisionAgentActionInvoked,
-      {action: 'generate-mutations'},
+      withVisionVersion({action: 'generate-mutations'}),
     ])
     expect(logged(VisionAgentActionInvoked.name)).toHaveLength(3)
   })
@@ -6497,18 +6534,18 @@ describe('VisionRedesign adoption telemetry', () => {
   it('records tabs added and closed, and a prettify and a lint open once each', async () => {
     renderRedesign()
     expect(logged(VisionTabsChanged.name)).toEqual([
-      [VisionTabsChanged, {count: 1, action: 'open'}],
+      [VisionTabsChanged, withVisionVersion({count: 1, action: 'open'})],
     ])
 
     fireEvent.click(screen.getByTestId('vision-new-tab'))
     expect(logged(VisionTabsChanged.name).at(-1)).toEqual([
       VisionTabsChanged,
-      {count: 2, action: 'add'},
+      withVisionVersion({count: 2, action: 'add'}),
     ])
     fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'))
     expect(logged(VisionTabsChanged.name).at(-1)).toEqual([
       VisionTabsChanged,
-      {count: 1, action: 'close'},
+      withVisionVersion({count: 1, action: 'close'}),
     ])
     fireEvent.click(screen.getByTestId('vision-tab-close'))
     expect(logged(VisionTabsChanged.name)).toHaveLength(3)
@@ -6517,7 +6554,7 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.click(await screen.findByTestId('vision-query-format'))
     await waitFor(() =>
       expect(logged(VisionQueryPrettified.name)).toEqual([
-        [VisionQueryPrettified, {outcome: 'success'}],
+        [VisionQueryPrettified, withVisionVersion({outcome: 'success'})],
       ]),
     )
     typeQuery('*[_type == "author"')
@@ -6525,13 +6562,15 @@ describe('VisionRedesign adoption telemetry', () => {
     await waitFor(() =>
       expect(logged(VisionQueryPrettified.name).at(-1)).toEqual([
         VisionQueryPrettified,
-        {outcome: 'error'},
+        withVisionVersion({outcome: 'error'}),
       ]),
     )
 
     openRequestTab('lint')
     await waitFor(() =>
-      expect(logged(VisionLintUsed.name)).toEqual([[VisionLintUsed, {action: 'open'}]]),
+      expect(logged(VisionLintUsed.name)).toEqual([
+        [VisionLintUsed, withVisionVersion({action: 'open'})],
+      ]),
     )
     openRequestTab('lint')
     expect(logged(VisionLintUsed.name)).toHaveLength(1)
