@@ -268,7 +268,7 @@ jobs:
           path: chromatic-artifacts
 
       - name: Upload archives to Chromatic
-        uses: chromaui/action@9cb4d65a86fe1c4c67a76a8d90f35a51a118e55f # v18.15.1
+        uses: chromaui/action@0a7067e5ffc663a631b14db505d8a94b26e1bf2f # v18.15.3
         env:
           # Playwright's outputDir is e2e/results, and the test artifacts
           # preserve the results/ folder (which contains chromatic-archives/),
